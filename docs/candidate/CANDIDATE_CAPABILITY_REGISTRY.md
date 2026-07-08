@@ -15,7 +15,7 @@
 | Last Updated | 2026-07-06 |
 | Tags / Capability Type | candidate, capability, registry |
 | Dependencies | [EAIRA Governance](../governance/README.md); [EAIRA Capability Governance Standard](../governance/EAIRA_CAPABILITY_GOVERNANCE_STANDARD.md); [EAIRA Capability Lifecycle](../governance/EAIRA_CAPABILITY_LIFECYCLE.md) |
-| Related Documents | [EAIRA Capability Assessment Standard](../governance/EAIRA_CAPABILITY_ASSESSMENT_STANDARD.md); [Multi AI Collaboration Candidate](./MULTI_AI_COLLABORATION_CANDIDATE.md) |
+| Related Documents | [EAIRA Capability Assessment Standard](../governance/EAIRA_CAPABILITY_ASSESSMENT_STANDARD.md); [Multi AI Collaboration Candidate](./MULTI_AI_COLLABORATION_CANDIDATE.md); [M3.4 Evidence-Driven AI Organization Slice Candidate](./M3_4_EVIDENCE_DRIVEN_AI_ORGANIZATION_SLICE_CANDIDATE.md) |
 | Supersedes | None |
 | Superseded By | None |
 | Completion Criteria | Governance Review completed for Task B scope. |
@@ -32,7 +32,10 @@ Placeholder.
 
 ## Registry Entries
 
-Placeholder.
+| Candidate | Status | Summary |
+| --- | --- | --- |
+| [Multi AI Collaboration Candidate](./MULTI_AI_COLLABORATION_CANDIDATE.md) | Candidate | Candidate capability record for multi AI collaboration assessment. |
+| [M3.4 Evidence-Driven AI Organization Slice Candidate](./M3_4_EVIDENCE_DRIVEN_AI_ORGANIZATION_SLICE_CANDIDATE.md) | Candidate | Candidate validation slice for Finance Revenue Input Task execution evidence. |
 
 ## Candidate Statuses
 
