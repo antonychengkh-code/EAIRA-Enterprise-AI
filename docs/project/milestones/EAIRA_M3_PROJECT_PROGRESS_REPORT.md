@@ -17,6 +17,8 @@ Record the current factual status of EAIRA M3: Project Management Foundation.
 
 This report covers the first controlled validation cycle for M3 Project Layer execution artifacts.
 
+This report is a historical project progress artifact. Current repository state is maintained in [Current Status](../status/CURRENT_STATUS.md).
+
 ## Rules
 
 - Markdown only.
