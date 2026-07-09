@@ -1,6 +1,7 @@
-"Task ID": "[Insert Task ID]"
-"Owner": "[Insert Owner]"
-"Status": "[Insert Status]"
-"Priority": "[Insert Priority]"
-"Dependencies": []
-"Last Updated": "YYYY-MM-DD"
+"Task ID": "M3.4-FINANCE-REVENUE-INPUT-001"
+"Owner": "Project Owner (final completion decision maker)"
+"Status": "Executed; completion_decision = APPROVED WITH FINDINGS"
+"Priority": "unknown - repository evidence not found"
+"Dependencies":
+  - "M3.4 Evidence-Driven AI Organization Slice Candidate"
+"Last Updated": "2026-07-08"
