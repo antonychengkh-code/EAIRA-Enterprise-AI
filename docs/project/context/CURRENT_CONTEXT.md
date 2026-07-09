@@ -17,7 +17,7 @@ Repository evidence currently includes:
 - M3.4 Evidence-Driven AI Organization Slice closeout: completed.
 - M3.4 Finance Revenue Input Task Record: `lifecycle_status = Executed`, `completion_decision = APPROVED WITH FINDINGS`.
 
-`docs/project/status/CURRENT_STATUS.md` remains present and records M3.2 and M3.3 as completed, with the next milestone pending Project Owner decision. The later M3.4 closeout provides additional repository evidence after that status snapshot.
+`docs/project/status/CURRENT_STATUS.md` now records M3.2, M3.3, and M3.4 as completed after repository convergence, with the next milestone pending Project Owner decision.
 
 ## Current Milestone
 
