@@ -28,7 +28,22 @@ Read the following in order:
 - Read summaries first, authoritative sources second.
 - Use daily reports as history or audit only.
 - Use `CURRENT_CONTEXT.md` as working context.
+- If a listed or referenced file is missing or inaccessible, report it as missing evidence and do not reconstruct it from memory or prior conversation.
 - If context conflicts, stop bootstrap, report the detected conflict, and request Project Owner clarification before continuing.
+
+## Expected Bootstrap Output
+
+Report the reconstructed Project Layer context from repository evidence, including:
+
+- current project context;
+- current milestone, phase, objective, active task, and context version status;
+- current decision;
+- active work and next action;
+- blockers;
+- pending Project Owner decisions, if any;
+- applicable boundaries;
+- missing or inaccessible evidence;
+- source paths used for reconstruction.
 
 ## Boundary
 
