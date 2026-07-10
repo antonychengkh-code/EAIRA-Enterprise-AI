@@ -81,7 +81,7 @@ It does not authorize execution work, implementation work, runtime work, or plat
 - `docs/project/strategy/EAIRA_NEXT_MILESTONE_PROPOSAL.md` records the candidate proposal titled `EAIRA Next Milestone Proposal`.
 - `docs/project/strategy/EAIRA_NEXT_MILESTONE_DECISION.md` records Project Owner approval for milestone authorization planning only.
 - `docs/project/milestones/EAIRA_M3_CLOSEOUT.md` records M3 closed in the Project Layer.
-- `docs/project/status/CURRENT_STATUS.md` records the next milestone as pending Project Owner decision.
+- `docs/project/status/CURRENT_STATUS.md` records milestone authorization planning as approved and records that no current or new milestone is established.
 
 ## Planned Deliverables
 

@@ -16,8 +16,9 @@ Repository evidence currently includes:
 - M3.3 Cold Start Validation closeout: completed.
 - M3.4 Evidence-Driven AI Organization Slice closeout: completed.
 - M3.4 Finance Revenue Input Task Record: `lifecycle_status = Executed`, `completion_decision = APPROVED WITH FINDINGS`.
+- The Next Milestone Candidate Proposal is approved for milestone authorization planning only.
 
-`docs/project/status/CURRENT_STATUS.md` now records M3.2, M3.3, and M3.4 as completed after repository convergence, with the next milestone pending Project Owner decision.
+`docs/project/status/CURRENT_STATUS.md` records M3.2, M3.3, and M3.4 as completed after repository convergence. No new milestone is established.
 
 ## Current Milestone
 
@@ -27,7 +28,9 @@ Based on repository evidence, the latest milestone closeout present is:
 
 - M3.4 - Evidence-Driven AI Organization Slice: closed.
 
-No repository evidence in this context file establishes M4, Platform Foundation, or a formal EAIRA Execution Layer.
+The completed M3 record, including the completed M3.4 slice, remains the latest completed milestone evidence. No current or new milestone is established.
+
+Milestone authorization planning approval does not establish M4, authorize implementation, establish Platform Foundation, or establish a formal EAIRA Execution Layer.
 
 ## Authoritative Sources
 
@@ -35,7 +38,7 @@ No repository evidence in this context file establishes M4, Platform Foundation,
 | --- | --- |
 | Current Milestone | Current authoritative repository records, especially latest applicable closeout records. |
 | Current Status | `docs/project/status/CURRENT_STATUS.md`, when present. |
-| Current Decisions | Applicable approved project records, including milestone closeouts and task records. |
+| Current Decisions | `docs/project/strategy/EAIRA_NEXT_MILESTONE_DECISION.md` and applicable approved project records. |
 | Validated Constraints | Applicable Active Task Record `completion_decision`; currently `docs/tasks/M3_4_FINANCE_REVENUE_INPUT_TASK_RECORD.md`. |
 | History | Daily reports under `docs/project/daily/` and project logs under `docs/project/logs/`. |
 
@@ -43,6 +46,9 @@ No repository evidence in this context file establishes M4, Platform Foundation,
 
 Repository-supported decisions include:
 
+- The Next Milestone Candidate Proposal is approved for milestone authorization planning only.
+- Planning approval does not establish a milestone or authorize implementation.
+- Planning approval does not establish M4, Platform Foundation, or a formal EAIRA Execution Layer.
 - M3.4 remained a Candidate validation slice and was not promoted to M4.
 - M3.4 did not establish Platform Foundation.
 - M3.4 did not formalize an EAIRA Execution Layer.
@@ -57,15 +63,16 @@ The authoritative Validated Constraints for M3.4 are recorded in:
 
 They are not duplicated here.
 
-## Next Recommended Direction
+## Current Planning Direction
 
-Repository evidence supports a cautious next direction:
+Repository evidence supports the following bounded planning direction:
 
-- Do not begin M4 or Platform Foundation automatically.
-- If future work is approved, prefer another small validation slice rather than a broad architecture rollout.
-- Candidate next-slice directions recorded in daily history include backend code generation, database migration generation, testing, or repository automation.
+- Prepare milestone authorization planning inputs within `docs/project/milestones/EAIRA_NEXT_MILESTONE_PROJECT_CHARTER.md` boundaries.
+- No current objective is assigned unless separately authorized.
+- No current active task is assigned.
+- Do not begin implementation, establish M4, establish Platform Foundation, or establish a formal EAIRA Execution Layer.
 
-Any future milestone selection remains subject to Project Owner decision.
+Any future milestone establishment and any implementation authorization require separate Project Owner authorization.
 
 ## Boundary
 

@@ -17,7 +17,7 @@
 
 Repository evidence records that M3 is closed in the Project Layer.
 
-`docs/project/status/CURRENT_STATUS.md` records M3.2, M3.3, and M3.4 as completed and records the next milestone as pending Project Owner decision.
+At the time immediately before this decision was recorded, `docs/project/status/CURRENT_STATUS.md` recorded M3.2, M3.3, and M3.4 as completed and recorded the next milestone as pending Project Owner decision. This statement preserves the pre-decision context and does not describe the synchronized current state.
 
 `docs/project/context/CURRENT_CONTEXT.md` records that no repository evidence establishes M4, Platform Foundation, or a formal EAIRA Execution Layer, and that future milestone selection remains subject to Project Owner decision.
 
@@ -73,7 +73,7 @@ This decision does not establish M4.
 
 Repository evidence supports recording this as a Strategy-owned decision because the Project Information Architecture assigns planning rationale to Strategy.
 
-Repository evidence supports keeping the decision bounded because current repository records state that M3 is closed, the next milestone remains subject to Project Owner decision, and no repository evidence establishes M4, Platform Foundation, or a formal EAIRA Execution Layer.
+Repository evidence available when this decision was recorded supported keeping the decision bounded because M3 was closed, the next milestone remained subject to Project Owner decision, and no repository evidence established M4, Platform Foundation, or a formal EAIRA Execution Layer.
 
 The existing candidate proposal is already scoped as a Strategy-owned candidate proposal and states that it does not establish a milestone, authorize implementation, or approve future work. This decision records Project Owner approval for milestone authorization planning only while preserving those boundaries.
 
