@@ -20,20 +20,24 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-No current objective is assigned unless separately authorized by the Project Owner.
+Prepare the EAIRA Next Milestone Authorization Planning Evidence Inventory using repository evidence only.
+
+Authorized task: `NEXT-MILESTONE-AUTHORIZATION-PLANNING-001`.
 
 ## Out of Scope
 
-Milestone authorization planning is approved by the Project Owner for planning only. This approval does not assign a current objective.
+This objective is Project Layer planning and evidence inventory work only.
 
 No milestone establishment, M4, implementation, Platform Foundation, formal EAIRA Execution Layer, governance change, automation, linting, CI/CD, SYSTEM authority, validation document change, or Bootstrap change is authorized.
 
 ## Expected Deliverables
 
-No deliverables are assigned without a separately authorized objective.
+Created and validated `docs/project/strategy/EAIRA_NEXT_MILESTONE_AUTHORIZATION_EVIDENCE_INVENTORY.md`.
 
 ## Success Criteria
 
-No objective execution begins without separate Project Owner authorization.
+The inventory distinguishes verified evidence, observations, gaps, assumptions, and proposed planning inputs; cites exact repository source paths for material conclusions; and records missing evidence without invention.
+
+Bootstrap reconstructs the authorized objective and active planning task without implying milestone establishment or implementation authorization.
 
 Planning-only scope boundaries remain preserved.

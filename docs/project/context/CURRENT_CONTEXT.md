@@ -17,6 +17,8 @@ Repository evidence currently includes:
 - M3.4 Evidence-Driven AI Organization Slice closeout: completed.
 - M3.4 Finance Revenue Input Task Record: `lifecycle_status = Executed`, `completion_decision = APPROVED WITH FINDINGS`.
 - The Next Milestone Candidate Proposal is approved for milestone authorization planning only.
+- Project Owner authorized objective: prepare the EAIRA Next Milestone Authorization Planning Evidence Inventory.
+- Active planning task: `NEXT-MILESTONE-AUTHORIZATION-PLANNING-001`, authorized for planning evidence inventory execution.
 
 `docs/project/status/CURRENT_STATUS.md` records M3.2, M3.3, and M3.4 as completed after repository convergence. No new milestone is established.
 
@@ -39,7 +41,7 @@ Milestone authorization planning approval does not establish M4, authorize imple
 | Current Milestone | Current authoritative repository records, especially latest applicable closeout records. |
 | Current Status | `docs/project/status/CURRENT_STATUS.md`, when present. |
 | Current Decisions | `docs/project/strategy/EAIRA_NEXT_MILESTONE_DECISION.md` and applicable approved project records. |
-| Validated Constraints | Applicable Active Task Record `completion_decision`; currently `docs/tasks/M3_4_FINANCE_REVENUE_INPUT_TASK_RECORD.md`. |
+| Validated Constraints | Historical M3.4 Task Record `completion_decision` in `docs/tasks/M3_4_FINANCE_REVENUE_INPUT_TASK_RECORD.md`. |
 | History | Daily reports under `docs/project/daily/` and project logs under `docs/project/logs/`. |
 
 ## Current Decisions
@@ -47,6 +49,7 @@ Milestone authorization planning approval does not establish M4, authorize imple
 Repository-supported decisions include:
 
 - The Next Milestone Candidate Proposal is approved for milestone authorization planning only.
+- The current authorized objective is limited to preparing the milestone authorization planning evidence inventory.
 - Planning approval does not establish a milestone or authorize implementation.
 - Planning approval does not establish M4, Platform Foundation, or a formal EAIRA Execution Layer.
 - M3.4 remained a Candidate validation slice and was not promoted to M4.
@@ -67,9 +70,7 @@ They are not duplicated here.
 
 Repository evidence supports the following bounded planning direction:
 
-- Prepare milestone authorization planning inputs within `docs/project/milestones/EAIRA_NEXT_MILESTONE_PROJECT_CHARTER.md` boundaries.
-- No current objective is assigned unless separately authorized.
-- No current active task is assigned.
+- Submit the prepared `docs/project/strategy/EAIRA_NEXT_MILESTONE_AUTHORIZATION_EVIDENCE_INVENTORY.md` for Project Owner review under planning task `NEXT-MILESTONE-AUTHORIZATION-PLANNING-001` and within `docs/project/milestones/EAIRA_NEXT_MILESTONE_PROJECT_CHARTER.md` boundaries.
 - Do not begin implementation, establish M4, establish Platform Foundation, or establish a formal EAIRA Execution Layer.
 
 Any future milestone establishment and any implementation authorization require separate Project Owner authorization.
