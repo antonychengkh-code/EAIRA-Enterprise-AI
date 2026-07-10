@@ -22,7 +22,7 @@ Synchronize current-state documents with repository evidence after M3.4 completi
 
 ## Out of Scope
 
-New milestone planning remains pending until explicitly approved by Project Owner.
+Milestone Authorization Planning is approved by Project Owner for planning only.
 
 No M4, Platform Foundation, formal Execution Layer, governance change, validation document change, or Bootstrap change is introduced by this objective.
 
@@ -40,6 +40,6 @@ Updated `docs/project/status/AGENT_CONTEXT_VERSION.yaml`.
 
 Current-state documents reflect completed M3.4 repository evidence.
 
-Future milestone planning remains pending until explicitly approved by Project Owner.
+Milestone Authorization Planning is approved by Project Owner for planning only.
 
 No governance documents are modified.

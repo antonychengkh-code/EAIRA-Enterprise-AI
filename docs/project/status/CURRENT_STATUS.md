@@ -20,7 +20,7 @@ M3.3 Cold Start Validation: Completed.
 
 M3.4 Evidence-Driven AI Organization Slice: Completed.
 
-Next Milestone: Pending project owner decision.
+Next Milestone: Milestone Authorization Planning approved by Project Owner; Charter documented.
 
 ## Active Phase
 
@@ -38,4 +38,4 @@ No current blocker is recorded in repository evidence.
 
 ## Next Action
 
-Await Project Owner decision for any future milestone or validation slice.
+Proceed within the documented Milestone Authorization Planning Charter boundaries.
