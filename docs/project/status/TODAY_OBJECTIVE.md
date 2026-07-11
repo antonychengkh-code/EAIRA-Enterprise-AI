@@ -6,7 +6,7 @@
 
 ## Version
 
-0.2.0
+0.3.0
 
 ## Milestone
 
@@ -20,9 +20,9 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-Prepare one bounded Local Readiness Assessment authorization package using repository evidence only.
+Present the proposed Local Readiness Assessment Authorization Package for Project Owner review and decision.
 
-Authorized task: `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001`.
+Completed preparation task: `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001`. The package remains pending Project Owner review and decision.
 
 ## Out of Scope
 
@@ -32,11 +32,11 @@ No assessment execution, assessment-evidence collection, milestone establishment
 
 ## Expected Deliverables
 
-One proposed Local Readiness Assessment authorization package for Project Owner review.
+Project Owner review of the proposed Local Readiness Assessment Authorization Package and a separate decision on whether a bounded assessment may be authorized.
 
 ## Success Criteria
 
-The proposed authorization package remains bounded and separates verified evidence from evidence gaps, assumptions, and proposals.
+The proposed authorization package remains bounded and available for Project Owner review, and it separates verified evidence from evidence gaps, assumptions, and proposals.
 
 Assessment execution remains unauthorized, and no assessment-evidence collection occurs under this objective.
 

@@ -21,7 +21,8 @@ Repository evidence currently includes:
 - The Project Owner decided that a Local Readiness Assessment is required before milestone establishment.
 - The Local Readiness Assessment planning authorization is committed in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION.md`.
 - Project Owner authorized objective: prepare one bounded Local Readiness Assessment authorization package for Project Owner review.
-- Active planning task: `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001`, with status `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION`, committed in `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`.
+- Authorization-package preparation task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001` is complete under its recorded completion criteria; the resulting package is pending Project Owner review.
+- The proposed Local Readiness Assessment Authorization Package exists in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE.md` with status `PROPOSED_FOR_PROJECT_OWNER_REVIEW` and execution marker `PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION`.
 
 `docs/project/status/CURRENT_STATUS.md` records M3.2, M3.3, and M3.4 as completed after repository convergence. No new milestone is established.
 
@@ -55,7 +56,8 @@ Repository-supported decisions include:
 - The Next Milestone Candidate Proposal is approved for milestone authorization planning only.
 - The Next Milestone Authorization Evidence Inventory is accepted.
 - A Local Readiness Assessment is required before milestone establishment.
-- The current authorized objective is limited to preparing one bounded Local Readiness Assessment authorization package for Project Owner review.
+- The authorized objective to prepare one bounded Local Readiness Assessment authorization package for Project Owner review is complete under the task's recorded completion criteria.
+- The proposed authorization package exists for Project Owner review; it does not authorize assessment execution or assessment-evidence collection.
 - Assessment execution and assessment-evidence collection remain unauthorized.
 - Planning approval does not establish a milestone or authorize implementation.
 - Planning approval does not establish M4, Platform Foundation, or a formal EAIRA Execution Layer.
@@ -77,7 +79,7 @@ They are not duplicated here.
 
 Repository evidence supports the following bounded planning direction:
 
-- Prepare one bounded Local Readiness Assessment authorization package for Project Owner review under planning task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001` and within the authority recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION.md`.
+- Submit the proposed Local Readiness Assessment Authorization Package for Project Owner review and a separate decision on whether to authorize a bounded assessment.
 - Do not execute the assessment, collect assessment evidence, begin implementation or runtime execution, establish M4, establish Platform Foundation, or establish a formal EAIRA Execution Layer.
 
 No new milestone is established. Any assessment execution, future milestone establishment, implementation, runtime execution, deployment, automation, CI/CD expansion, database mutation, governance modification, or production change requires separate authorization.
