@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-07-10
+2026-07-11
 
 ## Version
 
-0.1.0
+0.2.0
 
 ## Milestone
 
@@ -20,24 +20,24 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-Prepare the EAIRA Next Milestone Authorization Planning Evidence Inventory using repository evidence only.
+Prepare one bounded Local Readiness Assessment authorization package using repository evidence only.
 
-Authorized task: `NEXT-MILESTONE-AUTHORIZATION-PLANNING-001`.
+Authorized task: `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001`.
 
 ## Out of Scope
 
-This objective is Project Layer planning and evidence inventory work only.
+This objective is Project Layer authorization-package planning only. The Local Readiness Assessment remains unexecuted, unauthorized, and outside the current active task.
 
-No milestone establishment, M4, implementation, Platform Foundation, formal EAIRA Execution Layer, governance change, automation, linting, CI/CD, SYSTEM authority, validation document change, or Bootstrap change is authorized.
+No assessment execution, assessment-evidence collection, milestone establishment, M4, implementation, runtime execution, deployment, Platform Foundation, formal EAIRA Execution Layer, governance modification, automation, CI/CD expansion, database mutation, production change, SYSTEM authority, validation document change, or Bootstrap change is authorized.
 
 ## Expected Deliverables
 
-Created and validated `docs/project/strategy/EAIRA_NEXT_MILESTONE_AUTHORIZATION_EVIDENCE_INVENTORY.md`.
+One proposed Local Readiness Assessment authorization package for Project Owner review.
 
 ## Success Criteria
 
-The inventory distinguishes verified evidence, observations, gaps, assumptions, and proposed planning inputs; cites exact repository source paths for material conclusions; and records missing evidence without invention.
+The proposed authorization package remains bounded and separates verified evidence from evidence gaps, assumptions, and proposals.
 
-Bootstrap reconstructs the authorized objective and active planning task without implying milestone establishment or implementation authorization.
+Assessment execution remains unauthorized, and no assessment-evidence collection occurs under this objective.
 
-Planning-only scope boundaries remain preserved.
+The package does not imply milestone establishment or implementation authorization, and all planning-only scope boundaries remain preserved.

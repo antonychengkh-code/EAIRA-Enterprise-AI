@@ -17,8 +17,11 @@ Repository evidence currently includes:
 - M3.4 Evidence-Driven AI Organization Slice closeout: completed.
 - M3.4 Finance Revenue Input Task Record: `lifecycle_status = Executed`, `completion_decision = APPROVED WITH FINDINGS`.
 - The Next Milestone Candidate Proposal is approved for milestone authorization planning only.
-- Project Owner authorized objective: prepare the EAIRA Next Milestone Authorization Planning Evidence Inventory.
-- Active planning task: `NEXT-MILESTONE-AUTHORIZATION-PLANNING-001`, authorized for planning evidence inventory execution.
+- The Project Owner accepted the Next Milestone Authorization Evidence Inventory.
+- The Project Owner decided that a Local Readiness Assessment is required before milestone establishment.
+- The Local Readiness Assessment planning authorization is committed in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION.md`.
+- Project Owner authorized objective: prepare one bounded Local Readiness Assessment authorization package for Project Owner review.
+- Active planning task: `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001`, with status `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION`, committed in `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`.
 
 `docs/project/status/CURRENT_STATUS.md` records M3.2, M3.3, and M3.4 as completed after repository convergence. No new milestone is established.
 
@@ -40,7 +43,8 @@ Milestone authorization planning approval does not establish M4, authorize imple
 | --- | --- |
 | Current Milestone | Current authoritative repository records, especially latest applicable closeout records. |
 | Current Status | `docs/project/status/CURRENT_STATUS.md`, when present. |
-| Current Decisions | `docs/project/strategy/EAIRA_NEXT_MILESTONE_DECISION.md` and applicable approved project records. |
+| Current Decisions | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION.md`, `docs/project/strategy/EAIRA_NEXT_MILESTONE_DECISION.md`, and applicable approved project records. |
+| Active Task | `docs/project/status/ACTIVE_TASK.yaml` and `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`. |
 | Validated Constraints | Historical M3.4 Task Record `completion_decision` in `docs/tasks/M3_4_FINANCE_REVENUE_INPUT_TASK_RECORD.md`. |
 | History | Daily reports under `docs/project/daily/` and project logs under `docs/project/logs/`. |
 
@@ -49,7 +53,10 @@ Milestone authorization planning approval does not establish M4, authorize imple
 Repository-supported decisions include:
 
 - The Next Milestone Candidate Proposal is approved for milestone authorization planning only.
-- The current authorized objective is limited to preparing the milestone authorization planning evidence inventory.
+- The Next Milestone Authorization Evidence Inventory is accepted.
+- A Local Readiness Assessment is required before milestone establishment.
+- The current authorized objective is limited to preparing one bounded Local Readiness Assessment authorization package for Project Owner review.
+- Assessment execution and assessment-evidence collection remain unauthorized.
 - Planning approval does not establish a milestone or authorize implementation.
 - Planning approval does not establish M4, Platform Foundation, or a formal EAIRA Execution Layer.
 - M3.4 remained a Candidate validation slice and was not promoted to M4.
@@ -70,10 +77,10 @@ They are not duplicated here.
 
 Repository evidence supports the following bounded planning direction:
 
-- Submit the prepared `docs/project/strategy/EAIRA_NEXT_MILESTONE_AUTHORIZATION_EVIDENCE_INVENTORY.md` for Project Owner review under planning task `NEXT-MILESTONE-AUTHORIZATION-PLANNING-001` and within `docs/project/milestones/EAIRA_NEXT_MILESTONE_PROJECT_CHARTER.md` boundaries.
-- Do not begin implementation, establish M4, establish Platform Foundation, or establish a formal EAIRA Execution Layer.
+- Prepare one bounded Local Readiness Assessment authorization package for Project Owner review under planning task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001` and within the authority recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION.md`.
+- Do not execute the assessment, collect assessment evidence, begin implementation or runtime execution, establish M4, establish Platform Foundation, or establish a formal EAIRA Execution Layer.
 
-Any future milestone establishment and any implementation authorization require separate Project Owner authorization.
+No new milestone is established. Any assessment execution, future milestone establishment, implementation, runtime execution, deployment, automation, CI/CD expansion, database mutation, governance modification, or production change requires separate authorization.
 
 ## Boundary
 
