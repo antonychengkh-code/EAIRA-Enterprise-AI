@@ -6,7 +6,7 @@ EAIRA-PROJECT-STATUS-2026-07-11
 
 ## Version
 
-0.4.0
+0.5.0
 
 ## Updated At
 
@@ -24,7 +24,7 @@ Current/New Milestone: None established.
 
 ## Active Phase
 
-Project Owner review and decision on the proposed Local Readiness Assessment Authorization Package. The Local Readiness Assessment remains unexecuted and unauthorized.
+Bounded planning for one finalized Local Readiness Assessment Authorization Annex. The Local Readiness Assessment and assessment-evidence collection remain unauthorized.
 
 ## Current Decision
 
@@ -32,16 +32,18 @@ The Project Owner accepted the Next Milestone Authorization Evidence Inventory a
 
 Planning approval does not establish a milestone, establish M4, authorize implementation, establish Platform Foundation, or establish a formal EAIRA Execution Layer.
 
-Authorization-package preparation task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001` is complete under its recorded completion criteria. The resulting package is pending Project Owner review and decision.
+Authorization-package preparation task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001` is complete under its recorded completion criteria.
 
-The proposed package now exists in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE.md` with status `PROPOSED_FOR_PROJECT_OWNER_REVIEW` and execution marker `PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION`. Its existence does not authorize the assessment.
+Project Owner review is complete. `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md` records `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`.
+
+`AUTHORIZE_BOUNDED_ASSESSMENT` was not granted. `AUTHORIZE_WITH_REQUIRED_REVISIONS` was not granted as conditional execution authority. Only bounded planning for one finalized Local Readiness Assessment Authorization Annex is authorized. Annex preparation does not authorize assessment execution or assessment-evidence collection.
 
 ## Blockers
 
-No blocker to Project Owner review of the proposed authorization package is recorded.
+The mandatory Authorization Annex inputs identified by the Project Owner decision remain unresolved planning inputs. No assessment-authorization decision may be made until the decision record's all-fields-resolved gate is satisfied.
 
-Exact assessment scope, tools, commands, operator, verifier, and evidence-handling requirements are package inputs. They are not recorded as blockers by current repository evidence.
+No separately authorized Authorization Annex planning task record currently exists in repository evidence.
 
 ## Next Action
 
-Submit the proposed Local Readiness Assessment Authorization Package for Project Owner review and decision. Do not execute the assessment or collect assessment evidence without separate Project Owner authorization.
+The next authorized work, once separately bounded in an Authorization Annex planning task record, is planning for one finalized Local Readiness Assessment Authorization Annex and its submission for a future separate Project Owner review. Do not execute the assessment or collect assessment evidence.

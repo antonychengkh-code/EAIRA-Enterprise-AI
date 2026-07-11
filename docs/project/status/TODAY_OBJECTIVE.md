@@ -6,7 +6,7 @@
 
 ## Version
 
-0.3.0
+0.4.0
 
 ## Milestone
 
@@ -20,24 +20,24 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-Present the proposed Local Readiness Assessment Authorization Package for Project Owner review and decision.
+Prepare one finalized Local Readiness Assessment Authorization Annex within the bounded planning scope authorized by the Project Owner decision.
 
-Completed preparation task: `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-PACKAGE-001`. The package remains pending Project Owner review and decision.
+Authorization-package preparation and Project Owner review are complete. The recorded decision is `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. No separately authorized Authorization Annex planning task record currently exists.
 
 ## Out of Scope
 
-This objective is Project Layer authorization-package planning only. The Local Readiness Assessment remains unexecuted, unauthorized, and outside the current active task.
+This objective is Project Layer Authorization Annex planning only. The Local Readiness Assessment and assessment-evidence collection remain unauthorized. Annex preparation does not authorize assessment execution.
 
 No assessment execution, assessment-evidence collection, milestone establishment, M4, implementation, runtime execution, deployment, Platform Foundation, formal EAIRA Execution Layer, governance modification, automation, CI/CD expansion, database mutation, production change, SYSTEM authority, validation document change, or Bootstrap change is authorized.
 
 ## Expected Deliverables
 
-Project Owner review of the proposed Local Readiness Assessment Authorization Package and a separate decision on whether a bounded assessment may be authorized.
+One finalized Local Readiness Assessment Authorization Annex for future separate Project Owner review.
 
 ## Success Criteria
 
-The proposed authorization package remains bounded and available for Project Owner review, and it separates verified evidence from evidence gaps, assumptions, and proposals.
+The finalized Authorization Annex resolves or identifies as blockers every mandatory field required by the Project Owner decision and preserves the all-fields-resolved gate.
 
-Assessment execution remains unauthorized, and no assessment-evidence collection occurs under this objective.
+Assessment execution remains unauthorized, no assessment-evidence collection occurs, and Annex preparation is not treated as execution authorization.
 
-The package does not imply milestone establishment or implementation authorization, and all planning-only scope boundaries remain preserved.
+The Annex does not imply milestone establishment or implementation authorization, and all planning-only scope boundaries remain preserved.
