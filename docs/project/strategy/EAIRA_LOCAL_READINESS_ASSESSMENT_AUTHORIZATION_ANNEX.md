@@ -11,10 +11,11 @@
 | Execution Marker | `PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION` |
 | Assessment Execution | `UNAUTHORIZED` |
 | Assessment Evidence Collection | `UNAUTHORIZED` |
+| Command Execution | `UNAUTHORIZED` |
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Date | 2026-07-14 |
-| Version | 0.3.0 |
+| Version | 0.4.0 |
 
 ## 2. Purpose
 
@@ -63,14 +64,22 @@ This decision approves the Batch 1 planning inputs recorded below for Mandatory 
 
 This approval resolves planning inputs only. It does not authorize Local Readiness Assessment execution, simulation, trial activity, command execution, environment inspection, assessment-evidence collection, target interaction, implementation, remediation, runtime work or mutation, deployment, automation, CI/CD expansion, database or production mutation, external network activity, milestone establishment, M4, Platform Foundation, or a formal EAIRA Execution Layer.
 
+## Batch 2 Proposed Command-Control Planning Inputs
+
+All new Batch 2 manifest entries, command controls, and interaction entries are `PROPOSED_NOT_APPROVED` unless an entry is explicitly blocked or prohibited. They are planning text for Project Owner review only.
+
+No proposed command is executable or approved. Batch 2 does not authorize command execution, environment inspection, service or endpoint interaction, port probing, connectivity testing, process or container inspection, model or runtime interaction, database access, credential access, or assessment-evidence collection.
+
+The proposed manifest is closed: only listed entries may be reviewed, and no omitted, wildcard, implied, or substituted command or target is permitted.
+
 ## 5. Mandatory Field Resolution Matrix
 
 | # | Mandatory field | Resolution state | Current disposition |
 | ---: | --- | --- | --- |
 | 1 | Exact local environment boundary and complete target inventory | `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING` | Batch 1 approves the environment boundary and initial planning inventory; exact command-level interactions and controls remain unapproved. |
-| 2 | Exact approved tool and command manifest | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | No tool or command is approved for assessment execution. |
-| 3 | Command-specific arguments, working directory, privilege, target, purpose, expected output, timeout, and mutation-risk determination | `BLOCKED_BY_FIELD_2` | Cannot be completed until the exact command manifest is selected and approved. |
-| 4 | Approved and prohibited services, endpoints, ports, network actions, and resources | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | General prohibitions and planning targets are recorded; exact service, endpoint, port, network-action, and resource interactions remain unapproved. |
+| 2 | Exact approved tool and command manifest | `PROPOSED_NOT_APPROVED` | Batch 2 proposes a closed command manifest and explicit blockers; no command is approved or executable. |
+| 3 | Command-specific arguments, working directory, privilege, target, purpose, expected output, timeout, and mutation-risk determination | `PROPOSED_NOT_APPROVED` | Batch 2 proposes command-specific controls linked to every proposed command; all require Project Owner review. |
+| 4 | Approved and prohibited services, endpoints, ports, network actions, and resources | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | Batch 2 proposes a closed local/no-network interaction allowlist; exact service endpoints, ports, and several resource identifiers remain blocked. |
 | 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
 | 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
 | 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
@@ -141,69 +150,135 @@ The environment boundary and initial target inventory are approved as planning i
 
 ## 7. Mandatory Fields 2 and 3 — Tool and Command Manifest
 
-### Verified repository facts
+### Proposed command-selection controls
 
-- No exact tool or command is approved.
-- Commands must be reviewed individually for mutation risk.
-- A future execution authorization must approve exact tools, commands, arguments, targets, expected outputs, privilege levels, timeouts, and evidence locations.
-- If Hermes is proposed, repository evidence does not currently establish it as an approved target or tool.
+- Every command below is observational text classified `PROPOSED_NOT_APPROVED`.
+- No command installs, updates, starts, stops, restarts, creates, removes, fetches, pulls, pushes, commits, merges, rebases, checks out, cleans, resets, loads, runs a workload, performs inference, queries a database, writes through an API, or mutates configuration.
+- Every command proposes `NO_ELEVATION`, an explicit timeout, and `NONE` for network action.
+- No command reads environment-variable values, credentials, tokens, secrets, private configuration values, or unrelated host inventory.
+- Executable paths, endpoint details, ports, or safe semantics not supported by current planning evidence remain blockers below.
+- No command is classified as confirmed read-only because no command has received command-specific independent review and Project Owner approval.
 
-### Required manifest schema
+### Proposed closed manifest — command definitions
 
-| Manifest field | Requirement |
-| --- | --- |
-| Manifest ID | Stable unique identifier. |
-| Tool | Exact executable or tool name and approved version constraint. |
-| Command | Exact command text. |
-| Arguments | Exact ordered arguments; no placeholders at authorization time. |
-| Working directory | Exact approved path. |
-| Privilege level | Named user and explicit statement that elevation is or is not permitted. |
-| Target | Exact approved target from Field 1. |
-| Purpose | One bounded observation purpose. |
-| Expected output | Exact expected output form and safe fields. |
-| Timeout | Explicit command-specific timeout. |
-| Network action | None, local-only, or exact approved destination. |
-| Mutation-risk determination | `READ_ONLY_CONFIRMED`, `MUTATION_RISK_UNRESOLVED`, or `PROHIBITED`. |
-| Evidence path | Exact approved output location. |
-| Reproduction ID | Link to Field 10 procedure. |
-| Criteria mapping | Link to Field 11 mapping. |
+The three tables keyed by Manifest ID jointly form each complete proposed command row.
+
+| Manifest ID | Target ID | Executor and path style | Exact tool or executable | Exact command | Exact ordered arguments | Exact working directory | Named user context | Privilege | Purpose |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `B2-MAN-001` | `TGT-GIT-WSL-001` | WSL Git; WSL path | `git` | `git --version` | `--version` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe the WSL Git version string only. |
+| `B2-MAN-002` | `TGT-REPO-001` | WSL Git; WSL path | `git` | `git rev-parse --show-toplevel` | `rev-parse`, `--show-toplevel` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe the repository top-level path identity only. |
+| `B2-MAN-003` | `TGT-REPO-001` | WSL Git; WSL path | `git` | `git branch --show-current` | `branch`, `--show-current` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe the current branch name only. |
+| `B2-MAN-004` | `TGT-REPO-001` | WSL Git; WSL path | `git` | `git rev-parse HEAD` | `rev-parse`, `HEAD` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe the current repository `HEAD` SHA only. |
+| `B2-MAN-005` | `TGT-REPO-001` | WSL Git; WSL path | `git` | `git rev-parse origin/master` | `rev-parse`, `origin/master` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe the local remote-tracking SHA for `origin/master` only; no fetch. |
+| `B2-MAN-006` | `TGT-REPO-001` | WSL Git; WSL path | `git` | `git status --short --branch --untracked-files=no` | `status`, `--short`, `--branch`, `--untracked-files=no` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe branch and tracked working-tree status without enumerating untracked files. |
+| `B2-MAN-007` | `TGT-REPO-001` | WSL Git; WSL path | `git` | `git log -1 --format=%H%x09%an%x09%aI%x09%s` | `log`, `-1`, `--format=%H%x09%an%x09%aI%x09%s` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe one commit SHA, author name, author timestamp, and subject; no email or body. |
+| `B2-MAN-008` | `TGT-WSL-001` | WSL shell; WSL path | `uname` | `uname -srm` | `-srm` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe bounded WSL kernel name, release, and machine metadata. |
+| `B2-MAN-009` | `TGT-WSL-001` | WSL shell; WSL path | `pwd` | `pwd -P` | `-P` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe the physical current working-directory identity only. |
+| `B2-MAN-010` | `TGT-DOCKER-001` | WSL CLI; WSL path | `docker` | `docker --version` | `--version` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe Docker client version text without engine interaction. |
+| `B2-MAN-011` | `TGT-DOCKER-001` | WSL CLI; WSL path | `docker` | `docker context show` | `context`, `show` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe only the selected Docker context name; do not inspect the context. |
+| `B2-MAN-012` | `TGT-OLLAMA-001` | WSL CLI; WSL path | `ollama` | `ollama --version` | `--version` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe Ollama client version text only; no service or model interaction. |
+
+### Proposed closed manifest — output, risk, and traceability
+
+| Manifest ID | Expected safe output fields | Proposed maximum timeout | Network action | Mutation-risk determination and rationale | Evidence-output classification | Reproduction ID | Criteria-mapping ID | Approval state |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `B2-MAN-001` | One Git version string: product name and version only. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — version flag is proposed as observational. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-001` | `MAP-B2-001` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-002` | One absolute WSL repository path matching the approved working tree. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads repository path identity only. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-002` | `MAP-B2-002` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-003` | One branch name, or empty output if detached. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads current symbolic branch only. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-003` | `MAP-B2-003` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-004` | One 40-hexadecimal `HEAD` commit SHA. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — resolves an existing ref without mutation. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-004` | `MAP-B2-004` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-005` | One 40-hexadecimal `origin/master` remote-tracking SHA. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — resolves the existing local remote-tracking ref without network access. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-005` | `MAP-B2-005` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-006` | Branch header and zero or more tracked repository-relative status entries. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — proposes status observation with untracked enumeration disabled. | `PROPOSED_PATH_BEARING_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-006` | `MAP-B2-006` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-007` | Four tab-separated fields: commit SHA, author name, ISO-8601 author timestamp, subject. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads one bounded commit record and excludes email/body. | `PROPOSED_PERSON_NAME_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-007` | `MAP-B2-007` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-008` | Kernel name, kernel release, and machine architecture only. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads bounded OS identity metadata. | `PROPOSED_HOST_METADATA_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-008` | `MAP-B2-008` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-009` | One absolute WSL working-directory path matching the approved path. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads current directory identity only. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-009` | `MAP-B2-009` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-010` | One Docker client version string and build identifier if emitted. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — client version flag only; engine contact is prohibited. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-010` | `MAP-B2-010` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-011` | One Docker context name only. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads selected context name; context inspection is prohibited. | `PROPOSED_CONFIGURATION_NAME_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-011` | `MAP-B2-011` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-012` | One Ollama client version string only. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — client version flag only; service/model contact is prohibited. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-012` | `MAP-B2-012` | `PROPOSED_NOT_APPROVED` |
+
+### Proposed command-specific stop, redaction, and evidence controls
+
+`STOP-B2-COMMON` requires immediate stop before or during any future separately authorized command if authorization is absent or conflicting; executable resolution differs from the approved manifest; elevation, mutation, network access, credential access, or an unlisted target is requested; output exceeds the expected fields; provenance cannot be recorded; or the repository/environment changes unexpectedly. No remediation or alternate command is permitted.
+
+| Manifest ID | Command-specific stop condition | Proposed redaction need | Evidence destination placeholder | Approval state |
+| --- | --- | --- | --- | --- |
+| `B2-MAN-001` | Stop if output contains fields beyond product/version text. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-001.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-002` | Stop if output is not the exact approved WSL repository path. | Retain only the approved path; reject any other path. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-002.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-003` | Stop if output contains more than one branch-name line. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-003.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-004` | Stop if output is not one 40-hexadecimal SHA. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-004.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-005` | Stop if output is not one 40-hexadecimal SHA or if network access is attempted. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-005.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-006` | Stop if untracked entries, absolute paths, or data outside tracked status fields appear. | Repository-relative paths require Field 9 review; reject sensitive or absolute paths. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-006.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-007` | Stop if email, commit body, signature material, or more than four fields appears. | Author name and subject require Field 9 review; email/body are prohibited. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-007.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-008` | Stop if host name, user name, environment data, or additional inventory appears. | Retain only kernel name, release, and architecture. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-008.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-009` | Stop if output is not the exact approved WSL working-directory path. | Retain only the approved path; reject any other path. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-009.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-010` | Stop if the command attempts engine contact or output exceeds client version/build text. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-010.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-011` | Stop if output exceeds one context name or causes engine contact. | Context name requires Field 9 review; no context details may be retained. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-011.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-012` | Stop if the command contacts the service, lists models, or emits fields beyond client version text. | None expected; reject service/model metadata. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-012.txt` | `PROPOSED_NOT_APPROVED` |
+
+### Explicit manifest blockers
+
+These rows are part of the closed manifest but contain no command. No substitute, inferred path, endpoint, port, process name, or argument is permitted.
+
+| Manifest ID | Target ID | Missing exact input | Exact command | Working directory | Privilege | Proposed timeout if resolved | Network action | Mutation-risk determination | Evidence / reproduction / criteria | Approval state |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `B2-BLK-001` | `TGT-GIT-WIN-001` | Exact approved Windows Git executable path and invocation context. | `NO_COMMAND` | `C:\Users\User\OneDrive\文件\EAIRA-Enterprise-AI` | `NO_ELEVATION` | 30 seconds | `NONE` | `MUTATION_RISK_UNRESOLVED` | Evidence path, `REP-B2-BLK-001`, and `MAP-B2-BLK-001` remain blocked. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-BLK-002` | `TGT-DOCKER-001` | Exact approved Docker engine resource/context and safe server-version command. | `NO_COMMAND` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NO_ELEVATION` | 60 seconds | Local IPC or loopback only, exact value blocked | `MUTATION_RISK_UNRESOLVED` | Evidence path, `REP-B2-BLK-002`, and `MAP-B2-BLK-002` remain blocked. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-BLK-003` | `TGT-OLLAMA-001` | Exact Project Owner-approved loopback address, port, endpoint path, and non-mutating status command. | `NO_COMMAND` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NO_ELEVATION` | 60 seconds | Loopback only, exact value blocked | `MUTATION_RISK_UNRESOLVED` | Evidence path, `REP-B2-BLK-003`, and `MAP-B2-BLK-003` remain blocked. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-BLK-004` | `TGT-HERMES-001` | Exact executable/package path, supported version syntax, or exact configuration-presence path. | `NO_COMMAND` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NO_ELEVATION` | 300 seconds only if later proposed | `NONE` | `MUTATION_RISK_UNRESOLVED` | Evidence path, `REP-B2-BLK-004`, and `MAP-B2-BLK-004` remain blocked. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-BLK-005` | `TGT-OPENWEBUI-001` | Exact executable/process identifier or approved loopback address, port, endpoint, and safe status command. | `NO_COMMAND` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NO_ELEVATION` | 60 seconds | Loopback only, exact value blocked | `MUTATION_RISK_UNRESOLVED` | Evidence path, `REP-B2-BLK-005`, and `MAP-B2-BLK-005` remain blocked. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-BLK-006` | `TGT-LMSTUDIO-001` | Exact executable/process identifier or approved loopback address, port, endpoint, and safe status command. | `NO_COMMAND` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NO_ELEVATION` | 60 seconds | Loopback only, exact value blocked | `MUTATION_RISK_UNRESOLVED` | Evidence path, `REP-B2-BLK-006`, and `MAP-B2-BLK-006` remain blocked. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+
+### Manifest counts
+
+- Proposed command rows: 12.
+- Explicit blocked rows with no command: 6.
+- Total closed manifest rows: 18.
 
 ### Current status
 
-- Field 2: `BLOCKED_PENDING_PROJECT_OWNER_INPUT`
-- Field 3: `BLOCKED_BY_FIELD_2`
+- Field 2: `PROPOSED_NOT_APPROVED`
+- Field 3: `PROPOSED_NOT_APPROVED`
 
-No candidate command in planning text is authorized for execution.
+No manifest row is approved or executable. Exact command-specific approval, Field 8 evidence destinations, Field 9 redaction controls, Field 10 reproduction procedures, and Field 11 mappings remain required.
 
 ## 8. Mandatory Field 4 — Services, Endpoints, Ports, Network Actions, and Resources
 
-### Verified prohibited activities
+### Proposed closed interaction allowlist
 
-The following remain prohibited unless a future unconditional Project Owner decision expressly changes the applicable item:
+Default network rule: `ALL_UNLISTED_NETWORK_ACTIONS_PROHIBITED`.
 
-- external or production access;
-- installation or upgrade;
-- service start, stop, or restart;
-- container creation, removal, execution, or mutation;
-- model download, loading, inference, or execution;
-- database query, migration, or mutation;
-- API write activity;
-- repository mutation;
-- runtime mutation;
-- deployment;
-- credential or secret-value access;
-- remediation;
-- automation or CI/CD expansion.
+`NONE` means the proposed interaction must not initiate any network or service connection. `LOOPBACK_ONLY` is a scope ceiling, not an approved endpoint; where the address, port, or endpoint is blocked, no connection may be attempted.
 
-### Required Project Owner inputs
+| Interaction ID | Target ID | Service or resource | Exact endpoint or resource identifier | Port | Network scope | Permitted interaction | Explicitly prohibited interactions | Mutation prohibition | Approval state |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `B2-INT-001` | `TGT-REPO-001` | Approved EAIRA working tree | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NOT_APPLICABLE` | `NONE` | Only `B2-MAN-002` through `B2-MAN-007` after separate approval. | Fetch, pull, push, commit, checkout, reset, clean, merge, rebase, configuration change, or file mutation. | Repository content, refs, index, worktree, and configuration must not change. | `PROPOSED_NOT_APPROVED` |
+| `B2-INT-002` | `TGT-WSL-001` | Ubuntu under WSL2 | Approved WSL2 environment boundary; exact commands `B2-MAN-001`, `B2-MAN-008`, and `B2-MAN-009` only | `NOT_APPLICABLE` | `NONE` | Bounded version, kernel identity, and working-directory observations after separate approval. | Environment dumps, user/host inventory beyond expected fields, package actions, process enumeration, privilege elevation, or configuration reads. | WSL, host, package, process, and configuration state must not change. | `PROPOSED_NOT_APPROVED` |
+| `B2-INT-003` | `TGT-GIT-WSL-001` | WSL Git executable | `git` resolved only in the future approved WSL execution context | `NOT_APPLICABLE` | `NONE` | Only `B2-MAN-001` through `B2-MAN-007` after separate approval. | Any Git command not listed in the closed manifest. | Repository and Git configuration state must not change. | `PROPOSED_NOT_APPROVED` |
+| `B2-INT-004` | `TGT-DOCKER-001` | Docker client executable | `docker` client-only commands `B2-MAN-010` and `B2-MAN-011` | `NOT_APPLICABLE` | `NONE` | Client version and selected context-name observation after separate approval. | Engine inspection; container/image/network/volume listing; run, exec, start, stop, restart, create, remove, pull, load, build, prune; configuration or environment dumps. | Docker client, context, engine, container, image, network, volume, and configuration state must not change. | `PROPOSED_NOT_APPROVED` |
+| `B2-INT-005` | `TGT-OLLAMA-001` | Ollama client executable | `ollama` client command `B2-MAN-012` | `NOT_APPLICABLE` | `NONE` | Client version observation after separate approval. | Service calls, model listing, pull, run, load, inference, show, deletion, or metadata export. | Ollama service, model, runtime, and configuration state must not change. | `PROPOSED_NOT_APPROVED` |
+| `B2-INT-006` | `TGT-GIT-WIN-001` | Windows Git installation | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `NOT_APPLICABLE` | `NONE` | None until exact executable path and command are separately approved. | Any inferred executable path or command. | Repository and Git configuration state must not change. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-INT-007` | `TGT-DOCKER-001` | Docker engine | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | Local IPC or `LOOPBACK_ONLY` | None. | Engine contact, lifecycle actions, unrestricted inspection, sensitive configuration, or non-loopback access. | All Docker engine and managed-resource state must remain unchanged. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-INT-008` | `TGT-OLLAMA-001` | Ollama local service | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `LOOPBACK_ONLY` | None. | Connectivity tests, status/version calls, model actions, inference, writes, or non-loopback access. | Service, model, runtime, and configuration state must remain unchanged. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-INT-009` | `TGT-HERMES-001` | Hermes local runtime | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `NOT_APPLICABLE` | `NONE` | None. | Agent/task execution, browser access, shell actions, model inference, process interaction, or configuration-value disclosure. | Runtime, task, browser, shell, model, and configuration state must remain unchanged. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-INT-010` | `TGT-OPENWEBUI-001` | OpenWebUI local service | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `LOOPBACK_ONLY` | None. | Login, endpoint calls, API writes, model loading, inference, plugin execution, configuration export, credentials, or non-loopback access. | Application, service, model, plugin, and configuration state must remain unchanged. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-INT-011` | `TGT-LMSTUDIO-001` | LM Studio local application or service | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `LOOPBACK_ONLY` | None. | Application/service calls, model loading, inference, configuration export, credentials, or non-loopback access. | Application, service, model, runtime, and configuration state must remain unchanged. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
 
-A future review must list every approved service, endpoint, port, network action, and resource by exact identifier. Items not listed must remain prohibited.
+### Explicitly prohibited targets and interactions
+
+| Target ID | Prohibited boundary | Command | Approval state |
+| --- | --- | --- | --- |
+| `TGT-SUPABASE-001` | Any local Supabase environment or interaction pending separate approval. | `NO_COMMAND` | `PROHIBITED` |
+| `TGT-DATABASE-001` | Any local or remote database query, connection, migration, or mutation. | `NO_COMMAND` | `PROHIBITED` |
+| `TGT-PRODUCTION-001` | All production resources and interactions. | `NO_COMMAND` | `PROHIBITED` |
+| `TGT-CREDENTIAL-001` | Credentials, tokens, keys, secrets, and credential-bearing configuration. | `NO_COMMAND` | `PROHIBITED` |
+| `TGT-EXTERNAL-001` | External endpoints, internet services, and non-loopback network actions. | `NO_COMMAND` | `PROHIBITED` |
+
+API writes, service lifecycle actions, container lifecycle actions, model execution or inference, implementation, remediation, deployment, automation, and any interaction not explicitly listed remain prohibited.
 
 ### Current status
 
 `PARTIALLY_RESOLVED_WITH_BLOCKERS`
 
-General prohibitions are resolved. Field 1 records approved planning targets, but the command-level service, endpoint, port, network-action, and resource interaction allowlist is empty and unresolved.
+The closed interaction structure and prohibitions are proposed. Windows Git, Docker engine, Ollama service, Hermes, OpenWebUI, and LM Studio interactions remain blocked; no endpoint or port is approved.
 
 ## 9. Mandatory Fields 5 and 6 — Operator, Independent Verifier, Separation, and Stop Authority
 
@@ -491,6 +566,7 @@ No remediation or corrective action is authorized after a stop condition is reac
 | Is the all-fields-resolved gate satisfied? | No — `BLOCKED`. |
 | Assessment execution | `UNAUTHORIZED` |
 | Assessment-evidence collection | `UNAUTHORIZED` |
+| Command execution | `UNAUTHORIZED` |
 | New milestone established | `NO` |
 | Implementation or runtime work authorized | `NO` |
 | Is this Annex ready for an execution-authorization decision? | No; Project Owner inputs are required. |
