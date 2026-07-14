@@ -14,10 +14,12 @@
 | Command Execution | `UNAUTHORIZED` |
 | Connectivity Testing | `UNAUTHORIZED` |
 | Port Probing | `UNAUTHORIZED` |
+| Evidence Directory Creation | `UNAUTHORIZED` |
+| Evidence File Creation | `UNAUTHORIZED` |
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Date | 2026-07-14 |
-| Version | 0.5.0 |
+| Version | 0.6.0 |
 
 ## 2. Purpose
 
@@ -93,6 +95,14 @@ This decision approves selected Batch 2 command-manifest and interaction-control
 
 This decision does not authorize Local Readiness Assessment execution, command execution, assessment-evidence collection, environment or service inspection, endpoint interaction, port probing, connectivity testing, container, model, runtime, API, database, or credential interaction, implementation, remediation, deployment, automation, CI/CD expansion, milestone establishment, M4, Platform Foundation, or a formal EAIRA Execution Layer.
 
+## Batch 3 Proposed Evidence-Control Planning Inputs
+
+All Batch 3 evidence-handling, sensitive-data, reproduction, and criteria-mapping values are `PROPOSED_NOT_APPROVED`. They are documentation inputs for future Project Owner review and are not `PROJECT_OWNER_DECISION` or `VERIFIED_REPOSITORY_FACT` values.
+
+The placeholder paths and record structures below are text patterns only. No evidence directory, evidence file, incident record, reproduction artifact, mapping artifact, checksum, hash, integrity record, or assessment output is created by this planning work.
+
+Batch 3 does not authorize assessment execution, command execution, environment or service inspection, endpoint interaction, connectivity testing, port probing, assessment-evidence collection, evidence-directory or evidence-file creation, credential or sensitive-value access, or any implementation or runtime activity.
+
 ## 5. Mandatory Field Resolution Matrix
 
 | # | Mandatory field | Resolution state | Current disposition |
@@ -104,10 +114,10 @@ This decision does not authorize Local Readiness Assessment execution, command e
 | 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
 | 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
 | 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
-| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | No approved evidence location or lifecycle controls exist. |
-| 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | Secret capture is prohibited; detailed taxonomy and incident procedure remain unresolved. |
-| 10 | Reproduction procedure for every material observation | `PROPOSED_NOT_APPROVED` | A reusable procedure format is proposed below; command-specific procedures remain blocked. |
-| 11 | Criteria-to-evidence mapping | `PROPOSED_NOT_APPROVED` | A decision-use mapping framework is proposed below; exact criteria depend on approved targets and commands. |
+| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PROPOSED_NOT_APPROVED` | Batch 3 proposes a closed placeholder evidence-control model and decision options; no path, access mechanism, integrity method, retention rule, or disposal rule is approved. |
+| 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | Secret capture is prohibited; Batch 3 proposes a taxonomy, manifest-specific dispositions, and incident procedure, all pending Project Owner decisions. |
+| 10 | Reproduction procedure for every material observation | `PROPOSED_NOT_APPROVED` | Batch 3 proposes one non-executable reproduction record for each approved or conditionally approved planning manifest row; none is approved. |
+| 11 | Criteria-to-evidence mapping | `PROPOSED_NOT_APPROVED` | Batch 3 proposes one bounded non-inference mapping for each approved or conditionally approved planning manifest row; none is approved. |
 | 12 | All-fields-resolved gate | `RESOLVED_AS_CONTROL` | Gate logic is defined below; the gate currently evaluates to `BLOCKED`. |
 
 ## 6. Mandatory Field 1 — Local Environment Boundary and Target Inventory
@@ -427,124 +437,268 @@ These definitions govern only a future separately authorized assessment session.
 
 ## 11. Mandatory Field 8 — Evidence Handling and Integrity
 
-### Required Project Owner inputs
+### Proposed closed evidence-root structure
 
-The future authorization must define:
+The following is a placeholder pattern only. It is `PROPOSED_NOT_APPROVED`, is not a Windows or WSL path, and must not be created:
 
-- exact evidence root path;
-- approved readers and writers;
-- access-control method;
-- naming and indexing rules;
-- file-integrity mechanism;
-- provenance requirements;
-- retention duration;
-- disposal procedure;
-- handling of partial, failed, or stopped assessments;
-- whether repository storage is prohibited or separately approved;
-- whether evidence may leave the named local environment.
+```text
+EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/
+  session-manifest/
+  direct-output/
+  redacted-output/
+  verifier-review/
+  discrepancy-log/
+  stopped-assessment/
+  integrity-records/
+```
 
-### Minimum integrity controls proposed for review
+No path becomes usable until the Project Owner approves an exact evidence root and separately authorizes evidence collection.
 
-- preserve exact command text and ordered arguments;
-- record start and end timestamps and exit status;
-- identify operator, verifier, host, target, and manifest ID;
-- preserve original direct output before any approved redacted derivative;
-- record every redaction without retaining prohibited secret values;
-- make missing, partial, conflicting, and unexpected output explicit;
-- prevent evidence overwrite or silent replacement;
-- record verifier disposition separately from operator notes.
+### Proposed closed evidence-control register
+
+| Control | Proposed planning value | Approval state |
+| --- | --- | --- |
+| Exact evidence root path | `BLOCKED_PENDING_PROJECT_OWNER_INPUT`; placeholder above is structural only. | `PROPOSED_NOT_APPROVED` |
+| Writers | Role categories `ASSESSMENT_OPERATOR` for direct capture and `INDEPENDENT_VERIFIER` for separate review disposition; exact identities and write boundaries require approval. | `PROPOSED_NOT_APPROVED` |
+| Readers | Role categories `PROJECT_OWNER`, `ASSESSMENT_OPERATOR`, `INDEPENDENT_VERIFIER`, and `STOP_AUTHORITY`; least-privilege boundaries require approval. | `PROPOSED_NOT_APPROVED` |
+| Access-control mechanism | Exact operating-system identity, group, ACL, permission mode, encryption, and access-review mechanism blocked; none is inferred. | `PROPOSED_NOT_APPROVED` |
+| Naming convention | Proposed `<session-id>__<manifest-id>__<target-id>__<reproduction-id>__<mapping-id>__<timestamp>__<artifact-class>.<approved-extension>`. | `PROPOSED_NOT_APPROVED` |
+| Session ID | Exact future authorization-assigned identifier; no session exists under Batch 3. | `PROPOSED_NOT_APPROVED` |
+| Manifest, target, reproduction, mapping IDs | Must exactly match the closed Annex identifiers and must not use aliases or substitutions. | `PROPOSED_NOT_APPROVED` |
+| Timestamps and timezone | Exact start and end timestamps with UTC offset; Field 7 clock rules apply. | `PROPOSED_NOT_APPROVED` |
+| Operator and verifier identity | Record approved named identity and role separately; operator self-report cannot substitute for verifier disposition. | `PROPOSED_NOT_APPROVED` |
+| Direct-output preservation | Preserve original safely capturable output before any approved derivative; unsafe output must not be copied merely to satisfy preservation. | `PROPOSED_NOT_APPROVED` |
+| Redacted derivatives | Store separately from direct output and link to the source plus a non-sensitive redaction log; never overwrite the source. | `PROPOSED_NOT_APPROVED` |
+| Integrity verification | A checksum or cryptographic hash algorithm, scope, timing, and verifier method require Project Owner approval; no hash is calculated here. | `PROPOSED_NOT_APPROVED` |
+| Overwrite prohibition | Silent replacement is prohibited; original records remain immutable under the proposed model. | `PROPOSED_NOT_APPROVED` |
+| Corrections | Append-only or versioned correction record must identify the superseded artifact, reason, author, and time without deleting history. | `PROPOSED_NOT_APPROVED` |
+| Verifier disposition | Store separately from operator notes and direct output, linked by all record IDs. | `PROPOSED_NOT_APPROVED` |
+| Output-state classification | Explicitly classify `MISSING`, `PARTIAL`, `CONFLICTING`, `STALE`, `UNEXPECTED`, `UNSAFE`, or `USABLE_PENDING_VERIFICATION`. | `PROPOSED_NOT_APPROVED` |
+| Partial assessment | Partial output is `UNUSABLE` unless a future approved stopped-assessment rule explicitly permits safe retention. | `PROPOSED_NOT_APPROVED` |
+| Stopped assessment | Retain only safely captured, explicitly approved minimum records; no further collection, copying, or remediation. | `PROPOSED_NOT_APPROVED` |
+| Evidence export | Prohibited unless an exact destination, transfer method, reader list, redaction state, and disposal rule are separately approved. | `PROPOSED_NOT_APPROVED` |
+| Repository storage | Prohibited unless an exact repository location, content class, access rule, retention rule, and separate Project Owner approval exist. | `PROPOSED_NOT_APPROVED` |
+| Evidence unsafe to retain | Do not retain prohibited secrets or unsafe values; mark only a non-sensitive incident reference pending Project Owner decision. | `PROPOSED_NOT_APPROVED` |
+
+No operating-system user, group, ACL, filesystem permission, encryption mechanism, or actual reader/writer access is inferred or configured.
+
+### Proposed retention and disposal decision options
+
+The Project Owner must select or replace an option; Batch 3 selects none.
+
+| Option | Proposed boundary | Approval state |
+| --- | --- | --- |
+| Session-only retention | Retain safe, usable records only through the separately authorized session and review, then dispose under an approved procedure. | `PROPOSED_NOT_APPROVED` |
+| Fixed-duration retention | Project Owner supplies an exact duration, start event, review point, and disposal authority. | `PROPOSED_NOT_APPROVED` |
+| Retain until milestone decision | Retain safe records only until the separately identified milestone decision closes, then apply approved disposal. | `PROPOSED_NOT_APPROVED` |
+| Immediate disposal | Dispose unusable or sensitive evidence immediately only under an approved incident/disposal procedure that avoids further exposure. | `PROPOSED_NOT_APPROVED` |
+| Stopped-assessment exception | Retain safely captured minimum records only when explicitly approved; otherwise treat them as unusable and follow the approved disposal decision. | `PROPOSED_NOT_APPROVED` |
+
+### Proposed integrity content minimum
+
+Every future record would preserve exact command text and ordered arguments, exact start and end timestamps, exit status, target and manifest IDs, operator identity, and provenance. Direct output would precede redaction; a redaction log would exclude prohibited values; correction records would reference superseded evidence; verifier disposition would remain separate. Missing, partial, conflicting, stale, unexpected, and unsafe output would be explicit. All of these controls remain `PROPOSED_NOT_APPROVED`.
 
 ### Current status
 
-`BLOCKED_PENDING_PROJECT_OWNER_INPUT`
+`PROPOSED_NOT_APPROVED`
+
+Field 8 remains blocking because no exact root, access mechanism, integrity method, retention choice, disposal authority, or stopped-assessment handling rule is approved.
 
 ## 12. Mandatory Field 9 — Sensitive Data, Redaction, and Accidental Exposure
 
-### Verified repository facts
+### Existing prohibition boundary
 
 - Secret-value capture or disclosure is prohibited.
 - Assessment activity must stop if credentials or sensitive values are requested or exposed.
 - Evidence must not infer or disclose sensitive information outside approved scope.
 
-### Required Project Owner inputs
+### Proposed sensitive-data taxonomy
 
-The future authorization must define:
+Every disposition below is `PROPOSED_NOT_APPROVED`; no exact retention is approved.
 
-- sensitive-data taxonomy;
-- secret, credential, token, key, personal-data, business-data, and configuration-value categories;
-- fields that may be retained as names or presence indicators;
-- mandatory redaction method;
-- prohibited capture patterns;
-- accidental-exposure reporting path;
-- quarantine, access restriction, retention, and disposal rules for accidentally exposed material;
-- who determines whether safe evidence may be retained.
+| Category | Proposed disposition |
+| --- | --- |
+| Credentials | `PROHIBITED_FROM_CAPTURE` |
+| Passwords | `PROHIBITED_FROM_CAPTURE` |
+| API keys | `PROHIBITED_FROM_CAPTURE` |
+| OAuth tokens | `PROHIBITED_FROM_CAPTURE` |
+| Personal access tokens (PATs) | `PROHIBITED_FROM_CAPTURE` |
+| Private keys | `PROHIBITED_FROM_CAPTURE` |
+| Certificates containing private material | `PROHIBITED_FROM_CAPTURE` |
+| Connection strings | `PROHIBITED_FROM_CAPTURE` |
+| Database credentials | `PROHIBITED_FROM_CAPTURE` |
+| Environment-variable values | `PROHIBITED_FROM_CAPTURE` |
+| Personally identifiable information | `PROHIBITED_FROM_CAPTURE` |
+| User names where not required | `REDACT_BEFORE_RETENTION` |
+| Email addresses | `PROHIBITED_FROM_CAPTURE` |
+| Host names | `RETAIN_NAME_ONLY_IF_APPROVED` |
+| Local absolute paths | `REDACT_BEFORE_RETENTION` |
+| Repository-relative paths | `RETAIN_EXACT_VALUE_IF_EXPLICITLY_APPROVED` |
+| Commit author names | `RETAIN_NAME_ONLY_IF_APPROVED` |
+| Commit subjects | `RETAIN_EXACT_VALUE_IF_EXPLICITLY_APPROVED` |
+| Configuration names | `RETAIN_NAME_ONLY_IF_APPROVED` |
+| Docker context names | `RETAIN_NAME_ONLY_IF_APPROVED` |
+| Model names | `RETAIN_NAME_ONLY_IF_APPROVED` |
+| Service names | `RETAIN_NAME_ONLY_IF_APPROVED` |
+| Process names | `RETAIN_NAME_ONLY_IF_APPROVED` |
+| Ports and endpoints | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Business-sensitive information | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Production identifiers | `PROHIBITED_FROM_CAPTURE` |
+
+### Proposed manifest-specific Field 9 mapping
+
+`B2-MAN-012` is excluded because it remains `DEFER_PENDING_COMMAND_SEMANTICS_REVIEW` and is neither executable nor collectible.
+
+| Manifest ID | Output category | Proposed disposition and stop boundary | Approval state |
+| --- | --- | --- | --- |
+| `B2-MAN-001` | WSL Git product/version | Retain only product/version if explicitly approved; stop on any additional field. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-002` | Local absolute repository path | `REDACT_BEFORE_RETENTION`; compare only to the approved path and stop on any other path. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-003` | Branch name | `RETAIN_NAME_ONLY_IF_APPROVED`; stop if more than one line or unrelated ref data appears. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-004` | Commit SHA | Retain exact SHA only if explicitly approved; stop on any additional metadata. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-005` | Remote-tracking SHA | Retain exact SHA only if explicitly approved; stop on network action or additional metadata. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-006` | Branch header and tracked repository-relative paths | Paths require explicit retention approval; redact disallowed path components and stop on absolute, untracked, or sensitive paths. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-007` | SHA, author name, timestamp, commit subject | SHA/time may be retained only if approved; author name is name-only; subject requires explicit approval; email/body/signature material prohibited. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-008` | Kernel name, release, architecture | Retain only these three fields if explicitly approved; host/user names or other inventory trigger stop. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-009` | Local absolute working-directory path | `REDACT_BEFORE_RETENTION`; compare only to approved path and stop on any other path. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-010` | Docker client product/version/build | Retain bounded client fields only if explicitly approved; engine or configuration data trigger stop. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-011` | Docker context name | `RETAIN_NAME_ONLY_IF_APPROVED`; no output collection until Fields 8 and 9 are approved; context details or engine contact trigger stop. | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-013` | Windows Git product/version | Retain only product/version if explicitly approved; repository, configuration, credential, or additional fields trigger stop. | `PROPOSED_NOT_APPROVED` |
+
+### Proposed accidental-exposure procedure
+
+1. Stop immediately.
+2. Execute no further command and perform no remediation.
+3. Do not copy, repeat, quote, transform, or further expose the sensitive value.
+4. Restrict access to any safely captured record using only a future approved mechanism.
+5. Mark affected evidence `UNUSABLE_PENDING_PROJECT_OWNER_DECISION`.
+6. Notify the named Stop Authority through a future approved non-sensitive channel.
+7. Record only a non-sensitive incident identifier, time, manifest ID, target ID, and exposure category.
+8. The Project Owner decides retention, quarantine, redaction, or disposal.
+9. Restart requires a new explicit Project Owner decision.
+
+No incident record is created under Batch 3. Exact notification, quarantine, access, retention, redaction, and disposal mechanisms remain blocked.
 
 ### Current status
 
 `PARTIALLY_RESOLVED_WITH_BLOCKERS`
 
-Secret capture prohibition is resolved. Detailed taxonomy and accidental-exposure controls remain blocked.
+The secret-capture prohibition is resolved. The taxonomy, manifest mappings, and incident procedure are `PROPOSED_NOT_APPROVED`; exact dispositions and mechanisms remain blocked.
 
-## 13. Mandatory Field 10 — Reproduction Procedure
+## 13. Mandatory Field 10 — Reproduction Procedures
 
-### Proposed standard procedure format
+### Proposed reproduction-record construction
 
-Every material observation must have a separately approved reproduction record containing:
+Each reproduction record consists of `B3-REP-COMMON` plus both table rows carrying the same Reproduction ID. This incorporation is part of each record and supplies every required field. All records are `PROPOSED_NOT_APPROVED` and non-executable. `B2-MAN-012` is excluded and remains `DEFER_PENDING_COMMAND_SEMANTICS_REVIEW`.
 
-1. reproduction ID;
-2. linked manifest ID;
-3. exact environment and target identifiers;
-4. exact tool and version;
-5. exact command and ordered arguments;
-6. exact working directory and privilege level;
-7. expected safe output;
-8. approved timeout;
-9. operator action sequence;
-10. timestamp and clock source;
-11. exit status and direct-output location;
-12. redaction steps;
-13. verifier repetition or direct-output inspection steps;
-14. discrepancy handling;
-15. stop conditions;
-16. linked criteria-to-evidence mapping.
+`B3-REP-COMMON` proposes these controls for every record:
+
+- Preconditions: a future explicit execution authorization; approved Fields 1–9; approved session ID, evidence root, roles, redaction rules, and exact executable resolution; clean authorization and scope checks.
+- Operator procedure: confirm exact manifest text without aliases, wrappers, substitutions, or copy/paste changes; record start time; run the exact command once only if separately authorized; record end time and exit status; stop before copying unsafe output; preserve only safely capturable output under approved Field 8 controls.
+- Verifier procedure: independently inspect direct output and provenance, exact command/arguments, IDs, timestamps, exit status, redaction log, integrity record, and stop disposition; verifier output remains separate.
+- Discrepancy handling: classify missing, partial, conflicting, stale, unexpected, or unsafe output; stop without remediation or alternate command; refer to Stop Authority.
+- Rerun triggers: Field 7 rules, repository `HEAD`, tool version, target, service/configuration state, authorization, or evidence-integrity change; every rerun requires future execution authorization.
+- Quality controls: alternate commands, shell aliases, and wrappers are prohibited unless explicitly approved. Output outside expected fields triggers stop. Failure, timeout, or nonzero exit status is an observation outcome only and never remediation authority.
+
+### Proposed reproduction identity and execution fields
+
+| Reproduction ID | Manifest / target | Exact command and ordered arguments | Exact working directory | Executor / privilege | Timeout / network |
+| --- | --- | --- | --- | --- | --- |
+| `REP-B2-001` | `B2-MAN-001` / `TGT-GIT-WSL-001` | `git --version`; `--version` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL Git in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-002` | `B2-MAN-002` / `TGT-REPO-001` | `git rev-parse --show-toplevel`; `rev-parse`, `--show-toplevel` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL Git in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-003` | `B2-MAN-003` / `TGT-REPO-001` | `git branch --show-current`; `branch`, `--show-current` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL Git in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-004` | `B2-MAN-004` / `TGT-REPO-001` | `git rev-parse HEAD`; `rev-parse`, `HEAD` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL Git in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-005` | `B2-MAN-005` / `TGT-REPO-001` | `git rev-parse origin/master`; `rev-parse`, `origin/master` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL Git in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-006` | `B2-MAN-006` / `TGT-REPO-001` | `git status --short --branch --untracked-files=no`; `status`, `--short`, `--branch`, `--untracked-files=no` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL Git in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-007` | `B2-MAN-007` / `TGT-REPO-001` | `git log -1 --format=%H%x09%an%x09%aI%x09%s`; `log`, `-1`, `--format=%H%x09%an%x09%aI%x09%s` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL Git in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-008` | `B2-MAN-008` / `TGT-WSL-001` | `uname -srm`; `-srm` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL shell in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-009` | `B2-MAN-009` / `TGT-WSL-001` | `pwd -P`; `-P` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL shell in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-010` | `B2-MAN-010` / `TGT-DOCKER-001` | `docker --version`; `--version` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL Docker client in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-011` | `B2-MAN-011` / `TGT-DOCKER-001` | `docker context show`; `context`, `show` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | WSL Docker client in approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+| `REP-B2-013` | `B2-MAN-013` / `TGT-GIT-WIN-001` | `"/mnt/c/Program Files/Git/cmd/git.exe" --version`; `--version` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Windows Git invoked from approved WSL context / `NO_ELEVATION` | 30 seconds / `NONE` |
+
+### Proposed reproduction output, evidence, and traceability fields
+
+| Reproduction ID | Expected bounded output | Field 9 dependency | Field 8 destination placeholder | Record-specific precondition / stop | Mapping | Approval state |
+| --- | --- | --- | --- | --- | --- | --- |
+| `REP-B2-001` | One WSL Git product/version string. | Product/version retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-001__REP-B2-001.pending` | Exact WSL Git resolution; stop on additional fields. | `MAP-B2-001` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-002` | One approved absolute repository path. | Absolute-path redaction approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-002__REP-B2-002.pending` | Exact approved path; stop on any other path. | `MAP-B2-002` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-003` | One branch name or empty detached-state output. | Branch-name retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-003__REP-B2-003.pending` | Stop on more than one branch-name line. | `MAP-B2-003` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-004` | One 40-hexadecimal `HEAD` SHA. | Exact-SHA retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-004__REP-B2-004.pending` | Stop on malformed SHA or additional metadata. | `MAP-B2-004` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-005` | One 40-hexadecimal local `origin/master` SHA. | Exact-SHA retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-005__REP-B2-005.pending` | No fetch/network; stop on malformed SHA or additional metadata. | `MAP-B2-005` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-006` | Branch header and tracked relative status entries only. | Repository-relative-path decisions. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-006__REP-B2-006.pending` | Stop on untracked, absolute, sensitive, or unrelated fields. | `MAP-B2-006` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-007` | SHA, author name, ISO-8601 author time, subject. | Author-name and subject decisions. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-007__REP-B2-007.pending` | Stop on email, body, signature, or extra fields. | `MAP-B2-007` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-008` | Kernel name, release, architecture only. | Host-metadata retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-008__REP-B2-008.pending` | Stop on host/user names or other inventory. | `MAP-B2-008` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-009` | One approved absolute working-directory path. | Absolute-path redaction approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-009__REP-B2-009.pending` | Stop on any other path. | `MAP-B2-009` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-010` | Docker client product/version/build only. | Client-metadata retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-010__REP-B2-010.pending` | Stop on engine contact or extra data. | `MAP-B2-010` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-011` | Exactly one Docker context name. | Field 9 context-name approval; no collection until Fields 8 and 9 resolve. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-011__REP-B2-011.pending` | Stop on `docker context inspect`, context details, or engine contact. | `MAP-B2-011` | `PROPOSED_NOT_APPROVED` |
+| `REP-B2-013` | One Windows Git product/version string. | Product/version retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-013__REP-B2-013.pending` | Exact approved executable; stop on repository, configuration, credential, network, or extra data. | `MAP-B2-013` | `PROPOSED_NOT_APPROVED` |
+
+### Reproduction count and status
+
+- Proposed reproduction records: 12.
+- Excluded deferred row: `B2-MAN-012` / `DEFER_PENDING_COMMAND_SEMANTICS_REVIEW`.
+- Commands executed to test reproduction records: 0.
 
 ### Current status
 
 `PROPOSED_NOT_APPROVED`
 
-The format is available for Project Owner review. No material observation or executable reproduction procedure exists until Fields 1–9 are approved.
+Field 10 remains blocking because no reproduction record, evidence destination, redaction dependency, or execution procedure is approved.
 
 ## 14. Mandatory Field 11 — Criteria-to-Evidence Mapping
 
-### Decision-use rules
+### Proposed mapping construction
 
-- Tool presence may support only a tool-presence observation.
-- Version output may support only the observed version at the recorded time.
-- Service status may support only observed service availability, not workload or functional readiness.
-- File presence may support only existence at the approved path, not correctness or operational validity.
-- Local connectivity may support only the approved connection observation, not end-to-end readiness.
-- No single observation may establish Local Readiness, a milestone, implementation authority, Platform Foundation, or an Execution Layer.
+Each mapping consists of both table rows carrying the same Mapping ID. All mappings are `PROPOSED_NOT_APPROVED`. Evidence artifact placeholders are Field 8 patterns only. `B2-MAN-012` has no mapping because it remains deferred.
 
-### Required mapping schema
+### Proposed bounded criteria, observations, and verifier actions
 
-| Mapping field | Requirement |
-| --- | --- |
-| Criterion ID | Stable criterion identifier. |
-| Decision question | Exact future decision question informed. |
-| Required observation | Exact bounded observation. |
-| Manifest ID | Approved command or method. |
-| Evidence artifact | Exact approved evidence path and type. |
-| Verifier action | Exact independent-verification step. |
-| Sufficient result | Exact result that supports the criterion only. |
-| Insufficient result | Missing, stale, conflicting, partial, or unexpected result. |
-| Non-inference boundary | Conclusions explicitly prohibited from this evidence. |
-| Decision use | How the evidence may inform, but not determine, a later decision. |
+| Mapping ID | Manifest ID | Criterion and exact bounded observation | Expected evidence artifact | Verifier action | Sufficient result |
+| --- | --- | --- | --- | --- | --- |
+| `MAP-B2-001` | `B2-MAN-001` | Observe the WSL Git product/version string only. | Field 8 direct output for `REP-B2-001`. | Verify provenance and one bounded product/version field. | Expected bounded version text captured safely under valid authorization. |
+| `MAP-B2-002` | `B2-MAN-002` | Observe whether the command returns the exact approved repository top-level path. | Field 8 direct/redacted output for `REP-B2-002`. | Compare safely against the approved path and review redaction. | Exact approved path observed without extra output. |
+| `MAP-B2-003` | `B2-MAN-003` | Observe the current symbolic branch name or detached-state empty output. | Field 8 direct output for `REP-B2-003`. | Verify one bounded branch-name line or expected empty result. | One permitted branch observation with complete provenance. |
+| `MAP-B2-004` | `B2-MAN-004` | Observe the current `HEAD` SHA only. | Field 8 direct output for `REP-B2-004`. | Verify one 40-hexadecimal SHA and provenance. | One well-formed SHA captured under valid authorization. |
+| `MAP-B2-005` | `B2-MAN-005` | Observe the existing local `origin/master` remote-tracking SHA without network access. | Field 8 direct output for `REP-B2-005`. | Verify one SHA, no fetch/network action, and provenance. | One well-formed local remote-tracking SHA. |
+| `MAP-B2-006` | `B2-MAN-006` | Observe branch header and tracked working-tree status with untracked enumeration disabled. | Field 8 direct/redacted output for `REP-B2-006`. | Verify options, tracked-only scope, path handling, and provenance. | Bounded status output containing only permitted fields. |
+| `MAP-B2-007` | `B2-MAN-007` | Observe one commit SHA, author name, author timestamp, and subject. | Field 8 direct/redacted output for `REP-B2-007`. | Verify four fields, redaction decisions, and absence of email/body. | Exactly four expected fields safely captured. |
+| `MAP-B2-008` | `B2-MAN-008` | Observe kernel name, release, and architecture only. | Field 8 direct/redacted output for `REP-B2-008`. | Verify exactly three bounded metadata fields and provenance. | Expected three fields without host/user inventory. |
+| `MAP-B2-009` | `B2-MAN-009` | Observe the exact physical working-directory identity. | Field 8 direct/redacted output for `REP-B2-009`. | Compare safely to approved path and review redaction. | Exact approved path observed without extra output. |
+| `MAP-B2-010` | `B2-MAN-010` | Observe Docker client product/version/build text only. | Field 8 direct output for `REP-B2-010`. | Verify client-only output and absence of engine contact. | Bounded client version/build text only. |
+| `MAP-B2-011` | `B2-MAN-011` | Observe exactly one Docker context name without inspection or engine contact. | Field 8 direct/redacted output for `REP-B2-011`. | Verify one name, Field 9 handling, no context detail, and no engine contact. | Exactly one approved-to-retain context name under resolved Fields 8 and 9. |
+| `MAP-B2-013` | `B2-MAN-013` | Observe Windows Git product/version text only. | Field 8 direct output for `REP-B2-013`. | Verify exact executable provenance and absence of repository/configuration/credential interaction. | Bounded Windows Git version text only. |
+
+### Proposed insufficiency, non-inference, and decision-use boundaries
+
+For every mapping, missing, partial, conflicting, stale, outside-window, unverified, malformed, unexpected, or unsafe evidence is insufficient and `UNUSABLE` or `RERUN_REQUIRED` under Field 7 and proposed Field 8 controls.
+
+| Mapping ID | Non-inference boundary | Allowed decision use | Prohibited decision use | Approval state |
+| --- | --- | --- | --- | --- |
+| `MAP-B2-001` | Git version does not establish repository readiness. | Inform a future bounded WSL Git version observation only. | Readiness, correctness, synchronization, or implementation authority. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-002` | Repository path identity does not establish correctness or validity. | Inform whether a future observation resolved to the approved path. | Repository correctness, cleanliness, permissions, or readiness. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-003` | Branch name does not establish synchronization. | Inform a future branch-identity observation only. | Remote freshness, clean state, or code quality. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-004` | `HEAD` SHA does not establish clean state. | Inform a future commit-identity observation only. | Worktree cleanliness, correctness, quality, or readiness. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-005` | Local `origin/master` does not establish remote freshness without separately authorized fetch. | Inform a future local remote-tracking identity observation only. | Remote synchronization, network reachability, or deployment readiness. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-006` | Git status does not establish application readiness. | Inform a future bounded tracked-status observation only. | Functional, runtime, deployment, or production readiness. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-007` | Commit metadata does not establish code quality. | Inform a future bounded commit-metadata observation only. | Authorship assurance, correctness, review quality, or readiness. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-008` | Kernel metadata does not establish WSL functional readiness. | Inform a future bounded OS-identity observation only. | Compatibility, performance, service health, or runtime readiness. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-009` | Working-directory identity does not establish permissions or validity. | Inform whether a future shell resolved to the approved path. | Access sufficiency, repository correctness, or readiness. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-010` | Docker client version does not establish Docker engine readiness. | Inform a future Docker client-version observation only. | Engine availability, container capability, workload, or runtime readiness. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-011` | Docker context name does not establish engine connectivity or correctness. | Inform a future selected-context-name observation only. | Engine reachability, context correctness, container state, or runtime readiness. | `PROPOSED_NOT_APPROVED` |
+| `MAP-B2-013` | Windows Git version does not establish credential or repository-operation readiness. | Inform a future Windows Git version observation only. | Credential availability, repository operations, synchronization, or readiness. | `PROPOSED_NOT_APPROVED` |
+
+No mapping, alone or combined, may establish Local Readiness, milestone establishment, M4, Platform Foundation, a formal EAIRA Execution Layer, implementation authority, runtime authority, or production readiness.
+
+### Mapping count and status
+
+- Proposed criteria-to-evidence mappings: 12.
+- Mapping for deferred `B2-MAN-012`: none.
 
 ### Current status
 
 `PROPOSED_NOT_APPROVED`
 
-Exact criterion mappings remain blocked by unresolved target and command inputs.
+Field 11 remains blocking because no mapping, evidence artifact, verifier procedure, sufficient-result rule, or decision-use boundary is approved.
 
 ## 15. Mandatory Field 12 — All-Fields-Resolved Gate
 
@@ -616,6 +770,8 @@ No remediation or corrective action is authorized after a stop condition is reac
 | Command execution | `UNAUTHORIZED` |
 | Connectivity testing | `UNAUTHORIZED` |
 | Port probing | `UNAUTHORIZED` |
+| Evidence-directory creation | `UNAUTHORIZED` |
+| Evidence-file creation | `UNAUTHORIZED` |
 | New milestone established | `NO` |
 | Implementation or runtime work authorized | `NO` |
 | Is this Annex ready for an execution-authorization decision? | No; Project Owner inputs are required. |
