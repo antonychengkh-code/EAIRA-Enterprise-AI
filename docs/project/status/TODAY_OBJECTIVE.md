@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-07-11
+2026-07-14
 
 ## Version
 
-0.4.0
+0.5.0
 
 ## Milestone
 
@@ -20,9 +20,9 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-Prepare one finalized Local Readiness Assessment Authorization Annex within the bounded planning scope authorized by the Project Owner decision.
+Prepare one finalized Local Readiness Assessment Authorization Annex within the bounded planning scope authorized by the Project Owner decision and activated as task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001`, recorded at `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`.
 
-Authorization-package preparation and Project Owner review are complete. The recorded decision is `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. No separately authorized Authorization Annex planning task record currently exists.
+Authorization-package preparation and Project Owner review are complete. The recorded decision is `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. The current objective is now bounded by the activated Annex Planning task; no Annex has been created, completed, approved, or submitted by task activation.
 
 ## Out of Scope
 

@@ -1,11 +1,11 @@
-# Proposed Local Readiness Assessment Authorization Annex Planning Task Record
+# Local Readiness Assessment Authorization Annex Planning Task Record
 
 ## 1. Task Identification
 
 | Field | Value |
 | --- | --- |
 | Task Identifier | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
-| Review State | `PROPOSED_FOR_PROJECT_OWNER_REVIEW` |
+| Task Status | `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION` |
 | Execution Marker | `PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION` |
 | Layer | Project Layer |
 | Review Authority | Project Owner |
@@ -14,13 +14,17 @@
 
 Prepare one finalized Local Readiness Assessment Authorization Annex for future separate Project Owner review.
 
-This proposed task record is a planning proposal only. It is not active and does not authorize Annex preparation unless separately approved by the Project Owner.
+This task is active only for the bounded Project Layer planning needed to prepare one finalized Authorization Annex. Activation does not authorize the Local Readiness Assessment or assessment-evidence collection.
 
 ## 3. Authorization Basis
 
 The bounded planning basis is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`, which records `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE` and permits only bounded Project Layer planning for one finalized Local Readiness Assessment Authorization Annex.
 
-This proposal does not itself activate that planning task or expand the decision record's authority.
+The Project Owner approved and activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` for bounded Project Layer Authorization Annex planning.
+
+This activation does not constitute assessment-execution authorization and does not expand the authority recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`.
+
+For this task record, `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION` is reused solely as the existing repository-supported active planning status. Its application is limited by this task identifier and scope to Authorization Annex planning and does not authorize package execution, assessment execution, or assessment-evidence collection.
 
 ## 4. Inputs
 
@@ -34,7 +38,7 @@ This proposal does not itself activate that planning task or expand the decision
 
 ## 5. Scope
 
-If separately approved and activated by the Project Owner, this task is limited to:
+This active task is limited to:
 
 - preparing one finalized Local Readiness Assessment Authorization Annex;
 - resolving or explicitly identifying as blockers every mandatory Annex field in Section 6 of the decision record;
@@ -44,9 +48,8 @@ If separately approved and activated by the Project Owner, this task is limited 
 
 ## 6. Explicit Out-of-Scope Boundaries
 
-This proposed task does not authorize:
+This task does not authorize:
 
-- activation of this task without separate Project Owner approval;
 - Local Readiness Assessment execution, simulation, or trial activity;
 - assessment-evidence collection;
 - inspection or exercise of local services, processes, containers, models, databases, runtimes, APIs, endpoints, deployments, credentials, production resources, or unapproved environments as assessment activity;
@@ -55,7 +58,7 @@ This proposed task does not authorize:
 - database or production mutation;
 - governance modification;
 - milestone establishment, M4, Platform Foundation, or a formal EAIRA Execution Layer; or
-- modification of current status, context, objective, active-task, decision, Bootstrap, governance, runtime, or deployment records.
+- modification of decision, Bootstrap, governance, validation, runtime, or deployment records.
 
 ## 7. Required Deliverable
 
@@ -65,7 +68,7 @@ The Annex is a planning artifact only. Its preparation or completion does not ap
 
 ## 8. Completion Criteria
 
-The proposed task is complete only when:
+The task is complete only when:
 
 - one finalized Annex is prepared for Project Owner review;
 - every mandatory Annex field required by the decision record is resolved or explicitly identified as a blocker;
@@ -92,15 +95,15 @@ No remediation or corrective action is authorized after a stop condition is reac
 
 ## 11. Review and Execution Boundary
 
-The Project Owner is the sole review and decision authority for this proposal and any finalized Annex.
+The Project Owner is the sole review and decision authority for this task and any finalized Annex.
 
-This task remains proposed and inactive unless the Project Owner separately approves it. Annex completion would not authorize the Local Readiness Assessment. A future unconditional and separately recorded Project Owner authorization is required before any Local Readiness Assessment command, observation, interaction, or evidence collection may begin.
+This task is active only for bounded Authorization Annex planning. Annex completion would not authorize the Local Readiness Assessment. A future unconditional and separately recorded Project Owner authorization is required before any Local Readiness Assessment command, observation, interaction, or evidence collection may begin.
 
-No new milestone is established by this proposal, by any future activation of this planning task, or by completion of the Annex.
+No new milestone is established by activation of this planning task or by completion of the Annex.
 
-## 12. Proposal State
+## 12. Active Task State
 
-Status: `PROPOSED_FOR_PROJECT_OWNER_REVIEW`
+Task Status: `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION`
 
 Summary:
-This separately bounded Project Layer planning task record is proposed for Project Owner review only and is not authorized for execution.
+This separately bounded Project Layer planning task is active only for preparation of one finalized Authorization Annex for future separate Project Owner review. It is not authorized for assessment execution or assessment-evidence collection.
