@@ -9,11 +9,12 @@
 | Layer | Project Layer |
 | Status | `DRAFT_WITH_BLOCKERS_FOR_PROJECT_OWNER_INPUT` |
 | Execution Marker | `PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION` |
+| Assessment Execution | `UNAUTHORIZED` |
 | Assessment Evidence Collection | `UNAUTHORIZED` |
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Date | 2026-07-14 |
-| Version | 0.2.0 |
+| Version | 0.3.0 |
 
 ## 2. Purpose
 
@@ -28,7 +29,7 @@ This Annex derives its bounded planning authority from:
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`;
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`.
 
-The current Project Owner decision is `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. `AUTHORIZE_BOUNDED_ASSESSMENT` has not been granted. `AUTHORIZE_WITH_REQUIRED_REVISIONS` has not been granted as conditional execution authority.
+The underlying authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. The Batch 1 planning-input decision recorded below does not supersede that execution non-authorization. `AUTHORIZE_BOUNDED_ASSESSMENT` has not been granted. `AUTHORIZE_WITH_REQUIRED_REVISIONS` has not been granted as conditional execution authority.
 
 The Annex addresses the twelve mandatory content areas in Section 6 of the decision record. Every unresolved execution-controlling input remains a blocker and is not converted into an approved fact.
 
@@ -41,6 +42,7 @@ The Annex addresses the twelve mandatory content areas in Section 6 of the decis
 | `PROPOSED_NOT_APPROVED` | Candidate input or control requiring separate Project Owner approval. |
 | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | Required value or decision absent from current repository evidence. |
 | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | A control principle is supported, but one or more required inputs remain blocked. |
+| `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING` | Planning boundary and inventory inputs are approved, but exact command-level interactions and controls remain unapproved and blocking. |
 | `EVIDENCE_GAP` | Information not supported by current repository evidence. |
 | `ASSUMPTION` | Planning premise that must not be treated as evidence. |
 | `RISK` | Identified safety, evidence, scope, or authority risk. |
@@ -48,17 +50,30 @@ The Annex addresses the twelve mandatory content areas in Section 6 of the decis
 
 Agent self-report, conversation memory, tool availability, and unstored local knowledge are not verified repository facts.
 
+## Project Owner Input Resolution — Batch 1
+
+| Decision field | Recorded value |
+| --- | --- |
+| Decision | `APPROVE_BATCH_1_WITHOUT_EXECUTION_AUTHORITY` |
+| Decision Authority | Project Owner |
+| Decision Date | 2026-07-14 |
+| Classification | `PROJECT_OWNER_DECISION` |
+
+This decision approves the Batch 1 planning inputs recorded below for Mandatory Fields 1, 5, 6, and 7 only. These values are recorded as explicit `PROJECT_OWNER_DECISION` inputs and are not necessarily `VERIFIED_REPOSITORY_FACT`.
+
+This approval resolves planning inputs only. It does not authorize Local Readiness Assessment execution, simulation, trial activity, command execution, environment inspection, assessment-evidence collection, target interaction, implementation, remediation, runtime work or mutation, deployment, automation, CI/CD expansion, database or production mutation, external network activity, milestone establishment, M4, Platform Foundation, or a formal EAIRA Execution Layer.
+
 ## 5. Mandatory Field Resolution Matrix
 
 | # | Mandatory field | Resolution state | Current disposition |
 | ---: | --- | --- | --- |
-| 1 | Exact local environment boundary and complete target inventory | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | No exact environment or complete target inventory is approved in repository evidence. |
+| 1 | Exact local environment boundary and complete target inventory | `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING` | Batch 1 approves the environment boundary and initial planning inventory; exact command-level interactions and controls remain unapproved. |
 | 2 | Exact approved tool and command manifest | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | No tool or command is approved for assessment execution. |
 | 3 | Command-specific arguments, working directory, privilege, target, purpose, expected output, timeout, and mutation-risk determination | `BLOCKED_BY_FIELD_2` | Cannot be completed until the exact command manifest is selected and approved. |
-| 4 | Approved and prohibited services, endpoints, ports, network actions, and resources | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | General prohibitions are verified; exact approved items remain unassigned. |
-| 5 | Named operator and named independent verifier | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | Repository evidence does not assign either role. |
-| 6 | Verifier independence, role separation, and named stop authority | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | Independence principle is verified; named role holders and stop authority remain unresolved. |
-| 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | No approved observation window or freshness policy exists. |
+| 4 | Approved and prohibited services, endpoints, ports, network actions, and resources | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | General prohibitions and planning targets are recorded; exact service, endpoint, port, network-action, and resource interactions remain unapproved. |
+| 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
+| 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
+| 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
 | 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | No approved evidence location or lifecycle controls exist. |
 | 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | Secret capture is prohibited; detailed taxonomy and incident procedure remain unresolved. |
 | 10 | Reproduction procedure for every material observation | `PROPOSED_NOT_APPROVED` | A reusable procedure format is proposed below; command-specific procedures remain blocked. |
@@ -67,52 +82,62 @@ Agent self-report, conversation memory, tool availability, and unstored local kn
 
 ## 6. Mandatory Field 1 — Local Environment Boundary and Target Inventory
 
-### Verified repository facts
+### Approved environment boundary
 
-- The proposed assessment must be local, bounded, read-only, evidence-collection only, non-remediating, and independently verifiable.
-- External, deployment, production, and unlisted resources are outside the proposed boundary.
-- No exact local environment or target inventory is approved by current repository evidence.
+The following values are `PROJECT_OWNER_DECISION` inputs approved by `APPROVE_BATCH_1_WITHOUT_EXECUTION_AUTHORITY`. They were not independently inspected or verified under this task.
 
-### Required Project Owner inputs
-
-The Project Owner must complete and explicitly approve the following boundary record. No value may be derived from conversation memory, Agent self-report, unstored local knowledge, or inspection performed under this planning task.
-
-| Decision input | Required Project Owner value | Classification / approval state |
-| --- | --- | --- |
-| Exact environment ID | One stable identifier for the complete approved local environment. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Host boundary | Exact physical host, virtual host, or explicitly bounded combination. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Operating-system boundary | Exact operating system, edition or distribution, and boundary relevant to permitted interactions. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| WSL2 inclusion | Explicitly `INCLUDED` or `EXCLUDED`; if included, identify the exact approved distribution boundary. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Docker Desktop or local-container inclusion | Explicitly `INCLUDED` or `EXCLUDED`; if included, identify every approved engine, context, and container target. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Repository working-tree path | Exact approved path to the single permitted working tree, or each exact path if more than one is explicitly approved. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Permitted tools and targets | Exact allowlist of tools, services, processes, containers, models, runtimes, APIs, endpoints, databases, and configuration targets, each linked to a Target ID. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Exact exclusions | Exact denylist plus a rule that all unlisted targets are excluded. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Network policy | Either `ALL_NETWORK_ACTIONS_PROHIBITED` or a closed allowlist of explicitly named local endpoints and interactions. External and production access remain prohibited. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-
-### Required target-inventory schema
-
-Every proposed target must have one row. A row is not an allowlist entry until the Project Owner explicitly approves it.
-
-| Inventory field | Required content |
+| Decision input | Approved value |
 | --- | --- |
-| Target ID | Stable unique identifier. |
-| Category | Repository, tool, service, process, container, model, runtime, API, endpoint, database, configuration target, or other explicitly defined category. |
-| Exact identifier or path | Exact name, path, address, port, context, instance, or other unambiguous identifier. |
-| Environment ID | Link to the exact approved environment boundary. |
-| Proposed disposition | `PERMIT`, `EXCLUDE`, or `UNRESOLVED`; all are `PROPOSED_NOT_APPROVED` until Project Owner approval. |
-| Permitted interaction | Exact read-only interaction proposed; blank, implied, or wildcard interactions are prohibited. |
-| Network action | `NONE` or the exact named local endpoint interaction proposed under the network policy. |
-| Mutation prohibition | Explicit statement of prohibited state changes for the target. |
-| Approval state | `BLOCKED_PENDING_PROJECT_OWNER_INPUT`, `PROPOSED_NOT_APPROVED`, `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER`, or `NOT_APPLICABLE_APPROVED_BY_PROJECT_OWNER`. |
-| Project Owner decision reference | Exact repository path and decision identifier supporting an approved state. |
+| Environment ID | `EAIRA-LOCAL-PRIMARY-001` |
+| Physical host | Project Owner-controlled primary Windows workstation |
+| Host identifier | `WIN-3IDR7MV7G7C` |
+| Operating-system boundary | Windows host operating system plus explicitly approved WSL2 environment |
+| WSL2 | `INCLUDED` |
+| Approved WSL distribution | Ubuntu under WSL2 |
+| Docker Desktop | `INCLUDED_AS_TARGET_PENDING_COMMAND_APPROVAL` |
+| Local containers | `INCLUDED_ONLY_IF_INDIVIDUALLY_LISTED` |
+| Repository working tree | `C:\Users\User\OneDrive\文件\EAIRA-Enterprise-AI` |
+| WSL repository path | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` |
+| External environments | `EXCLUDED` |
+| Production resources | `PROHIBITED` |
+| Credential and secret inspection | `PROHIBITED` |
+| Network policy | Local-only by default; only explicitly listed loopback or local endpoints may later be proposed |
+| Unlisted targets | `PROHIBITED` |
 
-An empty inventory, an incomplete row, an unlisted target, or any row without an approved exact identifier and permitted interaction fails Field 1 and the all-fields-resolved gate.
+### Approved initial target inventory
+
+Each row is an approved planning target classified as `PROJECT_OWNER_DECISION`. Inclusion does not authorize interaction.
+
+| Target ID | Category | Exact target | Approved planning disposition | Current permitted interaction |
+| --- | --- | --- | --- | --- |
+| `TGT-REPO-001` | Repository | `C:\Users\User\OneDrive\文件\EAIRA-Enterprise-AI` | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
+| `TGT-WSL-001` | Virtual environment | Ubuntu under WSL2 | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
+| `TGT-GIT-WIN-001` | Tool | Windows Git installation | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
+| `TGT-GIT-WSL-001` | Tool | Git inside WSL2 | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
+| `TGT-DOCKER-001` | Runtime | Docker Desktop | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
+| `TGT-OLLAMA-001` | Local service | Ollama local service | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
+| `TGT-HERMES-001` | Agent runtime | Hermes local runtime | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
+| `TGT-OPENWEBUI-001` | Local service | OpenWebUI | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
+| `TGT-LMSTUDIO-001` | Local application | LM Studio | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
+| `TGT-SUPABASE-001` | Local platform | Local Supabase environment | `BLOCKED_PENDING_SEPARATE_APPROVAL` | None |
+| `TGT-DATABASE-001` | Database | Any local or remote database | `PROHIBITED_PENDING_SEPARATE_AUTHORIZATION` | None |
+| `TGT-PRODUCTION-001` | Production | All production resources | `PROHIBITED` | None |
+| `TGT-CREDENTIAL-001` | Sensitive resource | Credentials, tokens, keys, and secrets | `PROHIBITED` | None |
+| `TGT-EXTERNAL-001` | Network resource | External endpoints and internet services | `PROHIBITED_UNLESS_EXPLICITLY_APPROVED` | None |
+
+### Command-level control boundary
+
+- Inclusion in this inventory does not authorize interaction.
+- Every future interaction requires an exact approved command manifest.
+- No wildcard, implied, or unlisted target is permitted.
+- Database, credential, production, and external-network boundaries remain prohibited as stated above.
+- No target may be contacted, queried, executed, or inspected under this planning decision.
 
 ### Current status
 
-`BLOCKED_PENDING_PROJECT_OWNER_INPUT`
+`PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING`
 
-No environment or target may be inspected, contacted, queried, executed, or inferred under this Annex-planning task.
+The environment boundary and initial target inventory are approved as planning inputs. Field 1 remains blocking because exact command-level interactions and controls are not approved.
 
 ## 7. Mandatory Fields 2 and 3 — Tool and Command Manifest
 
@@ -178,80 +203,106 @@ A future review must list every approved service, endpoint, port, network action
 
 `PARTIALLY_RESOLVED_WITH_BLOCKERS`
 
-General prohibitions are resolved. The approved allowlist is empty and unresolved.
+General prohibitions are resolved. Field 1 records approved planning targets, but the command-level service, endpoint, port, network-action, and resource interaction allowlist is empty and unresolved.
 
 ## 9. Mandatory Fields 5 and 6 — Operator, Independent Verifier, Separation, and Stop Authority
 
-### Verified repository facts
+### Approved named roles
 
-- The Project Owner is the decision authority.
-- The planning execution owner is not assigned in current repository evidence.
-- Agent self-report alone is insufficient evidence.
-- Independent verification must rely on direct outputs and reproducible inspection within separately approved scope.
+The following assignments are `PROJECT_OWNER_DECISION` inputs approved by `APPROVE_BATCH_1_WITHOUT_EXECUTION_AUTHORITY`.
 
-### Required role assignments
+| Role | Approved assignment |
+| --- | --- |
+| Project Owner | Antony Cheng |
+| Assessment Operator | Codex operating under Antony Cheng's explicit task-level authorization |
+| Operator accountable human owner | Antony Cheng |
+| Independent Verifier | ChatGPT performing direct repository and approved evidence review |
+| Verifier accountable human owner | Antony Cheng |
+| Stop Authority | Antony Cheng |
 
-| Role | Required named assignment and authority | Current assignment | Classification / resolution state |
-| --- | --- | --- | --- |
-| Project Owner | Named final authorization and decision authority. | Project Owner role is established; named identity is not restated in current repository evidence. | Role authority: `VERIFIED_REPOSITORY_FACT`; named identity: `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Assessment Operator | Named individual or explicitly approved Agent under named human accountability; may perform only separately authorized manifest actions. | Unassigned. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Independent Verifier | Named individual who satisfies the independence and access rules below. | Unassigned. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Stop Authority | Named individual empowered to stop activity immediately, preserve only safely authorized records, and prohibit remediation or continuation. | Unassigned. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+### Approved role limitations
 
-### Independence requirements
+- Codex may perform only future actions listed in an explicitly approved command manifest.
+- ChatGPT may verify only approved direct evidence and may not generate the primary evidence it verifies.
+- Antony Cheng retains all final authorization and stop authority.
+- Neither Codex nor ChatGPT may establish readiness, approve a milestone, authorize implementation, or expand scope.
+- These role assignments do not authorize assessment execution, evidence collection, command execution, or target interaction.
 
-- The verifier must not generate the primary observation being verified.
-- The verifier must not direct, alter, complete, or substitute for the operator's generation of that primary observation.
-- The verifier must have access to approved direct outputs, provenance, timestamps, exact command text, exit status, redaction records, and relevant before-and-after Git-state evidence.
-- The verifier may reject evidence as missing, incomplete, stale, outside the observation window, unsafe, conflicting, non-reproducible, outside scope, lacking provenance, or inconsistent with the approved manifest.
-- Agent self-report alone is insufficient and cannot replace approved direct outputs or verifier action.
-- Operator and verifier responsibilities must remain explicitly separated in the approved role record and evidence record.
-- The operator and verifier may invoke the named Stop Authority; the exact invocation and escalation path requires Project Owner approval.
-- The Assessment Operator, Independent Verifier, and Stop Authority must each be explicitly named before Fields 5 and 6 can pass the all-fields-resolved gate.
+### Approved independence and stop controls
+
+1. Codex is the primary Assessment Operator.
+2. ChatGPT is the Independent Verifier.
+3. Operator and Verifier must not be the same execution instance for a material observation.
+4. The Verifier must review direct outputs and may not rely on Operator summaries alone.
+5. Agent self-report alone is insufficient evidence.
+6. Antony Cheng is the Stop Authority.
+7. Operator and Verifier must stop immediately when:
+   - authorization is absent, unclear, or conflicting;
+   - a target or command is unlisted;
+   - mutation risk is unresolved;
+   - credentials or sensitive data may be exposed;
+   - unexpected elevated privilege is required;
+   - evidence provenance is missing;
+   - repository or environment state changes unexpectedly;
+   - scope, authority, or verifier independence becomes unclear.
+8. No remediation or corrective action is permitted after a stop condition.
+9. Restart after a stop requires a new explicit Project Owner decision.
+
+### Independence limitation
+
+`RISK_ACCEPTED_FOR_BOUNDED_LOCAL_ASSESSMENT_PLANNING`
+
+The Project Owner accepts that independence is procedural rather than organizational because both Agent roles operate under the same Project Owner. This accepted planning risk does not reduce direct-evidence, role-separation, stop, or future-authorization requirements.
 
 ### Current status
 
-- Field 5: `BLOCKED_PENDING_PROJECT_OWNER_INPUT`
-- Field 6: `PARTIALLY_RESOLVED_WITH_BLOCKERS`
+- Field 5: `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER`
+- Field 6: `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER`
 
-Principles are defined; named assignments and explicit stop authority require Project Owner input.
+The named roles, procedural independence requirements, stop authority, stop conditions, and restart control are approved as planning inputs only.
 
 ## 10. Mandatory Field 7 — Observation Window and Evidence Freshness
 
-### Required Project Owner inputs
+### Approved observation and freshness controls
 
-The future authorization must complete and explicitly approve this control record:
+The following controls are `PROJECT_OWNER_DECISION` inputs approved by `APPROVE_BATCH_1_WITHOUT_EXECUTION_AUTHORITY`.
 
-| Decision input | Required Project Owner value | Classification / approval state |
-| --- | --- | --- |
-| Observation start | Exact timestamp including date, time, seconds, and UTC offset. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Observation end | Exact timestamp including date, time, seconds, and UTC offset. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Timezone | Exact IANA timezone name and required UTC offset treatment. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Authoritative clock source | Exact clock source used by operator and verifier, including how disagreement is handled. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Maximum evidence age | Exact duration measured from approved capture timestamp to each permitted decision use. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Staleness conditions | Exact conditions that classify evidence as `STALE` or `UNUSABLE`. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| General rerun triggers | Exact discrepancies, interruptions, failures, elapsed-time thresholds, or state changes requiring rerun. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Repository HEAD change | Explicit rule for whether any change to repository `HEAD` after capture makes affected evidence `RERUN_REQUIRED`. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Tool, service, target, configuration, or version change | Exact change classes that make affected evidence `RERUN_REQUIRED` or `UNUSABLE`. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Renewed authorization for rerun | Explicitly state whether each rerun requires renewed authorization and identify the approving authority and decision record. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Interrupted or stopped observations | Exact treatment of partial output and whether it must be `UNUSABLE`, retained under approved stopped-assessment handling, or separately reviewed. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Outside-window observations | Exact treatment; no outside-window evidence may be accepted by implication or silence. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Decision input | Approved value |
+| --- | --- |
+| Timezone | `Asia/Ho_Chi_Minh` |
+| UTC offset treatment | Record the actual UTC offset in every timestamp |
+| Authoritative clock source | Windows host operating-system clock |
+| Secondary clock reference | WSL2 clock; discrepancies must be recorded |
+| Maximum session duration | Four hours per separately authorized assessment session |
+| Observation start | Must be explicitly recorded in the future execution authorization |
+| Observation end | Start time plus no more than four hours |
+| Evidence validity | Valid only for the approved session and current repository `HEAD` |
+| Maximum evidence age | Four hours from capture unless a shorter criterion-specific limit applies |
+| Repository HEAD change | Repository-dependent evidence becomes `RERUN_REQUIRED` |
+| Tool version change | Affected evidence becomes `RERUN_REQUIRED` |
+| Service or configuration change | Affected evidence becomes `RERUN_REQUIRED` |
+| Target change | Affected evidence becomes `RERUN_REQUIRED` |
+| Interrupted assessment | Partial evidence is `UNUSABLE` unless separately retained under approved stopped-assessment handling |
+| Outside-window evidence | `UNUSABLE` |
+| Missing timestamp or provenance | `UNUSABLE` |
+| Rerun authorization | Any rerun after the approved session requires renewed Project Owner authorization |
+| Cross-session evidence reuse | Prohibited unless explicitly approved |
 
-### Proposed control states
+### Approved control-state definitions
 
-| State | Proposed meaning | Approval state |
-| --- | --- | --- |
-| `FRESH` | Captured within the approved window using the approved clock source and not invalidated by an approved staleness or rerun rule. | `PROPOSED_NOT_APPROVED` |
-| `STALE` | Older than the approved freshness threshold or affected by an approved staleness condition. | `PROPOSED_NOT_APPROVED` |
-| `OUTSIDE_WINDOW` | Captured before the approved start or after the approved end. | `PROPOSED_NOT_APPROVED` |
-| `RERUN_REQUIRED` | An approved change, discrepancy, interruption, or other trigger invalidates prior evidence for decision use. | `PROPOSED_NOT_APPROVED` |
-| `UNUSABLE` | Timestamp, provenance, clock basis, direct output, or required control evidence is missing, conflicting, unsafe, or incomplete. | `PROPOSED_NOT_APPROVED` |
+| State | Approved definition |
+| --- | --- |
+| `FRESH` | Captured within the approved session, using the approved clock controls, within the applicable maximum evidence age, for the current repository `HEAD`, and not affected by a rerun trigger. |
+| `STALE` | Older than the applicable maximum evidence age or a shorter criterion-specific limit; stale evidence is not valid for decision use. |
+| `OUTSIDE_WINDOW` | Captured before the explicitly authorized observation start or after the authorized observation end; outside-window evidence is `UNUSABLE`. |
+| `RERUN_REQUIRED` | A repository `HEAD`, tool version, service, configuration, target, or other approved trigger changed such that affected evidence must be collected again under valid authorization. |
+| `UNUSABLE` | Evidence that is partial after interruption, outside the approved window, missing a timestamp or provenance, or otherwise invalid under an approved control. |
 
-These labels are proposed control vocabulary only. They do not approve an observation window, freshness threshold, staleness policy, rerun, renewed authorization, or use of any evidence.
+These definitions govern only a future separately authorized assessment session. They do not authorize a session, set an observation start timestamp, authorize a rerun, or permit evidence collection.
 
 ### Current status
 
-`BLOCKED_PENDING_PROJECT_OWNER_INPUT`
+`RESOLVED_AND_APPROVED_BY_PROJECT_OWNER`
 
 ## 11. Mandatory Field 8 — Evidence Handling and Integrity
 
@@ -388,6 +439,7 @@ The following states fail the gate:
 - `BLOCKED_PENDING_PROJECT_OWNER_INPUT`;
 - `BLOCKED_BY_FIELD_n`;
 - `PARTIALLY_RESOLVED_WITH_BLOCKERS`;
+- `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING`;
 - `PROPOSED_NOT_APPROVED`;
 - `EVIDENCE_GAP`;
 - `ASSUMPTION`;
@@ -397,7 +449,7 @@ The following states fail the gate:
 
 `BLOCKED`
 
-Blocking fields: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, and 11.
+Blocking fields: 1, 2, 3, 4, 8, 9, 10, and 11.
 
 Field 12 is resolved only as gate logic; it does not satisfy the gate.
 
@@ -405,19 +457,15 @@ Field 12 is resolved only as gate logic; it does not satisfy the gate.
 
 The following decisions are required before this Annex can be finalized for an assessment-authorization decision:
 
-1. Name the exact local environment and approve the complete target inventory.
+1. Approve exact command-level interactions and controls for every permitted Field 1 target.
 2. Approve or reject every exact tool and command.
 3. Approve command-specific working directories, privilege levels, targets, expected outputs, timeouts, network actions, mutation-risk determinations, and evidence locations.
-4. Approve exact service, endpoint, port, network, and resource allowlists and prohibitions.
-5. Name the operator.
-6. Name the independent verifier and confirm independence requirements.
-7. Name the stop authority.
-8. Approve observation window, timezone, clock source, freshness, staleness, and rerun rules.
-9. Approve evidence paths, access roles, integrity controls, retention, disposal, and stopped-assessment handling.
-10. Approve sensitive-data taxonomy, redaction method, secret-handling prohibition, and accidental-exposure procedure.
-11. Approve the reproduction procedure format and every command-specific procedure.
-12. Approve the criteria-to-evidence mappings and non-inference boundaries.
-13. Confirm that all mandatory fields, exceptions, conflicts, and ambiguities satisfy the all-fields-resolved gate.
+4. Approve exact service, endpoint, port, network, and resource interaction allowlists and prohibitions.
+5. Approve evidence paths, access roles, integrity controls, retention, disposal, and stopped-assessment handling.
+6. Approve sensitive-data taxonomy, redaction method, secret-handling prohibition, and accidental-exposure procedure.
+7. Approve the reproduction procedure format and every command-specific procedure.
+8. Approve the criteria-to-evidence mappings and non-inference boundaries.
+9. Confirm that all mandatory fields, exceptions, conflicts, and ambiguities satisfy the all-fields-resolved gate.
 
 ## 17. Stop Conditions
 
@@ -441,10 +489,10 @@ No remediation or corrective action is authorized after a stop condition is reac
 | Are all twelve mandatory fields addressed? | Yes, as planning fields. |
 | Are all execution-controlling fields resolved and approved? | No. |
 | Is the all-fields-resolved gate satisfied? | No — `BLOCKED`. |
-| Is assessment execution authorized? | No. |
-| Is assessment-evidence collection authorized? | No. |
-| Is a new milestone established? | No. |
-| Is implementation or runtime work authorized? | No. |
+| Assessment execution | `UNAUTHORIZED` |
+| Assessment-evidence collection | `UNAUTHORIZED` |
+| New milestone established | `NO` |
+| Implementation or runtime work authorized | `NO` |
 | Is this Annex ready for an execution-authorization decision? | No; Project Owner inputs are required. |
 
 ## 19. Future Review Requirement
