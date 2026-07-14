@@ -13,7 +13,7 @@
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Date | 2026-07-14 |
-| Version | 0.1.0 |
+| Version | 0.2.0 |
 
 ## 2. Purpose
 
@@ -36,13 +36,15 @@ The Annex addresses the twelve mandatory content areas in Section 6 of the decis
 
 | Classification | Use in this Annex |
 | --- | --- |
-| Verified repository fact | Directly supported by cited repository content. |
-| Project Owner decision | Explicitly recorded Project Owner decision. |
-| Proposed assessment input | Candidate input requiring separate Project Owner approval. |
-| Evidence gap | Information not supported by current repository evidence. |
-| Assumption | Planning premise that must not be treated as evidence. |
-| Risk | Identified safety, evidence, scope, or authority risk. |
-| Future authorization requirement | Input that must be explicitly approved before assessment activity. |
+| `VERIFIED_REPOSITORY_FACT` | Directly supported by cited repository content. |
+| `PROJECT_OWNER_DECISION` | Explicitly recorded Project Owner decision. |
+| `PROPOSED_NOT_APPROVED` | Candidate input or control requiring separate Project Owner approval. |
+| `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | Required value or decision absent from current repository evidence. |
+| `PARTIALLY_RESOLVED_WITH_BLOCKERS` | A control principle is supported, but one or more required inputs remain blocked. |
+| `EVIDENCE_GAP` | Information not supported by current repository evidence. |
+| `ASSUMPTION` | Planning premise that must not be treated as evidence. |
+| `RISK` | Identified safety, evidence, scope, or authority risk. |
+| `FUTURE_AUTHORIZATION_REQUIREMENT` | Input that must be explicitly approved before assessment activity. |
 
 Agent self-report, conversation memory, tool availability, and unstored local knowledge are not verified repository facts.
 
@@ -73,16 +75,38 @@ Agent self-report, conversation memory, tool availability, and unstored local kn
 
 ### Required Project Owner inputs
 
-The Project Owner must explicitly identify:
+The Project Owner must complete and explicitly approve the following boundary record. No value may be derived from conversation memory, Agent self-report, unstored local knowledge, or inspection performed under this planning task.
 
-- one named local environment;
-- the physical or virtual host boundary;
-- the operating-system boundary;
-- every permitted repository working tree;
-- every permitted tool installation;
-- every permitted service, process, container, model, runtime, API, endpoint, database, and configuration target;
-- every explicitly excluded target;
-- whether network access is prohibited or limited to named local endpoints.
+| Decision input | Required Project Owner value | Classification / approval state |
+| --- | --- | --- |
+| Exact environment ID | One stable identifier for the complete approved local environment. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Host boundary | Exact physical host, virtual host, or explicitly bounded combination. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Operating-system boundary | Exact operating system, edition or distribution, and boundary relevant to permitted interactions. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| WSL2 inclusion | Explicitly `INCLUDED` or `EXCLUDED`; if included, identify the exact approved distribution boundary. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Docker Desktop or local-container inclusion | Explicitly `INCLUDED` or `EXCLUDED`; if included, identify every approved engine, context, and container target. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Repository working-tree path | Exact approved path to the single permitted working tree, or each exact path if more than one is explicitly approved. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Permitted tools and targets | Exact allowlist of tools, services, processes, containers, models, runtimes, APIs, endpoints, databases, and configuration targets, each linked to a Target ID. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Exact exclusions | Exact denylist plus a rule that all unlisted targets are excluded. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Network policy | Either `ALL_NETWORK_ACTIONS_PROHIBITED` or a closed allowlist of explicitly named local endpoints and interactions. External and production access remain prohibited. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+
+### Required target-inventory schema
+
+Every proposed target must have one row. A row is not an allowlist entry until the Project Owner explicitly approves it.
+
+| Inventory field | Required content |
+| --- | --- |
+| Target ID | Stable unique identifier. |
+| Category | Repository, tool, service, process, container, model, runtime, API, endpoint, database, configuration target, or other explicitly defined category. |
+| Exact identifier or path | Exact name, path, address, port, context, instance, or other unambiguous identifier. |
+| Environment ID | Link to the exact approved environment boundary. |
+| Proposed disposition | `PERMIT`, `EXCLUDE`, or `UNRESOLVED`; all are `PROPOSED_NOT_APPROVED` until Project Owner approval. |
+| Permitted interaction | Exact read-only interaction proposed; blank, implied, or wildcard interactions are prohibited. |
+| Network action | `NONE` or the exact named local endpoint interaction proposed under the network policy. |
+| Mutation prohibition | Explicit statement of prohibited state changes for the target. |
+| Approval state | `BLOCKED_PENDING_PROJECT_OWNER_INPUT`, `PROPOSED_NOT_APPROVED`, `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER`, or `NOT_APPLICABLE_APPROVED_BY_PROJECT_OWNER`. |
+| Project Owner decision reference | Exact repository path and decision identifier supporting an approved state. |
+
+An empty inventory, an incomplete row, an unlisted target, or any row without an approved exact identifier and permitted interaction fails Field 1 and the all-fields-resolved gate.
 
 ### Current status
 
@@ -167,23 +191,28 @@ General prohibitions are resolved. The approved allowlist is empty and unresolve
 
 ### Required role assignments
 
-| Role | Required named assignment | Current state |
-| --- | --- | --- |
-| Assessment operator | Named individual or explicitly approved agent under human accountability | `UNASSIGNED` |
-| Independent verifier | Named individual independent of observation execution | `UNASSIGNED` |
-| Stop authority | Named individual authorized to stop immediately without remediation | `UNASSIGNED` |
-| Project Owner | Final authorization and decision authority | `VERIFIED_ROLE`; named identity not restated in this Annex |
+| Role | Required named assignment and authority | Current assignment | Classification / resolution state |
+| --- | --- | --- | --- |
+| Project Owner | Named final authorization and decision authority. | Project Owner role is established; named identity is not restated in current repository evidence. | Role authority: `VERIFIED_REPOSITORY_FACT`; named identity: `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Assessment Operator | Named individual or explicitly approved Agent under named human accountability; may perform only separately authorized manifest actions. | Unassigned. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Independent Verifier | Named individual who satisfies the independence and access rules below. | Unassigned. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Stop Authority | Named individual empowered to stop activity immediately, preserve only safely authorized records, and prohibit remediation or continuation. | Unassigned. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
 
 ### Independence requirements
 
 - The verifier must not generate the primary observation being verified.
-- The verifier must have access to approved direct outputs, provenance, timestamps, command text, exit status, redactions, and relevant Git-state evidence.
-- The verifier must be able to reject evidence as missing, stale, unsafe, non-reproducible, or outside scope.
-- The operator and verifier must both be able to invoke the named stop authority.
+- The verifier must not direct, alter, complete, or substitute for the operator's generation of that primary observation.
+- The verifier must have access to approved direct outputs, provenance, timestamps, exact command text, exit status, redaction records, and relevant before-and-after Git-state evidence.
+- The verifier may reject evidence as missing, incomplete, stale, outside the observation window, unsafe, conflicting, non-reproducible, outside scope, lacking provenance, or inconsistent with the approved manifest.
+- Agent self-report alone is insufficient and cannot replace approved direct outputs or verifier action.
+- Operator and verifier responsibilities must remain explicitly separated in the approved role record and evidence record.
+- The operator and verifier may invoke the named Stop Authority; the exact invocation and escalation path requires Project Owner approval.
+- The Assessment Operator, Independent Verifier, and Stop Authority must each be explicitly named before Fields 5 and 6 can pass the all-fields-resolved gate.
 
 ### Current status
 
-`PARTIALLY_RESOLVED_WITH_BLOCKERS`
+- Field 5: `BLOCKED_PENDING_PROJECT_OWNER_INPUT`
+- Field 6: `PARTIALLY_RESOLVED_WITH_BLOCKERS`
 
 Principles are defined; named assignments and explicit stop authority require Project Owner input.
 
@@ -191,26 +220,34 @@ Principles are defined; named assignments and explicit stop authority require Pr
 
 ### Required Project Owner inputs
 
-The future authorization must explicitly define:
+The future authorization must complete and explicitly approve this control record:
 
-- observation start and end timestamps;
-- approved timezone;
-- authoritative clock source;
-- maximum acceptable evidence age;
-- staleness conditions;
-- rerun triggers;
-- whether reruns require renewed authorization;
-- handling of evidence captured outside the approved window.
+| Decision input | Required Project Owner value | Classification / approval state |
+| --- | --- | --- |
+| Observation start | Exact timestamp including date, time, seconds, and UTC offset. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Observation end | Exact timestamp including date, time, seconds, and UTC offset. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Timezone | Exact IANA timezone name and required UTC offset treatment. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Authoritative clock source | Exact clock source used by operator and verifier, including how disagreement is handled. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Maximum evidence age | Exact duration measured from approved capture timestamp to each permitted decision use. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Staleness conditions | Exact conditions that classify evidence as `STALE` or `UNUSABLE`. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| General rerun triggers | Exact discrepancies, interruptions, failures, elapsed-time thresholds, or state changes requiring rerun. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Repository HEAD change | Explicit rule for whether any change to repository `HEAD` after capture makes affected evidence `RERUN_REQUIRED`. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Tool, service, target, configuration, or version change | Exact change classes that make affected evidence `RERUN_REQUIRED` or `UNUSABLE`. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Renewed authorization for rerun | Explicitly state whether each rerun requires renewed authorization and identify the approving authority and decision record. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Interrupted or stopped observations | Exact treatment of partial output and whether it must be `UNUSABLE`, retained under approved stopped-assessment handling, or separately reviewed. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Outside-window observations | Exact treatment; no outside-window evidence may be accepted by implication or silence. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
 
 ### Proposed control states
 
-| State | Meaning |
-| --- | --- |
-| `FRESH` | Captured within the approved window using the approved clock source. |
-| `STALE` | Older than the approved freshness threshold. |
-| `OUTSIDE_WINDOW` | Captured before or after the authorized window. |
-| `RERUN_REQUIRED` | A defined change or discrepancy invalidates prior evidence. |
-| `UNUSABLE` | Timestamp, provenance, or clock basis is missing or conflicting. |
+| State | Proposed meaning | Approval state |
+| --- | --- | --- |
+| `FRESH` | Captured within the approved window using the approved clock source and not invalidated by an approved staleness or rerun rule. | `PROPOSED_NOT_APPROVED` |
+| `STALE` | Older than the approved freshness threshold or affected by an approved staleness condition. | `PROPOSED_NOT_APPROVED` |
+| `OUTSIDE_WINDOW` | Captured before the approved start or after the approved end. | `PROPOSED_NOT_APPROVED` |
+| `RERUN_REQUIRED` | An approved change, discrepancy, interruption, or other trigger invalidates prior evidence for decision use. | `PROPOSED_NOT_APPROVED` |
+| `UNUSABLE` | Timestamp, provenance, clock basis, direct output, or required control evidence is missing, conflicting, unsafe, or incomplete. | `PROPOSED_NOT_APPROVED` |
+
+These labels are proposed control vocabulary only. They do not approve an observation window, freshness threshold, staleness policy, rerun, renewed authorization, or use of any evidence.
 
 ### Current status
 
