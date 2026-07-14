@@ -12,10 +12,12 @@
 | Assessment Execution | `UNAUTHORIZED` |
 | Assessment Evidence Collection | `UNAUTHORIZED` |
 | Command Execution | `UNAUTHORIZED` |
+| Connectivity Testing | `UNAUTHORIZED` |
+| Port Probing | `UNAUTHORIZED` |
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Date | 2026-07-14 |
-| Version | 0.4.0 |
+| Version | 0.5.0 |
 
 ## 2. Purpose
 
@@ -41,9 +43,15 @@ The Annex addresses the twelve mandatory content areas in Section 6 of the decis
 | `VERIFIED_REPOSITORY_FACT` | Directly supported by cited repository content. |
 | `PROJECT_OWNER_DECISION` | Explicitly recorded Project Owner decision. |
 | `PROPOSED_NOT_APPROVED` | Candidate input or control requiring separate Project Owner approval. |
+| `APPROVED_AS_MANIFEST_PLANNING_INPUT` | Exact manifest content approved as a planning input only; not executable. |
+| `APPROVED_WITH_REQUIRED_REVISION_AS_PLANNING_INPUT` | Manifest planning content approved subject to the recorded required control revision; not executable. |
+| `DEFER_PENDING_COMMAND_SEMANTICS_REVIEW` | Command is not approved because its client/service behavior remains unresolved. |
+| `APPROVED_AS_PLANNING_INTERACTION_DEFINITION` | Interaction boundary approved as planning content only; interaction remains unauthorized. |
+| `APPROVED_CONDITIONALLY_AS_PLANNING_INTERACTION` | Planning interaction definition approved only for the recorded future condition; no current interaction authority. |
 | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | Required value or decision absent from current repository evidence. |
 | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | A control principle is supported, but one or more required inputs remain blocked. |
 | `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING` | Planning boundary and inventory inputs are approved, but exact command-level interactions and controls remain unapproved and blocking. |
+| `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Selected planning inputs are approved, but required revisions, deferrals, or blockers prevent field resolution. |
 | `EVIDENCE_GAP` | Information not supported by current repository evidence. |
 | `ASSUMPTION` | Planning premise that must not be treated as evidence. |
 | `RISK` | Identified safety, evidence, scope, or authority risk. |
@@ -66,20 +74,33 @@ This approval resolves planning inputs only. It does not authorize Local Readine
 
 ## Batch 2 Proposed Command-Control Planning Inputs
 
-All new Batch 2 manifest entries, command controls, and interaction entries are `PROPOSED_NOT_APPROVED` unless an entry is explicitly blocked or prohibited. They are planning text for Project Owner review only.
+Batch 2 introduced proposed manifest entries, command controls, and interaction entries for Project Owner review. The Batch 2 Review decision below now controls each recorded row state. Approval states are planning classifications only and do not authorize execution or evidence collection.
 
-No proposed command is executable or approved. Batch 2 does not authorize command execution, environment inspection, service or endpoint interaction, port probing, connectivity testing, process or container inspection, model or runtime interaction, database access, credential access, or assessment-evidence collection.
+No proposed command is executable or approved for execution. Batch 2 does not authorize command execution, environment inspection, service or endpoint interaction, port probing, connectivity testing, process or container inspection, model or runtime interaction, database access, credential access, or assessment-evidence collection.
 
 The proposed manifest is closed: only listed entries may be reviewed, and no omitted, wildcard, implied, or substituted command or target is permitted.
+
+## Project Owner Input Resolution — Batch 2 Review
+
+| Decision field | Recorded value |
+| --- | --- |
+| Decision | `APPROVE_BATCH_2_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY` |
+| Decision Authority | Project Owner |
+| Decision Date | 2026-07-14 |
+| Classification | `PROJECT_OWNER_DECISION` |
+
+This decision approves selected Batch 2 command-manifest and interaction-control planning inputs only. Approved values are `PROJECT_OWNER_DECISION` inputs and are not automatically `VERIFIED_REPOSITORY_FACT`. No command semantics, executable presence, local service state, endpoint, port, or environment behavior was independently verified.
+
+This decision does not authorize Local Readiness Assessment execution, command execution, assessment-evidence collection, environment or service inspection, endpoint interaction, port probing, connectivity testing, container, model, runtime, API, database, or credential interaction, implementation, remediation, deployment, automation, CI/CD expansion, milestone establishment, M4, Platform Foundation, or a formal EAIRA Execution Layer.
 
 ## 5. Mandatory Field Resolution Matrix
 
 | # | Mandatory field | Resolution state | Current disposition |
 | ---: | --- | --- | --- |
-| 1 | Exact local environment boundary and complete target inventory | `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING` | Batch 1 approves the environment boundary and initial planning inventory; exact command-level interactions and controls remain unapproved. |
-| 2 | Exact approved tool and command manifest | `PROPOSED_NOT_APPROVED` | Batch 2 proposes a closed command manifest and explicit blockers; no command is approved or executable. |
-| 3 | Command-specific arguments, working directory, privilege, target, purpose, expected output, timeout, and mutation-risk determination | `PROPOSED_NOT_APPROVED` | Batch 2 proposes command-specific controls linked to every proposed command; all require Project Owner review. |
-| 4 | Approved and prohibited services, endpoints, ports, network actions, and resources | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | Batch 2 proposes a closed local/no-network interaction allowlist; exact service endpoints, ports, and several resource identifiers remain blocked. |
+| 1 | Exact local environment boundary and complete target inventory | `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING` | The environment boundary and initial inventory are approved as planning inputs; selected command-level definitions are approved as planning content, but complete command-level controls remain unresolved. |
+| 2 | Exact approved tool and command manifest | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Selected Batch 2 manifest planning inputs are approved, one requires revision, one is deferred, and five target-specific rows remain blocked; no command is executable. |
+| 3 | Command-specific arguments, working directory, privilege, target, purpose, expected output, timeout, and mutation-risk determination | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Selected command-specific planning controls are approved, but required revisions, unresolved semantics, and evidence/redaction dependencies remain blocking. |
+| 4 | Approved and prohibited services, endpoints, ports, network actions, and resources | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | Selected no-network interaction definitions are approved as planning inputs; service endpoints, ports, and several resource interactions remain blocked. |
 | 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
 | 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
 | 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
@@ -121,7 +142,7 @@ Each row is an approved planning target classified as `PROJECT_OWNER_DECISION`. 
 | --- | --- | --- | --- | --- |
 | `TGT-REPO-001` | Repository | `C:\Users\User\OneDrive\文件\EAIRA-Enterprise-AI` | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
 | `TGT-WSL-001` | Virtual environment | Ubuntu under WSL2 | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
-| `TGT-GIT-WIN-001` | Tool | Windows Git installation | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
+| `TGT-GIT-WIN-001` | Tool | Windows Git at `C:\Program Files\Git\cmd\git.exe` (`/mnt/c/Program Files/Git/cmd/git.exe` from WSL) | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None; version-only planning interaction recorded below remains non-executable |
 | `TGT-GIT-WSL-001` | Tool | Git inside WSL2 | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
 | `TGT-DOCKER-001` | Runtime | Docker Desktop | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
 | `TGT-OLLAMA-001` | Local service | Ollama local service | `PERMIT_FOR_FUTURE_READ_ONLY_MANIFEST` | None until command approval |
@@ -133,6 +154,18 @@ Each row is an approved planning target classified as `PROJECT_OWNER_DECISION`. 
 | `TGT-PRODUCTION-001` | Production | All production resources | `PROHIBITED` | None |
 | `TGT-CREDENTIAL-001` | Sensitive resource | Credentials, tokens, keys, and secrets | `PROHIBITED` | None |
 | `TGT-EXTERNAL-001` | Network resource | External endpoints and internet services | `PROHIBITED_UNLESS_EXPLICITLY_APPROVED` | None |
+
+### Batch 2 approved Windows Git executable identity
+
+The following values are `PROJECT_OWNER_DECISION` inputs approved by `APPROVE_BATCH_2_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY`. They identify a planning target only and do not establish executable presence or authorize general Windows Git usage.
+
+| Decision input | Approved planning value |
+| --- | --- |
+| Windows-native executable path | `C:\Program Files\Git\cmd\git.exe` |
+| WSL-visible executable path | `/mnt/c/Program Files/Git/cmd/git.exe` |
+| Permitted planning scope | Future version-only manifest definition `B2-MAN-013` |
+| General Windows Git usage | `NOT_APPROVED` |
+| Execution | `UNAUTHORIZED` |
 
 ### Command-level control boundary
 
@@ -146,18 +179,18 @@ Each row is an approved planning target classified as `PROJECT_OWNER_DECISION`. 
 
 `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING`
 
-The environment boundary and initial target inventory are approved as planning inputs. Field 1 remains blocking because exact command-level interactions and controls are not approved.
+The environment boundary and initial target inventory are approved as planning inputs. Field 1 remains blocking because complete exact command-level interactions and controls are not resolved.
 
 ## 7. Mandatory Fields 2 and 3 — Tool and Command Manifest
 
 ### Proposed command-selection controls
 
-- Every command below is observational text classified `PROPOSED_NOT_APPROVED`.
+- Every command below is planning text classified by the Batch 2 Review decision; no row is executable.
 - No command installs, updates, starts, stops, restarts, creates, removes, fetches, pulls, pushes, commits, merges, rebases, checks out, cleans, resets, loads, runs a workload, performs inference, queries a database, writes through an API, or mutates configuration.
 - Every command proposes `NO_ELEVATION`, an explicit timeout, and `NONE` for network action.
 - No command reads environment-variable values, credentials, tokens, secrets, private configuration values, or unrelated host inventory.
 - Executable paths, endpoint details, ports, or safe semantics not supported by current planning evidence remain blockers below.
-- No command is classified as confirmed read-only because no command has received command-specific independent review and Project Owner approval.
+- No command is classified as confirmed read-only because planning approval does not establish independently verified semantics or execution authority.
 
 ### Proposed closed manifest — command definitions
 
@@ -176,24 +209,26 @@ The three tables keyed by Manifest ID jointly form each complete proposed comman
 | `B2-MAN-009` | `TGT-WSL-001` | WSL shell; WSL path | `pwd` | `pwd -P` | `-P` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe the physical current working-directory identity only. |
 | `B2-MAN-010` | `TGT-DOCKER-001` | WSL CLI; WSL path | `docker` | `docker --version` | `--version` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe Docker client version text without engine interaction. |
 | `B2-MAN-011` | `TGT-DOCKER-001` | WSL CLI; WSL path | `docker` | `docker context show` | `context`, `show` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe only the selected Docker context name; do not inspect the context. |
-| `B2-MAN-012` | `TGT-OLLAMA-001` | WSL CLI; WSL path | `ollama` | `ollama --version` | `--version` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe Ollama client version text only; no service or model interaction. |
+| `B2-MAN-012` | `TGT-OLLAMA-001` | WSL CLI; WSL path | `ollama` | `ollama --version` | `--version` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Deferred: proposed Ollama version observation pending independent command-semantics review; no substitute may be inferred. |
+| `B2-MAN-013` | `TGT-GIT-WIN-001` | Windows Git invoked from WSL; WSL path | `/mnt/c/Program Files/Git/cmd/git.exe` | `"/mnt/c/Program Files/Git/cmd/git.exe" --version` | `--version` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | Codex under Antony Cheng's explicit task-level authorization | `NO_ELEVATION` | Observe the Windows Git version string only; no repository, configuration, or credential interaction. |
 
 ### Proposed closed manifest — output, risk, and traceability
 
 | Manifest ID | Expected safe output fields | Proposed maximum timeout | Network action | Mutation-risk determination and rationale | Evidence-output classification | Reproduction ID | Criteria-mapping ID | Approval state |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `B2-MAN-001` | One Git version string: product name and version only. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — version flag is proposed as observational. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-001` | `MAP-B2-001` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-002` | One absolute WSL repository path matching the approved working tree. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads repository path identity only. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-002` | `MAP-B2-002` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-003` | One branch name, or empty output if detached. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads current symbolic branch only. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-003` | `MAP-B2-003` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-004` | One 40-hexadecimal `HEAD` commit SHA. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — resolves an existing ref without mutation. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-004` | `MAP-B2-004` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-005` | One 40-hexadecimal `origin/master` remote-tracking SHA. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — resolves the existing local remote-tracking ref without network access. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-005` | `MAP-B2-005` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-006` | Branch header and zero or more tracked repository-relative status entries. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — proposes status observation with untracked enumeration disabled. | `PROPOSED_PATH_BEARING_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-006` | `MAP-B2-006` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-007` | Four tab-separated fields: commit SHA, author name, ISO-8601 author timestamp, subject. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads one bounded commit record and excludes email/body. | `PROPOSED_PERSON_NAME_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-007` | `MAP-B2-007` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-008` | Kernel name, kernel release, and machine architecture only. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads bounded OS identity metadata. | `PROPOSED_HOST_METADATA_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-008` | `MAP-B2-008` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-009` | One absolute WSL working-directory path matching the approved path. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads current directory identity only. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-009` | `MAP-B2-009` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-010` | One Docker client version string and build identifier if emitted. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — client version flag only; engine contact is prohibited. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-010` | `MAP-B2-010` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-011` | One Docker context name only. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — reads selected context name; context inspection is prohibited. | `PROPOSED_CONFIGURATION_NAME_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-011` | `MAP-B2-011` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-012` | One Ollama client version string only. | 30 seconds | `NONE` | `READ_ONLY_PROPOSED_PENDING_REVIEW` — client version flag only; service/model contact is prohibited. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-012` | `MAP-B2-012` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-001` | One Git version string: product name and version only. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — version-only planning content approved; semantics are not independently verified. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-001` | `MAP-B2-001` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-002` | One absolute WSL repository path matching the approved working tree. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — repository-path planning content approved; not executable. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-002` | `MAP-B2-002` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-003` | One branch name, or empty output if detached. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — branch-name planning content approved; not executable. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-003` | `MAP-B2-003` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-004` | One 40-hexadecimal `HEAD` commit SHA. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — ref-resolution planning content approved; not executable. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-004` | `MAP-B2-004` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-005` | One 40-hexadecimal `origin/master` remote-tracking SHA. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — local ref-resolution planning content approved; no network action or execution authorized. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-005` | `MAP-B2-005` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-006` | Branch header and zero or more tracked repository-relative status entries. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — bounded status planning content approved; not executable. | `PROPOSED_PATH_BEARING_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-006` | `MAP-B2-006` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-007` | Four tab-separated fields: commit SHA, author name, ISO-8601 author timestamp, subject. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — bounded commit-record planning content approved; not executable. | `PROPOSED_PERSON_NAME_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-007` | `MAP-B2-007` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-008` | Kernel name, kernel release, and machine architecture only. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — bounded OS-identity planning content approved; not executable. | `PROPOSED_HOST_METADATA_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-008` | `MAP-B2-008` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-009` | One absolute WSL working-directory path matching the approved path. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — working-directory planning content approved; not executable. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-009` | `MAP-B2-009` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-010` | One Docker client version string and build identifier if emitted. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — client-version planning content approved; Docker engine contact remains prohibited. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-010` | `MAP-B2-010` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-011` | Exactly one Docker context name only. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — approved with required controls; context inspection, details, and Docker engine contact remain prohibited. | `PROPOSED_CONFIGURATION_NAME_OUTPUT_PENDING_FIELDS_8_AND_9`; no collection until Fields 8 and 9 are resolved | `REP-B2-011` | `MAP-B2-011` | `APPROVED_WITH_REQUIRED_REVISION_AS_PLANNING_INPUT` |
+| `B2-MAN-012` | Unresolved; client-only output behavior is not independently established. | 30 seconds | `NONE` | `MUTATION_RISK_UNRESOLVED` — `ollama --version` is not approved; service-contact semantics require separate review. | `NO_OUTPUT_COLLECTION_AUTHORIZED` | `REP-B2-012` | `MAP-B2-012` | `DEFER_PENDING_COMMAND_SEMANTICS_REVIEW` |
+| `B2-MAN-013` | One Windows Git version string: product name and version only. | 30 seconds | `NONE` | `READ_ONLY_APPROVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` — version-only planning content approved; executable presence and semantics are not independently verified. | `PROPOSED_DIRECT_OUTPUT_PENDING_FIELDS_8_AND_9` | `REP-B2-013` | `MAP-B2-013` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
 
 ### Proposed command-specific stop, redaction, and evidence controls
 
@@ -201,26 +236,34 @@ The three tables keyed by Manifest ID jointly form each complete proposed comman
 
 | Manifest ID | Command-specific stop condition | Proposed redaction need | Evidence destination placeholder | Approval state |
 | --- | --- | --- | --- | --- |
-| `B2-MAN-001` | Stop if output contains fields beyond product/version text. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-001.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-002` | Stop if output is not the exact approved WSL repository path. | Retain only the approved path; reject any other path. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-002.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-003` | Stop if output contains more than one branch-name line. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-003.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-004` | Stop if output is not one 40-hexadecimal SHA. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-004.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-005` | Stop if output is not one 40-hexadecimal SHA or if network access is attempted. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-005.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-006` | Stop if untracked entries, absolute paths, or data outside tracked status fields appear. | Repository-relative paths require Field 9 review; reject sensitive or absolute paths. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-006.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-007` | Stop if email, commit body, signature material, or more than four fields appears. | Author name and subject require Field 9 review; email/body are prohibited. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-007.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-008` | Stop if host name, user name, environment data, or additional inventory appears. | Retain only kernel name, release, and architecture. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-008.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-009` | Stop if output is not the exact approved WSL working-directory path. | Retain only the approved path; reject any other path. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-009.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-010` | Stop if the command attempts engine contact or output exceeds client version/build text. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-010.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-011` | Stop if output exceeds one context name or causes engine contact. | Context name requires Field 9 review; no context details may be retained. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-011.txt` | `PROPOSED_NOT_APPROVED` |
-| `B2-MAN-012` | Stop if the command contacts the service, lists models, or emits fields beyond client version text. | None expected; reject service/model metadata. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-012.txt` | `PROPOSED_NOT_APPROVED` |
+| `B2-MAN-001` | Stop if output contains fields beyond product/version text. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-001.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-002` | Stop if output is not the exact approved WSL repository path. | Retain only the approved path; reject any other path. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-002.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-003` | Stop if output contains more than one branch-name line. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-003.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-004` | Stop if output is not one 40-hexadecimal SHA. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-004.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-005` | Stop if output is not one 40-hexadecimal SHA or if network access is attempted. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-005.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-006` | Stop if untracked entries, absolute paths, or data outside tracked status fields appear. | Repository-relative paths require Field 9 review; reject sensitive or absolute paths. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-006.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-007` | Stop if email, commit body, signature material, or more than four fields appears. | Author name and subject require Field 9 review; email/body are prohibited. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-007.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-008` | Stop if host name, user name, environment data, or additional inventory appears. | Retain only kernel name, release, and architecture. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-008.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-009` | Stop if output is not the exact approved WSL working-directory path. | Retain only the approved path; reject any other path. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-009.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-010` | Stop if the command attempts engine contact or output exceeds client version/build text. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-010.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
+| `B2-MAN-011` | Stop if output is not exactly one context name, if `docker context inspect` or any context-detail read is attempted, or if Docker engine contact occurs. | Context name remains subject to Field 9 approval; no context details may be retained and no output may be collected until Fields 8 and 9 are resolved. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-011.txt` | `APPROVED_WITH_REQUIRED_REVISION_AS_PLANNING_INPUT` |
+| `B2-MAN-012` | Do not execute. Stop because client-only behavior is not independently established; any future command requires an approved client-only method or explicit Field 4 loopback service-contact approval. No substitute command may be inferred. | No output collection authorized. | `NO_EVIDENCE_PATH_AUTHORIZED` | `DEFER_PENDING_COMMAND_SEMANTICS_REVIEW` |
+| `B2-MAN-013` | Stop if output contains fields beyond Windows Git product/version text or if repository, configuration, credential, or network interaction occurs. | None expected; reject unexpected fields. | `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-013.txt` | `APPROVED_AS_MANIFEST_PLANNING_INPUT` |
 
-### Explicit manifest blockers
+### Resolved manifest blocker identity
 
-These rows are part of the closed manifest but contain no command. No substitute, inferred path, endpoint, port, process name, or argument is permitted.
+`B2-BLK-001` is resolved only for executable identity by the Project Owner decision. It does not approve general Windows Git usage or execution.
+
+| Manifest ID | Target ID | Resolved input | Linked planning command | Classification | Resolution state |
+| --- | --- | --- | --- | --- | --- |
+| `B2-BLK-001` | `TGT-GIT-WIN-001` | Windows path `C:\Program Files\Git\cmd\git.exe`; WSL-visible path `/mnt/c/Program Files/Git/cmd/git.exe` | `B2-MAN-013` version-only definition | `PROJECT_OWNER_DECISION` | `RESOLVED_AS_PLANNING_INPUT_NOT_EXECUTABLE` |
+
+### Explicit manifest blockers retained
+
+These rows remain part of the closed manifest but contain no command. No substitute, inferred path, endpoint, port, process name, or argument is permitted.
 
 | Manifest ID | Target ID | Missing exact input | Exact command | Working directory | Privilege | Proposed timeout if resolved | Network action | Mutation-risk determination | Evidence / reproduction / criteria | Approval state |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `B2-BLK-001` | `TGT-GIT-WIN-001` | Exact approved Windows Git executable path and invocation context. | `NO_COMMAND` | `C:\Users\User\OneDrive\文件\EAIRA-Enterprise-AI` | `NO_ELEVATION` | 30 seconds | `NONE` | `MUTATION_RISK_UNRESOLVED` | Evidence path, `REP-B2-BLK-001`, and `MAP-B2-BLK-001` remain blocked. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
 | `B2-BLK-002` | `TGT-DOCKER-001` | Exact approved Docker engine resource/context and safe server-version command. | `NO_COMMAND` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NO_ELEVATION` | 60 seconds | Local IPC or loopback only, exact value blocked | `MUTATION_RISK_UNRESOLVED` | Evidence path, `REP-B2-BLK-002`, and `MAP-B2-BLK-002` remain blocked. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
 | `B2-BLK-003` | `TGT-OLLAMA-001` | Exact Project Owner-approved loopback address, port, endpoint path, and non-mutating status command. | `NO_COMMAND` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NO_ELEVATION` | 60 seconds | Loopback only, exact value blocked | `MUTATION_RISK_UNRESOLVED` | Evidence path, `REP-B2-BLK-003`, and `MAP-B2-BLK-003` remain blocked. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
 | `B2-BLK-004` | `TGT-HERMES-001` | Exact executable/package path, supported version syntax, or exact configuration-presence path. | `NO_COMMAND` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NO_ELEVATION` | 300 seconds only if later proposed | `NONE` | `MUTATION_RISK_UNRESOLVED` | Evidence path, `REP-B2-BLK-004`, and `MAP-B2-BLK-004` remain blocked. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
@@ -229,16 +272,19 @@ These rows are part of the closed manifest but contain no command. No substitute
 
 ### Manifest counts
 
-- Proposed command rows: 12.
-- Explicit blocked rows with no command: 6.
-- Total closed manifest rows: 18.
+- Approved manifest planning-input rows: 11 (`B2-MAN-001` through `B2-MAN-010`, plus `B2-MAN-013`).
+- Approved-with-required-revision planning row: 1 (`B2-MAN-011`).
+- Deferred command-semantics row: 1 (`B2-MAN-012`).
+- Resolved blocker-identity record: 1 (`B2-BLK-001`).
+- Explicit blocked rows with no command: 5 (`B2-BLK-002` through `B2-BLK-006`).
+- Total closed manifest and blocker records: 19.
 
 ### Current status
 
-- Field 2: `PROPOSED_NOT_APPROVED`
-- Field 3: `PROPOSED_NOT_APPROVED`
+- Field 2: `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`
+- Field 3: `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`
 
-No manifest row is approved or executable. Exact command-specific approval, Field 8 evidence destinations, Field 9 redaction controls, Field 10 reproduction procedures, and Field 11 mappings remain required.
+Selected manifest content is approved as planning input only. No manifest row is executable. `B2-MAN-011` retains mandatory Field 9 and evidence-collection dependencies, `B2-MAN-012` is deferred, and Field 8 evidence destinations, Field 9 controls, Field 10 reproduction procedures, and Field 11 mappings remain required.
 
 ## 8. Mandatory Field 4 — Services, Endpoints, Ports, Network Actions, and Resources
 
@@ -250,12 +296,12 @@ Default network rule: `ALL_UNLISTED_NETWORK_ACTIONS_PROHIBITED`.
 
 | Interaction ID | Target ID | Service or resource | Exact endpoint or resource identifier | Port | Network scope | Permitted interaction | Explicitly prohibited interactions | Mutation prohibition | Approval state |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `B2-INT-001` | `TGT-REPO-001` | Approved EAIRA working tree | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NOT_APPLICABLE` | `NONE` | Only `B2-MAN-002` through `B2-MAN-007` after separate approval. | Fetch, pull, push, commit, checkout, reset, clean, merge, rebase, configuration change, or file mutation. | Repository content, refs, index, worktree, and configuration must not change. | `PROPOSED_NOT_APPROVED` |
-| `B2-INT-002` | `TGT-WSL-001` | Ubuntu under WSL2 | Approved WSL2 environment boundary; exact commands `B2-MAN-001`, `B2-MAN-008`, and `B2-MAN-009` only | `NOT_APPLICABLE` | `NONE` | Bounded version, kernel identity, and working-directory observations after separate approval. | Environment dumps, user/host inventory beyond expected fields, package actions, process enumeration, privilege elevation, or configuration reads. | WSL, host, package, process, and configuration state must not change. | `PROPOSED_NOT_APPROVED` |
-| `B2-INT-003` | `TGT-GIT-WSL-001` | WSL Git executable | `git` resolved only in the future approved WSL execution context | `NOT_APPLICABLE` | `NONE` | Only `B2-MAN-001` through `B2-MAN-007` after separate approval. | Any Git command not listed in the closed manifest. | Repository and Git configuration state must not change. | `PROPOSED_NOT_APPROVED` |
-| `B2-INT-004` | `TGT-DOCKER-001` | Docker client executable | `docker` client-only commands `B2-MAN-010` and `B2-MAN-011` | `NOT_APPLICABLE` | `NONE` | Client version and selected context-name observation after separate approval. | Engine inspection; container/image/network/volume listing; run, exec, start, stop, restart, create, remove, pull, load, build, prune; configuration or environment dumps. | Docker client, context, engine, container, image, network, volume, and configuration state must not change. | `PROPOSED_NOT_APPROVED` |
-| `B2-INT-005` | `TGT-OLLAMA-001` | Ollama client executable | `ollama` client command `B2-MAN-012` | `NOT_APPLICABLE` | `NONE` | Client version observation after separate approval. | Service calls, model listing, pull, run, load, inference, show, deletion, or metadata export. | Ollama service, model, runtime, and configuration state must not change. | `PROPOSED_NOT_APPROVED` |
-| `B2-INT-006` | `TGT-GIT-WIN-001` | Windows Git installation | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `NOT_APPLICABLE` | `NONE` | None until exact executable path and command are separately approved. | Any inferred executable path or command. | Repository and Git configuration state must not change. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| `B2-INT-001` | `TGT-REPO-001` | Approved EAIRA working tree | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI` | `NOT_APPLICABLE` | `NONE` | Only `B2-MAN-002` through `B2-MAN-007` under a future separate execution authorization. | Fetch, pull, push, commit, checkout, reset, clean, merge, rebase, configuration change, or file mutation. | Repository content, refs, index, worktree, and configuration must not change. | `APPROVED_AS_PLANNING_INTERACTION_DEFINITION` |
+| `B2-INT-002` | `TGT-WSL-001` | Ubuntu under WSL2 | Approved WSL2 environment boundary; exact commands `B2-MAN-001`, `B2-MAN-008`, and `B2-MAN-009` only | `NOT_APPLICABLE` | `NONE` | Bounded version, kernel identity, and working-directory observations under a future separate execution authorization. | Environment dumps, user/host inventory beyond expected fields, package actions, process enumeration, privilege elevation, or configuration reads. | WSL, host, package, process, and configuration state must not change. | `APPROVED_AS_PLANNING_INTERACTION_DEFINITION` |
+| `B2-INT-003` | `TGT-GIT-WSL-001` | WSL Git executable | `git` resolved only in a future separately authorized WSL execution context | `NOT_APPLICABLE` | `NONE` | Only `B2-MAN-001` through `B2-MAN-007` under a future separate execution authorization. | Any Git command not listed in the closed manifest. | Repository and Git configuration state must not change. | `APPROVED_AS_PLANNING_INTERACTION_DEFINITION` |
+| `B2-INT-004` | `TGT-DOCKER-001` | Docker client executable | `docker` client-only commands `B2-MAN-010` and `B2-MAN-011` | `NOT_APPLICABLE` | `NONE` | Client version and selected context-name planning interactions under a future separate execution authorization; `B2-MAN-011` also requires Fields 8 and 9 resolution. | `docker context inspect`; context details; Docker engine inspection or contact; container/image/network/volume listing; run, exec, start, stop, restart, create, remove, pull, load, build, prune; configuration or environment dumps. | Docker client, context, engine, container, image, network, volume, and configuration state must not change. | `APPROVED_AS_PLANNING_INTERACTION_DEFINITION` |
+| `B2-INT-005` | `TGT-OLLAMA-001` | Future client-only Ollama interaction | No command currently approved; applies only to a future explicitly approved client-only command | `NOT_APPLICABLE`; no port approved | `NONE`; no service contact approved | Only a future command whose client-only behavior is independently established and separately approved. This conditional definition does not approve `B2-MAN-012`. | `B2-MAN-012`; Ollama service contact; endpoint or port interaction; model or runtime interaction; model listing, pull, run, load, inference, show, deletion, or metadata export. | Ollama service, model, runtime, client, and configuration state must not change. | `APPROVED_CONDITIONALLY_AS_PLANNING_INTERACTION` |
+| `B2-INT-006` | `TGT-GIT-WIN-001` | Windows Git executable | Windows path `C:\Program Files\Git\cmd\git.exe`; WSL-visible path `/mnt/c/Program Files/Git/cmd/git.exe`; `B2-MAN-013` only | `NOT_APPLICABLE` | `NONE` | Future version-only planning interaction under a separate execution authorization; no repository interaction. | General Windows Git usage; repository interaction; configuration read; credential interaction; network action; any inferred executable path or command. | Repository, Git configuration, credentials, and environment state must not change. | `APPROVED_AS_PLANNING_INTERACTION_DEFINITION` |
 | `B2-INT-007` | `TGT-DOCKER-001` | Docker engine | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | Local IPC or `LOOPBACK_ONLY` | None. | Engine contact, lifecycle actions, unrestricted inspection, sensitive configuration, or non-loopback access. | All Docker engine and managed-resource state must remain unchanged. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
 | `B2-INT-008` | `TGT-OLLAMA-001` | Ollama local service | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `LOOPBACK_ONLY` | None. | Connectivity tests, status/version calls, model actions, inference, writes, or non-loopback access. | Service, model, runtime, and configuration state must remain unchanged. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
 | `B2-INT-009` | `TGT-HERMES-001` | Hermes local runtime | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `NOT_APPLICABLE` | `NONE` | None. | Agent/task execution, browser access, shell actions, model inference, process interaction, or configuration-value disclosure. | Runtime, task, browser, shell, model, and configuration state must remain unchanged. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
@@ -278,7 +324,7 @@ API writes, service lifecycle actions, container lifecycle actions, model execut
 
 `PARTIALLY_RESOLVED_WITH_BLOCKERS`
 
-The closed interaction structure and prohibitions are proposed. Windows Git, Docker engine, Ollama service, Hermes, OpenWebUI, and LM Studio interactions remain blocked; no endpoint or port is approved.
+Selected interaction definitions are approved as planning inputs only. Docker engine, Ollama service, Hermes, OpenWebUI, and LM Studio interactions remain blocked. `B2-INT-005` is conditional and does not approve `B2-MAN-012`; no service endpoint or port is approved.
 
 ## 9. Mandatory Fields 5 and 6 — Operator, Independent Verifier, Separation, and Stop Authority
 
@@ -515,6 +561,7 @@ The following states fail the gate:
 - `BLOCKED_BY_FIELD_n`;
 - `PARTIALLY_RESOLVED_WITH_BLOCKERS`;
 - `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING`;
+- `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`;
 - `PROPOSED_NOT_APPROVED`;
 - `EVIDENCE_GAP`;
 - `ASSUMPTION`;
@@ -532,10 +579,10 @@ Field 12 is resolved only as gate logic; it does not satisfy the gate.
 
 The following decisions are required before this Annex can be finalized for an assessment-authorization decision:
 
-1. Approve exact command-level interactions and controls for every permitted Field 1 target.
-2. Approve or reject every exact tool and command.
-3. Approve command-specific working directories, privilege levels, targets, expected outputs, timeouts, network actions, mutation-risk determinations, and evidence locations.
-4. Approve exact service, endpoint, port, network, and resource interaction allowlists and prohibitions.
+1. Resolve complete command-level interactions and controls for every permitted Field 1 target.
+2. Complete the required revision for `B2-MAN-011`, resolve or reject deferred `B2-MAN-012`, and resolve the remaining blocked manifest rows.
+3. Resolve outstanding command-specific semantics, evidence locations, redaction dependencies, reproduction procedures, and criteria mappings.
+4. Resolve the blocked service, endpoint, port, network, and resource interactions while retaining all recorded prohibitions.
 5. Approve evidence paths, access roles, integrity controls, retention, disposal, and stopped-assessment handling.
 6. Approve sensitive-data taxonomy, redaction method, secret-handling prohibition, and accidental-exposure procedure.
 7. Approve the reproduction procedure format and every command-specific procedure.
@@ -567,6 +614,8 @@ No remediation or corrective action is authorized after a stop condition is reac
 | Assessment execution | `UNAUTHORIZED` |
 | Assessment-evidence collection | `UNAUTHORIZED` |
 | Command execution | `UNAUTHORIZED` |
+| Connectivity testing | `UNAUTHORIZED` |
+| Port probing | `UNAUTHORIZED` |
 | New milestone established | `NO` |
 | Implementation or runtime work authorized | `NO` |
 | Is this Annex ready for an execution-authorization decision? | No; Project Owner inputs are required. |
