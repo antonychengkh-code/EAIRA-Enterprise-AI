@@ -16,13 +16,16 @@
 | Port Probing | `UNAUTHORIZED` |
 | Evidence Directory Creation | `UNAUTHORIZED` |
 | Evidence File Creation | `UNAUTHORIZED` |
+| Access-Control Configuration | `UNAUTHORIZED` |
+| Encryption Configuration | `UNAUTHORIZED` |
 | Hash Calculation | `UNAUTHORIZED` |
+| Redaction Activity | `UNAUTHORIZED` |
 | Evidence Retention Activity | `UNAUTHORIZED` |
 | Evidence Disposal Activity | `UNAUTHORIZED` |
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Date | 2026-07-14 |
-| Version | 0.7.0 |
+| Version | 0.8.0 |
 
 ## 2. Purpose
 
@@ -48,6 +51,8 @@ The Annex addresses the twelve mandatory content areas in Section 6 of the decis
 | `VERIFIED_REPOSITORY_FACT` | Directly supported by cited repository content. |
 | `PROJECT_OWNER_DECISION` | Explicitly recorded Project Owner decision. |
 | `PROPOSED_NOT_APPROVED` | Candidate input or control requiring separate Project Owner approval. |
+| `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` | Exact option prepared for Project Owner selection; it is not selected, approved, verified, or executable. |
+| `RECOMMENDATION_NOT_PROJECT_OWNER_DECISION` | Planning recommendation for review that does not select an option or record Project Owner approval. |
 | `APPROVED_AS_MANIFEST_PLANNING_INPUT` | Exact manifest content approved as a planning input only; not executable. |
 | `APPROVED_WITH_REQUIRED_REVISION_AS_PLANNING_INPUT` | Manifest planning content approved subject to the recorded required control revision; not executable. |
 | `DEFER_PENDING_COMMAND_SEMANTICS_REVIEW` | Command is not approved because its client/service behavior remains unresolved. |
@@ -130,6 +135,192 @@ This decision approves selected Batch 3 evidence-control, redaction, reproductio
 
 This decision does not authorize evidence-directory creation, evidence-file creation, command execution, assessment activity, assessment-evidence collection, hash calculation, redaction activity, evidence retention, evidence disposal, environment or service inspection, endpoint interaction, connectivity testing, port probing, or any implementation or runtime activity. It does not establish that any path exists, any access control is configured, any command was reproduced, any evidence was captured, any criterion was satisfied, or the environment is ready.
 
+## Batch 4 Proposed Evidence Implementation-Detail Inputs
+
+All Batch 4 values below are `PROPOSED_NOT_APPROVED` unless an entry explicitly reproduces an existing `PROJECT_OWNER_DECISION`. Exact options are decision inputs only. No path was resolved, inspected, or created; no user or group was enumerated; and no access, encryption, disposal, notification, quarantine, or redaction mechanism was configured or exercised.
+
+### Field 8 proposed evidence-root decision options
+
+| Option | Windows planning path | WSL/Linux planning path | Risks and required future decisions | State |
+| --- | --- | --- | --- | --- |
+| A — Windows-local evidence root | `C:\Users\User\OneDrive\文件\EAIRA-Enterprise-AI-Evidence` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI-Evidence` | OneDrive synchronization may export or replicate evidence; evidence may leave the strictly local boundary; accidental cloud synchronization is possible; repository/evidence separation is logical but not necessarily physical; unsuitable unless synchronization and export behavior are explicitly approved. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
+| B — Windows-local non-OneDrive evidence root | `C:\EAIRA\Evidence` | `/mnt/c/EAIRA/Evidence` | Requires future directory creation and ACL configuration; may require administrative privilege depending on the host; exact user identity and permission behavior remain unverified. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
+| C — WSL-local evidence root | `NOT_APPLICABLE` | `~/eaira-evidence` | `~` is not exact enough for final authorization; a future exact absolute Linux path is required. WSL backup/recovery behavior, Windows-host accessibility, separation from Windows evidence-management controls, and exact user identity remain unresolved. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
+
+These strings are planning text only. Their existence, synchronization behavior, ownership, permissions, and suitability were not inspected.
+
+#### Planning recommendation
+
+Classification: `RECOMMENDATION_NOT_PROJECT_OWNER_DECISION`.
+
+Prefer Option B for Project Owner review, subject to an approved exact ACL and privilege plan, because it avoids a known OneDrive-style synchronization path, separates evidence from the Git repository, excludes production/external storage, supports Windows/WSL interoperability, and can be designed for least privilege with verifier read access separated from operator write access. This recommendation does not select or approve an evidence root.
+
+### Field 8 proposed closed role-to-permission matrix
+
+All permissions are `PROPOSED_NOT_APPROVED` planning inputs and confer no current access.
+
+| Role | Proposed planning permissions | Explicit separation / `NO_ACCESS` boundary |
+| --- | --- | --- |
+| `PROJECT_OWNER` | `READ_DIRECT_OUTPUT`, `READ_REDACTED_OUTPUT`, `READ_VERIFIER_DISPOSITION`, `APPROVE_RETENTION_EXCEPTION`, `APPROVE_DISPOSAL` | `NO_ACCESS` to routine operator or verifier writes unless separately authorized. |
+| `ASSESSMENT_OPERATOR` | `CREATE_SESSION_STRUCTURE`, `WRITE_DIRECT_OUTPUT`, `READ_DIRECT_OUTPUT`, `WRITE_REDACTED_OUTPUT`, `READ_REDACTED_OUTPUT`, `WRITE_INCIDENT_METADATA` | `NO_ACCESS` to `WRITE_VERIFIER_DISPOSITION`, `APPROVE_RETENTION_EXCEPTION`, and `APPROVE_DISPOSAL`. |
+| `INDEPENDENT_VERIFIER` | `READ_DIRECT_OUTPUT`, `READ_REDACTED_OUTPUT`, `WRITE_VERIFIER_DISPOSITION`, `READ_VERIFIER_DISPOSITION`, `WRITE_INCIDENT_METADATA` | `NO_ACCESS` to `WRITE_DIRECT_OUTPUT`, `WRITE_REDACTED_OUTPUT`, `CREATE_SESSION_STRUCTURE`, retention exceptions, and disposal approval. |
+| `STOP_AUTHORITY` | `WRITE_INCIDENT_METADATA`, `APPROVE_RETENTION_EXCEPTION`, `APPROVE_DISPOSAL` within separately recorded authority | `NO_ACCESS` to direct/redacted evidence content or verifier disposition unless separately approved; receives only non-sensitive stop/incident metadata by default. |
+
+### Field 8 unresolved operating-system identity mapping
+
+No user or group name is inferred. Every value remains `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` and `PROPOSED_NOT_APPROVED`.
+
+| Required future decision field | Planning value |
+| --- | --- |
+| Windows user identity | `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` |
+| WSL user identity | `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` |
+| Windows local group for evidence readers | `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` |
+| Windows local group for evidence writers | `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` |
+| Verifier group | `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` |
+| Owner/Stop-Authority group | `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` |
+| Windows-to-WSL identity mapping | `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` |
+| Whether one human may hold multiple role memberships | `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` |
+| Separation controls when Antony Cheng is accountable for multiple roles | `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` |
+
+### Field 8 proposed access-mechanism alternatives
+
+| Alternative | Benefits | Limitations | Privilege requirements | Cross-boundary risks | Future verification requirements | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| Windows NTFS ACL | Mature Windows identity and granular access model; natural for Windows-local roots. | Does not by itself establish WSL access semantics or encryption. | ACL creation/change may require owner or administrative authority. | WSL access may not map exactly to intended Windows role separation. | Verify exact users/groups, inheritance, effective access, WSL behavior, and denial of unlisted identities. | `PROPOSED_NOT_APPROVED` |
+| WSL/Linux ownership and mode bits | Native Linux ownership and compact least-privilege model for a WSL-local root. | Basic mode bits may not express every verifier/operator distinction; Windows-host access remains unresolved. | Ownership or group changes may require elevated privilege. | Windows access, backup, export, and host-side controls may bypass assumptions. | Verify exact UID/GID mapping, owner/group/mode, effective access, and Windows-host behavior. | `PROPOSED_NOT_APPROVED` |
+| Combined Windows host control with WSL access | Supports practical Windows/WSL interoperability with host-controlled policy. | More complex identity and permission mapping; two boundary models must agree. | May require Windows ACL authority and WSL identity configuration. | Mismatched Windows/WSL enforcement could grant unintended access. | Verify both effective-access views, inheritance, identity mapping, and cross-boundary write/read separation. | `PROPOSED_NOT_APPROVED` |
+| Application-level access control | Can add record-level workflow separation and audit metadata. | Explicitly insufficient alone unless approved; cannot replace filesystem/host enforcement. | Depends on the future application and service identity. | Application bypass, direct filesystem access, or configuration error may defeat controls. | Verify host/filesystem controls plus application identities, authorization rules, and bypass resistance. | `PROPOSED_NOT_APPROVED` |
+
+No `icacls`, `chmod`, `chown`, `getfacl`, `setfacl`, PowerShell ACL, or user/group command is authorized by these alternatives.
+
+### Field 8 proposed encryption alternatives
+
+`ENCRYPTION_MECHANISM_PENDING_PROJECT_OWNER_INPUT` remains the controlling blocker.
+
+| Alternative | Planning boundary | State |
+| --- | --- | --- |
+| BitLocker-backed host-volume protection | Future decision must verify volume scope, recovery governance, WSL interaction, and whether host-volume protection meets the evidence risk model. | `PROPOSED_NOT_APPROVED` |
+| Encrypted evidence archive | Future decision must define archive format, creation timing, access workflow, key custody, verifier access, and disposal behavior. | `PROPOSED_NOT_APPROVED` |
+| Application-level encryption | Future decision must define algorithm, implementation, key custody, access recovery, verifier workflow, and filesystem exposure. | `PROPOSED_NOT_APPROVED` |
+| No separate encryption beyond approved host-volume control | Accept only if the Project Owner explicitly determines verified host-volume control is sufficient for the approved evidence classes. | `PROPOSED_NOT_APPROVED` |
+
+No encryption mechanism is assumed enabled. Encryption keys must not be stored in the evidence root, Git repository, Annex files, or environment variables captured as evidence.
+
+### Field 8 proposed disposal control and mechanisms
+
+A future disposal event would require expiration under `FIXED_30_DAY_RETENTION_AFTER_FINAL_VERIFIER_DISPOSITION`, Project Owner or delegated Stop Authority approval, an exact artifact list, verifier confirmation that retention is no longer required, and a disposal log containing only non-sensitive metadata. Silent deletion is prohibited, and disposal must not occur while an incident or discrepancy remains open. These are `PROPOSED_NOT_APPROVED` implementation details and do not authorize disposal.
+
+| Mechanism option | Planning limitation | State |
+| --- | --- | --- |
+| Filesystem deletion | Ordinary deletion may not remove replicas, snapshots, backups, synchronized copies, or recoverable storage blocks. | `PROPOSED_NOT_APPROVED` |
+| Secure-delete tooling | Effectiveness depends on storage media, filesystem, snapshots, synchronization, backups, privileges, and tool semantics. | `PROPOSED_NOT_APPROVED` |
+| Encrypted-container key destruction | Requires an approved encrypted-container design and verified key custody; copies and backups remain in scope. | `PROPOSED_NOT_APPROVED` |
+
+Secure-deletion characteristics remain unverified because they depend on storage media, filesystem, synchronization, snapshots, backups, and encryption. No mechanism is selected or executed.
+
+### Field 8 proposed incident-notification options
+
+No notification may contain a sensitive value.
+
+| Option | Planning limitation | State |
+| --- | --- | --- |
+| Direct ChatGPT/Codex session notification | Requires confirmation that the session is an approved non-sensitive notification channel and that only minimum metadata is sent. | `PROPOSED_NOT_APPROVED` |
+| Local non-sensitive incident file outside the evidence content area | Requires an exact approved path, access rule, lifecycle, and assurance that no sensitive content is recorded. | `PROPOSED_NOT_APPROVED` |
+| Email notification | Requires an approved recipient, account, transport, subject/body template, and prohibition on sensitive content. | `PROPOSED_NOT_APPROVED` |
+| Another exact approved channel | Project Owner must name the exact channel, recipients, minimum metadata, access, and retention rules. | `PROPOSED_NOT_APPROVED` |
+
+### Field 8 proposed minimum stopped-assessment record
+
+| Field | Proposed content boundary |
+| --- | --- |
+| Incident or stop ID | Non-sensitive stable identifier only. |
+| Timestamp | Exact timestamp with UTC offset. |
+| Session ID | Approved session identifier only. |
+| Manifest ID | Approved manifest identifier only. |
+| Target ID | Approved target identifier only. |
+| Stop category | Approved non-sensitive category only. |
+| Operator identity | Approved identity reference only. |
+| Stop Authority notification state | Non-sensitive delivery state only. |
+| Disposition state | Non-sensitive Project Owner/Stop Authority disposition only. |
+| Restart-authorization reference | Reference only; absence means restart remains unauthorized. |
+
+The schema is `PROPOSED_NOT_APPROVED`. It explicitly prohibits command output, exposed secret values, credential fragments, copied sensitive content, and unnecessary absolute paths. No stopped-assessment record is created.
+
+### Field 9 proposed deterministic path-alias rules
+
+| Alias | Planning meaning | Classification / state |
+| --- | --- | --- |
+| `EAIRA_REPOSITORY_ROOT` | Existing approved alias for the exact approved repository root. | Existing `PROJECT_OWNER_DECISION` planning input. |
+| `EAIRA_EVIDENCE_ROOT` | Future alias for the exact evidence root after Project Owner approval. | `PROPOSED_NOT_APPROVED` |
+| `WINDOWS_USER_HOME` | Future alias for an approved Windows user-home prefix without retaining a user name. | `PROPOSED_NOT_APPROVED` |
+| `WSL_USER_HOME` | Future alias for an approved WSL user-home prefix without retaining a user name. | `PROPOSED_NOT_APPROVED` |
+
+Deterministic proposed rules:
+
+1. Replace the exact approved repository root with `EAIRA_REPOSITORY_ROOT`.
+2. Replace the exact future approved evidence root with `EAIRA_EVIDENCE_ROOT`.
+3. Replace approved user-home prefixes with `WINDOWS_USER_HOME` or `WSL_USER_HOME`.
+4. An unknown absolute path triggers immediate stop and `UNUSABLE_PENDING_PROJECT_OWNER_DECISION`.
+5. Partial path substitution that leaks a user name is prohibited.
+
+Rules 2–5 remain `PROPOSED_NOT_APPROVED`; Rule 1 reproduces the existing Project Owner-approved alias decision. No redaction is performed.
+
+### Field 9 proposed sensitive repository-relative path review
+
+The following future review-pattern categories are `PROPOSED_NOT_APPROVED` planning rules, not repository evidence: credentials; secrets; tokens; keys; certificates; `.env`; production configuration; customer or employee personal information; finance or payroll source data; private backups; and credential stores.
+
+Any match would require stop, sensitive-content review, and a future Project Owner disposition before retention. The repository is not scanned under Batch 4.
+
+### Field 9 proposed commit-metadata implementation rules
+
+| `B2-MAN-007` field | Proposed disposition | State |
+| --- | --- | --- |
+| Commit SHA | Retain exact value only if evidence collection is later authorized. | `PROPOSED_NOT_APPROVED` |
+| Timestamp | Retain exact value under a future evidence authorization. | `PROPOSED_NOT_APPROVED` |
+| Author name | Replace with `COMMIT_AUTHOR_REDACTED` unless explicitly required. | `PROPOSED_NOT_APPROVED` |
+| Commit subject | Retain only after sensitive-content review. | `PROPOSED_NOT_APPROVED` |
+| Email, body, signature | Prohibited from capture or retention. | Existing `PROJECT_OWNER_DECISION` prohibition. |
+
+### Field 9 proposed Docker context-name options
+
+| Option | Proposed disposition | State |
+| --- | --- | --- |
+| Exact-name retention | Retain the exact name only after an explicit Project Owner decision. | `PROPOSED_NOT_APPROVED` |
+| Redacted name | Replace with `DOCKER_CONTEXT_REDACTED`. | `PROPOSED_NOT_APPROVED` |
+| Equality result | Retain only whether the observed name equals a separately approved expected name. | `PROPOSED_NOT_APPROVED` |
+| Sensitive name | Mark evidence unusable if the context name itself is sensitive. | `PROPOSED_NOT_APPROVED` |
+
+Recommendation: prefer the equality-result approach unless exact-name retention is necessary. Classification: `RECOMMENDATION_NOT_PROJECT_OWNER_DECISION`. No Docker command is executed.
+
+### Field 9 proposed business-sensitive-information rule
+
+The planning categories are financial, payroll, employee, customer, supplier, contractual, production, security, internal architecture, and unreleased product or strategy information. Proposed disposition: `REDACT_BEFORE_RETENTION_OR_MARK_UNUSABLE`. Exact permitted categories require Project Owner approval; this rule remains `PROPOSED_NOT_APPROVED`.
+
+### Field 9 proposed accidental-exposure quarantine planning
+
+On suspected exposure, stop immediately, perform no further capture or copying, mark affected evidence `UNUSABLE_PENDING_PROJECT_OWNER_DECISION`, and use quarantine only after the Project Owner approves an exact location or mechanism, access boundary, notification channel, retention decision, and disposal method. Quarantine must not expand exposure or create an additional sensitive copy. All implementation details remain `PROPOSED_NOT_APPROVED`; no quarantine or notification occurs.
+
+### Field 9 proposed non-sensitive redaction-record schema
+
+| Field | Proposed content boundary |
+| --- | --- |
+| Redaction record ID | Non-sensitive stable identifier. |
+| Source artifact ID | Identifier only. |
+| Derivative artifact ID | Identifier only. |
+| Timestamp | Exact timestamp with UTC offset. |
+| Redaction rule ID | Approved rule identifier only. |
+| Category | Approved non-sensitive category only. |
+| Operator identity | Approved identity reference only. |
+| Verifier disposition | Separate verifier decision reference. |
+| Source hash reference | Reference only; not the source content. |
+| Derivative hash reference | Reference only; not the derivative content. |
+
+The schema is `PROPOSED_NOT_APPROVED` and explicitly prohibits recording the removed sensitive value. No redaction record is created under Batch 4.
+
+### Batch 4 resolution boundary
+
+Batch 4 does not resolve Field 8 or Field 9. Fields 8–11 retain their Resolution Matrix states, blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11, and the all-fields-resolved gate remains `BLOCKED`.
+
 ## 5. Mandatory Field Resolution Matrix
 
 | # | Mandatory field | Resolution state | Current disposition |
@@ -141,8 +332,8 @@ This decision does not authorize evidence-directory creation, evidence-file crea
 | 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
 | 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
 | 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
-| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Batch 3 evidence-control structure, SHA-256 integrity planning, 30-day retention planning, and stopped-assessment controls are approved; exact path, access, encryption, disposal, and notification mechanisms remain blocked. |
-| 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Prohibitions, general dispositions, manifest-specific planning controls, and incident procedure are approved with recorded revisions; exact mechanisms remain blocked. |
+| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Batch 3 planning controls remain approved; Batch 4 adds unapproved evidence-root, access, identity, ACL, encryption, disposal, notification, and stopped-record options. |
+| 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 3 controls remain approved; Batch 4 adds deterministic implementation and quarantine/notification proposals that require Project Owner decisions. |
 | 10 | Reproduction procedure for every material observation | `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES` | Twelve non-executable reproduction records are approved as planning controls; unresolved Field 8 and Field 9 dependencies remain blocking. |
 | 11 | Criteria-to-evidence mapping | `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES` | Twelve criteria mappings are approved as planning controls; no approved evidence root or assessment evidence exists. |
 | 12 | All-fields-resolved gate | `RESOLVED_AS_CONTROL` | Gate logic is defined below; the gate currently evaluates to `BLOCKED`. |
@@ -829,7 +1020,10 @@ No remediation or corrective action is authorized after a stop condition is reac
 | Port probing | `UNAUTHORIZED` |
 | Evidence-directory creation | `UNAUTHORIZED` |
 | Evidence-file creation | `UNAUTHORIZED` |
+| Access-control configuration | `UNAUTHORIZED` |
+| Encryption configuration | `UNAUTHORIZED` |
 | Hash calculation | `UNAUTHORIZED` |
+| Redaction activity | `UNAUTHORIZED` |
 | Evidence retention activity | `UNAUTHORIZED` |
 | Evidence disposal activity | `UNAUTHORIZED` |
 | New milestone established | `NO` |
