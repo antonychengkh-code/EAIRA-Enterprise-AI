@@ -237,17 +237,19 @@ The decision accepts Batch 6 only as planning evidence. It does not reinterpret,
 | Batch 4 relationship | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md` — Sections `2`, `4`, `5`, and `6` | `APPROVE_BATCH_4_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY`; encryption remains blocked; Field 8 remains partial and the gate remains blocked. |
 | Batch 5 relationship | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_5_REVIEW_DECISION.md` — Sections `2`, `7`, `8`, and `9` | `APPROVE_BATCH_5_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY`; it is subordinate to the package decision and grants no execution authority. |
 | Active-task boundary | `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` — `5. Scope`; `6. Explicit Out-of-Scope Boundaries`; `11. Review and Execution Boundary` | The task is limited to bounded Annex planning and does not authorize assessment, evidence collection, configuration, implementation, deployment, runtime activity or milestone establishment. |
-| Correction synchronization | Repository Git evidence — `HEAD`, `origin/master`, latest commit | Both resolve to `9e765281c6f39f844bf87fcf348c29e7dcf8161e`; the latest subject is `docs(project): correct Batch 6 planning lifecycle wording`. |
+| Batch 6 documentary lifecycle | Repository Git evidence — package creation, package correction, decision-record creation, `HEAD`, and `origin/master` | Package creation was separately authorized and completed at `a4e6fc9c87bc66b59b172d08d81682b19030bf37`; correction was completed at `9e765281c6f39f844bf87fcf348c29e7dcf8161e`; the synchronized decision-record commit is `385c66c314af7582320356e0258ebe985fa4b6f8`; `HEAD` and `origin/master` both resolve to that decision-record commit. |
 
 ### Future synchronization boundary
 
-1. This proposed decision record requires separate explicit Project Owner authorization before repository creation.
-2. After this decision record is committed and synchronized, a separate Project Owner decision is required before modifying:
+1. Initial repository creation of this decision record was separately authorized and completed.
+2. Commit `385c66c314af7582320356e0258ebe985fa4b6f8` is the synchronized Batch 6 decision-record commit.
+3. Creation and synchronization of this decision record did not authorize Annex or status synchronization.
+4. Any future modification of this decision record requires separate explicit Project Owner authorization identifying the exact path and permitted mutation.
+5. A separate Project Owner decision is required before modifying:
    - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX.md`;
    - `docs/project/context/CURRENT_CONTEXT.md`;
    - `docs/project/status/CURRENT_STATUS.md`;
    - `docs/project/status/TODAY_OBJECTIVE.md`; or
    - `docs/project/status/ACTIVE_TASK.yaml`.
-3. Creation of this decision record does not authorize Annex or status synchronization.
-4. No exact next documentary planning batch is authorized by this decision.
-5. Any future documentary evidence package requires a separate Project Owner decision defining its exact scope, paths and permitted mutation.
+6. No exact next documentary planning batch is authorized by this decision.
+7. Any future documentary evidence package requires a separate Project Owner decision defining its exact scope, paths and permitted mutation.

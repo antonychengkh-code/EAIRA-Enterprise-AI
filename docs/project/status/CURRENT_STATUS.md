@@ -6,7 +6,7 @@ EAIRA-PROJECT-STATUS-2026-07-15
 
 ## Version
 
-0.8.0
+0.9.0
 
 ## Updated At
 
@@ -24,7 +24,7 @@ Current/New Milestone: None established.
 
 ## Active Phase
 
-Bounded Project Layer planning under activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to resolve or explicitly retain the remaining mandatory Authorization Annex blockers. Batch 5 decision recording and synchronization into Annex Version `0.11.0` are complete; the overall Annex remains unfinalized and the Local Readiness Assessment and assessment-evidence collection remain unauthorized.
+Bounded Project Layer planning under activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to resolve or explicitly retain the remaining mandatory Authorization Annex blockers. Batch 6 option-level planning evidence and its Project Owner decision are recorded and synchronized into Annex Version `0.12.0` without option selection or execution authority; the overall Annex remains unfinalized and the Local Readiness Assessment and assessment-evidence collection remain unauthorized.
 
 ## Current Decision
 
@@ -44,6 +44,10 @@ The Project Owner recorded `APPROVE_BATCH_4_WITH_REQUIRED_REVISIONS_WITHOUT_EXEC
 
 The Project Owner recorded `APPROVE_BATCH_5_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY` on 2026-07-15. The Batch 5 decision is synchronized into the main Authorization Annex at Version `0.11.0` and committed at `6dd07a4177eb970c4bf8ce4da5eee634ccfcc6de` (`docs(project): record and synchronize annex batch 5 decision`). Separate local groups are the default identity/group-control planning model; hybrid individual-user plus group control is an exception requiring separate explicit Project Owner approval; single-user procedural separation is rejected as the default and as sufficient access control; and multiple role memberships are permitted only with approved separation controls. These decisions and the approved access-control inputs are planning-only and non-executable.
 
+The Batch 6 encryption option-level planning package was created at `a4e6fc9c87bc66b59b172d08d81682b19030bf37` (`docs(project): add Batch 6 encryption option planning`) and received its authorized documentary correction at `9e765281c6f39f844bf87fcf348c29e7dcf8161e` (`docs(project): correct Batch 6 planning lifecycle wording`). The Project Owner decision record was created and synchronized at `385c66c314af7582320356e0258ebe985fa4b6f8` (`docs(project): record Batch 6 review decision`).
+
+The controlling Batch 6 decision is `APPROVE_BATCH_6_AS_PLANNING_EVIDENCE_WITHOUT_OPTION_SELECTION_OR_EXECUTION_AUTHORITY`. Options A–D remain `REVIEWED_NOT_SELECTED`; all four Annex encryption alternatives remain `PROPOSED_NOT_APPROVED`; `ENCRYPTION_MECHANISM_PENDING_PROJECT_OWNER_INPUT` and `OPTION_SELECTION_REMAINS_BLOCKED_BY_EVIDENCE_GAPS` remain controlling. No encryption mechanism is assumed enabled. This decision accepts planning evidence only and grants no option selection, Field 8 resolution, inspection, configuration, implementation, execution, runtime, deployment, or key-operation authority.
+
 Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`. Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. Field 10 retains Field 8 and Field 9 dependencies, Field 11 retains evidence dependencies, and the all-fields-resolved gate remains `BLOCKED`.
 
 ## Blockers
@@ -54,4 +58,4 @@ No assessment-authorization decision may be made until the all-fields-resolved g
 
 ## Next Action
 
-The next authorized work is bounded Project Layer planning under `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` to resolve or explicitly retain remaining Annex blockers. No exact next planning batch is established; its scope remains subject to Project Owner direction. Do not infer or select identities, groups, users, ACL entries, permissions, commands, or mechanisms. Do not execute or simulate the assessment, run assessment commands, inspect the environment, collect evidence, configure access, or treat planning as assessment or implementation authorization.
+The next authorized work remains bounded Project Layer planning under `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` to resolve or explicitly retain remaining Annex blockers. The synchronized Batch 6 package and decision are planning evidence only; no option or Annex alternative may be selected while the recorded evidence gaps remain unresolved. No exact next documentary planning batch is established, and its scope remains subject to Project Owner direction. Do not infer or select identities, groups, users, ACL entries, permissions, commands, encryption mechanisms, or key arrangements. Do not execute or simulate the assessment, run assessment commands, inspect the environment, collect evidence, configure access or encryption, or treat planning as assessment or implementation authorization.
