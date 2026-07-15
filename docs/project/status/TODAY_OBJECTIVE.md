@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-07-14
+2026-07-15
 
 ## Version
 
-0.5.0
+0.6.0
 
 ## Milestone
 
@@ -20,24 +20,26 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-Prepare one finalized Local Readiness Assessment Authorization Annex within the bounded planning scope authorized by the Project Owner decision and activated as task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001`, recorded at `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`.
+Continue bounded Project Layer planning under task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` for the next unresolved Authorization Annex input set.
 
-Authorization-package preparation and Project Owner review are complete. The recorded decision is `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. The current objective is now bounded by the activated Annex Planning task; no Annex has been created, completed, approved, or submitted by task activation.
+Batch 4 Project Owner Review decision recording and synchronization into the main Annex are complete. The decision is `APPROVE_BATCH_4_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY`; the Annex is synchronized at Version `0.9.0` and committed and pushed at `ad570ae2ce5ff64265cce30df57725c2d59be69e`. The overall Annex is not finalized or execution-ready, and its all-fields-resolved gate remains `BLOCKED`.
+
+The recommended immediate planning focus is operating-system identities and group mapping plus exact ACL implementation planning. Do not infer or select identities, groups, users, ACL entries, permissions, commands, or mechanisms.
 
 ## Out of Scope
 
-This objective is Project Layer Authorization Annex planning only. The Local Readiness Assessment and assessment-evidence collection remain unauthorized. Annex preparation does not authorize assessment execution.
+This objective is Project Layer Authorization Annex blocker-resolution planning only. The Local Readiness Assessment, command execution, environment inspection, and assessment-evidence collection remain unauthorized. Planning does not authorize assessment execution or implementation.
 
-No assessment execution, assessment-evidence collection, milestone establishment, M4, implementation, runtime execution, deployment, Platform Foundation, formal EAIRA Execution Layer, governance modification, automation, CI/CD expansion, database mutation, production change, SYSTEM authority, validation document change, or Bootstrap change is authorized.
+No evidence-directory or evidence-file creation; ACL, identity, group, access, or encryption configuration; hashing, redaction, quarantine, notification, retention, or disposal activity; milestone establishment; M4; implementation; runtime execution; deployment; Platform Foundation; formal EAIRA Execution Layer; governance modification; automation; CI/CD expansion; database mutation; production change; SYSTEM authority; validation document change; or Bootstrap change is authorized.
 
 ## Expected Deliverables
 
-One finalized Local Readiness Assessment Authorization Annex for future separate Project Owner review.
+One bounded planning update for the next unresolved Annex input set, with blockers and evidence gaps kept explicit. This objective does not require or imply finalization of the overall Annex.
 
 ## Success Criteria
 
-The finalized Authorization Annex resolves or identifies as blockers every mandatory field required by the Project Owner decision and preserves the all-fields-resolved gate.
+The planning update addresses only repository-supported blocker-resolution inputs, does not invent identities, groups, users, ACL entries, permissions, commands, mechanisms, owners, priorities, or deadlines, and preserves unresolved items as blockers.
 
-Assessment execution remains unauthorized, no assessment-evidence collection occurs, and Annex preparation is not treated as execution authorization.
+Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`; Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; Field 10 retains Field 8 and Field 9 dependencies; Field 11 retains evidence dependencies; and the all-fields-resolved gate remains `BLOCKED`.
 
-The Annex does not imply milestone establishment or implementation authorization, and all planning-only scope boundaries remain preserved.
+Assessment execution, command execution, environment inspection, and evidence collection remain unauthorized. No milestone, implementation, runtime, deployment, database, production, governance, M4, Platform Foundation, or formal EAIRA Execution Layer authority is implied or established.

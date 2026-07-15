@@ -2,15 +2,15 @@
 
 ## Context ID
 
-EAIRA-PROJECT-STATUS-2026-07-14
+EAIRA-PROJECT-STATUS-2026-07-15
 
 ## Version
 
-0.6.0
+0.7.0
 
 ## Updated At
 
-2026-07-14
+2026-07-15
 
 ## Current Milestone
 
@@ -24,7 +24,7 @@ Current/New Milestone: None established.
 
 ## Active Phase
 
-Bounded Project Layer planning for one finalized Local Readiness Assessment Authorization Annex under activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001`, recorded at `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`. The Local Readiness Assessment and assessment-evidence collection remain unauthorized.
+Bounded Project Layer planning under activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to resolve or explicitly retain the remaining mandatory Authorization Annex blockers. Batch 4 decision recording and synchronization into Annex Version `0.9.0` are complete; the overall Annex remains unfinalized and the Local Readiness Assessment and assessment-evidence collection remain unauthorized.
 
 ## Current Decision
 
@@ -40,10 +40,16 @@ Project Owner review is complete. `docs/project/strategy/EAIRA_LOCAL_READINESS_A
 
 The Project Owner approved and activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` for bounded Project Layer Authorization Annex planning. This activation does not constitute assessment-execution authorization and does not expand the authority recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`. The task does not establish a milestone, M4, Platform Foundation, a formal EAIRA Execution Layer, or implementation authority.
 
+The Project Owner recorded `APPROVE_BATCH_4_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY` on 2026-07-15. The Batch 4 decision is synchronized into the main Authorization Annex at Version `0.9.0`, committed and pushed at `ad570ae2ce5ff64265cce30df57725c2d59be69e` (`docs(project): synchronize annex batch 4 review decision`). This commit is documentation evidence only and is not assessment-execution, implementation, or evidence-collection authorization.
+
+Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`. Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. Field 10 retains Field 8 and Field 9 dependencies, Field 11 retains evidence dependencies, and the all-fields-resolved gate remains `BLOCKED`.
+
 ## Blockers
 
-The mandatory Authorization Annex inputs identified by the Project Owner decision remain unresolved planning inputs. No assessment-authorization decision may be made until the decision record's all-fields-resolved gate is satisfied. Assessment execution and assessment-evidence collection remain unauthorized.
+Blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11. Unresolved planning inputs include complete command-level interactions and controls for permitted Field 1 targets; the required `B2-MAN-011` revision; disposition of deferred `B2-MAN-012`; remaining blocked manifest rows; command-specific semantics; service, endpoint, port, network, and resource interactions; operating-system identities and group mapping; exact ACL implementation; encryption and disposal mechanisms; final incident-notification channel and configuration; exact permitted business-sensitive-information categories; Field 8 and Field 9 reproduction dependencies; and Field 11 evidence dependencies.
+
+No assessment-authorization decision may be made until the all-fields-resolved gate is satisfied. Local Readiness Assessment execution, command execution, environment inspection, evidence collection, evidence-directory or evidence-file creation, ACL, identity, group, access, encryption, hashing, redaction, quarantine, notification, retention, disposal, runtime, deployment, database, production, or governance activity remains unauthorized. No milestone or M4 is established, and neither Platform Foundation nor a formal EAIRA Execution Layer is established.
 
 ## Next Action
 
-The next authorized work is bounded preparation of one finalized Local Readiness Assessment Authorization Annex under `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` for future separate Project Owner review. Do not execute or simulate the assessment, collect assessment evidence, or treat Annex preparation as assessment authorization.
+The next authorized work is bounded Project Layer planning under `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` to resolve or explicitly retain remaining Annex blockers. The recommended immediate planning focus is operating-system identities and group mapping plus exact ACL implementation planning, without inferring or selecting identities, groups, users, ACL entries, permissions, commands, or mechanisms. Do not execute or simulate the assessment, run commands, inspect the environment, collect evidence, configure access, or treat planning as assessment or implementation authorization.
