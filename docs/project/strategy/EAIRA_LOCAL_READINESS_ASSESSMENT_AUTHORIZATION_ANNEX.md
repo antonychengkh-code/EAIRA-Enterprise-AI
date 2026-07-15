@@ -25,7 +25,7 @@
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Date | 2026-07-15 |
-| Version | 0.10.0 |
+| Version | 0.11.0 |
 
 ## 2. Purpose
 
@@ -39,6 +39,7 @@ This Annex derives its bounded planning authority from:
 
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`;
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md`;
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_5_REVIEW_DECISION.md`;
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`.
 
 The underlying authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. The Batch 1 planning-input decision recorded below does not supersede that execution non-authorization. `AUTHORIZE_BOUNDED_ASSESSMENT` has not been granted. `AUTHORIZE_WITH_REQUIRED_REVISIONS` has not been granted as conditional execution authority.
@@ -65,6 +66,7 @@ The Annex addresses the twelve mandatory content areas in Section 6 of the decis
 | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Selected planning inputs are approved, but required revisions, deferrals, or blockers prevent field resolution. |
 | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Evidence-control planning inputs are approved, but exact implementation details remain unapproved and blocking. |
 | `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` | Evidence-control structure approved as planning content only; no evidence activity is authorized. |
+| `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` | Identity, group, or access-control structure approved as planning content only; no identity, group, ACL, access, or verification activity is authorized. |
 | `APPROVED_AS_INTEGRITY_PLANNING_INPUT_NOT_EXECUTABLE` | Integrity method approved as future planning content only; no hash calculation is authorized. |
 | `APPROVED_AS_RETENTION_PLANNING_INPUT` | Retention policy approved as future planning content only; no evidence creation, retention, or disposal is authorized. |
 | `APPROVED_AS_REDACTION_PLANNING_CONTROL` | Redaction control approved as planning content only; no capture or redaction activity is authorized. |
@@ -78,6 +80,7 @@ The Annex addresses the twelve mandatory content areas in Section 6 of the decis
 | `ASSUMPTION` | Planning premise that must not be treated as evidence. |
 | `RISK` | Identified safety, evidence, scope, or authority risk. |
 | `FUTURE_AUTHORIZATION_REQUIREMENT` | Input that must be explicitly approved before assessment activity. |
+| `REJECTED_BY_PROJECT_OWNER` | Option explicitly rejected by the Project Owner and unavailable as an approved planning or execution input. |
 
 Agent self-report, conversation memory, tool availability, and unstored local knowledge are not verified repository facts.
 
@@ -206,9 +209,21 @@ No `icacls`, `chmod`, `chown`, `getfacl`, `setfacl`, PowerShell ACL, or user/gro
 
 The Project Owner selected `Combined Windows host control with WSL access` as the access-control planning approach. The Windows NTFS ACL-only, WSL/Linux ownership-and-mode-bits-only, and application-level alternatives remain `PROPOSED_NOT_APPROVED`; no unselected alternative or exact ACL implementation is implicitly approved.
 
-## Batch 5 Proposed OS Identity and ACL Planning Inputs
+## Batch 5 OS Identity and ACL Planning Inputs
 
-Batch 5 prepares non-executable Project Owner decision inputs for operating-system identity mapping, role-to-group enforcement functions, and exact ACL implementation planning. All Batch 5 values remain `PROPOSED_NOT_APPROVED`, `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED`, `BLOCKED_PENDING_PROJECT_OWNER_INPUT`, or `FUTURE_AUTHORIZATION_REQUIREMENT` unless separately approved by a later Project Owner decision.
+The Batch 5 Review decision below controls the item-level states in this section. Approved values are non-executable planning inputs and `PROJECT_OWNER_DECISION` values; they are not `VERIFIED_REPOSITORY_FACT` values. No identity, group, membership, UID, GID, ACL entry, right, inheritance behavior, privilege requirement, rollback mechanism, or effective-access result was inspected, configured, tested, or verified.
+
+## Project Owner Input Resolution — Batch 5 Review
+
+| Decision field | Recorded value |
+| --- | --- |
+| Decision | `APPROVE_BATCH_5_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY` |
+| Decision Authority | Project Owner |
+| Decision Date | 2026-07-15 |
+| Classification | `PROJECT_OWNER_DECISION` |
+| Authoritative Decision Record | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_5_REVIEW_DECISION.md` |
+
+This decision approves only the item-level non-executable planning inputs identified below. It does not establish that any identity, group, membership, mapping, ACL, right, inheritance behavior, deny rule, privilege requirement, rollback mechanism, or effective-access result exists or is implemented, configured, verified, tested, operational, executable, or sufficient for assessment authorization. It does not authorize assessment execution, command execution, environment inspection, identity or group enumeration, assessment-evidence collection, directory or file creation, access configuration or testing, implementation, runtime activity, deployment, database or production mutation, governance modification, milestone establishment, M4, Platform Foundation, or a formal EAIRA Execution Layer.
 
 ### Field 8 bounded OS identity and ACL decision inputs
 
@@ -238,30 +253,30 @@ The approved role-to-permission matrix above remains controlling. The following 
 
 | Approved logical role | Proposed OS group function without a group name | Required separation preserved from approved matrix | Exact group identity | Planning state |
 | --- | --- | --- | --- | --- |
-| `PROJECT_OWNER` | Evidence read and separately recorded retention/disposal approval function. | No routine operator output, redaction, or verifier-disposition write authority unless separately approved. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `PROPOSED_NOT_APPROVED` |
-| `ASSESSMENT_OPERATOR` | Session-structure and evidence-output writer function with permitted readback and incident-metadata write function. | No verifier-disposition write, retention-exception approval, or disposal approval. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `PROPOSED_NOT_APPROVED` |
-| `INDEPENDENT_VERIFIER` | Direct/redacted evidence reader plus verifier-disposition writer and incident-metadata writer function. | No primary direct-output or redacted-output write and no session-structure creation. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `PROPOSED_NOT_APPROVED` |
-| `STOP_AUTHORITY` | Non-sensitive incident-metadata and separately recorded retention/disposal decision function. | Metadata-only default; no direct/redacted evidence or verifier-disposition content access unless separately approved. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `PROPOSED_NOT_APPROVED` |
+| `PROJECT_OWNER` | Evidence read and separately recorded retention/disposal approval function. | No routine operator output, redaction, or verifier-disposition write authority unless separately approved. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| `ASSESSMENT_OPERATOR` | Session-structure and evidence-output writer function with permitted readback and incident-metadata write function. | No verifier-disposition write, retention-exception approval, or disposal approval. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| `INDEPENDENT_VERIFIER` | Direct/redacted evidence reader plus verifier-disposition writer and incident-metadata writer function. | No primary direct-output or redacted-output write and no session-structure creation. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| `STOP_AUTHORITY` | Non-sensitive incident-metadata and separately recorded retention/disposal decision function. | Metadata-only default; no direct/redacted evidence or verifier-disposition content access unless separately approved. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
 
-Whether these functions require one group per function, multiple groups per role, individual-user entries, or a hybrid remains a Project Owner decision. Function descriptions do not override the approved role-to-permission matrix or grant current access.
+Separate local groups are the approved default enforcement model for these functions. A hybrid individual-user plus group-control model is retained only as an exception requiring separate explicit Project Owner approval before use. Exact group structure, names, memberships, and any individual-user exception remain blocked. Function descriptions do not override the approved role-to-permission matrix or grant current access.
 
 #### C. Combined Windows/WSL ACL planning requirements
 
 | Planning control | Non-executable requirement for future Project Owner decision | Unresolved input or evidence | Planning state |
 | --- | --- | --- | --- |
-| NTFS ACL inheritance boundary | Define the evidence-root inheritance boundary explicitly, including whether parent inheritance is retained, constrained, or removed and how unintended inherited access is prevented. | Verified parent inheritance and effective-access behavior. | `PROPOSED_NOT_APPROVED` |
-| Explicit allow permissions | Translate each approved logical permission into the minimum required filesystem rights at the correct root or subdirectory boundary; do not infer broad or administrative rights. | Exact principals, exact rights, scope, propagation, and subdirectory mapping. | `PROPOSED_NOT_APPROVED` |
-| Explicit deny or no-access boundary | Decide where absence of an allow entry is sufficient and where an explicit deny is required, accounting for group-membership interactions and deny precedence. | Exact memberships, conflict analysis, and approved deny policy. | `PROPOSED_NOT_APPROVED` |
-| Operator write / verifier non-write separation | Permit the operator function to write only approved operator-controlled locations while preventing verifier primary-evidence writes. | Exact writer and verifier principals plus effective-access proof. | `PROPOSED_NOT_APPROVED` |
-| Verifier-disposition write separation | Permit verifier-disposition writes only in the approved verifier-review boundary and prevent operator writes there. | Exact verifier/operator principals and directory-specific rights. | `PROPOSED_NOT_APPROVED` |
-| Project Owner read access | Provide read access required by the approved matrix without routine operator or verifier write authority. | Exact Project Owner principal or group function and effective rights. | `PROPOSED_NOT_APPROVED` |
-| Stop Authority metadata-only default access | Limit default access to non-sensitive incident metadata and separately approved decision records; direct/redacted evidence content remains no-access by default. | Exact metadata boundary, principal or group function, and exception process. | `PROPOSED_NOT_APPROVED` |
-| WSL access through `/mnt/c` | Define how Windows-host controls govern access observed through WSL and prohibit assumptions that Linux ownership or mode presentation independently enforces the intended separation. | Verified Windows-to-WSL mapping and effective access from the approved WSL context. | `PROPOSED_NOT_APPROVED` |
-| Effective-access verification | Require separately authorized verification for every approved role/principal against every relevant root and subdirectory, including allowed and prohibited actions. | Approved verification plan, expected results, and evidence handling. | `FUTURE_AUTHORIZATION_REQUIREMENT` |
-| Denial of unlisted identities | Require proof that identities outside the approved mapping receive no access, except separately documented mandatory system access approved by the Project Owner. | Exact identity inventory, system-access exceptions, and denial results. | `FUTURE_AUTHORIZATION_REQUIREMENT` |
-| Privilege/elevation requirements | Identify the minimum authority needed for future configuration and verification without assuming administrator, owner, or elevated access. | Verified configuration owner, elevation requirement, and authorization boundary. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Rollback planning | Define a reviewed pre-change record, restoration target, failure stop condition, and approval boundary for returning to the prior access state without deleting evidence. | Verified rollback method and separately approved responsible principal. | `PROPOSED_NOT_APPROVED` |
-| Access review and re-verification | Define review triggers for membership, inheritance, path, WSL mapping, exception, and policy changes; each trigger requires re-verification before continued authorized use. | Review cadence, trigger owner, evidence requirements, and exception process. | `PROPOSED_NOT_APPROVED` |
+| NTFS ACL inheritance boundary | Define the evidence-root inheritance boundary explicitly, including whether parent inheritance is retained, constrained, or removed and how unintended inherited access is prevented. | Exact inheritance and propagation behavior plus verified effective-access results remain `FUTURE_AUTHORIZATION_REQUIREMENT`. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Explicit allow permissions | Translate each approved logical permission into the minimum required filesystem rights at the correct root or subdirectory boundary; do not infer broad or administrative rights. | Exact principals, rights, scope, propagation, and subdirectory mapping remain `BLOCKED_PENDING_PROJECT_OWNER_INPUT`. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Explicit deny or no-access boundary | Decide where absence of an allow entry is sufficient and where an explicit deny is required, accounting for group-membership interactions and deny precedence. | Exact memberships, conflict analysis, and deny policy remain `BLOCKED_PENDING_PROJECT_OWNER_INPUT`. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Operator write / verifier non-write separation | Permit the operator function to write only approved operator-controlled locations while preventing verifier primary-evidence writes. | Exact writer and verifier principals, rights, and effective-access results remain blocked or future-authorized. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Verifier-disposition write separation | Permit verifier-disposition writes only in the approved verifier-review boundary and prevent operator writes there. | Exact verifier/operator principals, directory-specific rights, and effective-access results remain blocked or future-authorized. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Project Owner read access | Provide read access required by the approved matrix without routine operator or verifier write authority. | Exact Project Owner principal or group function, rights, and effective-access results remain blocked or future-authorized. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Stop Authority metadata-only default access | Limit default access to non-sensitive incident metadata and separately approved decision records; direct/redacted evidence content remains no-access by default. | Exact metadata boundary, principal or group function, exception process, and effective-access results remain blocked or future-authorized. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| WSL access through `/mnt/c` | Define how Windows-host controls govern access observed through WSL and prohibit assumptions that Linux ownership or mode presentation independently enforces the intended separation. | Exact Windows-to-WSL mapping and verified effective access remain blocked or future-authorized. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Effective-access verification | Require separately authorized verification for every approved role/principal against every relevant root and subdirectory, including allowed and prohibited actions. | Exact verification plan, expected results, evidence handling, and verified results remain `FUTURE_AUTHORIZATION_REQUIREMENT`. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Denial of unlisted identities | Require proof that identities outside the approved mapping receive no access, except separately documented mandatory system access approved by the Project Owner. | Exact identity inventory, system-access exceptions, and denial results remain `FUTURE_AUTHORIZATION_REQUIREMENT`. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Privilege/elevation requirements | Require least privilege and identify the minimum authority needed for future configuration and verification without assuming administrator, owner, or elevated access. | Exact configuration owner, privilege or elevation requirement, and authorization boundary remain `BLOCKED_PENDING_PROJECT_OWNER_INPUT`. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Rollback planning | Define a reviewed pre-change record, restoration target, failure stop condition, and approval boundary for returning to the prior access state without deleting evidence. | Exact rollback mechanism and responsible principal remain `BLOCKED_PENDING_PROJECT_OWNER_INPUT`; verification remains future-authorized. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
+| Access review and re-verification | Define review triggers for membership, inheritance, path, WSL mapping, exception, and policy changes; each trigger requires re-verification before continued authorized use. | Exact cadence, trigger owner, evidence requirements, and exception process remain `BLOCKED_PENDING_PROJECT_OWNER_INPUT`; re-verification remains future-authorized. | `APPROVED_AS_ACCESS_CONTROL_PLANNING_INPUT_NOT_EXECUTABLE` |
 
 No row is an ACL entry, configuration instruction, command, or implementation approval. Exact filesystem rights and enforcement mechanisms remain unresolved.
 
@@ -271,19 +286,19 @@ No row is an ACL entry, configuration instruction, command, or implementation ap
 
 | Option | Planning description | Risks and limitations | State |
 | --- | --- | --- | --- |
-| Single-user procedural separation | One verified OS principal performs separately recorded logical roles using procedural boundaries rather than OS-principal separation. | The filesystem cannot distinguish role changes performed by the same principal; self-approval, self-verification, accidental cross-role writes, and weak denial evidence may make this unsuitable for the approved separation model. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
-| Separate local groups | Distinct verified local group functions enforce reader, writer, verifier, and owner/Stop-Authority boundaries, with exact membership separately approved. | Requires administrative lifecycle control, membership review, inheritance analysis, nested-membership review, and cross-boundary verification; misconfiguration can grant unintended access. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
-| Hybrid individual-user plus group control | Group functions provide baseline access while narrowly scoped individual-user entries address separately approved exceptions. | Greater rule complexity can create conflicting entries, hidden privilege accumulation, difficult rollback, and inconsistent Windows/WSL effective access. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
+| Single-user procedural separation | One verified OS principal performs separately recorded logical roles using procedural boundaries rather than OS-principal separation. | The filesystem cannot distinguish role changes performed by the same principal; self-approval, self-verification, accidental cross-role writes, and weak denial evidence make this insufficient for the approved separation model. | `REJECTED_BY_PROJECT_OWNER` |
+| Separate local groups | Distinct verified local group functions enforce reader, writer, verifier, and owner/Stop-Authority boundaries, with exact membership separately approved. | Approved default planning model; exact group names, structure, memberships, inheritance, and cross-boundary behavior remain unresolved. | `PROJECT_OWNER_DECISION` |
+| Hybrid individual-user plus group control | Group functions provide baseline access while narrowly scoped individual-user entries address separately approved exceptions. | Retained only as an exception model; each use requires separate explicit Project Owner approval and exact rights, scope, rationale, and rollback planning. | `FUTURE_AUTHORIZATION_REQUIREMENT` |
 
 ##### Multiple-role membership options
 
 | Option | Planning description | Risks and limitations | State |
 | --- | --- | --- | --- |
-| Multiple role memberships prohibited | Each verified human principal receives only one operational role membership for the assessment boundary. | Stronger technical separation may require additional personnel and may not fit available staffing; exact role coverage remains unresolved. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
-| Multiple role memberships permitted only with approved separation controls | A verified human may hold more than one role only when session, action, approval, write-path, and independent-verification controls are explicitly approved and enforceable. | Shared principal rights may still collapse filesystem separation; procedural controls cannot be assumed equivalent to technical separation. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
-| Multiple role memberships permitted without additional separation | A verified human may receive all otherwise approved memberships without added controls. | Highest risk of self-approval, self-verification, privilege accumulation, accidental overwrite, and inability to demonstrate independent denial; may conflict with the approved role separation. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
+| Multiple role memberships prohibited | Each verified human principal receives only one operational role membership for the assessment boundary. | Preferred stronger technical-separation condition when staffing permits; not mandatory under this decision, and exact role coverage remains unresolved. | `PROJECT_OWNER_DECISION` |
+| Multiple role memberships permitted only with approved separation controls | A verified human may hold more than one role only when session, action, approval, write-path, and independent-verification controls are explicitly approved and enforceable. | Approved controlling planning rule; exact memberships and separation-control implementations remain unresolved. | `PROJECT_OWNER_DECISION` |
+| Multiple role memberships permitted without additional separation | A verified human may receive all otherwise approved memberships without added controls. | Highest risk of self-approval, self-verification, privilege accumulation, accidental overwrite, and inability to demonstrate independent denial; conflicts with the approved controlling rule. | `REJECTED_BY_PROJECT_OWNER` |
 
-No option is selected or recommended by this planning section. The Project Owner must explicitly select, reject, or revise the options before exact ACL planning can progress.
+The Project Owner selected `Separate local groups` as the default model and retained `Hybrid individual-user plus group control` only as a separately approved exception model. `Single-user procedural separation` is rejected as the default and as a sufficient access-control model. Multiple role memberships are permitted only with approved separation controls; prohibition remains the preferred stronger technical condition when staffing permits but is not mandatory, and membership without additional separation is rejected. Exact identities, groups, memberships, and controls remain unresolved.
 
 #### E. Required future verification before ACL configuration authorization
 
@@ -301,7 +316,7 @@ All listed evidence remains future evidence only. Its collection requires separa
 
 #### Field 8 state preservation after this planning update
 
-The identity values, group mapping, ACL model, exact entries, inheritance behavior, privilege requirements, rollback method, and effective-access results remain unapproved or blocked. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`. Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. Field 10 retains Field 8 and Field 9 dependencies. Field 11 retains evidence dependencies. Blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11, and the all-fields-resolved gate remains `BLOCKED`.
+Batch 5 approves the default separate-local-groups model, the exception boundary, the controlling multiple-role membership rule, and the listed access-control requirements as non-executable planning inputs. Exact Windows and WSL identities, local group names, memberships, UID/GID mapping, ACL entries and rights, inheritance and propagation behavior, deny policy, privilege or elevation requirement, rollback mechanism, and verified effective-access results remain blocked or future authorization requirements. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`. Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. Field 10 retains Field 8 and Field 9 dependencies. Field 11 retains evidence dependencies. Blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11, and the all-fields-resolved gate remains `BLOCKED`.
 
 ### Field 8 proposed encryption alternatives
 
@@ -442,7 +457,7 @@ Batch 4 approves the listed planning inputs but does not fully resolve Field 8 o
 | 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
 | 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
 | 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
-| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Batch 4 approves Option B, the combined host/WSL access approach, the role-to-permission matrix, and the stopped-record schema as planning inputs; identities, group mapping, exact ACL implementation, encryption, disposal, and final notification details remain blocked. |
+| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Batch 4 approvals remain controlling; Batch 5 approves separate local groups as the default planning model, controlled multiple-role membership, role-to-group functions, and access-control requirements as non-executable planning inputs. Exact identities, groups, memberships, UID/GID mapping, ACL rights and behavior, privilege, rollback, effective-access results, encryption, disposal, and final notification details remain blocked or future-authorized. |
 | 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 4 approves deterministic path-alias controls, sensitive repository-relative path review, the equality-result approach, the accidental-exposure stop principle, and the non-sensitive redaction-record schema; exact business-sensitive categories and implementation mechanisms remain blocked. |
 | 10 | Reproduction procedure for every material observation | `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES` | Twelve non-executable reproduction records are approved as planning controls; unresolved Field 8 and Field 9 dependencies remain blocking. |
 | 11 | Criteria-to-evidence mapping | `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES` | Twelve criteria mappings are approved as planning controls; the approved planning root is not created or usable, and no assessment evidence exists. |
@@ -1104,7 +1119,7 @@ The following decisions are required before this Annex can be finalized for an a
 2. Complete the required revision for `B2-MAN-011`, resolve or reject deferred `B2-MAN-012`, and resolve the remaining blocked manifest rows.
 3. Resolve outstanding command-specific semantics, authorized evidence-use details, redaction dependencies, reproduction procedures, and criteria mappings.
 4. Resolve the blocked service, endpoint, port, network, and resource interactions while retaining all recorded prohibitions.
-5. Resolve operating-system identities and group mapping, exact ACL implementation, encryption mechanism, disposal mechanism, and final incident-notification channel and configuration while retaining the approved Option B root, combined host/WSL approach, role matrix, and stopped-record schema.
+5. Resolve exact operating-system identities, local group names and memberships, UID/GID mapping, ACL entries and rights, inheritance and propagation behavior, deny policy, privilege or elevation requirement, rollback mechanism, and verified effective-access results while retaining the Batch 5 approved default group model, exception boundary, role-membership rule, and non-executable access-control planning inputs; separately resolve encryption, disposal, and final incident-notification mechanisms.
 6. Complete the required Field 9 revisions and resolve exact permitted business-sensitive-information categories plus the blocked notification, quarantine, filesystem-restriction, and disposal mechanisms.
 7. Resolve Field 8 and Field 9 dependencies for the approved non-executable reproduction planning controls.
 8. Resolve the evidence dependencies for the approved criteria-to-evidence planning mappings.
@@ -1161,6 +1176,7 @@ The Project Owner must then conduct a separate review and record an unconditiona
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_5_REVIEW_DECISION.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`
 - `docs/project/status/CURRENT_STATUS.md`
