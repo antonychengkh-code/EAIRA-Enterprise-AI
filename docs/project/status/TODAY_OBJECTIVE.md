@@ -6,7 +6,7 @@
 
 ## Version
 
-0.6.0
+0.7.0
 
 ## Milestone
 
@@ -20,11 +20,11 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-Continue bounded Project Layer planning under task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` for the next unresolved Authorization Annex input set.
+Continue bounded Project Layer planning under task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to resolve or explicitly retain remaining Authorization Annex blockers.
 
-Batch 4 Project Owner Review decision recording and synchronization into the main Annex are complete. The decision is `APPROVE_BATCH_4_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY`; the Annex is synchronized at Version `0.9.0` and committed and pushed at `ad570ae2ce5ff64265cce30df57725c2d59be69e`. The overall Annex is not finalized or execution-ready, and its all-fields-resolved gate remains `BLOCKED`.
+Batch 5 Project Owner Review decision recording and synchronization into the main Annex are complete. The decision is `APPROVE_BATCH_5_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY`; the Annex is synchronized at Version `0.11.0` and committed at `6dd07a4177eb970c4bf8ce4da5eee634ccfcc6de`. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`; the overall Annex is not finalized or execution-ready, and its all-fields-resolved gate remains `BLOCKED`.
 
-The recommended immediate planning focus is operating-system identities and group mapping plus exact ACL implementation planning. Do not infer or select identities, groups, users, ACL entries, permissions, commands, or mechanisms.
+No exact next planning batch is established; its scope remains subject to Project Owner direction. Do not infer or select identities, groups, users, ACL entries, permissions, commands, or mechanisms.
 
 ## Out of Scope
 
@@ -34,7 +34,7 @@ No evidence-directory or evidence-file creation; ACL, identity, group, access, o
 
 ## Expected Deliverables
 
-One bounded planning update for the next unresolved Annex input set, with blockers and evidence gaps kept explicit. This objective does not require or imply finalization of the overall Annex.
+One bounded Project Layer planning update to resolve or explicitly retain remaining Annex blockers, with the exact planning batch subject to Project Owner direction and all blockers and evidence gaps kept explicit. This objective does not require or imply finalization of the overall Annex.
 
 ## Success Criteria
 
