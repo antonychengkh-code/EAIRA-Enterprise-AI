@@ -16,13 +16,13 @@
 | Decision authority | Project Owner |
 | Proposed version | `0.1.0` |
 | Date | 2026-07-15 |
-| Repository mutation | Not authorized or performed |
+| Repository artifact state | Created through separate Project Owner-authorized repository mutation; committed and synchronized. This state does not constitute encryption-option approval or execution authority. |
 | Inspection | Not authorized or performed |
 | Configuration | Not authorized or performed |
 | Implementation | Not authorized or performed |
-| Repository-write authority | Creation of this proposed file in the repository requires a separate explicit Project Owner repository-write authorization. |
+| Repository-write history | Initial file creation was separately authorized by the Project Owner and completed. Any future modification still requires separate explicit Project Owner authorization. |
 
-The active Annex planning task does not by itself authorize creation of this separate planning-package file. Documentary correctness does not constitute repository-write authority. Any future write authorization must identify the exact path and permitted mutation.
+The initial repository creation of this planning package was separately authorized and completed. That repository action did not select an encryption option, approve an Annex alternative, resolve Field 8, or authorize implementation or execution. Any future modification requires a separate explicit Project Owner authorization identifying the exact path and permitted mutation.
 
 ### Status meaning
 
@@ -120,7 +120,7 @@ Only evidence already verified during the immediately preceding read-only docume
 | `VSE-03` | Same — `Current Decision` | Field 8: `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`; Field 9: `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; gate: `BLOCKED`. | This package cannot claim to resolve Field 8 or make the Annex execution-ready. |
 | `VSE-04` | Same — `Blockers` | Blocking fields remain `1, 2, 3, 4, 8, 9, 10, and 11`; unresolved planning inputs include `encryption and disposal mechanisms`. | Encryption and disposal must remain unresolved. |
 | `VSE-05` | Same — `Current Milestone` | `Current/New Milestone: None established.` | Batch 6 cannot imply milestone establishment. |
-| `VSE-06` | `docs/project/status/TODAY_OBJECTIVE.md` — `Out of Scope` | `EXACT EXCERPTS`: “No evidence-directory or evidence-file creation”; “ACL, identity, group, access, or encryption configuration”; “implementation”; “runtime execution”; “deployment” is authorized. | No encryption configuration, implementation, deployment or runtime action may be included. These excerpts are not presented as the complete source sentence. |
+| `VSE-06` | `docs/project/status/TODAY_OBJECTIVE.md` — `Out of Scope` | `FAITHFUL SOURCE SUMMARY`: The `Out of Scope` section states that evidence-directory or evidence-file creation; ACL, identity, group, access, or encryption configuration; implementation; runtime execution; and deployment are not authorized. | No encryption configuration, implementation, deployment or runtime action may be included. These excerpts are not presented as the complete source sentence. |
 | `VSE-07` | Same — `Success Criteria` | “does not invent identities, groups, users, ACL entries, permissions, commands, mechanisms, owners, priorities, or deadlines.” | Batch 6 must not invent key identities, mechanisms, owners or deadlines. Avoiding invented products and custodians is a bounded application of this constraint. |
 | `VSE-08` | `docs/project/status/ACTIVE_TASK.yaml` — YAML key `Status` | `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION` | Active status supports planning preparation only. |
 | `VSE-09` | Same — YAML key `Execution Marker` | `PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION` | Every Batch 6 category and Annex alternative remains non-executable. |
@@ -574,7 +574,7 @@ Before selection can be considered, the Project Owner would need to decide or au
 11. Interpretation of relationships between Batch 6 categories and existing Annex alternatives.
 12. Disposition of the `POTENTIAL_DECISION_CONFLICT` records.
 13. Whether a narrower documentary evidence package may be prepared.
-14. Whether the exact proposed path may be created through a separately authorized repository mutation.
+14. Whether a future documentary evidence package or further modification of this planning package should be separately authorized, including the exact permitted path and mutation scope.
 
 This section does not request selection under the current evidence state.
 
@@ -618,13 +618,11 @@ This package:
 - does not establish a milestone;
 - does not modify an approved decision.
 
-Creation of this proposed file in the repository requires a separate explicit Project Owner repository-write authorization.
+Creation of this file was completed through a separate explicit Project Owner repository-write authorization.
 
-The active Annex planning task does not by itself authorize creation of this separate planning-package file. Documentary correctness does not constitute repository-write authority. A future write authorization must identify:
+That completed repository mutation does not constitute option selection, Annex-alternative approval, Field 8 resolution, architecture approval, implementation authority, or execution authority.
 
-- exact path: `docs/project/planning/BATCH_6_ENCRYPTION_OPTION_LEVEL_PLANNING_PACKAGE.md`;
-- exact permitted mutation;
-- applicable review boundary.
+Any future modification of this file requires a separate explicit Project Owner authorization identifying the exact path and permitted mutation.
 
 Final status:
 
