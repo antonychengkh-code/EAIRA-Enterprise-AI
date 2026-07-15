@@ -6,9 +6,9 @@
 | --- | --- |
 | Title | EAIRA Batch 8 Assessment Scope Minimization and Command Manifest Closure Planning Package |
 | Batch designation | `BATCH_8_ASSESSMENT_SCOPE_MINIMIZATION_AND_COMMAND_MANIFEST_CLOSURE_PLANNING` |
-| Proposed path | `docs/project/planning/BATCH_8_ASSESSMENT_SCOPE_MINIMIZATION_AND_COMMAND_MANIFEST_CLOSURE_PLANNING_PACKAGE.md` |
+| Repository path | `docs/project/planning/BATCH_8_ASSESSMENT_SCOPE_MINIMIZATION_AND_COMMAND_MANIFEST_CLOSURE_PLANNING_PACKAGE.md` |
 | Documentary review state | `PENDING_PROJECT_OWNER_BATCH_8_SCOPE_REVIEW` |
-| Repository authority | Repository creation requires separate explicit Project Owner authorization |
+| Repository mutation authority | Creation and every future modification require separate explicit Project Owner authorization |
 | Scope-model state | `SCOPE_MODEL_UNSELECTED` |
 | Execution marker | `PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION` |
 | Decision authority | Project Owner |
@@ -499,16 +499,14 @@ Any future decision should separately record:
 
 ## 19. Authorization Boundary
 
-The current preparation activity is response-only.
+This repository artifact remains a non-executable documentary planning package pending Project Owner Batch 8 scope review.
 
-If this package is later created through separate authorization:
-
-- it remains `PENDING_PROJECT_OWNER_BATCH_8_SCOPE_REVIEW`;
-- repository creation, staging, commit, or push does not select a scope model;
-- Git lifecycle state is repository-history evidence, not package approval state;
-- no command or interaction becomes authorized;
-- no Field or gate state changes;
-- no execution or evidence-collection authority follows;
-- every future modification requires separate explicit Project Owner authorization identifying the exact path and permitted mutation.
+- Documentary review state remains `PENDING_PROJECT_OWNER_BATCH_8_SCOPE_REVIEW`.
+- The act of repository creation, staging, commit, or push does not select a scope model.
+- Git lifecycle state is repository-history evidence, not package approval state.
+- No command or interaction becomes authorized.
+- No Field or gate state changes.
+- No execution or evidence-collection authority follows.
+- Every future modification requires separate explicit Project Owner authorization identifying the exact path and permitted mutation.
 
 Any later decision record, Annex synchronization, status synchronization, staging, commit, or push requires separate authorization.
