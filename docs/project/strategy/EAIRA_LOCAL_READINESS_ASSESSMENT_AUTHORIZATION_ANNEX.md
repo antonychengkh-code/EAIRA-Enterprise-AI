@@ -25,7 +25,7 @@
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Date | 2026-07-15 |
-| Version | 0.12.0 |
+| Version | 0.13.0 |
 
 ## 2. Purpose
 
@@ -41,6 +41,7 @@ This Annex derives its bounded planning authority from:
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md`;
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_5_REVIEW_DECISION.md`;
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_6_REVIEW_DECISION.md`;
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_7_REVIEW_DECISION.md`;
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`.
 
 The underlying authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. The Batch 1 planning-input decision recorded below does not supersede that execution non-authorization. `AUTHORIZE_BOUNDED_ASSESSMENT` has not been granted. `AUTHORIZE_WITH_REQUIRED_REVISIONS` has not been granted as conditional execution authority.
@@ -476,6 +477,46 @@ The schema is `APPROVED_AS_REDACTION_PLANNING_CONTROL` and explicitly prohibits 
 
 Batch 4 approves the listed planning inputs but does not fully resolve Field 8 or Field 9. Operating-system identities and group mapping, exact ACL implementation, encryption mechanism, disposal mechanism, final incident-notification channel and configuration, exact permitted business-sensitive-information categories, and other recorded implementation dependencies remain blocked or deferred. Fields 8–11 retain their Resolution Matrix states, blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11, and the all-fields-resolved gate remains `BLOCKED`.
 
+## Batch 7 Data/Evidence Classification and Encryption-Scope Planning Evidence
+
+The Batch 7 data/evidence classification and encryption-scope planning package was created at commit `c18cc3ee85262ec1b8a95964694c679455bc6b8e`. It documents abstract artifact classes, classification models, classification criteria, Annex Field 9 precedence, plaintext-exposure questions, encryption-scope questions, backup, recovery, replica and export questions, and unresolved evidence requirements. It does not classify actual data or evidence, establish that an artifact exists, approve an encryption scope, or grant implementation or execution authority.
+
+## Project Owner Input Resolution — Batch 7 Review
+
+| Decision field | Recorded value |
+| --- | --- |
+| Decision | `APPROVE_BATCH_7_AS_PLANNING_EVIDENCE_AND_SELECT_MODEL_B_WITHOUT_ACTUAL_CLASSIFICATION_OR_EXECUTION_AUTHORITY` |
+| Decision Authority | Project Owner |
+| Decision Date | 2026-07-15 |
+| Classification | `PROJECT_OWNER_DECISION` |
+| Execution Marker | `PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION` |
+| Package Commit | `c18cc3ee85262ec1b8a95964694c679455bc6b8e` |
+| Decision Record Commit | `396f302130276ac28da9818889677949072a6a9d` |
+| Authoritative Decision Record | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_7_REVIEW_DECISION.md` |
+
+This decision accepts Batch 7 only as bounded, non-executable planning evidence and selects Model B solely as the documentary classification model. It does not classify actual data or evidence, approve an actual category assignment, assign a classification execution owner, approve an encryption scope, or grant assessment, implementation, runtime, deployment or milestone authority.
+
+| Batch 7 model | Disposition |
+| --- | --- |
+| Model A | `REVIEWED_NOT_SELECTED` |
+| Model B | `SELECTED_AS_DOCUMENTARY_CLASSIFICATION_MODEL_ONLY` |
+
+Model B records five documentary categories:
+
+1. `Public`
+2. `Internal non-sensitive`
+3. `Confidential`
+4. `Restricted-retainable`
+5. `Prohibited from retention`
+
+The approved Annex Field 9 taxonomy and dispositions remain controlling. Model B does not replace, narrow, supersede or reinterpret the Annex taxonomy. Every mapping remains a `NON-SELECTIVE DOCUMENTARY CROSSWALK`. Any apparent inconsistency remains a `POTENTIAL_DECISION CONFLICT` and must return to the Project Owner.
+
+Existing Annex `PROHIBITED_FROM_CAPTURE` dispositions remain stricter and controlling. `Prohibited from retention` does not authorize temporary capture or retention. Encryption, hashing, redaction, transformation, aliasing, restricted access or any other technical treatment cannot authorize retention of prohibited content. No retention exception is granted.
+
+Batch 7 does not change the Batch 6 decision. Options A–D remain `REVIEWED_NOT_SELECTED`; all Annex encryption alternatives remain `PROPOSED_NOT_APPROVED`; `ENCRYPTION_MECHANISM_PENDING_PROJECT_OWNER_INPUT` and `OPTION_SELECTION_REMAINS_BLOCKED_BY_EVIDENCE_GAPS` remain controlling.
+
+Actual classification assignments, classification inheritance, exact encryption scope, plaintext locations and readers, administrator plaintext access, verifier decryption authority, backup, recovery, replica and export treatment, platform and application capabilities, key governance, compliance and cryptographic requirements, technical and data-flow evidence, and acceptance and verification criteria remain unresolved.
+
 ## 5. Mandatory Field Resolution Matrix
 
 | # | Mandatory field | Resolution state | Current disposition |
@@ -487,8 +528,8 @@ Batch 4 approves the listed planning inputs but does not fully resolve Field 8 o
 | 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
 | 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
 | 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
-| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Batch 4 approvals remain controlling; Batch 5 approves separate local groups as the default planning model, controlled multiple-role membership, role-to-group functions, and access-control requirements as non-executable planning inputs. Batch 6 is accepted as planning evidence only; Options A–D remain `REVIEWED_NOT_SELECTED`, all Annex encryption alternatives remain `PROPOSED_NOT_APPROVED`, and option selection remains blocked by evidence gaps. Exact identities, groups, memberships, UID/GID mapping, ACL rights and behavior, privilege, rollback, effective-access results, encryption, disposal, and final notification details remain blocked or future-authorized. |
-| 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 4 approves deterministic path-alias controls, sensitive repository-relative path review, the equality-result approach, the accidental-exposure stop principle, and the non-sensitive redaction-record schema; exact business-sensitive categories and implementation mechanisms remain blocked. |
+| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Batch 4 approvals remain controlling; Batch 5 approves separate local groups as the default planning model, controlled multiple-role membership, role-to-group functions, and access-control requirements as non-executable planning inputs. Batch 6 is accepted as planning evidence only; Options A–D remain `REVIEWED_NOT_SELECTED`, all Annex encryption alternatives remain `PROPOSED_NOT_APPROVED`, and option selection remains blocked by evidence gaps. Batch 7 selects Model B only as the documentary classification model and does not approve actual classification, encryption scope, plaintext access, backup, recovery, replica, export or key governance. Exact identities, groups, memberships, UID/GID mapping, ACL rights and behavior, privilege, rollback, effective-access results, encryption, disposal, and final notification details remain blocked or future-authorized. |
+| 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 4 approvals remain controlling. Batch 7 selects Model B only as a subordinate documentary model; the approved Annex Field 9 taxonomy and stricter prohibitions remain controlling, every mapping remains a `NON-SELECTIVE DOCUMENTARY CROSSWALK`, and apparent conflicts remain `POTENTIAL_DECISION CONFLICT`. No actual assignment or retention exception is approved. Exact business-sensitive categories, classification inheritance, actual assignments and implementation mechanisms remain blocked. |
 | 10 | Reproduction procedure for every material observation | `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES` | Twelve non-executable reproduction records are approved as planning controls; unresolved Field 8 and Field 9 dependencies remain blocking. |
 | 11 | Criteria-to-evidence mapping | `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES` | Twelve criteria mappings are approved as planning controls; the approved planning root is not created or usable, and no assessment evidence exists. |
 | 12 | All-fields-resolved gate | `RESOLVED_AS_CONTROL` | Gate logic is defined below; the gate currently evaluates to `BLOCKED`. |
@@ -907,6 +948,8 @@ Field 8 remains blocking. The approved planning root and access approach do not 
 
 Batch 6 acceptance as planning evidence does not change this state. Options A–D remain `REVIEWED_NOT_SELECTED`; all four Annex alternatives remain `PROPOSED_NOT_APPROVED`; `ENCRYPTION_MECHANISM_PENDING_PROJECT_OWNER_INPUT` and `OPTION_SELECTION_REMAINS_BLOCKED_BY_EVIDENCE_GAPS` remain controlling.
 
+Batch 7 acceptance as planning evidence and documentary selection of Model B do not change this state. No actual artifact is classified; no encryption scope, plaintext reader, administrator access, verifier decryption authority, backup, recovery, replica, export, product, vendor, algorithm, architecture or key-governance model is approved.
+
 ## 12. Mandatory Field 9 — Sensitive Data, Redaction, and Accidental Exposure
 
 ### Existing prohibition boundary
@@ -949,6 +992,14 @@ The following are `PROJECT_OWNER_DECISION` planning controls. They do not author
 | Production identifiers | `PROHIBITED_FROM_CAPTURE` |
 
 No secret value is approved for capture.
+
+### Batch 7 documentary classification boundary
+
+Model A is `REVIEWED_NOT_SELECTED`. Model B is `SELECTED_AS_DOCUMENTARY_CLASSIFICATION_MODEL_ONLY` with documentary categories `Public`, `Internal non-sensitive`, `Confidential`, `Restricted-retainable` and `Prohibited from retention`.
+
+The approved Annex Field 9 taxonomy and dispositions remain controlling. Model B supplies no actual classification or category assignment and does not replace, narrow or reinterpret any Annex disposition. Every mapping remains a `NON-SELECTIVE DOCUMENTARY CROSSWALK`; any apparent inconsistency remains a `POTENTIAL_DECISION CONFLICT` for Project Owner resolution.
+
+Existing `PROHIBITED_FROM_CAPTURE` dispositions remain stricter than the Model B `Prohibited from retention` category. The latter does not grant temporary capture, retention, transformation or a retention exception. Encryption, hashing, redaction, transformation, aliasing or restricted access cannot authorize retention of prohibited content.
 
 ### Approved manifest-specific Field 9 planning mappings
 
@@ -1152,7 +1203,7 @@ The following decisions are required before this Annex can be finalized for an a
 3. Resolve outstanding command-specific semantics, authorized evidence-use details, redaction dependencies, reproduction procedures, and criteria mappings.
 4. Resolve the blocked service, endpoint, port, network, and resource interactions while retaining all recorded prohibitions.
 5. Resolve exact operating-system identities, local group names and memberships, UID/GID mapping, ACL entries and rights, inheritance and propagation behavior, deny policy, privilege or elevation requirement, rollback mechanism, and verified effective-access results while retaining the Batch 5 approved default group model, exception boundary, role-membership rule, and non-executable access-control planning inputs; separately resolve encryption, disposal, and final incident-notification mechanisms.
-6. Before any encryption option or Annex-alternative selection, resolve the Batch 6 evidence gaps for approved data and evidence classification; exact encryption scope; verified platform and application capabilities; key ownership, custody, administration, permitted service identities and separation; backup, recovery, rotation, revocation and compromise response; auditability and cryptographic standards; vendor, regional, licensing, portability and recovery constraints; and future acceptance and verification criteria.
+6. Preserve Model B as the selected documentary classification model only. Resolve actual data and evidence classification assignments; classification inheritance; exact encryption scope; plaintext locations and readers; administrator plaintext access; independent-verifier decryption authority; verified platform and application capabilities; backup, recovery, replica and export treatment; key ownership, custody, administration, permitted service identities and separation; rotation, revocation and compromise response; auditability, compliance and cryptographic standards; vendor, regional, licensing, portability and recovery constraints; technical and data-flow evidence; and future acceptance and verification criteria before any encryption option or Annex-alternative selection.
 7. Complete the required Field 9 revisions and resolve exact permitted business-sensitive-information categories plus the blocked notification, quarantine, filesystem-restriction, and disposal mechanisms.
 8. Resolve Field 8 and Field 9 dependencies for the approved non-executable reproduction planning controls.
 9. Resolve the evidence dependencies for the approved criteria-to-evidence planning mappings.
@@ -1180,6 +1231,10 @@ No remediation or corrective action is authorized after a stop condition is reac
 | Are all twelve mandatory fields addressed? | Yes, as planning fields. |
 | Are all execution-controlling fields resolved and approved? | No. |
 | Is the all-fields-resolved gate satisfied? | No — `BLOCKED`. |
+| Is Batch 7 accepted as planning evidence? | Yes, as bounded non-executable planning evidence only. |
+| Is a documentary classification model selected? | Yes — Model B is `SELECTED_AS_DOCUMENTARY_CLASSIFICATION_MODEL_ONLY`; Model A is `REVIEWED_NOT_SELECTED`. |
+| Is any actual data or evidence classified? | No. |
+| Is any encryption scope, option, or Annex alternative selected? | No. |
 | Assessment execution | `UNAUTHORIZED` |
 | Assessment-evidence collection | `UNAUTHORIZED` |
 | Command execution | `UNAUTHORIZED` |
@@ -1212,6 +1267,8 @@ The Project Owner must then conduct a separate review and record an unconditiona
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_5_REVIEW_DECISION.md`
 - `docs/project/planning/BATCH_6_ENCRYPTION_OPTION_LEVEL_PLANNING_PACKAGE.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_6_REVIEW_DECISION.md`
+- `docs/project/planning/BATCH_7_DATA_EVIDENCE_CLASSIFICATION_AND_ENCRYPTION_SCOPE_PLANNING_PACKAGE.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_7_REVIEW_DECISION.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`
 - `docs/project/status/CURRENT_STATUS.md`
