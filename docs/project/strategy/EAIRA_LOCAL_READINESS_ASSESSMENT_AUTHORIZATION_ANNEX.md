@@ -24,8 +24,8 @@
 | Evidence Disposal Activity | `UNAUTHORIZED` |
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
-| Date | 2026-07-14 |
-| Version | 0.8.0 |
+| Date | 2026-07-15 |
+| Version | 0.9.0 |
 
 ## 2. Purpose
 
@@ -38,6 +38,7 @@ This Annex is a planning artifact only. It does not authorize, execute, simulate
 This Annex derives its bounded planning authority from:
 
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`;
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md`;
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`.
 
 The underlying authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. The Batch 1 planning-input decision recorded below does not supersede that execution non-authorization. `AUTHORIZE_BOUNDED_ASSESSMENT` has not been granted. `AUTHORIZE_WITH_REQUIRED_REVISIONS` has not been granted as conditional execution authority.
@@ -135,31 +136,41 @@ This decision approves selected Batch 3 evidence-control, redaction, reproductio
 
 This decision does not authorize evidence-directory creation, evidence-file creation, command execution, assessment activity, assessment-evidence collection, hash calculation, redaction activity, evidence retention, evidence disposal, environment or service inspection, endpoint interaction, connectivity testing, port probing, or any implementation or runtime activity. It does not establish that any path exists, any access control is configured, any command was reproduced, any evidence was captured, any criterion was satisfied, or the environment is ready.
 
-## Batch 4 Proposed Evidence Implementation-Detail Inputs
+## Batch 4 Evidence Implementation-Detail Planning Inputs
 
-All Batch 4 values below are `PROPOSED_NOT_APPROVED` unless an entry explicitly reproduces an existing `PROJECT_OWNER_DECISION`. Exact options are decision inputs only. No path was resolved, inspected, or created; no user or group was enumerated; and no access, encryption, disposal, notification, quarantine, or redaction mechanism was configured or exercised.
+The Batch 4 Review decision below controls the item-level states in this section. Approved values are non-executable planning inputs and `PROJECT_OWNER_DECISION` values; they are not `VERIFIED_REPOSITORY_FACT` values. No path was inspected or created; no user or group was enumerated; and no access, encryption, disposal, notification, quarantine, or redaction mechanism was configured or exercised.
 
-### Field 8 proposed evidence-root decision options
+## Project Owner Input Resolution — Batch 4 Review
+
+| Decision field | Recorded value |
+| --- | --- |
+| Decision | `APPROVE_BATCH_4_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY` |
+| Decision Authority | Project Owner |
+| Decision Date | 2026-07-15 |
+| Classification | `PROJECT_OWNER_DECISION` |
+| Authoritative Decision Record | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md` |
+
+This decision approves only the item-level non-executable planning inputs identified below. It does not establish that a path exists or that any control is implemented, configured, tested, or operational. It does not authorize assessment execution, command execution, environment inspection, assessment-evidence collection, directory or file creation, ACL, identity, or group configuration, encryption, hashing, redaction, quarantine, notification, retention, disposal, implementation, remediation, runtime activity, deployment, database or production mutation, governance modification, milestone establishment, M4, Platform Foundation, or a formal EAIRA Execution Layer.
+
+### Field 8 evidence-root decision options
 
 | Option | Windows planning path | WSL/Linux planning path | Risks and required future decisions | State |
 | --- | --- | --- | --- | --- |
 | A — Windows-local evidence root | `C:\Users\User\OneDrive\文件\EAIRA-Enterprise-AI-Evidence` | `/mnt/c/Users/User/OneDrive/文件/EAIRA-Enterprise-AI-Evidence` | OneDrive synchronization may export or replicate evidence; evidence may leave the strictly local boundary; accidental cloud synchronization is possible; repository/evidence separation is logical but not necessarily physical; unsuitable unless synchronization and export behavior are explicitly approved. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
-| B — Windows-local non-OneDrive evidence root | `C:\EAIRA\Evidence` | `/mnt/c/EAIRA/Evidence` | Requires future directory creation and ACL configuration; may require administrative privilege depending on the host; exact user identity and permission behavior remain unverified. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
+| B — Windows-local non-OneDrive evidence root | `C:\EAIRA\Evidence` | `/mnt/c/EAIRA/Evidence` | Approved as a planning input only; future directory creation and ACL configuration remain unauthorized, and exact user identity and permission behavior remain unresolved. | `PROJECT_OWNER_DECISION` |
 | C — WSL-local evidence root | `NOT_APPLICABLE` | `~/eaira-evidence` | `~` is not exact enough for final authorization; a future exact absolute Linux path is required. WSL backup/recovery behavior, Windows-host accessibility, separation from Windows evidence-management controls, and exact user identity remain unresolved. | `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` |
 
 These strings are planning text only. Their existence, synchronization behavior, ownership, permissions, and suitability were not inspected.
 
-#### Planning recommendation
+#### Option disposition
 
-Classification: `RECOMMENDATION_NOT_PROJECT_OWNER_DECISION`.
+The Project Owner selected Option B as a planning input. Options A and C remain `PROJECT_OWNER_INPUT_OPTION_NOT_APPROVED` and are not implicitly approved. The selection does not establish path existence or authorize directory creation, evidence storage, access configuration, or evidence collection.
 
-Prefer Option B for Project Owner review, subject to an approved exact ACL and privilege plan, because it avoids a known OneDrive-style synchronization path, separates evidence from the Git repository, excludes production/external storage, supports Windows/WSL interoperability, and can be designed for least privilege with verifier read access separated from operator write access. This recommendation does not select or approve an evidence root.
+### Field 8 approved closed role-to-permission matrix
 
-### Field 8 proposed closed role-to-permission matrix
+The matrix is `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` and confers no current access. Operating-system identities, group mapping, exact ACL implementation, and all access configuration remain unresolved and unauthorized.
 
-All permissions are `PROPOSED_NOT_APPROVED` planning inputs and confer no current access.
-
-| Role | Proposed planning permissions | Explicit separation / `NO_ACCESS` boundary |
+| Role | Approved planning permissions | Explicit separation / `NO_ACCESS` boundary |
 | --- | --- | --- |
 | `PROJECT_OWNER` | `READ_DIRECT_OUTPUT`, `READ_REDACTED_OUTPUT`, `READ_VERIFIER_DISPOSITION`, `APPROVE_RETENTION_EXCEPTION`, `APPROVE_DISPOSAL` | `NO_ACCESS` to routine operator or verifier writes unless separately authorized. |
 | `ASSESSMENT_OPERATOR` | `CREATE_SESSION_STRUCTURE`, `WRITE_DIRECT_OUTPUT`, `READ_DIRECT_OUTPUT`, `WRITE_REDACTED_OUTPUT`, `READ_REDACTED_OUTPUT`, `WRITE_INCIDENT_METADATA` | `NO_ACCESS` to `WRITE_VERIFIER_DISPOSITION`, `APPROVE_RETENTION_EXCEPTION`, and `APPROVE_DISPOSAL`. |
@@ -168,7 +179,7 @@ All permissions are `PROPOSED_NOT_APPROVED` planning inputs and confer no curren
 
 ### Field 8 unresolved operating-system identity mapping
 
-No user or group name is inferred. Every value remains `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` and `PROPOSED_NOT_APPROVED`.
+No user or group name is inferred. Every value remains `OS_IDENTITY_PENDING_PROJECT_OWNER_INPUT` and `BLOCKED_PENDING_PROJECT_OWNER_INPUT`.
 
 | Required future decision field | Planning value |
 | --- | --- |
@@ -188,10 +199,12 @@ No user or group name is inferred. Every value remains `OS_IDENTITY_PENDING_PROJ
 | --- | --- | --- | --- | --- | --- | --- |
 | Windows NTFS ACL | Mature Windows identity and granular access model; natural for Windows-local roots. | Does not by itself establish WSL access semantics or encryption. | ACL creation/change may require owner or administrative authority. | WSL access may not map exactly to intended Windows role separation. | Verify exact users/groups, inheritance, effective access, WSL behavior, and denial of unlisted identities. | `PROPOSED_NOT_APPROVED` |
 | WSL/Linux ownership and mode bits | Native Linux ownership and compact least-privilege model for a WSL-local root. | Basic mode bits may not express every verifier/operator distinction; Windows-host access remains unresolved. | Ownership or group changes may require elevated privilege. | Windows access, backup, export, and host-side controls may bypass assumptions. | Verify exact UID/GID mapping, owner/group/mode, effective access, and Windows-host behavior. | `PROPOSED_NOT_APPROVED` |
-| Combined Windows host control with WSL access | Supports practical Windows/WSL interoperability with host-controlled policy. | More complex identity and permission mapping; two boundary models must agree. | May require Windows ACL authority and WSL identity configuration. | Mismatched Windows/WSL enforcement could grant unintended access. | Verify both effective-access views, inheritance, identity mapping, and cross-boundary write/read separation. | `PROPOSED_NOT_APPROVED` |
+| Combined Windows host control with WSL access | Supports practical Windows/WSL interoperability with host-controlled policy. | More complex identity and permission mapping; two boundary models must agree. | May require Windows ACL authority and WSL identity configuration. | Mismatched Windows/WSL enforcement could grant unintended access. | Verify both effective-access views, inheritance, identity mapping, and cross-boundary write/read separation. | `PROJECT_OWNER_DECISION` |
 | Application-level access control | Can add record-level workflow separation and audit metadata. | Explicitly insufficient alone unless approved; cannot replace filesystem/host enforcement. | Depends on the future application and service identity. | Application bypass, direct filesystem access, or configuration error may defeat controls. | Verify host/filesystem controls plus application identities, authorization rules, and bypass resistance. | `PROPOSED_NOT_APPROVED` |
 
 No `icacls`, `chmod`, `chown`, `getfacl`, `setfacl`, PowerShell ACL, or user/group command is authorized by these alternatives.
+
+The Project Owner selected `Combined Windows host control with WSL access` as the access-control planning approach. The Windows NTFS ACL-only, WSL/Linux ownership-and-mode-bits-only, and application-level alternatives remain `PROPOSED_NOT_APPROVED`; no unselected alternative or exact ACL implementation is implicitly approved.
 
 ### Field 8 proposed encryption alternatives
 
@@ -229,7 +242,7 @@ No notification may contain a sensitive value.
 | Email notification | Requires an approved recipient, account, transport, subject/body template, and prohibition on sensitive content. | `PROPOSED_NOT_APPROVED` |
 | Another exact approved channel | Project Owner must name the exact channel, recipients, minimum metadata, access, and retention rules. | `PROPOSED_NOT_APPROVED` |
 
-### Field 8 proposed minimum stopped-assessment record
+### Field 8 approved minimum stopped-assessment record
 
 | Field | Proposed content boundary |
 | --- | --- |
@@ -244,30 +257,30 @@ No notification may contain a sensitive value.
 | Disposition state | Non-sensitive Project Owner/Stop Authority disposition only. |
 | Restart-authorization reference | Reference only; absence means restart remains unauthorized. |
 
-The schema is `PROPOSED_NOT_APPROVED`. It explicitly prohibits command output, exposed secret values, credential fragments, copied sensitive content, and unnecessary absolute paths. No stopped-assessment record is created.
+The schema is `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT`. It explicitly prohibits command output, exposed secret values, credential fragments, copied sensitive content, and unnecessary absolute paths. No stopped-assessment record is created.
 
-### Field 9 proposed deterministic path-alias rules
+### Field 9 approved deterministic path-alias rules
 
 | Alias | Planning meaning | Classification / state |
 | --- | --- | --- |
 | `EAIRA_REPOSITORY_ROOT` | Existing approved alias for the exact approved repository root. | Existing `PROJECT_OWNER_DECISION` planning input. |
-| `EAIRA_EVIDENCE_ROOT` | Future alias for the exact evidence root after Project Owner approval. | `PROPOSED_NOT_APPROVED` |
-| `WINDOWS_USER_HOME` | Future alias for an approved Windows user-home prefix without retaining a user name. | `PROPOSED_NOT_APPROVED` |
-| `WSL_USER_HOME` | Future alias for an approved WSL user-home prefix without retaining a user name. | `PROPOSED_NOT_APPROVED` |
+| `EAIRA_EVIDENCE_ROOT` | Alias for the approved Option B planning evidence root without retaining its absolute representation. | `APPROVED_AS_REDACTION_PLANNING_CONTROL` |
+| `WINDOWS_USER_HOME` | Alias for a future approved Windows user-home prefix without retaining a user name. | `APPROVED_AS_REDACTION_PLANNING_CONTROL` |
+| `WSL_USER_HOME` | Alias for a future approved WSL user-home prefix without retaining a user name. | `APPROVED_AS_REDACTION_PLANNING_CONTROL` |
 
-Deterministic proposed rules:
+Deterministic rules:
 
 1. Replace the exact approved repository root with `EAIRA_REPOSITORY_ROOT`.
-2. Replace the exact future approved evidence root with `EAIRA_EVIDENCE_ROOT`.
+2. Replace either approved Option B planning-root representation with `EAIRA_EVIDENCE_ROOT`.
 3. Replace approved user-home prefixes with `WINDOWS_USER_HOME` or `WSL_USER_HOME`.
 4. An unknown absolute path triggers immediate stop and `UNUSABLE_PENDING_PROJECT_OWNER_DECISION`.
 5. Partial path substitution that leaks a user name is prohibited.
 
-Rules 2–5 remain `PROPOSED_NOT_APPROVED`; Rule 1 reproduces the existing Project Owner-approved alias decision. No redaction is performed.
+Rules 1–5 are `APPROVED_AS_REDACTION_PLANNING_CONTROL`. User-home prefixes remain unresolved inputs, so those aliases cannot be operationalized. No redaction is performed.
 
-### Field 9 proposed sensitive repository-relative path review
+### Field 9 approved sensitive repository-relative path review
 
-The following future review-pattern categories are `PROPOSED_NOT_APPROVED` planning rules, not repository evidence: credentials; secrets; tokens; keys; certificates; `.env`; production configuration; customer or employee personal information; finance or payroll source data; private backups; and credential stores.
+The following review-pattern categories are `APPROVED_AS_REDACTION_PLANNING_CONTROL`, not repository evidence: credentials; secrets; tokens; keys; certificates; `.env`; production configuration; customer or employee personal information; finance or payroll source data; private backups; and credential stores.
 
 Any match would require stop, sensitive-content review, and a future Project Owner disposition before retention. The repository is not scanned under Batch 4.
 
@@ -281,26 +294,26 @@ Any match would require stop, sensitive-content review, and a future Project Own
 | Commit subject | Retain only after sensitive-content review. | `PROPOSED_NOT_APPROVED` |
 | Email, body, signature | Prohibited from capture or retention. | Existing `PROJECT_OWNER_DECISION` prohibition. |
 
-### Field 9 proposed Docker context-name options
+### Field 9 reviewed Docker context-name options
 
 | Option | Proposed disposition | State |
 | --- | --- | --- |
 | Exact-name retention | Retain the exact name only after an explicit Project Owner decision. | `PROPOSED_NOT_APPROVED` |
 | Redacted name | Replace with `DOCKER_CONTEXT_REDACTED`. | `PROPOSED_NOT_APPROVED` |
-| Equality result | Retain only whether the observed name equals a separately approved expected name. | `PROPOSED_NOT_APPROVED` |
+| Equality result | Retain only whether the observed name equals a separately approved expected name. | `PROJECT_OWNER_DECISION` |
 | Sensitive name | Mark evidence unusable if the context name itself is sensitive. | `PROPOSED_NOT_APPROVED` |
 
-Recommendation: prefer the equality-result approach unless exact-name retention is necessary. Classification: `RECOMMENDATION_NOT_PROJECT_OWNER_DECISION`. No Docker command is executed.
+The Project Owner selected the `Equality result` planning disposition. Exact-name retention, redacted-name retention, and sensitive-name handling alternatives remain `PROPOSED_NOT_APPROVED` and are not implicitly approved. The expected comparison value remains separately approval-dependent. No Docker command is executed.
 
 ### Field 9 proposed business-sensitive-information rule
 
-The planning categories are financial, payroll, employee, customer, supplier, contractual, production, security, internal architecture, and unreleased product or strategy information. Proposed disposition: `REDACT_BEFORE_RETENTION_OR_MARK_UNUSABLE`. Exact permitted categories require Project Owner approval; this rule remains `PROPOSED_NOT_APPROVED`.
+The planning categories are financial, payroll, employee, customer, supplier, contractual, production, security, internal architecture, and unreleased product or strategy information. Planning disposition: `REDACT_BEFORE_RETENTION_OR_MARK_UNUSABLE`. Exact permitted categories remain `BLOCKED_PENDING_PROJECT_OWNER_INPUT`.
 
-### Field 9 proposed accidental-exposure quarantine planning
+### Field 9 approved accidental-exposure stop principle and blocked quarantine planning
 
-On suspected exposure, stop immediately, perform no further capture or copying, mark affected evidence `UNUSABLE_PENDING_PROJECT_OWNER_DECISION`, and use quarantine only after the Project Owner approves an exact location or mechanism, access boundary, notification channel, retention decision, and disposal method. Quarantine must not expand exposure or create an additional sensitive copy. All implementation details remain `PROPOSED_NOT_APPROVED`; no quarantine or notification occurs.
+On suspected exposure, stop immediately, perform no further capture or copying, and mark affected evidence `UNUSABLE_PENDING_PROJECT_OWNER_DECISION`. This accidental-exposure stop principle is `APPROVED_AS_INCIDENT_RESPONSE_PLANNING_CONTROL`. Quarantine may be used only after the Project Owner approves an exact location or mechanism, access boundary, notification channel, retention decision, and disposal method. Those implementation details remain `BLOCKED_PENDING_PROJECT_OWNER_INPUT`; quarantine must not expand exposure or create an additional sensitive copy. No quarantine or notification occurs.
 
-### Field 9 proposed non-sensitive redaction-record schema
+### Field 9 approved non-sensitive redaction-record schema
 
 | Field | Proposed content boundary |
 | --- | --- |
@@ -315,11 +328,11 @@ On suspected exposure, stop immediately, perform no further capture or copying, 
 | Source hash reference | Reference only; not the source content. |
 | Derivative hash reference | Reference only; not the derivative content. |
 
-The schema is `PROPOSED_NOT_APPROVED` and explicitly prohibits recording the removed sensitive value. No redaction record is created under Batch 4.
+The schema is `APPROVED_AS_REDACTION_PLANNING_CONTROL` and explicitly prohibits recording the removed sensitive value. No redaction record is created under Batch 4.
 
 ### Batch 4 resolution boundary
 
-Batch 4 does not resolve Field 8 or Field 9. Fields 8–11 retain their Resolution Matrix states, blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11, and the all-fields-resolved gate remains `BLOCKED`.
+Batch 4 approves the listed planning inputs but does not fully resolve Field 8 or Field 9. Operating-system identities and group mapping, exact ACL implementation, encryption mechanism, disposal mechanism, final incident-notification channel and configuration, exact permitted business-sensitive-information categories, and other recorded implementation dependencies remain blocked or deferred. Fields 8–11 retain their Resolution Matrix states, blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11, and the all-fields-resolved gate remains `BLOCKED`.
 
 ## 5. Mandatory Field Resolution Matrix
 
@@ -332,10 +345,10 @@ Batch 4 does not resolve Field 8 or Field 9. Fields 8–11 retain their Resoluti
 | 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
 | 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
 | 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
-| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Batch 3 planning controls remain approved; Batch 4 adds unapproved evidence-root, access, identity, ACL, encryption, disposal, notification, and stopped-record options. |
-| 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 3 controls remain approved; Batch 4 adds deterministic implementation and quarantine/notification proposals that require Project Owner decisions. |
+| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Batch 4 approves Option B, the combined host/WSL access approach, the role-to-permission matrix, and the stopped-record schema as planning inputs; identities, group mapping, exact ACL implementation, encryption, disposal, and final notification details remain blocked. |
+| 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 4 approves deterministic path-alias controls, sensitive repository-relative path review, the equality-result approach, the accidental-exposure stop principle, and the non-sensitive redaction-record schema; exact business-sensitive categories and implementation mechanisms remain blocked. |
 | 10 | Reproduction procedure for every material observation | `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES` | Twelve non-executable reproduction records are approved as planning controls; unresolved Field 8 and Field 9 dependencies remain blocking. |
-| 11 | Criteria-to-evidence mapping | `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES` | Twelve criteria mappings are approved as planning controls; no approved evidence root or assessment evidence exists. |
+| 11 | Criteria-to-evidence mapping | `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES` | Twelve criteria mappings are approved as planning controls; the approved planning root is not created or usable, and no assessment evidence exists. |
 | 12 | All-fields-resolved gate | `RESOLVED_AS_CONTROL` | Gate logic is defined below; the gate currently evaluates to `BLOCKED`. |
 
 ## 6. Mandatory Field 1 — Local Environment Boundary and Target Inventory
@@ -657,10 +670,15 @@ These definitions govern only a future separately authorized assessment session.
 
 ### Approved closed evidence-root planning structure
 
-The following closed structural pattern is approved as `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT`. It is placeholder text only, is not a Windows or WSL path, and must not be created:
+The Project Owner selected Option B as `PROJECT_OWNER_DECISION` planning input:
+
+- Windows planning root: `C:\EAIRA\Evidence`
+- WSL planning root: `/mnt/c/EAIRA/Evidence`
+
+The following closed structural pattern is approved as `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT`. `EAIRA_EVIDENCE_ROOT` deterministically represents either approved Option B path form. The pattern is planning text only and must not be created:
 
 ```text
-EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/
+EAIRA_EVIDENCE_ROOT/
   session-manifest/
   direct-output/
   redacted-output/
@@ -670,17 +688,18 @@ EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/
   integrity-records/
 ```
 
-No path becomes usable until the Project Owner approves an exact evidence root and separately authorizes evidence creation and collection.
+Neither path is verified to exist or usable. Directory or file creation, access configuration, evidence storage, and evidence collection require future separate authorization.
 
 ### Approved evidence-control planning register
 
 | Control | Approved planning value or retained blocker | Approval state |
 | --- | --- | --- |
-| Exact evidence root path | `BLOCKED_PENDING_PROJECT_OWNER_INPUT`; placeholder above is structural only. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Exact evidence root path | Option B planning forms: Windows `C:\EAIRA\Evidence`; WSL `/mnt/c/EAIRA/Evidence`. Existence and use are not authorized or verified. | `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` |
 | Writers | Role category `ASSESSMENT_OPERATOR` for future separately authorized direct capture and `INDEPENDENT_VERIFIER` for separate verifier disposition. | `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` |
 | Readers | Role categories `PROJECT_OWNER`, `ASSESSMENT_OPERATOR`, `INDEPENDENT_VERIFIER`, and `STOP_AUTHORITY`. | `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` |
 | Reader/writer separation | Operator records, direct output, and verifier disposition remain separated; the verifier does not generate the primary evidence reviewed. | `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` |
-| Access-control mechanism | Exact operating-system identity, group, ACL, permission mode, encryption, and access-review mechanism blocked; none is inferred. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
+| Access-control planning approach | `Combined Windows host control with WSL access`; exact operating-system identities, group mapping, ACL entries, inheritance, effective access, privilege requirements, Windows-to-WSL mapping, and cross-boundary enforcement remain blocked. | `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` |
+| Role-to-permission matrix | The closed Batch 4 role matrix is approved as planning content; it grants no current access. | `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` |
 | Naming convention | `<session-id>__<manifest-id>__<target-id>__<reproduction-id>__<mapping-id>__<timestamp>__<artifact-class>.<approved-extension>`. | `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` |
 | Required identifiers | Use exact manifest, target, reproduction, mapping, session, timestamp, operator, and verifier identifiers; aliases and substitutions are prohibited. | `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` |
 | Direct-output separation | Safely retained direct output remains separate from redacted derivatives; unsafe output is not copied merely to preserve it. | `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT` |
@@ -728,22 +747,21 @@ Classification: `APPROVED_AS_RETENTION_PLANNING_INPUT` and `PROJECT_OWNER_DECISI
 - No further capture, copying, remediation, or alternate command is permitted.
 - Restart requires a new explicit Project Owner decision.
 
-These controls are `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT`. No stop record or evidence is created or retained by this decision.
+The controls and the Batch 4 minimum stopped-assessment record schema are `APPROVED_AS_EVIDENCE_CONTROL_PLANNING_INPUT`. No stop record or evidence is created or retained by this decision.
 
 ### Retained Field 8 blockers
 
-- Exact Windows or WSL evidence-root path.
 - Actual operating-system user and group identities.
-- ACL or filesystem permission mechanism.
+- Exact ACL implementation, permission behavior, and cross-boundary identity/group mapping.
 - Encryption mechanism.
 - Exact disposal command or physical deletion method.
-- Exact incident notification channel.
+- Final incident-notification channel and configuration.
 
 ### Current status
 
 `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`
 
-Field 8 remains blocking. No evidence root may be created, and no evidence creation, hashing, retention, or disposal activity is authorized.
+Field 8 remains blocking. The approved planning root and access approach do not authorize creation or configuration. No evidence root may be created, and no evidence creation, hashing, retention, or disposal activity is authorized.
 
 ## 12. Mandatory Field 9 — Sensitive Data, Redaction, and Accidental Exposure
 
@@ -778,7 +796,7 @@ The following are `PROJECT_OWNER_DECISION` planning controls. They do not author
 | Commit author names | `RETAIN_NAME_ONLY_IF_REQUIRED_AND_APPROVED` |
 | Commit subjects | Review for secrets and business-sensitive information before retention |
 | Configuration names | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
-| Docker context names | `RETAIN_NAME_ONLY_IF_APPROVED` |
+| Docker context names | Retain only an equality result against a separately approved expected value |
 | Model names | Retain only if required by an approved criterion |
 | Service names | Retain only if required by an approved criterion |
 | Process names | Retain only if required by an approved criterion |
@@ -804,7 +822,7 @@ No secret value is approved for capture.
 | `B2-MAN-008` | Kernel name, release, architecture | Retain only these three fields if separately authorized; host/user names or other inventory trigger stop. | `APPROVED_AS_REDACTION_PLANNING_CONTROL` |
 | `B2-MAN-009` | Local absolute working-directory path | Full absolute path must not be retained in redacted evidence; use approved alias `EAIRA_REPOSITORY_ROOT`. | `APPROVED_WITH_REQUIRED_REDACTION_REVISION` |
 | `B2-MAN-010` | Docker client product/version/build | Retain bounded client fields only if separately authorized; engine or configuration data trigger stop. | `APPROVED_AS_REDACTION_PLANNING_CONTROL` |
-| `B2-MAN-011` | Docker context name | Retain only when Field 8 is sufficiently resolved, the exact name-retention decision is recorded, output is exactly one context name, and no context detail or Docker engine contact occurs. | `APPROVED_WITH_REQUIRED_REDACTION_REVISION` |
+| `B2-MAN-011` | Docker context name | Retain only whether the observed name equals a separately approved expected value, and only when Field 8 is sufficiently resolved, output is exactly one context name, and no context detail or Docker engine contact occurs. Exact-name retention is not approved. | `APPROVED_WITH_REQUIRED_REDACTION_REVISION` |
 | `B2-MAN-013` | Windows Git product/version | Retain only product/version if separately authorized; repository, configuration, credential, or additional fields trigger stop. | `APPROVED_AS_REDACTION_PLANNING_CONTROL` |
 
 ### Approved accidental-exposure planning procedure
@@ -823,11 +841,15 @@ State: `APPROVED_AS_INCIDENT_RESPONSE_PLANNING_CONTROL`.
 
 No incident record is created under Batch 3. The exact notification channel, quarantine mechanism, filesystem access restriction, and disposal mechanism remain blocked.
 
+### Batch 4 approved redaction implementation planning controls
+
+The deterministic path-alias rules, sensitive repository-relative path review controls, accidental-exposure stop principle, and non-sensitive redaction-record schema are approved as planning controls. Their applicable classifications are `APPROVED_AS_REDACTION_PLANNING_CONTROL` and `APPROVED_AS_INCIDENT_RESPONSE_PLANNING_CONTROL`. Exact permitted business-sensitive-information categories, user-home prefix inputs, quarantine mechanism, filesystem restriction implementation, final notification channel and configuration, and disposal mechanism remain `BLOCKED_PENDING_PROJECT_OWNER_INPUT`.
+
 ### Current status
 
 `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`
 
-The prohibitions, general dispositions, manifest-specific planning controls, and incident procedure are approved as `PROJECT_OWNER_DECISION` planning inputs. Required redaction revisions and exact implementation mechanisms remain blocking; no capture or redaction activity is authorized.
+The prohibitions, general dispositions, manifest-specific planning controls, Batch 4 redaction controls, and incident procedure are approved as `PROJECT_OWNER_DECISION` planning inputs. Required redaction revisions, exact permitted business-sensitive-information categories, and exact implementation mechanisms remain blocking; no capture or redaction activity is authorized.
 
 ## 13. Mandatory Field 10 — Reproduction Procedures
 
@@ -865,18 +887,18 @@ Each reproduction record consists of `B3-REP-COMMON` plus both table rows carryi
 
 | Reproduction ID | Expected bounded output | Field 9 dependency | Field 8 destination placeholder | Record-specific precondition / stop | Mapping | Approval state |
 | --- | --- | --- | --- | --- | --- | --- |
-| `REP-B2-001` | One WSL Git product/version string. | Product/version retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-001__REP-B2-001.pending` | Exact WSL Git resolution; stop on additional fields. | `MAP-B2-001` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-002` | One approved absolute repository path. | Absolute-path redaction approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-002__REP-B2-002.pending` | Exact approved path; stop on any other path. | `MAP-B2-002` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-003` | One branch name or empty detached-state output. | Branch-name retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-003__REP-B2-003.pending` | Stop on more than one branch-name line. | `MAP-B2-003` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-004` | One 40-hexadecimal `HEAD` SHA. | Exact-SHA retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-004__REP-B2-004.pending` | Stop on malformed SHA or additional metadata. | `MAP-B2-004` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-005` | One 40-hexadecimal local `origin/master` SHA. | Exact-SHA retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-005__REP-B2-005.pending` | No fetch/network; stop on malformed SHA or additional metadata. | `MAP-B2-005` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-006` | Branch header and tracked relative status entries only. | Repository-relative-path decisions. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-006__REP-B2-006.pending` | Stop on untracked, absolute, sensitive, or unrelated fields. | `MAP-B2-006` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-007` | SHA, author name, ISO-8601 author time, subject. | Author-name and subject decisions. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-007__REP-B2-007.pending` | Stop on email, body, signature, or extra fields. | `MAP-B2-007` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-008` | Kernel name, release, architecture only. | Host-metadata retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-008__REP-B2-008.pending` | Stop on host/user names or other inventory. | `MAP-B2-008` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-009` | One approved absolute working-directory path. | Absolute-path redaction approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-009__REP-B2-009.pending` | Stop on any other path. | `MAP-B2-009` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-010` | Docker client product/version/build only. | Client-metadata retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-010__REP-B2-010.pending` | Stop on engine contact or extra data. | `MAP-B2-010` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-011` | Exactly one Docker context name. | Field 9 context-name approval; no collection until Fields 8 and 9 resolve. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-011__REP-B2-011.pending` | Stop on `docker context inspect`, context details, or engine contact. | `MAP-B2-011` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
-| `REP-B2-013` | One Windows Git product/version string. | Product/version retention approval. | `EVIDENCE_ROOT_PENDING_PROJECT_OWNER_APPROVAL/direct-output/<session>__B2-MAN-013__REP-B2-013.pending` | Exact approved executable; stop on repository, configuration, credential, network, or extra data. | `MAP-B2-013` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-001` | One WSL Git product/version string. | Product/version retention approval. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-001__REP-B2-001.pending` | Exact WSL Git resolution; stop on additional fields. | `MAP-B2-001` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-002` | One approved absolute repository path. | Absolute-path redaction approval. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-002__REP-B2-002.pending` | Exact approved path; stop on any other path. | `MAP-B2-002` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-003` | One branch name or empty detached-state output. | Branch-name retention approval. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-003__REP-B2-003.pending` | Stop on more than one branch-name line. | `MAP-B2-003` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-004` | One 40-hexadecimal `HEAD` SHA. | Exact-SHA retention approval. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-004__REP-B2-004.pending` | Stop on malformed SHA or additional metadata. | `MAP-B2-004` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-005` | One 40-hexadecimal local `origin/master` SHA. | Exact-SHA retention approval. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-005__REP-B2-005.pending` | No fetch/network; stop on malformed SHA or additional metadata. | `MAP-B2-005` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-006` | Branch header and tracked relative status entries only. | Repository-relative-path decisions. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-006__REP-B2-006.pending` | Stop on untracked, absolute, sensitive, or unrelated fields. | `MAP-B2-006` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-007` | SHA, author name, ISO-8601 author time, subject. | Author-name and subject decisions. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-007__REP-B2-007.pending` | Stop on email, body, signature, or extra fields. | `MAP-B2-007` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-008` | Kernel name, release, architecture only. | Host-metadata retention approval. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-008__REP-B2-008.pending` | Stop on host/user names or other inventory. | `MAP-B2-008` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-009` | One approved absolute working-directory path. | Absolute-path redaction approval. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-009__REP-B2-009.pending` | Stop on any other path. | `MAP-B2-009` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-010` | Docker client product/version/build only. | Client-metadata retention approval. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-010__REP-B2-010.pending` | Stop on engine contact or extra data. | `MAP-B2-010` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-011` | One Boolean or bounded equality-result value indicating whether the observed Docker context name equals the separately approved expected value; the exact context name must not be retained. | Field 9 equality-result approval and separately approved expected comparison value; no collection until Fields 8 and 9 resolve. | `EAIRA_EVIDENCE_ROOT/redacted-output/<session>__B2-MAN-011__REP-B2-011.pending` | Stop if the exact context name would be retained, if the expected comparison value is not separately approved, or on `docker context inspect`, context details, or engine contact. | `MAP-B2-011` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
+| `REP-B2-013` | One Windows Git product/version string. | Product/version retention approval. | `EAIRA_EVIDENCE_ROOT/direct-output/<session>__B2-MAN-013__REP-B2-013.pending` | Exact approved executable; stop on repository, configuration, credential, network, or extra data. | `MAP-B2-013` | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` |
 
 ### Reproduction count and status
 
@@ -943,7 +965,7 @@ No mapping, alone or combined, may establish overall Local Readiness, milestone 
 
 `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES`
 
-Field 11 remains blocking because no approved evidence root or assessment evidence exists. Approval of the mapping controls does not satisfy any criterion.
+Field 11 remains blocking because the approved planning root is not created or usable and no assessment evidence exists. Approval of the mapping controls does not satisfy any criterion.
 
 ## 15. Mandatory Field 12 — All-Fields-Resolved Gate
 
@@ -983,10 +1005,10 @@ The following decisions are required before this Annex can be finalized for an a
 
 1. Resolve complete command-level interactions and controls for every permitted Field 1 target.
 2. Complete the required revision for `B2-MAN-011`, resolve or reject deferred `B2-MAN-012`, and resolve the remaining blocked manifest rows.
-3. Resolve outstanding command-specific semantics, evidence locations, redaction dependencies, reproduction procedures, and criteria mappings.
+3. Resolve outstanding command-specific semantics, authorized evidence-use details, redaction dependencies, reproduction procedures, and criteria mappings.
 4. Resolve the blocked service, endpoint, port, network, and resource interactions while retaining all recorded prohibitions.
-5. Resolve the exact evidence-root path, operating-system access identities and mechanism, encryption, disposal method, and incident notification channel while retaining the approved Field 8 planning controls.
-6. Complete the required Field 9 redaction revisions and resolve the blocked notification, quarantine, filesystem-restriction, and disposal mechanisms.
+5. Resolve operating-system identities and group mapping, exact ACL implementation, encryption mechanism, disposal mechanism, and final incident-notification channel and configuration while retaining the approved Option B root, combined host/WSL approach, role matrix, and stopped-record schema.
+6. Complete the required Field 9 revisions and resolve exact permitted business-sensitive-information categories plus the blocked notification, quarantine, filesystem-restriction, and disposal mechanisms.
 7. Resolve Field 8 and Field 9 dependencies for the approved non-executable reproduction planning controls.
 8. Resolve the evidence dependencies for the approved criteria-to-evidence planning mappings.
 9. Confirm that all mandatory fields, exceptions, conflicts, and ambiguities satisfy the all-fields-resolved gate.
@@ -1041,6 +1063,7 @@ The Project Owner must then conduct a separate review and record an unconditiona
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`
 - `docs/project/status/CURRENT_STATUS.md`
