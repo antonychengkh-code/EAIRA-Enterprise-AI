@@ -14,7 +14,7 @@
 
 Continue bounded Project Layer planning toward one Authorization Annex that may be finalized only after remaining mandatory blockers are resolved or explicitly retained for Project Owner review.
 
-Batch 4 through Batch 8 Project Owner decision recording and authorized Annex synchronization are complete through Annex Version `0.14.0` at commit `fc9a9e1d126376daef2c40cdf91970751574f4b0`. The overall Annex is not finalized or execution-ready. This task remains active only for bounded Project Layer blocker-resolution planning; activation does not authorize the Local Readiness Assessment or assessment-evidence collection.
+Batch 4 through Batch 8 Project Owner decision recording, the later Gate Sequence Decision and Field-State Decision, and authorized Annex synchronization are complete through Annex Version `0.16.0` at commit `f9dae1a17d8f3da34fdfec6e9d82445f4edf624e`. The overall Annex is not finalized or execution-ready. This task remains active only for bounded Project Layer blocker-resolution planning; activation does not authorize the Local Readiness Assessment or assessment-evidence collection.
 
 ## 3. Authorization Basis
 
@@ -41,6 +41,8 @@ For this task record, `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION` is reus
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_GATE_SEQUENCE_DECISION.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_FIELD_STATE_DECISION.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_5_REVIEW_DECISION.md`
 - `docs/project/planning/BATCH_6_ENCRYPTION_OPTION_LEVEL_PLANNING_PACKAGE.md`
@@ -76,6 +78,9 @@ Completed:
 - Batch 6 package creation, correction, decision, and synchronization through `385c66c314af7582320356e0258ebe985fa4b6f8` without encryption-option selection;
 - Batch 7 decision and Annex Version `0.13.0` synchronization, with Model B selected only as the documentary classification model and no actual classification;
 - Batch 8 package creation and stabilization, Project Owner decision recording, and Annex Version `0.14.0` synchronization at `fc9a9e1d126376daef2c40cdf91970751574f4b0`.
+- the Gate Sequence Decision recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_GATE_SEQUENCE_DECISION.md`, correcting lifecycle sequencing without automatically reclassifying a Field or changing the gate;
+- the later Field-State Decision recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_FIELD_STATE_DECISION.md`, reclassifying Field 1 and Field 4 only for mandatory Annex pre-execution documentary planning completeness without performing a formal gate evaluation; and
+- synchronization of that adopted documentary state into Annex Version `0.16.0` at commit `f9dae1a17d8f3da34fdfec6e9d82445f4edf624e`.
 
 Batch 8 selects the following complete closed initial Model A documentary inventory:
 
@@ -97,14 +102,17 @@ Not completed:
 
 Current Annex state:
 
+- Field 1: `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER`, limited to mandatory Annex pre-execution documentary planning completeness;
+- Field 4: `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER`, limited to mandatory Annex pre-execution documentary planning completeness;
 - Field 8: `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`;
 - Field 9: `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`;
 - Field 10 retains Field 8 and Field 9 dependencies;
 - Field 11 retains evidence dependencies;
+- Field 12: `RESOLVED_AS_CONTROL`;
 - gate: `BLOCKED`;
-- blocking fields: 1, 2, 3, 4, 8, 9, 10, and 11.
+- fields outside passing states: 2, 3, 8, 9, 10, and 11.
 
-Remaining selected-Model-A planning blockers include objective verification of every retained target, manifest, interaction, evidence-use, redaction, reproduction, criteria-mapping, and Field 8 and Field 9 dependency; operating-system identities and group mapping; exact ACL implementation; encryption mechanism; disposal mechanism; final incident-notification channel and configuration; exact permitted business-sensitive-information categories; and Field 11 evidence dependencies. Excluded historical records are not prerequisites for initial Model A documentary completeness, but remain unresolved historical or future-extension matters. Any future extension requires separate Project Owner authorization.
+The selected target inventory and the five-interaction inventory are documentary-complete for Field 1 and Field 4 and are not remaining blockers for those Fields. Remaining selected-Model-A planning blockers include retained command semantics and command-specific controls for Fields 2 and 3; operating-system identities and group mapping; exact ACL implementation; encryption mechanism; disposal mechanism; final incident-notification channel and configuration; exact permitted business-sensitive-information categories; applicable Field 8 and Field 9 dependencies; and Field 10 and Field 11 dependencies. Excluded historical records are not prerequisites for initial Model A documentary completeness, but remain unresolved historical or future-extension matters. Any future extension requires separate Project Owner authorization. Field 1 and Field 4 resolution does not establish target existence, executable availability, service availability, connectivity, environment readiness, criterion satisfaction, assessment results, or operational authority.
 
 ## 6. Explicit Out-of-Scope Boundaries
 
@@ -170,4 +178,4 @@ No new milestone is established by activation of this planning task or by comple
 Task Status: `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION`
 
 Summary:
-Batch 4 through Batch 8 decision recording and authorized Annex synchronization are complete through Annex Version `0.14.0`. Batch 7 Model B remains selected only as the documentary classification model; Batch 8 Model A remains selected only as the initial documentary assessment-scope model. This separately bounded Project Layer planning task remains active only for resolution or explicit retention of the remaining Annex blockers for future separate Project Owner review. The repository does not record a separate Project Owner decision closing this task, establishing Batch 9, or activating a successor task. It is not authorized for assessment execution, command execution, environment inspection, assessment-evidence collection, configuration, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer activity.
+Batch 4 through Batch 8 decision recording, the Gate Sequence Decision, the later Field-State Decision, and authorized Annex synchronization are complete through Annex Version `0.16.0` at commit `f9dae1a17d8f3da34fdfec6e9d82445f4edf624e`. Field 1 and Field 4 are `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` only for mandatory Annex pre-execution documentary planning completeness; Fields 2, 3, 8, 9, 10, and 11 remain outside passing states; Field 12 remains `RESOLVED_AS_CONTROL`; and the gate remains `BLOCKED`. Batch 7 Model B remains selected only as the documentary classification model; Batch 8 Model A remains selected only as the initial documentary assessment-scope model. This separately bounded Project Layer planning task remains active only for resolution or explicit retention of the remaining Annex blockers for future separate Project Owner review. The repository does not record a separate Project Owner decision closing this task, establishing Batch 9, or activating a successor task. It is not authorized for assessment execution, command execution, environment inspection, assessment-evidence collection, configuration, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer activity.
