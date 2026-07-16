@@ -25,7 +25,7 @@
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Date | 2026-07-16 |
-| Version | 0.14.0 |
+| Version | 0.15.0 |
 
 ## 2. Purpose
 
@@ -43,9 +43,12 @@ This Annex derives its bounded planning authority from:
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_6_REVIEW_DECISION.md`;
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_7_REVIEW_DECISION.md`;
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_8_REVIEW_DECISION.md`;
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_GATE_SEQUENCE_DECISION.md`;
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`.
 
 The underlying authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. The Batch 1 planning-input decision recorded below does not supersede that execution non-authorization. `AUTHORIZE_BOUNDED_ASSESSMENT` has not been granted. `AUTHORIZE_WITH_REQUIRED_REVISIONS` has not been granted as conditional execution authority.
+
+The Gate Sequence Decision corrects lifecycle sequencing only. It preserves the Package Decision and every substantive Batch 4–8 decision, grants no execution or evidence-collection authority, and does not automatically reclassify any Field or change the gate state.
 
 The Annex addresses the twelve mandatory content areas in Section 6 of the decision record. Every unresolved execution-controlling input remains a blocker and is not converted into an approved fact.
 
@@ -76,9 +79,9 @@ The Annex addresses the twelve mandatory content areas in Section 6 of the decis
 | `APPROVED_WITH_REQUIRED_REDACTION_REVISION` | Redaction planning control approved subject to its recorded revision; no capture or redaction activity is authorized. |
 | `APPROVED_AS_INCIDENT_RESPONSE_PLANNING_CONTROL` | Incident-response sequence approved as planning content only; no incident record or response activity is authorized. |
 | `APPROVED_AS_REPRODUCTION_PLANNING_CONTROL_NOT_EXECUTABLE` | Reproduction record approved as planning content only; command execution and evidence capture remain unauthorized. |
-| `APPROVED_AS_CRITERIA_MAPPING_PLANNING_CONTROL` | Criteria mapping approved as planning content only; no criterion is satisfied and no evidence exists. |
-| `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES` | Reproduction planning controls are approved but remain blocking and non-executable until Field 8 and Field 9 dependencies are resolved. |
-| `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES` | Criteria mappings are approved planning controls but remain blocking because approved evidence handling and actual assessment evidence do not exist. |
+| `APPROVED_AS_CRITERIA_MAPPING_PLANNING_CONTROL` | Criteria mapping approved as planning content only; approval satisfies no criterion and creates no assessment evidence. Actual evidence and criterion satisfaction are post-execution matters, and the absence of actual assessment evidence before execution is not itself a pre-execution Field 11 blocker. |
+| `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES` | Reproduction definitions are approved pre-execution planning controls but remain blocking and non-executable until applicable Field 8 and Field 9 planning-rule dependencies are resolved. Actual reproduction execution is post-authorization. Field 9 dependencies concern approved taxonomy, disposition, inheritance, retention, redaction, capture-prohibition, secret-handling, and exposure-response rules, not actual future-artifact assignments. |
+| `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES` | Criteria mappings are approved planning controls. The current Field remains blocking pending complete and approved pre-execution mapping definitions and evidence-handling definitions, direct verification, and separate Project Owner Field-state review. Actual command outputs, evidence artifacts, verifier findings, criterion satisfaction, readiness conclusions, and result acceptance are post-execution matters and are not pre-execution requirements. |
 | `EVIDENCE_GAP` | Information not supported by current repository evidence. |
 | `ASSUMPTION` | Planning premise that must not be treated as evidence. |
 | `RISK` | Identified safety, evidence, scope, or authority risk. |
@@ -642,7 +645,7 @@ This determination is classified only as:
 
 It does not establish executable or command existence, executable availability, independently verified semantics, operational evidence controls, target-environment readiness, criterion satisfaction, Field 1–4 resolution, gate satisfaction, execution authority, or evidence-collection authority.
 
-This Version 0.14.0 synchronization records the adopted complete closed documentary inventory but does not modify any Field state. Before any future Field-state modification, direct review of the synchronized Annex, objective verification that every retained requirement is addressed and satisfied, and separate Project Owner approval remain required. That later review must not reopen or unselect the initial documentary scope.
+This Version 0.15.0 lifecycle-sequencing remediation preserves the adopted complete closed documentary inventory and does not modify any Field state. Before any future Field-state modification, direct review of the remediated Annex, objective verification that every retained requirement is addressed and satisfied, and separate Project Owner approval remain required. That later review must not reopen or unselect the initial documentary scope.
 
 ## 5. Mandatory Field Resolution Matrix
 
@@ -655,11 +658,11 @@ This Version 0.14.0 synchronization records the adopted complete closed document
 | 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
 | 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
 | 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
-| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Batch 4 approvals remain controlling; Batch 5 approves separate local groups as the default planning model, controlled multiple-role membership, role-to-group functions, and access-control requirements as non-executable planning inputs. Batch 6 is accepted as planning evidence only; Options A–D remain `REVIEWED_NOT_SELECTED`, all Annex encryption alternatives remain `PROPOSED_NOT_APPROVED`, and option selection remains blocked by evidence gaps. Batch 7 selects Model B only as the documentary classification model and does not approve actual classification, encryption scope, plaintext access, backup, recovery, replica, export or key governance. Exact identities, groups, memberships, UID/GID mapping, ACL rights and behavior, privilege, rollback, effective-access results, encryption, disposal, and final notification details remain blocked or future-authorized. |
-| 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 4 approvals remain controlling. Batch 7 selects Model B only as a subordinate documentary model; the approved Annex Field 9 taxonomy and stricter prohibitions remain controlling, every mapping remains a `NON-SELECTIVE DOCUMENTARY CROSSWALK`, and apparent conflicts remain `POTENTIAL_DECISION CONFLICT`. No actual assignment or retention exception is approved. Exact business-sensitive categories, classification inheritance, actual assignments and implementation mechanisms remain blocked. |
-| 10 | Reproduction procedure for every material observation | `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES` | Twelve non-executable reproduction records are approved as planning controls; unresolved Field 8 and Field 9 dependencies remain blocking. |
-| 11 | Criteria-to-evidence mapping | `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES` | Twelve criteria mappings are approved as planning controls; the approved planning root is not created or usable, and no assessment evidence exists. |
-| 12 | All-fields-resolved gate | `RESOLVED_AS_CONTROL` | Gate logic is defined below; the gate currently evaluates to `BLOCKED`. |
+| 8 | Evidence paths, readers, access, integrity, retention, disposal, and stopped-assessment handling | `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS` | Batch 4 approvals remain controlling; Batch 5 approves separate local groups as the default planning model, controlled multiple-role membership, role-to-group functions, and access-control requirements as non-executable planning inputs. Batch 6 is accepted as planning evidence only; Options A–D remain `REVIEWED_NOT_SELECTED`, all Annex encryption alternatives remain `PROPOSED_NOT_APPROVED`, and option selection remains blocked by evidence gaps. Batch 7 selects Model B only as the documentary classification model and does not approve actual classification, encryption scope, plaintext access, backup, recovery, replica, export or key governance. Exact identities, groups, memberships, UID/GID mapping, ACL rights and behavior, privilege, rollback, effective-access results, encryption, disposal, and final notification details remain blocked or future-authorized. Field 8 remains outside the Gate Sequence correction. |
+| 9 | Redaction, sensitive-data taxonomy, secret prohibition, and accidental-exposure procedure | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 4 approvals remain controlling. Batch 7 selects Model B only as a subordinate documentary model; the approved Annex Field 9 taxonomy and stricter prohibitions remain controlling, every mapping remains a `NON-SELECTIVE DOCUMENTARY CROSSWALK`, and apparent conflicts remain `POTENTIAL_DECISION CONFLICT`. No actual classification or category assignment has occurred, no classification execution is authorized, and no retention exception is granted. Actual classification assignments to future evidence artifacts are post-capture activities and are not pre-execution blockers. Exact business-sensitive-information rules, classification inheritance, taxonomy precedence and conflict handling, ambiguity and escalation rules, retention and non-retention rules, redaction and alias rules, capture prohibitions, secret-handling rules, accidental-exposure controls, and unresolved implementation-rule definitions remain pre-execution blockers where not already approved. |
+| 10 | Reproduction procedure for every material observation | `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES` | Twelve non-executable reproduction records are approved as planning controls; reproduction-definition completeness is pre-execution, while actual reproduction execution and resulting evidence are post-authorization. Unresolved Field 8 and Field 9 planning-rule dependencies remain blocking. Execution remains unauthorized as a protected boundary, not as a defect in planning-definition completeness. |
+| 11 | Criteria-to-evidence mapping | `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES` | Twelve criteria mappings are approved as planning controls. The current Field remains pending direct verification that all eleven selected-scope mappings contain complete approved definitions for the exact criterion, bounded future observation, evidence-artifact class or pattern, provenance, timestamps and session linkage, verifier procedure, sufficiency, insufficiency and unusable-evidence rules, discrepancy handling, allowed decision use, prohibited inference and decision use, and applicable pre-execution Field 8 and Field 9 handling definitions, followed by separate Project Owner Field-state review. Actual assessment evidence, verifier findings, criterion satisfaction, and readiness conclusions are post-execution matters and are not pre-execution blockers. |
+| 12 | All-fields-resolved gate | `RESOLVED_AS_CONTROL` | Gate logic is defined below; the gate currently evaluates to `BLOCKED`. The gate evaluates lifecycle-appropriate approved planning completeness and does not require evidence or results that can exist only after execution authorization. Gate satisfaction would only make the Annex eligible for a separate Project Owner execution-authorization decision and would not itself authorize execution or evidence collection. |
 
 ## 6. Mandatory Field 1 — Local Environment Boundary and Target Inventory
 
@@ -1185,6 +1188,8 @@ The approved Annex Field 9 taxonomy and dispositions remain controlling. Model B
 
 Existing `PROHIBITED_FROM_CAPTURE` dispositions remain stricter than the Model B `Prohibited from retention` category. The latter does not grant temporary capture, retention, transformation or a retention exception. Encryption, hashing, redaction, transformation, aliasing or restricted access cannot authorize retention of prohibited content.
 
+Approved classification taxonomy, disposition, precedence, inheritance, retention, redaction, alias, capture-prohibition, secret-handling, exposure-response, ambiguity, and escalation rules are pre-execution planning controls. Actual assignments to future evidence artifacts are post-capture activities. The absence of actual assignments before evidence exists is expected and is not itself a pre-execution blocker. This lifecycle distinction grants no classification, capture, redaction, retention, quarantine, notification, or disposal authority.
+
 ### Approved manifest-specific Field 9 planning mappings
 
 `B2-MAN-012` is excluded because it remains `DEFER_PENDING_COMMAND_SEMANTICS_REVIEW` and is neither executable nor collectible.
@@ -1234,7 +1239,7 @@ The deterministic path-alias rules, sensitive repository-relative path review co
 
 `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`
 
-The prohibitions, general dispositions, manifest-specific planning controls, Batch 4 redaction controls, and incident procedure are approved as `PROJECT_OWNER_DECISION` planning inputs. Required redaction revisions, exact permitted business-sensitive-information categories, and exact implementation mechanisms remain blocking; no capture or redaction activity is authorized.
+The prohibitions, general dispositions, manifest-specific planning controls, Batch 4 redaction controls, and incident procedure are approved as `PROJECT_OWNER_DECISION` pre-execution planning inputs. Required redaction revisions, exact permitted business-sensitive-information rules, classification inheritance, applicable ambiguity and escalation rules, and exact implementation-rule definitions remain blocking; no classification execution, capture, redaction, retention, quarantine, notification, or disposal activity is authorized. Actual assignments to future evidence artifacts remain post-capture matters and are not pre-execution blockers.
 
 ## 13. Mandatory Field 10 — Reproduction Procedures
 
@@ -1306,7 +1311,7 @@ Selected initial-scope reproduction-record count: 11. Field 10 remains `APPROVED
 
 `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES`
 
-Field 10 remains blocking because Field 8 and Field 9 dependencies are unresolved and execution is unauthorized. No command change, alias, wrapper, substitution, alternate command, evidence destination use, remediation, or reproduction execution is authorized.
+Field 10 remains blocking because applicable Field 8 and Field 9 planning-rule dependencies are unresolved. Reproduction-definition completeness is a pre-execution requirement; actual reproduction execution and resulting outputs are post-authorization matters. Execution remains unauthorized as a protected boundary, not as missing planning evidence. No command change, alias, wrapper, substitution, alternate command, evidence destination use, remediation, or reproduction execution is authorized.
 
 ## 14. Mandatory Field 11 — Criteria-to-Evidence Mapping
 
@@ -1352,6 +1357,22 @@ For every mapping, missing, partial, conflicting, stale, outside-window, unverif
 
 No mapping, alone or combined, may establish overall Local Readiness, milestone establishment, M4, Platform Foundation, a formal EAIRA Execution Layer, implementation authority, runtime authority, deployment readiness, or production readiness.
 
+### Selected-scope mapping definition completeness controls
+
+For each of the eleven selected-scope mappings, the two mapping-table rows, the corresponding selected reproduction record, `B3-REP-COMMON`, and the applicable Field 7, Field 8, and Field 9 planning controls form the complete pre-execution mapping definition. Direct verification must confirm that this incorporated definition supplies:
+
+- the exact criterion and bounded future observation stated in the first mapping table;
+- the evidence-artifact class or pattern identified through the corresponding reproduction record and its Field 8 destination placeholder;
+- provenance linking the approved manifest ID, target ID, reproduction ID, mapping ID, exact command and arguments, direct output, and verifier record;
+- timestamps and session linkage through the approved Field 7 rules, the corresponding `<session>` evidence pattern, and the `B3-REP-COMMON` start-time, end-time, and session controls;
+- the verifier action and sufficient-result rule stated in the first mapping table;
+- the common insufficiency and unusable-evidence rules stated above;
+- discrepancy handling through `B3-REP-COMMON`, including classification of missing, partial, conflicting, stale, unexpected, or unsafe output, stop without remediation or alternate command, and referral to the Stop Authority;
+- the allowed decision use stated in the second mapping table; and
+- the prohibited inference and decision use stated in the second mapping table and the overall non-readiness boundary above.
+
+If direct verification finds any required definition absent or ambiguous, that absence remains a documentary pre-execution blocker for Field 11. No value may be invented or inferred. Actual command outputs, evidence artifacts, verifier findings, criterion satisfaction or non-satisfaction, discrepancy findings, readiness conclusions, result acceptance, and later decision use remain post-execution matters.
+
 ### Mapping count and status
 
 - Approved criteria-to-evidence planning mappings: 12.
@@ -1372,7 +1393,7 @@ Selected initial-scope criteria-mapping count: 11. Field 11 remains `APPROVED_AS
 
 `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES`
 
-Field 11 remains blocking because the approved planning root is not created or usable and no assessment evidence exists. Approval of the mapping controls does not satisfy any criterion.
+Field 11 remains in its current recorded state pending independent verification that all eleven selected-scope mappings contain complete approved definitions and applicable pre-execution Field 8 and Field 9 handling dependencies, followed by separate Project Owner Field-state review. Actual assessment evidence, actual verifier findings, actual criterion satisfaction or non-satisfaction, readiness conclusions, and result acceptance are post-execution matters and are not pre-execution blockers. Approval of the mapping controls does not satisfy any criterion.
 
 ## 15. Mandatory Field 12 — All-Fields-Resolved Gate
 
@@ -1398,6 +1419,12 @@ The following states fail the gate:
 - `ASSUMPTION`;
 - unresolved conflict, exception, ambiguity, or unlisted target.
 
+### Gate lifecycle interpretation
+
+The pre-execution all-fields-resolved gate evaluates complete and approved planning definitions and controls appropriate to the lifecycle stage before execution. Actual command outputs, evidence artifacts, verifier findings, criterion satisfaction or non-satisfaction, discrepancy findings, readiness conclusions, and post-execution result acceptance are not pre-execution gate inputs.
+
+Current Fields continue to fail the gate because their recorded states have not been separately reclassified by the Project Owner. This Annex remediation does not itself reclassify any Field or satisfy the gate. A future passing gate would only make the Annex eligible for a separate Project Owner assessment-execution authorization decision; it would not itself authorize execution or evidence collection.
+
 ### Current gate evaluation
 
 `BLOCKED`
@@ -1414,7 +1441,7 @@ The following requirements remain before any Field-state modification or assessm
 
 1. Directly review this synchronized Annex and verify that the retained target, manifest, supporting-record, interaction, reproduction, and mapping overlays faithfully implement the adopted Batch 8 decision.
 2. Objectively verify that every retained command-manifest and interaction requirement is addressed and satisfied without inferring executable availability, command semantics, environment readiness, or criterion satisfaction.
-3. Resolve retained-scope evidence-use, redaction, reproduction, criteria-mapping, and Field 8 and Field 9 dependencies.
+3. Resolve complete and approved pre-execution evidence-use, redaction, reproduction-definition, criteria-mapping-definition, and applicable Field 8 and Field 9 planning-rule dependencies. This requirement does not require actual assessment evidence, post-capture classification assignments, verifier findings, criterion satisfaction, readiness conclusions, or result acceptance before execution.
 4. Obtain separate Project Owner approval before modifying any Field state.
 
 ### Excluded historical and future-extension matters
@@ -1438,11 +1465,11 @@ Any future extension covering Docker Engine, Ollama, Hermes, OpenWebUI, or LM St
 ### Fields 8–11 dependencies
 
 1. Resolve exact operating-system identities, local group names and memberships, UID/GID mapping, ACL entries and rights, inheritance and propagation behavior, deny policy, privilege or elevation requirements, rollback, and verified effective-access results while preserving the Batch 5 planning model and non-execution boundary.
-2. Resolve encryption, disposal, final incident-notification, actual classification assignments, classification inheritance, exact encryption scope, plaintext locations and readers, administrator access, verifier decryption, backup, recovery, replica and export treatment, key governance, platform and application capabilities, technical and data-flow evidence, compliance and cryptographic requirements, and acceptance and verification criteria.
+2. Resolve encryption, disposal, final incident-notification, classification inheritance, exact encryption scope, plaintext locations and readers, administrator access, verifier decryption, backup, recovery, replica and export treatment, key governance, platform and application capabilities, technical and data-flow evidence, compliance and cryptographic requirements, and complete pre-execution acceptance and verification definitions. Actual future-artifact classification assignments are post-capture matters. Actual verifier findings, criterion satisfaction, evidence acceptance, and readiness conclusions are post-execution matters.
 3. Preserve Batch 6 Options A–D as `REVIEWED_NOT_SELECTED`, all Annex encryption alternatives as `PROPOSED_NOT_APPROVED`, and Batch 7 Model B only as the documentary classification model.
 4. Resolve Field 8 and Field 9 dependencies for the eleven selected-scope reproduction controls.
-5. Resolve evidence dependencies for the eleven selected-scope criteria mappings.
-6. Confirm through a later direct review and separate Project Owner decision that every mandatory Field classification, exception, conflict, and ambiguity satisfies the all-fields-resolved gate.
+5. Complete and independently verify the eleven selected-scope mapping definitions and all applicable pre-execution evidence-handling definitions, then obtain a separate Project Owner Field-state review. Actual assessment evidence and post-execution satisfaction results are not required for this pre-execution documentary step.
+6. Follow the future lifecycle order: complete the separately authorized Annex remediation; independently verify the complete Annex and exact diff; conduct separate Project Owner Field-state reviews; evaluate the gate under the corrected lifecycle interpretation; only after a passing gate, conduct a separate execution-authorization decision; after unconditional authorization, execute approved commands and collect evidence; independently verify the evidence; produce only the bounded permitted readiness conclusion; and use results only in a later separate Project Owner decision.
 
 ## 17. Stop Conditions
 
@@ -1472,6 +1499,8 @@ No remediation or corrective action is authorized after a stop condition is reac
 | Is an initial documentary assessment-scope model selected? | Yes — Batch 8 Model A is `SELECTED_AS_INITIAL_DOCUMENTARY_SCOPE_MODEL`; Batch 8 Models B and C are `REVIEWED_NOT_SELECTED`. |
 | Is the initial Model A documentary inventory complete and closed? | Yes, only as `DOCUMENTARY_INITIAL_SCOPE_COMPLETENESS_DETERMINATION_ONLY`; no Field, criterion, gate, execution, or evidence authority follows. |
 | Is any actual data or evidence classified? | No. |
+| Is the absence of actual classification itself a pre-execution failure? | No. Approved classification rules are pre-execution controls; actual future-artifact assignments are post-capture matters. Existing unresolved Field 9 planning definitions, controls, Field state, and Project Owner inputs remain blocking. |
+| Is the absence of actual assessment evidence itself a pre-execution failure? | No. Actual evidence, verifier findings, criterion satisfaction, readiness conclusions, and result acceptance are post-execution matters. Existing unresolved planning definitions, controls, Field states, and Project Owner inputs remain blocking. |
 | Is any encryption scope, option, or Annex alternative selected? | No. |
 | Assessment execution | `UNAUTHORIZED` |
 | Assessment-evidence collection | `UNAUTHORIZED` |
@@ -1492,9 +1521,19 @@ No remediation or corrective action is authorized after a stop condition is reac
 
 ## 19. Future Review Requirement
 
-After the mandatory inputs are supplied and every field is explicitly resolved, this Annex must undergo direct file review and independent repository verification, including exact Git status, exact Git diff, and direct reading of the finalized Annex. For any future Field-state modification, direct review of this synchronized Annex, objective verification that every retained requirement is addressed and satisfied, and separate Project Owner approval are required. That review must not reopen or unselect the initial Model A documentary scope.
+The required future lifecycle sequence is:
 
-The Project Owner must then conduct a separate review and record an unconditional decision. Annex completion, acceptance, silence, conditional language, or approval with unresolved revisions is insufficient to authorize any assessment command, observation, interaction, or evidence collection.
+1. Complete the separately authorized Annex remediation.
+2. Independently verify the complete Annex, exact changed-file list, and exact path-scoped diff.
+3. Conduct separate Project Owner Field-state reviews without reopening or unselecting the initial Model A documentary scope.
+4. Evaluate the all-fields-resolved gate under the corrected lifecycle interpretation.
+5. Only if the gate passes, conduct a separate Project Owner assessment-execution authorization decision.
+6. Only after unconditional authorization, execute the exact approved commands and collect the exact approved evidence.
+7. Independently verify the evidence, provenance, verifier findings, and criteria mappings.
+8. Produce only the bounded permitted `INITIAL_MINIMAL_CORE_SCOPE_READINESS` conclusion supported by the authorized selected scope and verified evidence.
+9. Use results only in a later separate Project Owner decision.
+
+Annex completion, acceptance, silence, conditional language, or approval with unresolved revisions is insufficient to authorize any assessment command, observation, interaction, or evidence collection. Gate satisfaction would establish eligibility for a separate execution-authorization decision only and would not itself authorize execution or evidence collection.
 
 ## 20. Source Paths
 
@@ -1509,6 +1548,7 @@ The Project Owner must then conduct a separate review and record an unconditiona
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_7_REVIEW_DECISION.md`
 - `docs/project/planning/BATCH_8_ASSESSMENT_SCOPE_MINIMIZATION_AND_COMMAND_MANIFEST_CLOSURE_PLANNING_PACKAGE.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_8_REVIEW_DECISION.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_GATE_SEQUENCE_DECISION.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`
 - `docs/project/status/CURRENT_STATUS.md`
