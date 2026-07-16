@@ -25,7 +25,7 @@
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Date | 2026-07-16 |
-| Version | 0.15.0 |
+| Version | 0.16.0 |
 
 ## 2. Purpose
 
@@ -44,11 +44,14 @@ This Annex derives its bounded planning authority from:
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_7_REVIEW_DECISION.md`;
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_8_REVIEW_DECISION.md`;
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_GATE_SEQUENCE_DECISION.md`;
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_FIELD_STATE_DECISION.md`;
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`.
 
 The underlying authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. The Batch 1 planning-input decision recorded below does not supersede that execution non-authorization. `AUTHORIZE_BOUNDED_ASSESSMENT` has not been granted. `AUTHORIZE_WITH_REQUIRED_REVISIONS` has not been granted as conditional execution authority.
 
 The Gate Sequence Decision corrects lifecycle sequencing only. It preserves the Package Decision and every substantive Batch 4–8 decision, grants no execution or evidence-collection authority, and does not automatically reclassify any Field or change the gate state.
+
+The later Field-State Decision separately reclassifies Field 1 and Field 4 as `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` only for mandatory Annex pre-execution planning completeness. It retains every other Field state, records Fields 2, 3, 8, 9, 10, and 11 as the documentary blocker set without performing a formal Field 12 gate evaluation, leaves the gate `BLOCKED`, and grants no execution or evidence-collection authority.
 
 The Annex addresses the twelve mandatory content areas in Section 6 of the decision record. Every unresolved execution-controlling input remains a blocker and is not converted into an approved fact.
 
@@ -337,7 +340,7 @@ All listed evidence remains future evidence only. Its collection requires separa
 
 #### Field 8 state preservation after this planning update
 
-Batch 5 approves the default separate-local-groups model, the exception boundary, the controlling multiple-role membership rule, and the listed access-control requirements as non-executable planning inputs. Exact Windows and WSL identities, local group names, memberships, UID/GID mapping, ACL entries and rights, inheritance and propagation behavior, deny policy, privilege or elevation requirement, rollback mechanism, and verified effective-access results remain blocked or future authorization requirements. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`. Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. Field 10 retains Field 8 and Field 9 dependencies. Field 11 retains evidence dependencies. Blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11, and the all-fields-resolved gate remains `BLOCKED`.
+Batch 5 approves the default separate-local-groups model, the exception boundary, the controlling multiple-role membership rule, and the listed access-control requirements as non-executable planning inputs. Exact Windows and WSL identities, local group names, memberships, UID/GID mapping, ACL entries and rights, inheritance and propagation behavior, deny policy, privilege or elevation requirement, rollback mechanism, and verified effective-access results remain blocked or future authorization requirements. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`. Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. Field 10 retains Field 8 and Field 9 dependencies. Field 11 retains evidence dependencies. After the separately adopted Field-State Decision, the documentary blocker set is Fields 2, 3, 8, 9, 10, and 11, and the all-fields-resolved gate remains `BLOCKED`; this tracking is not a new or formal Field 12 gate evaluation.
 
 ## Batch 6 Encryption Option-Level Planning Evidence
 
@@ -494,7 +497,7 @@ The schema is `APPROVED_AS_REDACTION_PLANNING_CONTROL` and explicitly prohibits 
 
 ### Batch 4 resolution boundary
 
-Batch 4 approves the listed planning inputs but does not fully resolve Field 8 or Field 9. Operating-system identities and group mapping, exact ACL implementation, encryption mechanism, disposal mechanism, final incident-notification channel and configuration, exact permitted business-sensitive-information categories, and other recorded implementation dependencies remain blocked or deferred. Fields 8–11 retain their Resolution Matrix states, blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11, and the all-fields-resolved gate remains `BLOCKED`.
+Batch 4 approves the listed planning inputs but does not fully resolve Field 8 or Field 9. Operating-system identities and group mapping, exact ACL implementation, encryption mechanism, disposal mechanism, final incident-notification channel and configuration, exact permitted business-sensitive-information categories, and other recorded implementation dependencies remain blocked or deferred. Fields 8–11 retain their Resolution Matrix states. After the separately adopted Field-State Decision, the documentary blocker set is Fields 2, 3, 8, 9, 10, and 11, and the all-fields-resolved gate remains `BLOCKED`; this tracking is not a new or formal Field 12 gate evaluation.
 
 ## Batch 7 Data/Evidence Classification and Encryption-Scope Planning Evidence
 
@@ -645,16 +648,16 @@ This determination is classified only as:
 
 It does not establish executable or command existence, executable availability, independently verified semantics, operational evidence controls, target-environment readiness, criterion satisfaction, Field 1–4 resolution, gate satisfaction, execution authority, or evidence-collection authority.
 
-This Version 0.15.0 lifecycle-sequencing remediation preserves the adopted complete closed documentary inventory and does not modify any Field state. Before any future Field-state modification, direct review of the remediated Annex, objective verification that every retained requirement is addressed and satisfied, and separate Project Owner approval remain required. That later review must not reopen or unselect the initial documentary scope.
+This Version 0.16.0 Field-state synchronization preserves the adopted complete closed documentary inventory and records only the later Field-State Decision's separate reclassifications of Field 1 and Field 4. The Gate Sequence Decision itself did not automatically reclassify any Field. Before any further Field-state modification, direct review of the synchronized Annex, objective verification of the applicable retained requirements, and separate Project Owner approval remain required. That later review must not reopen or unselect the initial documentary scope.
 
 ## 5. Mandatory Field Resolution Matrix
 
 | # | Mandatory field | Resolution state | Current disposition |
 | ---: | --- | --- | --- |
-| 1 | Exact local environment boundary and complete target inventory | `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING` | Batch 8 selects the complete initial Model A documentary target set. Field 1 remains unchanged because retained command-level controls have not been objectively verified as addressed and satisfied. |
-| 2 | Exact approved tool and command manifest | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 8 retains eleven command-manifest rows and excludes the remaining rows from the selected initial scope while preserving historical traceability. No command is executable, and no Field-state change is approved. |
+| 1 | Exact local environment boundary and complete target inventory | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | The later Field-State Decision resolves Field 1 only for mandatory Annex pre-execution planning completeness because the exact local environment boundary is documented, the selected Batch 8 Model A target overlay is complete and closed, and retained, excluded, prohibited, and separate-extension targets are documented. This does not establish target existence, executable availability, environment readiness, criterion satisfaction, assessment readiness, or execution authority. |
+| 2 | Exact approved tool and command manifest | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 8 retains eleven command-manifest rows and excludes the remaining rows from the selected initial scope while preserving historical traceability. No command is executable. Batch 8 itself did not approve a Field 2 state change, and the later Field-State Decision retains Field 2 unchanged. |
 | 3 | Command-specific arguments, working directory, privilege, target, purpose, expected output, timeout, and mutation-risk determination | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Retained command-specific planning controls remain subject to evidence, redaction, semantic-verification, and satisfaction dependencies. Batch 8 does not resolve Field 3. |
-| 4 | Approved and prohibited services, endpoints, ports, network actions, and resources | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | Batch 8 retains exactly five documentary interactions for selected Model A and excludes extended interactions from the initial scope. No interaction, endpoint, port, or execution authority is approved, and Field 4 remains unchanged. |
+| 4 | Approved and prohibited services, endpoints, ports, network actions, and resources | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | The later Field-State Decision resolves Field 4 only for mandatory Annex pre-execution planning completeness because the selected Model A interaction inventory is complete and closed with exactly `B2-INT-001`, `B2-INT-002`, `B2-INT-003`, narrowed `B2-INT-004`, and `B2-INT-006`. No service, endpoint, port, network, inspection, interaction, command-execution, or evidence-collection authority is granted. |
 | 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
 | 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
 | 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
@@ -747,9 +750,9 @@ The selected target overlay does not establish target existence, availability, r
 
 ### Current status
 
-`PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING`
+`RESOLVED_AND_APPROVED_BY_PROJECT_OWNER`
 
-The historical environment boundary and target inventory remain approved planning inputs. Batch 8 selects and closes the initial Model A documentary target set. This synchronization does not modify Field 1. Field 1 remains unchanged until the synchronized Annex is directly reviewed, every retained requirement is objectively verified as addressed and satisfied, and the Project Owner separately approves a Field-state modification.
+The later Field-State Decision resolves Field 1 only for mandatory Annex pre-execution planning completeness. The exact local environment boundary is documented; the selected Batch 8 Model A target overlay is complete and closed; and retained, excluded, prohibited, and separate-extension targets are documented. This documentary resolution does not establish target existence, executable availability, environment readiness, criterion satisfaction, assessment readiness, or execution authority.
 
 ## 7. Mandatory Fields 2 and 3 — Tool and Command Manifest
 
@@ -933,9 +936,9 @@ API writes, service lifecycle actions, container lifecycle actions, model execut
 
 ### Current status
 
-`PARTIALLY_RESOLVED_WITH_BLOCKERS`
+`RESOLVED_AND_APPROVED_BY_PROJECT_OWNER`
 
-Historical interaction definitions remain approved planning inputs only. The selected initial Model A overlay retains exactly five documentary interactions and excludes Docker Engine, Ollama service, Hermes, OpenWebUI, and LM Studio interactions from the initial scope. Those historical or future-extension matters remain non-executable. No service endpoint or port is approved, and Field 4 remains unchanged.
+Historical interaction definitions remain approved planning inputs only. The later Field-State Decision resolves Field 4 only for mandatory Annex pre-execution planning completeness because the selected Model A interaction inventory is complete and closed with exactly `B2-INT-001`, `B2-INT-002`, `B2-INT-003`, narrowed `B2-INT-004`, and `B2-INT-006`. `B2-INT-004` remains limited strictly to `B2-MAN-010`, Docker Engine contact is excluded, and no service endpoint or port is required for the selected initial documentary scope. All unlisted interactions remain prohibited, and future extensions require separate Project Owner authorization. This resolution grants no service, endpoint, port, network, inspection, interaction, command-execution, or evidence-collection authority.
 
 ## 9. Mandatory Fields 5 and 6 — Operator, Independent Verifier, Separation, and Stop Authority
 
@@ -1174,7 +1177,7 @@ The following are `PROJECT_OWNER_DECISION` planning controls. They do not author
 | Model names | Retain only if required by an approved criterion |
 | Service names | Retain only if required by an approved criterion |
 | Process names | Retain only if required by an approved criterion |
-| Ports and endpoints | Retain only after exact Field 4 approval |
+| Ports and endpoints | No port or endpoint is required or approved for the selected initial scope; any future extension may retain one only after separate explicit Project Owner approval |
 | Business-sensitive information | `REDACT_BEFORE_RETENTION_OR_MARK_UNUSABLE` |
 | Production identifiers | `PROHIBITED_FROM_CAPTURE` |
 
@@ -1423,26 +1426,26 @@ The following states fail the gate:
 
 The pre-execution all-fields-resolved gate evaluates complete and approved planning definitions and controls appropriate to the lifecycle stage before execution. Actual command outputs, evidence artifacts, verifier findings, criterion satisfaction or non-satisfaction, discrepancy findings, readiness conclusions, and post-execution result acceptance are not pre-execution gate inputs.
 
-Current Fields continue to fail the gate because their recorded states have not been separately reclassified by the Project Owner. This Annex remediation does not itself reclassify any Field or satisfy the gate. A future passing gate would only make the Annex eligible for a separate Project Owner assessment-execution authorization decision; it would not itself authorize execution or evidence collection.
+The Gate Sequence Decision itself did not automatically reclassify any Field. The later Field-State Decision separately reclassifies Field 1 and Field 4 as `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER`; Fields 2, 3, 8, 9, 10, and 11 remain outside passing states. This Version 0.16.0 synchronization records those adopted documentary states but does not perform or satisfy a formal Field 12 gate evaluation. A future passing gate would only make the Annex eligible for a separate Project Owner assessment-execution authorization decision; it would not itself authorize execution or evidence collection.
 
 ### Current gate evaluation
 
 `BLOCKED`
 
-Blocking fields: 1, 2, 3, 4, 8, 9, 10, and 11.
+Documentary blocker-set tracking resulting from the separately adopted Field-State Decision: 2, 3, 8, 9, 10, and 11. This is not a new or formal Field 12 gate evaluation.
 
 Field 12 is resolved only as gate logic; it does not satisfy the gate.
 
 ## 16. Consolidated Project Owner Input Queue
 
-The following requirements remain before any Field-state modification or assessment-authorization decision.
+The following requirements remain before any further Field-state modification, formal gate-review decision, or assessment-authorization decision.
 
 ### Retained Model A requirements
 
-1. Directly review this synchronized Annex and verify that the retained target, manifest, supporting-record, interaction, reproduction, and mapping overlays faithfully implement the adopted Batch 8 decision.
-2. Objectively verify that every retained command-manifest and interaction requirement is addressed and satisfied without inferring executable availability, command semantics, environment readiness, or criterion satisfaction.
+1. Directly review this synchronized Annex and verify that the retained target, manifest, supporting-record, interaction, reproduction, and mapping overlays faithfully preserve the adopted Batch 8 decision and that the Field 1 and Field 4 states faithfully record the later Field-State Decision.
+2. Field 1 target-inventory review and Field 4 interaction-inventory review are complete for mandatory Annex pre-execution planning completeness. For Fields 2 and 3, objectively verify the remaining retained command semantics and command-specific controls without inferring executable availability, environment readiness, or criterion satisfaction.
 3. Resolve complete and approved pre-execution evidence-use, redaction, reproduction-definition, criteria-mapping-definition, and applicable Field 8 and Field 9 planning-rule dependencies. This requirement does not require actual assessment evidence, post-capture classification assignments, verifier findings, criterion satisfaction, readiness conclusions, or result acceptance before execution.
-4. Obtain separate Project Owner approval before modifying any Field state.
+4. Obtain separate Project Owner approval before any further Field-state modification, and obtain a separate Project Owner decision for any formal gate review.
 
 ### Excluded historical and future-extension matters
 
@@ -1469,7 +1472,7 @@ Any future extension covering Docker Engine, Ollama, Hermes, OpenWebUI, or LM St
 3. Preserve Batch 6 Options A–D as `REVIEWED_NOT_SELECTED`, all Annex encryption alternatives as `PROPOSED_NOT_APPROVED`, and Batch 7 Model B only as the documentary classification model.
 4. Resolve Field 8 and Field 9 dependencies for the eleven selected-scope reproduction controls.
 5. Complete and independently verify the eleven selected-scope mapping definitions and all applicable pre-execution evidence-handling definitions, then obtain a separate Project Owner Field-state review. Actual assessment evidence and post-execution satisfaction results are not required for this pre-execution documentary step.
-6. Follow the future lifecycle order: complete the separately authorized Annex remediation; independently verify the complete Annex and exact diff; conduct separate Project Owner Field-state reviews; evaluate the gate under the corrected lifecycle interpretation; only after a passing gate, conduct a separate execution-authorization decision; after unconditional authorization, execute approved commands and collect evidence; independently verify the evidence; produce only the bounded permitted readiness conclusion; and use results only in a later separate Project Owner decision.
+6. Follow the future lifecycle order: independently verify this Version 0.16.0 Field-state synchronization and exact diff; conduct separate Project Owner Field-state reviews for Fields 2, 3, 8, 9, 10, and 11; only after those reviews, conduct a separate formal Project Owner gate review under the corrected lifecycle interpretation; only after a passing gate, conduct a separate assessment-execution authorization decision; after unconditional authorization, execute approved commands and collect evidence; independently verify the evidence; produce only the bounded permitted readiness conclusion; and use results only in a later separate Project Owner decision.
 
 ## 17. Stop Conditions
 
@@ -1523,15 +1526,14 @@ No remediation or corrective action is authorized after a stop condition is reac
 
 The required future lifecycle sequence is:
 
-1. Complete the separately authorized Annex remediation.
-2. Independently verify the complete Annex, exact changed-file list, and exact path-scoped diff.
-3. Conduct separate Project Owner Field-state reviews without reopening or unselecting the initial Model A documentary scope.
-4. Evaluate the all-fields-resolved gate under the corrected lifecycle interpretation.
-5. Only if the gate passes, conduct a separate Project Owner assessment-execution authorization decision.
-6. Only after unconditional authorization, execute the exact approved commands and collect the exact approved evidence.
-7. Independently verify the evidence, provenance, verifier findings, and criteria mappings.
-8. Produce only the bounded permitted `INITIAL_MINIMAL_CORE_SCOPE_READINESS` conclusion supported by the authorized selected scope and verified evidence.
-9. Use results only in a later separate Project Owner decision.
+1. Independently verify the complete Version 0.16.0 Annex, exact changed-file list, and exact path-scoped diff. Field 1 and Field 4 documentary review is recorded as complete by the separately adopted Field-State Decision.
+2. Conduct separate Project Owner Field-state reviews for Fields 2, 3, 8, 9, 10, and 11 without reopening or unselecting the initial Model A documentary scope.
+3. Only after those Field-state reviews, conduct a separate formal Project Owner evaluation of the all-fields-resolved gate under the corrected lifecycle interpretation.
+4. Only if the gate passes, conduct a separate Project Owner assessment-execution authorization decision.
+5. Only after unconditional authorization, execute the exact approved commands and collect the exact approved evidence.
+6. Independently verify the evidence, provenance, verifier findings, and criteria mappings.
+7. Produce only the bounded permitted `INITIAL_MINIMAL_CORE_SCOPE_READINESS` conclusion supported by the authorized selected scope and verified evidence.
+8. Use results only in a later separate Project Owner decision.
 
 Annex completion, acceptance, silence, conditional language, or approval with unresolved revisions is insufficient to authorize any assessment command, observation, interaction, or evidence collection. Gate satisfaction would establish eligibility for a separate execution-authorization decision only and would not itself authorize execution or evidence collection.
 
@@ -1549,6 +1551,7 @@ Annex completion, acceptance, silence, conditional language, or approval with un
 - `docs/project/planning/BATCH_8_ASSESSMENT_SCOPE_MINIMIZATION_AND_COMMAND_MANIFEST_CLOSURE_PLANNING_PACKAGE.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_8_REVIEW_DECISION.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_GATE_SEQUENCE_DECISION.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_FIELD_STATE_DECISION.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`
 - `docs/project/status/CURRENT_STATUS.md`
