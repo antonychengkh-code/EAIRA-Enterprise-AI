@@ -14,7 +14,7 @@
 
 Continue bounded Project Layer planning toward one Authorization Annex that may be finalized only after remaining mandatory blockers are resolved or explicitly retained for Project Owner review.
 
-Batch 4 Project Owner Review decision recording and synchronization into Annex Version `0.9.0` are complete. The overall Annex is not finalized or execution-ready. This task remains active only for bounded Project Layer blocker-resolution planning; activation does not authorize the Local Readiness Assessment or assessment-evidence collection.
+Batch 4 through Batch 8 Project Owner decision recording and authorized Annex synchronization are complete through Annex Version `0.14.0` at commit `fc9a9e1d126376daef2c40cdf91970751574f4b0`. The overall Annex is not finalized or execution-ready. This task remains active only for bounded Project Layer blocker-resolution planning; activation does not authorize the Local Readiness Assessment or assessment-evidence collection.
 
 ## 3. Authorization Basis
 
@@ -23,6 +23,14 @@ The bounded planning basis is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSES
 The Project Owner approved and activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` for bounded Project Layer Authorization Annex planning.
 
 The Project Owner recorded `APPROVE_BATCH_4_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY` on 2026-07-15 in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md`. The decision was synchronized into the main Annex at Version `0.9.0` and committed and pushed at `ad570ae2ce5ff64265cce30df57725c2d59be69e` (`docs(project): synchronize annex batch 4 review decision`). This is documentation evidence, not execution or implementation authority.
+
+The Project Owner recorded `APPROVE_BATCH_5_WITH_REQUIRED_REVISIONS_WITHOUT_EXECUTION_AUTHORITY`; the Batch 5 decision and access-control planning inputs were synchronized into Annex Version `0.11.0` at commit `6dd07a4177eb970c4bf8ce4da5eee634ccfcc6de`.
+
+The Batch 6 encryption option-level planning package was created at `a4e6fc9c87bc66b59b172d08d81682b19030bf37`, corrected at `9e765281c6f39f844bf87fcf348c29e7dcf8161e`, and its decision was recorded and synchronized at `385c66c314af7582320356e0258ebe985fa4b6f8`. The controlling decision is `APPROVE_BATCH_6_AS_PLANNING_EVIDENCE_WITHOUT_OPTION_SELECTION_OR_EXECUTION_AUTHORITY`; Options A–D remain `REVIEWED_NOT_SELECTED`, all Annex encryption alternatives remain `PROPOSED_NOT_APPROVED`, and option selection remains blocked by evidence gaps.
+
+The Project Owner recorded `APPROVE_BATCH_7_AS_PLANNING_EVIDENCE_AND_SELECT_MODEL_B_WITHOUT_ACTUAL_CLASSIFICATION_OR_EXECUTION_AUTHORITY`; the decision was synchronized into Annex Version `0.13.0` at `396f302130276ac28da9818889677949072a6a9d`. Batch 7 Model B is `SELECTED_AS_DOCUMENTARY_CLASSIFICATION_MODEL_ONLY`; no actual data or evidence classification, category assignment, encryption scope, or retention exception is approved.
+
+The Batch 8 assessment-scope package was created at `17d03c080e22b3dab9df13043358418a25a3b55a` and stabilized at `fec0436da1941576c3a322291ec9dca2b03ba6b0`. The Project Owner decision `APPROVE_BATCH_8_AND_SELECT_MODEL_A_WITH_MANDATORY_SEPARATE_EXTENSION_AND_LIMITED_READINESS_CLAIM_WITHOUT_EXECUTION_AUTHORITY` was recorded at `d2f81c4d3ed42ea3c8ab0710bf5af2ad0d88d356` and synchronized into Annex Version `0.14.0` at `fc9a9e1d126376daef2c40cdf91970751574f4b0`. Batch 8 Model A is `SELECTED_AS_INITIAL_DOCUMENTARY_SCOPE_MODEL`; Batch 8 Models B and C are `REVIEWED_NOT_SELECTED`. Batch 7 Model B and Batch 8 Model A remain separate documentary model namespaces.
 
 This activation does not constitute assessment-execution authorization and does not expand the authority recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`.
 
@@ -34,6 +42,13 @@ For this task record, `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION` is reus
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_5_REVIEW_DECISION.md`
+- `docs/project/planning/BATCH_6_ENCRYPTION_OPTION_LEVEL_PLANNING_PACKAGE.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_6_REVIEW_DECISION.md`
+- `docs/project/planning/BATCH_7_DATA_EVIDENCE_CLASSIFICATION_AND_ENCRYPTION_SCOPE_PLANNING_PACKAGE.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_7_REVIEW_DECISION.md`
+- `docs/project/planning/BATCH_8_ASSESSMENT_SCOPE_MINIMIZATION_AND_COMMAND_MANIFEST_CLOSURE_PLANNING_PACKAGE.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_8_REVIEW_DECISION.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`
 - `docs/project/status/CURRENT_STATUS.md`
 - `docs/project/status/TODAY_OBJECTIVE.md`
@@ -50,13 +65,28 @@ This active task is limited to:
 - keeping verified repository facts, Project Owner decisions, proposed assessment inputs, evidence gaps, assumptions, risks, and future authorization requirements separate; and
 - submitting the finalized Annex for a future separate Project Owner review.
 
-## 5.1 Recorded Batch 4 Transition
+## 5.1 Recorded Batch 4–8 Transitions
 
 Completed:
 
 - Batch 4 Project Owner Review decision recording;
 - synchronization of the Batch 4 decision into the main Annex;
 - Annex Version `0.9.0` documentation update at commit `ad570ae2ce5ff64265cce30df57725c2d59be69e`.
+- Batch 5 decision and Annex Version `0.11.0` synchronization at `6dd07a4177eb970c4bf8ce4da5eee634ccfcc6de`;
+- Batch 6 package creation, correction, decision, and synchronization through `385c66c314af7582320356e0258ebe985fa4b6f8` without encryption-option selection;
+- Batch 7 decision and Annex Version `0.13.0` synchronization, with Model B selected only as the documentary classification model and no actual classification;
+- Batch 8 package creation and stabilization, Project Owner decision recording, and Annex Version `0.14.0` synchronization at `fc9a9e1d126376daef2c40cdf91970751574f4b0`.
+
+Batch 8 selects the following complete closed initial Model A documentary inventory:
+
+- selected targets: `TGT-REPO-001`, `TGT-WSL-001`, `TGT-GIT-WIN-001`, `TGT-GIT-WSL-001`, and `TGT-DOCKER-001` limited strictly to `B2-MAN-010`;
+- retained command-manifest rows: `B2-MAN-001` through `B2-MAN-010` and `B2-MAN-013`;
+- `B2-BLK-001` only as `RETAINED_AS_SUPPORTING_TRACEABILITY_RECORD_NOT_AS_EXECUTABLE_MANIFEST_ROW`;
+- exactly five retained documentary interactions: `B2-INT-001`, `B2-INT-002`, `B2-INT-003`, `B2-INT-004` narrowed strictly to `B2-MAN-010`, and `B2-INT-006`;
+- excluded initial-scope records: `B2-MAN-011`, `B2-MAN-012`, `B2-BLK-002` through `B2-BLK-006`, `B2-INT-005`, and `B2-INT-007` through `B2-INT-011`, all retained as historical traceability under `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE`;
+- mandatory separate Project Owner-authorized Annex extension before Docker Engine, Ollama, Hermes, OpenWebUI, or LM Studio may return to scope;
+- any future conclusion limited to `INITIAL_MINIMAL_CORE_SCOPE_READINESS`;
+- completeness classified only as `DOCUMENTARY_INITIAL_SCOPE_COMPLETENESS_DETERMINATION_ONLY`.
 
 Not completed:
 
@@ -74,7 +104,7 @@ Current Annex state:
 - gate: `BLOCKED`;
 - blocking fields: 1, 2, 3, 4, 8, 9, 10, and 11.
 
-Remaining planning blockers include complete command-level interactions and controls for permitted Field 1 targets; the required revision for `B2-MAN-011`; disposition of deferred `B2-MAN-012`; remaining blocked manifest rows; command-specific semantics; service, endpoint, port, network, and resource interactions; operating-system identities and group mapping; exact ACL implementation; encryption mechanism; disposal mechanism; final incident-notification channel and configuration; exact permitted business-sensitive-information categories; Field 8 and Field 9 reproduction dependencies; and Field 11 evidence dependencies. The `B2-MAN-011` equality-result planning revision does not by itself resolve that command row.
+Remaining selected-Model-A planning blockers include objective verification of every retained target, manifest, interaction, evidence-use, redaction, reproduction, criteria-mapping, and Field 8 and Field 9 dependency; operating-system identities and group mapping; exact ACL implementation; encryption mechanism; disposal mechanism; final incident-notification channel and configuration; exact permitted business-sensitive-information categories; and Field 11 evidence dependencies. Excluded historical records are not prerequisites for initial Model A documentary completeness, but remain unresolved historical or future-extension matters. Any future extension requires separate Project Owner authorization.
 
 ## 6. Explicit Out-of-Scope Boundaries
 
@@ -140,4 +170,4 @@ No new milestone is established by activation of this planning task or by comple
 Task Status: `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION`
 
 Summary:
-Batch 4 decision recording and Annex Version `0.9.0` synchronization are complete. This separately bounded Project Layer planning task remains active only for resolution or explicit retention of the remaining Annex blockers for future separate Project Owner review. The repository does not record a separate Project Owner decision closing this task or activating a successor task. It is not authorized for assessment execution, command execution, environment inspection, assessment-evidence collection, configuration, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer activity.
+Batch 4 through Batch 8 decision recording and authorized Annex synchronization are complete through Annex Version `0.14.0`. Batch 7 Model B remains selected only as the documentary classification model; Batch 8 Model A remains selected only as the initial documentary assessment-scope model. This separately bounded Project Layer planning task remains active only for resolution or explicit retention of the remaining Annex blockers for future separate Project Owner review. The repository does not record a separate Project Owner decision closing this task, establishing Batch 9, or activating a successor task. It is not authorized for assessment execution, command execution, environment inspection, assessment-evidence collection, configuration, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer activity.

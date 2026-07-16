@@ -2,15 +2,15 @@
 
 ## Context ID
 
-EAIRA-PROJECT-STATUS-2026-07-15
+EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.10.0
+0.11.0
 
 ## Updated At
 
-2026-07-15
+2026-07-16
 
 ## Current Milestone
 
@@ -24,7 +24,7 @@ Current/New Milestone: None established.
 
 ## Active Phase
 
-Bounded Project Layer planning under activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to resolve or explicitly retain the remaining mandatory Authorization Annex blockers. Batch 7 planning evidence and its Project Owner decision are recorded and substantively synchronized into Annex Version `0.13.0`; Model B is selected only as the documentary classification model, no actual classification is approved, and the Local Readiness Assessment and assessment-evidence collection remain unauthorized.
+Bounded Project Layer planning under activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to resolve or explicitly retain the remaining mandatory Authorization Annex blockers. Batch 8 planning evidence and its Project Owner decision are recorded and synchronized into Annex Version `0.14.0`; Batch 8 Model A is selected only as the initial documentary assessment-scope model. The separate Batch 7 Model B selection remains the documentary classification model. Neither decision modifies, replaces, or reopens the other; no actual classification is approved, and the Local Readiness Assessment and assessment-evidence collection remain unauthorized.
 
 ## Current Decision
 
@@ -52,14 +52,24 @@ The Batch 7 data/evidence classification and encryption-scope planning package w
 
 Model A is `REVIEWED_NOT_SELECTED`. Model B is `SELECTED_AS_DOCUMENTARY_CLASSIFICATION_MODEL_ONLY` with documentary categories Public, Internal non-sensitive, Confidential, Restricted-retainable, and Prohibited from retention. No actual data or evidence is classified and no actual category assignment is approved. The approved Annex Field 9 taxonomy and dispositions remain controlling; every mapping remains a `NON-SELECTIVE DOCUMENTARY CROSSWALK`; apparent conflicts remain `POTENTIAL_DECISION CONFLICT`; stricter `PROHIBITED_FROM_CAPTURE` dispositions control; and no retention exception is granted.
 
+The Batch 8 assessment-scope-minimization and command-manifest-closure planning package was created at `17d03c080e22b3dab9df13043358418a25a3b55a` and stabilized at `fec0436da1941576c3a322291ec9dca2b03ba6b0`. The Project Owner decision record was committed at `d2f81c4d3ed42ea3c8ab0710bf5af2ad0d88d356`, and the decision was synchronized into the main Authorization Annex at Version `0.14.0` in commit `fc9a9e1d126376daef2c40cdf91970751574f4b0`.
+
+The controlling Batch 8 decision is `APPROVE_BATCH_8_AND_SELECT_MODEL_A_WITH_MANDATORY_SEPARATE_EXTENSION_AND_LIMITED_READINESS_CLAIM_WITHOUT_EXECUTION_AUTHORITY`. Batch 8 Model A is `SELECTED_AS_INITIAL_DOCUMENTARY_SCOPE_MODEL`; Batch 8 Models B and C are `REVIEWED_NOT_SELECTED`. This initial-scope decision is distinct from, and does not modify, replace, or reopen, the Batch 7 selection of Model B as `SELECTED_AS_DOCUMENTARY_CLASSIFICATION_MODEL_ONLY`.
+
+The Batch 8 initial documentary scope selects Repository, WSL, Windows Git, WSL Git, and Docker limited to `B2-MAN-010`. It retains command-manifest records `B2-MAN-001` through `B2-MAN-010` plus `B2-MAN-013`; `B2-BLK-001` is supporting traceability only. It retains exactly five interactions: `B2-INT-001`, `B2-INT-002`, `B2-INT-003`, narrowed `B2-INT-004`, and `B2-INT-006`. It excludes `B2-MAN-011`, `B2-MAN-012`, `B2-BLK-002` through `B2-BLK-006`, `B2-INT-005`, and `B2-INT-007` through `B2-INT-011` from the selected initial scope. Docker Engine beyond `B2-MAN-010`, Ollama, Hermes, OpenWebUI, and LM Studio require a mandatory separate extension.
+
+The only permitted readiness claim is `INITIAL_MINIMAL_CORE_SCOPE_READINESS`, and the completeness determination is `DOCUMENTARY_INITIAL_SCOPE_COMPLETENESS_DETERMINATION_ONLY`. These documentary decisions do not resolve a Field or authorize execution, environment inspection, or evidence collection.
+
 Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`. Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. Field 10 retains Field 8 and Field 9 dependencies, Field 11 retains evidence dependencies, and the all-fields-resolved gate remains `BLOCKED`.
 
 ## Blockers
 
-Blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11. Unresolved planning inputs include complete command-level interactions and controls for permitted Field 1 targets; the required `B2-MAN-011` revision; disposition of deferred `B2-MAN-012`; remaining blocked manifest rows; command-specific semantics; service, endpoint, port, network, and resource interactions; exact Windows and WSL identities; exact local group names and memberships; exact UID/GID mapping; exact ACL entries, rights, inheritance, propagation, deny policy, privilege or elevation requirement, rollback mechanism, and verified effective-access results; actual classification assignments and classification inheritance; encryption scope; plaintext locations and readers; administrator access and verifier decryption; backup, recovery, replica and export treatment; key governance; platform, application, technical, data-flow, compliance and cryptographic evidence; acceptance and verification criteria; encryption and disposal mechanisms; final incident-notification channel and configuration; exact permitted business-sensitive-information categories; Field 8 and Field 9 reproduction dependencies; and Field 11 evidence dependencies.
+Blocking fields remain 1, 2, 3, 4, 8, 9, 10, and 11. Within the selected Batch 8 Model A scope, unresolved planning inputs include command-specific semantics and controls for the retained manifest; the retained five service, endpoint, port, network, and resource interactions; exact Windows and WSL identities; exact local group names and memberships; exact UID/GID mapping; exact ACL entries, rights, inheritance, propagation, deny policy, privilege or elevation requirement, rollback mechanism, and verified effective-access results; actual classification assignments and classification inheritance; encryption scope; plaintext locations and readers; administrator access and verifier decryption; backup, recovery, replica and export treatment; key governance; platform, application, technical, data-flow, compliance and cryptographic evidence; acceptance and verification criteria; encryption and disposal mechanisms; final incident-notification channel and configuration; exact permitted business-sensitive-information categories; Field 8 and Field 9 reproduction dependencies; and Field 11 evidence dependencies.
+
+The excluded historical records `B2-MAN-011`, `B2-MAN-012`, `B2-BLK-002` through `B2-BLK-006`, `B2-INT-005`, and `B2-INT-007` through `B2-INT-011` are not prerequisites for documentary completeness of the selected initial scope. Docker Engine beyond `B2-MAN-010`, Ollama, Hermes, OpenWebUI, and LM Studio are future separate-extension matters, not selected-initial-scope prerequisites. Their exclusion does not resolve the retained Fields 1–4 and 8–11 dependencies or change the `BLOCKED` gate.
 
 No assessment-authorization decision may be made until the all-fields-resolved gate is satisfied. Local Readiness Assessment execution, command execution, environment inspection, evidence collection, evidence-directory or evidence-file creation, ACL, identity, group, access, encryption, hashing, redaction, quarantine, notification, retention, disposal, runtime, deployment, database, production, or governance activity remains unauthorized. No milestone or M4 is established, and neither Platform Foundation nor a formal EAIRA Execution Layer is established.
 
 ## Next Action
 
-This substantive synchronization records the completed Batch 7 documentary planning and decision cycle. The next authorized work remains bounded Project Layer planning under `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` to resolve or explicitly retain remaining Annex blockers. Model B is documentary only; no actual classification is approved; and no Batch 6 option or Annex alternative may be selected while the recorded evidence gaps remain unresolved. No subsequent documentary planning batch is established automatically; future planning remains subject to separate Project Owner direction and authorization. Do not infer or select identities, groups, users, ACL entries, permissions, commands, encryption mechanisms, or key arrangements. Do not execute or simulate the assessment, run assessment commands, inspect the environment, collect evidence, configure access or encryption, or treat planning as assessment or implementation authorization.
+This synchronization records the completed Batch 8 documentary planning, decision, and Annex-synchronization cycle. The next authorized work remains bounded Project Layer planning under the same active task, `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`, to resolve or explicitly retain the remaining dependencies within the selected initial scope. Batch 8 Model A is an initial documentary assessment-scope model only; Batch 7 Model B remains a separate documentary classification model; no actual classification is approved; and no Batch 6 option or Annex alternative may be selected while the recorded evidence gaps remain unresolved. No Batch 9, successor task, or other documentary planning batch is established automatically. Any Field-state change, new batch, successor task, or scope extension requires direct evidence, separate Project Owner review, and separate explicit authorization. Do not infer or select identities, groups, users, ACL entries, permissions, commands, encryption mechanisms, or key arrangements. Do not execute or simulate the assessment, run assessment commands, inspect the environment, collect evidence, configure access or encryption, or treat planning as assessment or implementation authorization.
