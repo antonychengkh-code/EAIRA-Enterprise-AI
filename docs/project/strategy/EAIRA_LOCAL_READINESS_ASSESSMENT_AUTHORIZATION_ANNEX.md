@@ -24,8 +24,8 @@
 | Evidence Disposal Activity | `UNAUTHORIZED` |
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
-| Date | 2026-07-15 |
-| Version | 0.13.0 |
+| Date | 2026-07-16 |
+| Version | 0.14.0 |
 
 ## 2. Purpose
 
@@ -42,6 +42,7 @@ This Annex derives its bounded planning authority from:
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_5_REVIEW_DECISION.md`;
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_6_REVIEW_DECISION.md`;
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_7_REVIEW_DECISION.md`;
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_8_REVIEW_DECISION.md`;
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`.
 
 The underlying authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. The Batch 1 planning-input decision recorded below does not supersede that execution non-authorization. `AUTHORIZE_BOUNDED_ASSESSMENT` has not been granted. `AUTHORIZE_WITH_REQUIRED_REVISIONS` has not been granted as conditional execution authority.
@@ -83,6 +84,21 @@ The Annex addresses the twelve mandatory content areas in Section 6 of the decis
 | `RISK` | Identified safety, evidence, scope, or authority risk. |
 | `FUTURE_AUTHORIZATION_REQUIREMENT` | Input that must be explicitly approved before assessment activity. |
 | `REJECTED_BY_PROJECT_OWNER` | Option explicitly rejected by the Project Owner and unavailable as an approved planning or execution input. |
+
+### Batch 8 Documentary Status and Disposition Labels
+
+The following are documentary status, model-disposition, record-disposition, and scope-completeness labels:
+
+| Label | Meaning |
+| --- | --- |
+| `APPROVED_AS_PLANNING_EVIDENCE` | Project Owner-approved documentary planning evidence; no execution or evidence-collection authority. |
+| `SELECTED_AS_INITIAL_DOCUMENTARY_SCOPE_MODEL` | Scope model selected for the initial documentary assessment inventory only. |
+| `REVIEWED_NOT_SELECTED` | Model reviewed but not selected for the applicable documentary decision. |
+| `RETAINED_AS_SUPPORTING_TRACEABILITY_RECORD_NOT_AS_EXECUTABLE_MANIFEST_ROW` | Supporting traceability retained without creating a command or interaction record. |
+| `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE` | Historical record remains traceable but is excluded from the selected initial scope. |
+| `DOCUMENTARY_INITIAL_SCOPE_COMPLETENESS_DETERMINATION_ONLY` | Determines documentary scope closure only; it does not establish existence, readiness, criterion satisfaction, Field resolution, gate satisfaction, or authority. |
+
+These labels do not independently establish a `VERIFIED_REPOSITORY_FACT`, execution authority, evidence-collection authority, Field resolution, criterion satisfaction, or gate satisfaction.
 
 Agent self-report, conversation memory, tool availability, and unstored local knowledge are not verified repository facts.
 
@@ -517,14 +533,125 @@ Batch 7 does not change the Batch 6 decision. Options A–D remain `REVIEWED_NOT
 
 Actual classification assignments, classification inheritance, exact encryption scope, plaintext locations and readers, administrator plaintext access, verifier decryption authority, backup, recovery, replica and export treatment, platform and application capabilities, key governance, compliance and cryptographic requirements, technical and data-flow evidence, and acceptance and verification criteria remain unresolved.
 
+## Batch 8 Assessment Scope Minimization and Command Manifest Closure Planning Evidence
+
+The Project Owner accepts the Batch 8 assessment-scope minimization and command-manifest closure package as bounded documentary planning evidence. The package's original lifecycle states remain historical pre-decision source evidence, while the Batch 8 decision record controls the adopted disposition.
+
+## Project Owner Input Resolution — Batch 8 Review
+
+| Decision field | Recorded value |
+| --- | --- |
+| Decision | `APPROVE_BATCH_8_AND_SELECT_MODEL_A_WITH_MANDATORY_SEPARATE_EXTENSION_AND_LIMITED_READINESS_CLAIM_WITHOUT_EXECUTION_AUTHORITY` |
+| Decision Authority | Project Owner |
+| Decision Date | 2026-07-16 |
+| Status | `APPROVED_AS_PLANNING_EVIDENCE` |
+| Classification | `PROJECT_OWNER_DECISION` |
+| Execution Marker | `PROPOSED_NOT_AUTHORIZED_FOR_EXECUTION` |
+| Package | `docs/project/planning/BATCH_8_ASSESSMENT_SCOPE_MINIMIZATION_AND_COMMAND_MANIFEST_CLOSURE_PLANNING_PACKAGE.md` |
+| Package Commit | `17d03c080e22b3dab9df13043358418a25a3b55a`; stabilized at `fec0436da1941576c3a322291ec9dca2b03ba6b0` |
+| Authoritative Decision Record | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_8_REVIEW_DECISION.md` |
+
+This decision accepts Batch 8 only as bounded documentary planning evidence and selects Model A only as the initial documentary assessment-scope model.
+
+| Batch 8 scope model | Disposition |
+| --- | --- |
+| Model A — Minimal Core Assessment Scope | `SELECTED_AS_INITIAL_DOCUMENTARY_SCOPE_MODEL` |
+| Model B — Minimal Core Plus Docker Context Equality | `REVIEWED_NOT_SELECTED` |
+| Model C — Extended Local AI Assessment Scope | `REVIEWED_NOT_SELECTED` |
+
+Batch 7 Model B and Batch 8 Model A belong to different documentary model namespaces. Batch 7 Model B remains `SELECTED_AS_DOCUMENTARY_CLASSIFICATION_MODEL_ONLY`; Batch 8 Model A is `SELECTED_AS_INITIAL_DOCUMENTARY_SCOPE_MODEL`. Neither decision modifies or reopens the other.
+
+### Batch 8 selected targets
+
+The selected initial Model A documentary target set contains only:
+
+- `TGT-REPO-001`
+- `TGT-WSL-001`
+- `TGT-GIT-WIN-001`
+- `TGT-GIT-WSL-001`
+- `TGT-DOCKER-001`, limited strictly to the Docker client-version planning row `B2-MAN-010`
+
+Target selection does not establish existence or authorize interaction, inspection, command execution, or evidence collection.
+
+### Batch 8 retained command and supporting records
+
+Retained command-manifest rows:
+
+- `B2-MAN-001` through `B2-MAN-010`
+- `B2-MAN-013`
+
+`B2-BLK-001` is retained only as:
+
+`RETAINED_AS_SUPPORTING_TRACEABILITY_RECORD_NOT_AS_EXECUTABLE_MANIFEST_ROW`
+
+It is not a command, is not an interaction, does not increase either count, and grants no execution authority.
+
+### Batch 8 selected interaction allowlist
+
+Exactly five documentary interaction records are retained:
+
+- `B2-INT-001`
+- `B2-INT-002`
+- `B2-INT-003`
+- `B2-INT-004`, narrowed strictly to `B2-MAN-010`
+- `B2-INT-006`
+
+For the selected initial Model A scope, retained `B2-INT-004` includes only the Docker client-version planning interaction associated with `B2-MAN-010`. It excludes `B2-MAN-011`, Docker context equality handling, context-name retention, context inspection, Docker Engine contact, interaction authority, and execution authority.
+
+### Batch 8 excluded initial-scope records
+
+The following are classified only as `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE`:
+
+- `B2-MAN-011`
+- `B2-MAN-012`
+- `B2-BLK-002` through `B2-BLK-006`
+- `B2-INT-005`
+- `B2-INT-007` through `B2-INT-011`
+
+Exclusion does not delete historical planning evidence, prove nonexistence or unsafety, permanently reject a target, authorize a substitute command or later interaction, or automatically approve a future extension.
+
+### Mandatory separate-extension rule
+
+Docker Engine, Ollama, Hermes, OpenWebUI, and LM Studio may return to assessment scope only through a separately proposed and separately Project Owner-authorized Annex extension defining exact targets, commands, executables, working directories, endpoints, ports, service-contact boundaries, output restrictions, mutation-risk determinations, evidence classifications, Fields 8 and 9 controls, reproduction procedures, criteria mappings, stop conditions, review authority, and synchronization authority.
+
+No excluded target, interaction, command, endpoint, or port is implicitly reserved, pre-approved, or fast-tracked.
+
+### Limited readiness-claim boundary
+
+Any future readiness conclusion derived only from the selected Model A scope must be described as:
+
+`INITIAL_MINIMAL_CORE_SCOPE_READINESS`
+
+It must not be represented as complete EAIRA local-AI-platform readiness, Docker Engine readiness, Ollama readiness, Hermes readiness, OpenWebUI readiness, LM Studio readiness, complete runtime readiness, implementation readiness, milestone readiness, or Platform Foundation readiness.
+
+### Documentary initial-scope completeness determination
+
+The retained Model A target set, retained command-manifest rows, `B2-BLK-001` supporting traceability record, and retained interaction allowlist constitute the complete closed documentary inventory for the initial Model A assessment scope.
+
+That inventory includes selected targets, retained command-manifest rows, `B2-BLK-001` as supporting traceability only, five retained documentary interaction records, excluded and deferred records, and execution and evidence-collection boundaries.
+
+Every record explicitly listed in Batch 8 decision §7 remains `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE`.
+
+The phrase “excluded and deferred records” does not create a new row-specific deferred disposition.
+
+Future extension eligibility remains governed only by the mandatory separate-extension rule.
+
+This determination is classified only as:
+
+`DOCUMENTARY_INITIAL_SCOPE_COMPLETENESS_DETERMINATION_ONLY`
+
+It does not establish executable or command existence, executable availability, independently verified semantics, operational evidence controls, target-environment readiness, criterion satisfaction, Field 1–4 resolution, gate satisfaction, execution authority, or evidence-collection authority.
+
+This Version 0.14.0 synchronization records the adopted complete closed documentary inventory but does not modify any Field state. Before any future Field-state modification, direct review of the synchronized Annex, objective verification that every retained requirement is addressed and satisfied, and separate Project Owner approval remain required. That later review must not reopen or unselect the initial documentary scope.
+
 ## 5. Mandatory Field Resolution Matrix
 
 | # | Mandatory field | Resolution state | Current disposition |
 | ---: | --- | --- | --- |
-| 1 | Exact local environment boundary and complete target inventory | `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING` | The environment boundary and initial inventory are approved as planning inputs; selected command-level definitions are approved as planning content, but complete command-level controls remain unresolved. |
-| 2 | Exact approved tool and command manifest | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Selected Batch 2 manifest planning inputs are approved, one requires revision, one is deferred, and five target-specific rows remain blocked; no command is executable. |
-| 3 | Command-specific arguments, working directory, privilege, target, purpose, expected output, timeout, and mutation-risk determination | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Selected command-specific planning controls are approved, but required revisions, unresolved semantics, and evidence/redaction dependencies remain blocking. |
-| 4 | Approved and prohibited services, endpoints, ports, network actions, and resources | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | Selected no-network interaction definitions are approved as planning inputs; service endpoints, ports, and several resource interactions remain blocked. |
+| 1 | Exact local environment boundary and complete target inventory | `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING` | Batch 8 selects the complete initial Model A documentary target set. Field 1 remains unchanged because retained command-level controls have not been objectively verified as addressed and satisfied. |
+| 2 | Exact approved tool and command manifest | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Batch 8 retains eleven command-manifest rows and excludes the remaining rows from the selected initial scope while preserving historical traceability. No command is executable, and no Field-state change is approved. |
+| 3 | Command-specific arguments, working directory, privilege, target, purpose, expected output, timeout, and mutation-risk determination | `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS` | Retained command-specific planning controls remain subject to evidence, redaction, semantic-verification, and satisfaction dependencies. Batch 8 does not resolve Field 3. |
+| 4 | Approved and prohibited services, endpoints, ports, network actions, and resources | `PARTIALLY_RESOLVED_WITH_BLOCKERS` | Batch 8 retains exactly five documentary interactions for selected Model A and excludes extended interactions from the initial scope. No interaction, endpoint, port, or execution authority is approved, and Field 4 remains unchanged. |
 | 5 | Named operator and named independent verifier | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 names the operator, verifier, accountable human owner, and stop authority. |
 | 6 | Verifier independence, role separation, and named stop authority | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves procedural independence, separation, stop conditions, and restart control. |
 | 7 | Observation window, timezone, clock source, freshness, staleness, and rerun rules | `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` | Batch 1 approves the observation and freshness control framework; an exact future start timestamp still belongs in a separate execution authorization. |
@@ -599,11 +726,27 @@ The following values are `PROJECT_OWNER_DECISION` inputs approved by `APPROVE_BA
 - Database, credential, production, and external-network boundaries remain prohibited as stated above.
 - No target may be contacted, queried, executed, or inspected under this planning decision.
 
+### Batch 8 selected initial Model A target overlay
+
+The approved initial target inventory above remains historical planning evidence. For the selected initial Model A documentary scope, the effective target overlay is:
+
+| Target or boundary | Selected Model A disposition |
+| --- | --- |
+| `TGT-REPO-001` | Retained in selected initial Model A documentary scope |
+| `TGT-WSL-001` | Retained in selected initial Model A documentary scope |
+| `TGT-GIT-WIN-001` | Retained in selected initial Model A documentary scope |
+| `TGT-GIT-WSL-001` | Retained in selected initial Model A documentary scope |
+| `TGT-DOCKER-001` | Retained in selected initial Model A documentary scope; limited strictly to `B2-MAN-010` |
+| Docker Engine, `TGT-OLLAMA-001`, `TGT-HERMES-001`, `TGT-OPENWEBUI-001`, `TGT-LMSTUDIO-001` | `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE`; historical planning evidence retained; separate extension required |
+| Existing prohibited targets | Existing prohibitions remain unchanged |
+
+The selected target overlay does not establish target existence, availability, readiness, or authority.
+
 ### Current status
 
 `PARTIALLY_RESOLVED_WITH_COMMAND_LEVEL_CONTROLS_PENDING`
 
-The environment boundary and initial target inventory are approved as planning inputs. Field 1 remains blocking because complete exact command-level interactions and controls are not resolved.
+The historical environment boundary and target inventory remain approved planning inputs. Batch 8 selects and closes the initial Model A documentary target set. This synchronization does not modify Field 1. Field 1 remains unchanged until the synchronized Annex is directly reviewed, every retained requirement is objectively verified as addressed and satisfied, and the Project Owner separately approves a Field-state modification.
 
 ## 7. Mandatory Fields 2 and 3 — Tool and Command Manifest
 
@@ -703,12 +846,35 @@ These rows remain part of the closed manifest but contain no command. No substit
 - Explicit blocked rows with no command: 5 (`B2-BLK-002` through `B2-BLK-006`).
 - Total closed manifest and blocker records: 19.
 
+### Batch 8 selected initial Model A manifest overlay
+
+The historical command, supporting, and blocker records above remain intact. The selected initial Model A documentary disposition is:
+
+| Historical records | Selected Model A disposition |
+| --- | --- |
+| `B2-MAN-001` through `B2-MAN-010` | Retained in selected initial Model A documentary scope |
+| `B2-MAN-011` | `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE` |
+| `B2-MAN-012` | `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE`; historical deferred semantics retained |
+| `B2-MAN-013` | Retained in selected initial Model A documentary scope |
+| `B2-BLK-001` | `RETAINED_AS_SUPPORTING_TRACEABILITY_RECORD_NOT_AS_EXECUTABLE_MANIFEST_ROW` |
+| `B2-BLK-002` through `B2-BLK-006` | `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE` |
+
+Selected initial Model A counts:
+
+- Retained command-manifest rows: 11.
+- Supporting traceability records: 1.
+- Supporting records counted as commands: 0.
+- Supporting records counted as interactions: 0.
+- Excluded command and blocked records retained in historical traceability: 7.
+- Execution-authorized rows: 0.
+- Evidence-collection-authorized rows: 0.
+
 ### Current status
 
 - Field 2: `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`
 - Field 3: `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`
 
-Selected manifest content is approved as planning input only. No manifest row is executable. `B2-MAN-011` retains mandatory Field 9 and evidence-collection dependencies, `B2-MAN-012` is deferred, and Field 8 evidence destinations, Field 9 controls, Field 10 reproduction procedures, and Field 11 mappings remain required.
+Historical manifest content remains approved planning evidence only. For selected Model A, `B2-MAN-011`, `B2-MAN-012`, and `B2-BLK-002` through `B2-BLK-006` are outside the selected initial scope and are not prerequisites for its documentary completeness. Retained rows remain non-executable and subject to Field 8, Field 9, Field 10, Field 11, semantic-verification, and satisfaction dependencies. Field 2 and Field 3 states remain unchanged.
 
 ## 8. Mandatory Field 4 — Services, Endpoints, Ports, Network Actions, and Resources
 
@@ -732,6 +898,24 @@ Default network rule: `ALL_UNLISTED_NETWORK_ACTIONS_PROHIBITED`.
 | `B2-INT-010` | `TGT-OPENWEBUI-001` | OpenWebUI local service | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `LOOPBACK_ONLY` | None. | Login, endpoint calls, API writes, model loading, inference, plugin execution, configuration export, credentials, or non-loopback access. | Application, service, model, plugin, and configuration state must remain unchanged. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
 | `B2-INT-011` | `TGT-LMSTUDIO-001` | LM Studio local application or service | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` | `LOOPBACK_ONLY` | None. | Application/service calls, model loading, inference, configuration export, credentials, or non-loopback access. | Application, service, model, runtime, and configuration state must remain unchanged. | `BLOCKED_PENDING_PROJECT_OWNER_INPUT` |
 
+### Batch 8 selected initial Model A interaction overlay
+
+The historical Batch 2 interaction table above remains intact as pre-Batch 8 historical planning evidence. The selected initial Model A overlay below records the adopted effective initial-scope boundary and does not rewrite the historical interaction record.
+
+The selected initial Model A interaction allowlist retains exactly:
+
+| Interaction | Selected Model A disposition |
+| --- | --- |
+| `B2-INT-001` | Retained in selected initial Model A documentary scope |
+| `B2-INT-002` | Retained in selected initial Model A documentary scope |
+| `B2-INT-003` | Retained in selected initial Model A documentary scope |
+| `B2-INT-004` | Retained in selected initial Model A documentary scope; narrowed strictly to `B2-MAN-010` |
+| `B2-INT-006` | Retained in selected initial Model A documentary scope |
+
+Within this selected-scope overlay, `B2-INT-004` includes only the Docker client-version planning interaction associated with `B2-MAN-010`. It excludes `B2-MAN-011`, Docker context equality handling, context-name retention, context inspection, Docker Engine contact, interaction authority, and execution authority.
+
+`B2-INT-005` and `B2-INT-007` through `B2-INT-011` are `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE`. Their historical records remain traceable, and any later inclusion requires a separately authorized extension.
+
 ### Explicitly prohibited targets and interactions
 
 | Target ID | Prohibited boundary | Command | Approval state |
@@ -748,7 +932,7 @@ API writes, service lifecycle actions, container lifecycle actions, model execut
 
 `PARTIALLY_RESOLVED_WITH_BLOCKERS`
 
-Selected interaction definitions are approved as planning inputs only. Docker engine, Ollama service, Hermes, OpenWebUI, and LM Studio interactions remain blocked. `B2-INT-005` is conditional and does not approve `B2-MAN-012`; no service endpoint or port is approved.
+Historical interaction definitions remain approved planning inputs only. The selected initial Model A overlay retains exactly five documentary interactions and excludes Docker Engine, Ollama service, Hermes, OpenWebUI, and LM Studio interactions from the initial scope. Those historical or future-extension matters remain non-executable. No service endpoint or port is approved, and Field 4 remains unchanged.
 
 ## 9. Mandatory Fields 5 and 6 — Operator, Independent Verifier, Separation, and Stop Authority
 
@@ -1020,6 +1204,12 @@ Existing `PROHIBITED_FROM_CAPTURE` dispositions remain stricter than the Model B
 | `B2-MAN-011` | Docker context name | Retain only whether the observed name equals a separately approved expected value, and only when Field 8 is sufficiently resolved, output is exactly one context name, and no context detail or Docker engine contact occurs. Exact-name retention is not approved. | `APPROVED_WITH_REQUIRED_REDACTION_REVISION` |
 | `B2-MAN-013` | Windows Git product/version | Retain only product/version if separately authorized; repository, configuration, credential, or additional fields trigger stop. | `APPROVED_AS_REDACTION_PLANNING_CONTROL` |
 
+### Batch 8 selected-scope Field 9 boundary
+
+All historical Field 9 records remain intact. For the selected initial Model A scope, `B2-MAN-011` and its context-name or equality-result handling are `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE`. No context-name retention, context equality handling, context inspection, Docker Engine contact, or related evidence collection is retained.
+
+This selected-scope exclusion does not resolve or rewrite historical `B2-MAN-011`, `REP-B2-011`, or `MAP-B2-011` semantics. The approved Field 9 taxonomy, Batch 7 Model B documentary classification decision, stricter prohibitions, and current Field 9 state remain unchanged.
+
 ### Approved accidental-exposure planning procedure
 
 State: `APPROVED_AS_INCIDENT_RESPONSE_PLANNING_CONTROL`.
@@ -1101,6 +1291,17 @@ Each reproduction record consists of `B3-REP-COMMON` plus both table rows carryi
 - Excluded deferred row: `B2-MAN-012` / `DEFER_PENDING_COMMAND_SEMANTICS_REVIEW`.
 - Commands executed to test reproduction records: 0.
 
+### Batch 8 selected initial Model A reproduction overlay
+
+All twelve historical reproduction records remain intact. The selected initial Model A scope retains eleven reproduction records:
+
+- `REP-B2-001` through `REP-B2-010`
+- `REP-B2-013`
+
+`REP-B2-011` is `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE`. Its historical record and its semantic relationship to `MAP-B2-011` remain unresolved and are preserved only for historical traceability or a future separately authorized extension review.
+
+Selected initial-scope reproduction-record count: 11. Field 10 remains `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES`.
+
 ### Current status
 
 `APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES`
@@ -1156,6 +1357,17 @@ No mapping, alone or combined, may establish overall Local Readiness, milestone 
 - Approved criteria-to-evidence planning mappings: 12.
 - Mapping for deferred `B2-MAN-012`: none.
 
+### Batch 8 selected initial Model A criteria-mapping overlay
+
+All twelve historical criteria mappings remain intact. The selected initial Model A scope retains eleven mappings:
+
+- `MAP-B2-001` through `MAP-B2-010`
+- `MAP-B2-013`
+
+`MAP-B2-011` is `NOT_INCLUDED_IN_SELECTED_INITIAL_ASSESSMENT_SCOPE`. Its historical inconsistency with `REP-B2-011` is not resolved by this synchronization and remains an unresolved historical or future-extension review matter.
+
+Selected initial-scope criteria-mapping count: 11. Field 11 remains `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES`.
+
 ### Current status
 
 `APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES`
@@ -1196,18 +1408,41 @@ Field 12 is resolved only as gate logic; it does not satisfy the gate.
 
 ## 16. Consolidated Project Owner Input Queue
 
-The following decisions are required before this Annex can be finalized for an assessment-authorization decision:
+The following requirements remain before any Field-state modification or assessment-authorization decision.
 
-1. Resolve complete command-level interactions and controls for every permitted Field 1 target.
-2. Complete the required revision for `B2-MAN-011`, resolve or reject deferred `B2-MAN-012`, and resolve the remaining blocked manifest rows.
-3. Resolve outstanding command-specific semantics, authorized evidence-use details, redaction dependencies, reproduction procedures, and criteria mappings.
-4. Resolve the blocked service, endpoint, port, network, and resource interactions while retaining all recorded prohibitions.
-5. Resolve exact operating-system identities, local group names and memberships, UID/GID mapping, ACL entries and rights, inheritance and propagation behavior, deny policy, privilege or elevation requirement, rollback mechanism, and verified effective-access results while retaining the Batch 5 approved default group model, exception boundary, role-membership rule, and non-executable access-control planning inputs; separately resolve encryption, disposal, and final incident-notification mechanisms.
-6. Preserve Model B as the selected documentary classification model only. Resolve actual data and evidence classification assignments; classification inheritance; exact encryption scope; plaintext locations and readers; administrator plaintext access; independent-verifier decryption authority; verified platform and application capabilities; backup, recovery, replica and export treatment; key ownership, custody, administration, permitted service identities and separation; rotation, revocation and compromise response; auditability, compliance and cryptographic standards; vendor, regional, licensing, portability and recovery constraints; technical and data-flow evidence; and future acceptance and verification criteria before any encryption option or Annex-alternative selection.
-7. Complete the required Field 9 revisions and resolve exact permitted business-sensitive-information categories plus the blocked notification, quarantine, filesystem-restriction, and disposal mechanisms.
-8. Resolve Field 8 and Field 9 dependencies for the approved non-executable reproduction planning controls.
-9. Resolve the evidence dependencies for the approved criteria-to-evidence planning mappings.
-10. Confirm that all mandatory fields, exceptions, conflicts, and ambiguities satisfy the all-fields-resolved gate.
+### Retained Model A requirements
+
+1. Directly review this synchronized Annex and verify that the retained target, manifest, supporting-record, interaction, reproduction, and mapping overlays faithfully implement the adopted Batch 8 decision.
+2. Objectively verify that every retained command-manifest and interaction requirement is addressed and satisfied without inferring executable availability, command semantics, environment readiness, or criterion satisfaction.
+3. Resolve retained-scope evidence-use, redaction, reproduction, criteria-mapping, and Field 8 and Field 9 dependencies.
+4. Obtain separate Project Owner approval before modifying any Field state.
+
+### Excluded historical and future-extension matters
+
+The following remain historical planning records but are not prerequisites for initial Model A documentary-scope completeness:
+
+- `B2-MAN-011`
+- `B2-MAN-012`
+- `B2-BLK-002` through `B2-BLK-006`
+- `B2-INT-005`
+- `B2-INT-007` through `B2-INT-011`
+- `REP-B2-011`
+- `MAP-B2-011`
+
+Their historical dispositions, gaps, and internal inconsistencies remain traceable and unresolved. They must not be silently deleted, rewritten, or treated as selected initial-scope requirements.
+
+### Separate-extension requirements
+
+Any future extension covering Docker Engine, Ollama, Hermes, OpenWebUI, or LM Studio must independently define and receive Project Owner approval for exact targets, commands and arguments, executables or process identities, working directories, endpoints, addresses, ports, service-contact and network boundaries, output restrictions, mutation-risk determinations, evidence classifications, Fields 8 and 9 controls, reproduction procedures, criteria mappings, stop conditions, review authority, and synchronization authority.
+
+### Fields 8–11 dependencies
+
+1. Resolve exact operating-system identities, local group names and memberships, UID/GID mapping, ACL entries and rights, inheritance and propagation behavior, deny policy, privilege or elevation requirements, rollback, and verified effective-access results while preserving the Batch 5 planning model and non-execution boundary.
+2. Resolve encryption, disposal, final incident-notification, actual classification assignments, classification inheritance, exact encryption scope, plaintext locations and readers, administrator access, verifier decryption, backup, recovery, replica and export treatment, key governance, platform and application capabilities, technical and data-flow evidence, compliance and cryptographic requirements, and acceptance and verification criteria.
+3. Preserve Batch 6 Options A–D as `REVIEWED_NOT_SELECTED`, all Annex encryption alternatives as `PROPOSED_NOT_APPROVED`, and Batch 7 Model B only as the documentary classification model.
+4. Resolve Field 8 and Field 9 dependencies for the eleven selected-scope reproduction controls.
+5. Resolve evidence dependencies for the eleven selected-scope criteria mappings.
+6. Confirm through a later direct review and separate Project Owner decision that every mandatory Field classification, exception, conflict, and ambiguity satisfies the all-fields-resolved gate.
 
 ## 17. Stop Conditions
 
@@ -1232,7 +1467,10 @@ No remediation or corrective action is authorized after a stop condition is reac
 | Are all execution-controlling fields resolved and approved? | No. |
 | Is the all-fields-resolved gate satisfied? | No — `BLOCKED`. |
 | Is Batch 7 accepted as planning evidence? | Yes, as bounded non-executable planning evidence only. |
-| Is a documentary classification model selected? | Yes — Model B is `SELECTED_AS_DOCUMENTARY_CLASSIFICATION_MODEL_ONLY`; Model A is `REVIEWED_NOT_SELECTED`. |
+| Is the Batch 7 documentary classification model selected? | Yes — Batch 7 Model B is `SELECTED_AS_DOCUMENTARY_CLASSIFICATION_MODEL_ONLY`; Batch 7 Model A is `REVIEWED_NOT_SELECTED`. |
+| Is Batch 8 accepted as planning evidence? | Yes — `APPROVED_AS_PLANNING_EVIDENCE` without execution authority. |
+| Is an initial documentary assessment-scope model selected? | Yes — Batch 8 Model A is `SELECTED_AS_INITIAL_DOCUMENTARY_SCOPE_MODEL`; Batch 8 Models B and C are `REVIEWED_NOT_SELECTED`. |
+| Is the initial Model A documentary inventory complete and closed? | Yes, only as `DOCUMENTARY_INITIAL_SCOPE_COMPLETENESS_DETERMINATION_ONLY`; no Field, criterion, gate, execution, or evidence authority follows. |
 | Is any actual data or evidence classified? | No. |
 | Is any encryption scope, option, or Annex alternative selected? | No. |
 | Assessment execution | `UNAUTHORIZED` |
@@ -1254,7 +1492,7 @@ No remediation or corrective action is authorized after a stop condition is reac
 
 ## 19. Future Review Requirement
 
-After the mandatory inputs are supplied and every field is explicitly resolved, this Annex must undergo direct file review and independent repository verification, including exact Git status, exact Git diff, and direct reading of the finalized Annex.
+After the mandatory inputs are supplied and every field is explicitly resolved, this Annex must undergo direct file review and independent repository verification, including exact Git status, exact Git diff, and direct reading of the finalized Annex. For any future Field-state modification, direct review of this synchronized Annex, objective verification that every retained requirement is addressed and satisfied, and separate Project Owner approval are required. That review must not reopen or unselect the initial Model A documentary scope.
 
 The Project Owner must then conduct a separate review and record an unconditional decision. Annex completion, acceptance, silence, conditional language, or approval with unresolved revisions is insufficient to authorize any assessment command, observation, interaction, or evidence collection.
 
@@ -1269,6 +1507,8 @@ The Project Owner must then conduct a separate review and record an unconditiona
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_6_REVIEW_DECISION.md`
 - `docs/project/planning/BATCH_7_DATA_EVIDENCE_CLASSIFICATION_AND_ENCRYPTION_SCOPE_PLANNING_PACKAGE.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_7_REVIEW_DECISION.md`
+- `docs/project/planning/BATCH_8_ASSESSMENT_SCOPE_MINIMIZATION_AND_COMMAND_MANIFEST_CLOSURE_PLANNING_PACKAGE.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_8_REVIEW_DECISION.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`
 - `docs/project/status/CURRENT_STATUS.md`
