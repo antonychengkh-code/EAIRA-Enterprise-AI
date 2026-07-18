@@ -4,18 +4,24 @@
 
 | Field | Value |
 | --- | --- |
-| Document Type | Project Owner adoption decision record draft |
+| Document Type | Project Owner adoption decision record — committed locally, pending push authorization |
 | Decision Date | 2026-07-18 |
 | Adopted Package | `docs/project/planning/FIELD_2_RETAINED_COMMAND_SEMANTICS_VERIFICATION_PACKAGE.md` |
-| Package SHA-256 | `10194369E577128EDFE6648C8D4E02C8A0ED5116909B15F14DABE7EFFE980D90` |
-| Package Byte Size | `41,321` bytes |
-| Package Status at Decision Time | Untracked working-tree draft; `ADOPTED_RESPONSE_ONLY_PLANNING_EVIDENCE_UNTRACKED_PENDING_REPOSITORY_RECORDING` |
+| Original Adopted Package SHA-256 | `10194369E577128EDFE6648C8D4E02C8A0ED5116909B15F14DABE7EFFE980D90` |
+| Original Adopted Package Byte Size | `41,321` bytes |
+| Original Adoption Commit | `21a0c858aaa2ba7788d348f1e2b715ab321023fa` |
+| Original Artifact Identity Classification | Byte-exact artifact identity at the original local adoption commit |
+| Current Lifecycle-Corrected Package SHA-256 | `2060C54E168B922E29FE7E614B1543B0D003B6E4BCF0434224FB53551DA05814` |
+| Current Lifecycle-Corrected Package Byte Size | `42,563` bytes |
+| Corrected Successor Classification | Lifecycle-corrected successor to the originally adopted artifact; substantively unchanged within the protected adoption scope; pending successful correction commit until the corrected package and this record are committed together; committed-local and pending push authorization after successful correction commit |
+| Historical Package Status at Decision Time | Untracked working-tree draft; `ADOPTED_RESPONSE_ONLY_PLANNING_EVIDENCE_UNTRACKED_PENDING_REPOSITORY_RECORDING` |
 | Repository Baseline | `master` at `287a52ec25aaf8554878775737ef1a24ed3f04ad` |
 | Local Remote-Tracking Baseline | Local `origin/master` at `287a52ec25aaf8554878775737ef1a24ed3f04ad` |
 | Live-Remote Verification | Unverified; local `origin/master` is a local remote-tracking ref only, and no fetch or live-remote query was performed |
-| Decision-Record Working-Tree Classification | `UNTRACKED_PROJECT_OWNER_ADOPTION_RECORD_DRAFT_PENDING_INDEPENDENT_VERIFICATION` |
+| Historical Decision-Record Classification at Creation | `UNTRACKED_PROJECT_OWNER_ADOPTION_RECORD_DRAFT_PENDING_INDEPENDENT_VERIFICATION` |
+| Current Record Classification | `COMMITTED_LOCAL_PROJECT_OWNER_ADOPTION_RECORD_PENDING_PUSH_AUTHORIZATION` |
 
-This record documents a Project Owner decision in an untracked working-tree draft. It is not committed repository evidence.
+At adoption-record creation time, this record documented a Project Owner decision in an untracked working-tree draft and was not committed repository evidence. After commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa`, it is committed-local repository evidence pending push authorization and is not live-remote verified.
 
 ## 2. Verification Basis
 
@@ -27,17 +33,25 @@ The Project Owner acceptance classification is:
 
 `ACCEPTED_AS_INDEPENDENT_POST_REVISION_VERIFICATION_WITH_PROCEDURAL_FINDINGS`
 
-The verified artifact identity is the package path, SHA-256, and byte size recorded in Section 1. Independent verification found no substantive content mismatch. The verification report is a response-only, non-repository input and is not described or treated as committed repository evidence.
+The original adopted artifact identity is the package path, original SHA-256, original byte size, and original adoption commit recorded in Section 1. Independent verification found no substantive content mismatch in that byte-exact artifact. The verification report is a response-only, non-repository input and is not described or treated as committed repository evidence.
+
+The current lifecycle-corrected successor identity is separately recorded in Section 1. The bounded lifecycle correction does not alter the substantive adoption scope. Subject to successful protected-content validation and a successful correction commit containing the byte-identical corrected package and this record, the lifecycle-corrected successor remains adopted as planning evidence with recorded limitations.
 
 ## 3. Project Owner Adoption Decision
 
-The Project Owner decision is:
+The Project Owner decision as issued was:
 
 `ADOPTED_AS_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS_PENDING_REPOSITORY_COMMIT`
 
-The adoption decision already exists at the Project Owner response-only decision layer. This new untracked record draft documents that decision in the repository working tree. Creation of this draft does not make the decision committed repository evidence and does not convert the response-only decision into a committed record.
+The current decision status is:
 
-The decision becomes committed repository evidence only after a separately authorized successful commit containing this record. No staging or commit is authorized by this decision-record draft.
+`ADOPTED_AS_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS_COMMITTED_LOCALLY_PENDING_PUSH`
+
+The pending-repository-commit condition in the historical decision-as-issued value was satisfied by commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa`.
+
+At adoption-record creation time, the adoption decision existed at the Project Owner response-only decision layer, and the new untracked record draft documented that decision only in the working tree. Merely creating that draft did not make the decision committed repository evidence or convert the response-only decision into a committed record. The separately authorized successful-commit condition was subsequently satisfied locally by commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa`; no retroactive creation-time cure or authorization is claimed.
+
+At creation time, no staging or commit was authorized by the decision-record draft itself.
 
 ## 4. Adoption Basis
 
@@ -97,7 +111,7 @@ The Project Owner records the following high-level decisions:
 | `B2-MAN-013` | Option B — require version-scoped Git-for-Windows-under-WSL primary documentation |
 | Output and dependency rules | Option A — make SHA expectations conditional on the repository object format |
 
-Before a successful commit, these remain Project Owner decisions documented in an untracked adoption-record draft. Only after a separately authorized successful commit containing this record may they be described as committed repository-recorded decisions.
+Before commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa`, these were Project Owner decisions documented only in an untracked adoption-record draft. After that separately authorized successful local commit containing this record, they are committed-local repository-recorded decisions; they remain unpushed, not live-remote verified, and not execution-authorizing.
 
 These decisions select only the stated high-level directions. No Stage 1 detail decision is selected, including no pager-suppression form, executable-binding representation policy, path-identification method, repository-discovery-variable treatment, optional-lock suppression form, fsmonitor treatment alternative, lazy-fetch suppression form, concrete Object-Name Expectation Rule text, executable path, version, configuration, environment fact, or inspection method.
 
@@ -107,10 +121,10 @@ The following limitations and evidence gaps are carried forward:
 
 1. S1–S17 remain externally unverified source descriptions and are not `VERIFIED_REPOSITORY_EVIDENCE`.
 2. The complete prior response-only source was not independently reviewed.
-3. Before a successful commit, the six high-level directions are documented only in this untracked draft and are not committed repository evidence.
+3. Before commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa`, the six high-level directions were documented only in an untracked draft and were not committed repository evidence. After that successful local commit, they are committed-local repository evidence, remain unpushed and not live-remote verified, and grant no execution authority.
 4. All Stage 1 detail decisions remain unselected.
 5. Package-local analytical labels remain non-authoritative pending Project Owner approval or taxonomy mapping.
-6. Creation authorization was absent from committed repository evidence.
+6. At package and adoption-record creation time, creation authorization was absent from committed repository evidence. Commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa` prospectively records the authorization classification and related provenance without retroactively proving creation-time authorization; the historical gap remains recorded.
 7. Live-remote parity remains unverified; local `origin/master` is only a local remote-tracking ref.
 8. The Claude research memo and Codex reconciliation report remain non-repository and independently unverified supporting inputs.
 9. Field 8 dependencies remain unresolved, including evidence destinations, readers and writers, ACLs, integrity, encryption, retention, disposal, and stopped-assessment handling.
@@ -120,13 +134,13 @@ The following limitations and evidence gaps are carried forward:
 13. Cross-cutting detailed inputs remain unresolved: Git pager suppression form; shell resolution or exact executable binding; repository-discovery environment controls; optional-lock treatment; fsmonitor treatment; lazy-fetch treatment; object-format-dependent SHA-width rule text; Docker residual-risk treatment; Windows-Git-through-WSL residual-risk treatment; and applicable Field 8 and Field 9 boundaries.
 14. Executable presence, installed versions, actual PATH, aliases, functions, wrappers, configuration, environment variables, plugins, helpers, hooks, pagers, credential stores, partial-clone state, repository object format, and actual runtime behavior remain unverified.
 
-Creation of this untracked decision-record draft does not cure the committed-evidence gap. The gap would be closed prospectively only upon a separately authorized successful commit containing this record.
+At adoption-record creation time, creating the untracked decision-record draft did not cure the committed-evidence gap. The separately authorized successful-commit condition was subsequently satisfied locally by commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa`, prospectively recording the decision and related provenance as committed-local repository evidence.
 
 No retroactive cure or authorization is claimed.
 
 ## 8. State Preservation
 
-This adoption decision and its untracked record draft change none of the following controlling states:
+This adoption decision and its committed-local lifecycle record change none of the following controlling states:
 
 | State | Preserved Value |
 | --- | --- |
@@ -160,23 +174,30 @@ This record authorizes none of the following:
 
 This record does not establish a milestone, M4, Platform Foundation, or a formal EAIRA Execution Layer.
 
-## 10. Future Lifecycle — Identification Only
+## 10. Lifecycle History and Remaining Future Steps — Identification Only
 
-The following possible lifecycle is identified without authorization:
+At adoption-record creation time, the following lifecycle was identified without authorization:
 
-1. Independently verify the two untracked files: the adopted package and this adoption-record draft.
+1. Independently verify the two then-untracked files: the adopted package and the adoption-record draft.
 2. Obtain a separate Project Owner staging-and-commit decision.
 3. Stage exactly the package and this adoption record.
 4. Verify the staged content and exact commit boundary.
 5. Create one bounded commit containing exactly those two files.
+
+Steps 1 through 5 were subsequently completed locally by commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa`. Their completion does not authorize any later lifecycle step.
+
 6. Push only under separate authorization.
 7. Perform any status or context synchronization only under later, separate authorization.
 8. Perform any Main Annex synchronization review only under later, separate authorization.
 
-No lifecycle step above is authorized by this record.
+No remaining future lifecycle step is authorized by this record.
 
 ---
 
-Post-creation classification:
+Historical post-creation classification:
 
 `UNTRACKED_PROJECT_OWNER_ADOPTION_RECORD_DRAFT_PENDING_INDEPENDENT_VERIFICATION`
+
+Current classification:
+
+`COMMITTED_LOCAL_PROJECT_OWNER_ADOPTION_RECORD_PENDING_PUSH_AUTHORIZATION`

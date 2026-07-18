@@ -17,8 +17,10 @@
 | Retrieval Date | 2026-07-17 |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Package Disposition | `BLOCKED_WITH_REMEDIATION` |
-| Working-Tree Classification | `REVISED_UNTRACKED_WORKING_TREE_DRAFT_PENDING_INDEPENDENT_PROJECT_OWNER_VERIFICATION` |
-| Bounded Revision Applied | 2026-07-18, under response-only Project Owner authorization only; not repository-ratified, staged, committed, or pushed |
+| Historical Working-Tree Classification at Bounded-Revision Completion | `REVISED_UNTRACKED_WORKING_TREE_DRAFT_PENDING_INDEPENDENT_PROJECT_OWNER_VERIFICATION` |
+| Current Classification | `COMMITTED_LOCAL_FIELD_2_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS_PENDING_PUSH_AUTHORIZATION` |
+| Historical Bounded-Revision Event | Completed 2026-07-18 under response-only Project Owner authorization; at bounded-revision completion, the package was not staged, committed, or pushed |
+| Subsequent Local Commit | Subsequently committed locally in `21a0c858aaa2ba7788d348f1e2b715ab321023fa`; remains unpushed and not live-remote verified |
 
 ## 2. Purpose
 
@@ -28,7 +30,7 @@ This package verifies documentary semantics. It does not execute a command, disc
 
 ## 3. Authority and Scope
 
-Creation of this single artifact was authorized by the Project Owner through response-only instruction. That creation authorization is classified as `USER_PROVIDED_RESPONSE_ONLY_PROJECT_OWNER_DECISION_INPUT`; it is not recorded in any committed repository record, and its absence from committed repository evidence is an explicit evidence gap recorded in Section 12. The single authorized artifact is:
+At package creation time, creation of this single artifact was authorized by the Project Owner through response-only instruction. At that time, the creation authorization was classified as `USER_PROVIDED_RESPONSE_ONLY_PROJECT_OWNER_DECISION_INPUT`, was not supported by committed repository evidence, and constituted the historical provenance gap recorded in Section 12. Commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa` prospectively records the authorization classification, adoption decision, and related provenance in committed-local repository evidence; it does not retroactively prove creation-time authorization or remove the historical provenance gap. The single authorized artifact is:
 
 `docs/project/planning/FIELD_2_RETAINED_COMMAND_SEMANTICS_VERIFICATION_PACKAGE.md`
 
@@ -208,7 +210,7 @@ The cross-cutting inputs above are Project Owner decision-envelope questions who
 
 ### C. Evidence-layer classification gaps
 
-- The creation authorization for this package is a response-only Project Owner input and is not supported by any committed repository record.
+- At package creation time, the creation authorization was a response-only Project Owner input and was not supported by committed repository evidence. Commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa` prospectively records the authorization classification, adoption decision, and related provenance in committed-local repository evidence without retroactively proving creation-time authorization; the historical provenance gap remains recorded.
 - The live-remote parity statement in Section 4 is self-reported at creation and unverified within the current authorized evidence boundary.
 - The Claude research memo and Codex reconciliation report cited in Section 16 are user-provided, non-repository, independently unverified inputs.
 - S1–S17 remain externally unverified source descriptions.
@@ -248,7 +250,7 @@ These labels change no Field state, gate state, command, or row conclusion.
 
 ## 14. Recommended Project Owner Review Inputs
 
-The detailed options below are `NON_SELECTED_PROJECT_OWNER_REVIEW_INPUT`. The Project Owner has ratified six high-level remediation directions only as response-only decision inputs, recorded in the subsection `Ratified high-level response-only directions` below. No Stage 1 detail decision is selected; see the subsection `Unselected Stage 1 detail decisions` below. A recommendation, matrix preference, or analytical conclusion is not a Project Owner selection.
+The detailed options below are `NON_SELECTED_PROJECT_OWNER_REVIEW_INPUT`. At bounded-revision time, the Project Owner had ratified six high-level remediation directions only as response-only decision inputs, recorded in the subsection `Ratified high-level directions — lifecycle history and current state` below. No Stage 1 detail decision is selected; see the subsection `Unselected Stage 1 detail decisions` below. A recommendation, matrix preference, or analytical conclusion is not a Project Owner selection.
 
 ### Common Git invocation envelope
 
@@ -288,7 +290,7 @@ The detailed options below are `NON_SELECTED_PROJECT_OWNER_REVIEW_INPUT`. The Pr
 
 These options do not modify the Main Annex command text and do not authorize another artifact or operational activity.
 
-### Ratified high-level response-only directions
+### Ratified high-level directions — lifecycle history and current state
 
 The Project Owner ratified the following high-level remediation directions only as `USER_PROVIDED_RESPONSE_ONLY_PROJECT_OWNER_DECISION_INPUT`:
 
@@ -301,7 +303,7 @@ The Project Owner ratified the following high-level remediation directions only 
 | `B2-MAN-013` | Option B — require version-scoped Git-for-Windows-under-WSL primary documentation |
 | Output and dependency rules | Option A — make SHA expectations conditional on the repository object format |
 
-These ratified directions are not repository-recorded, not committed, not pushed, not independently verified, and not execution-authorizing. They are response-only Project Owner decision inputs pending future repository ratification. They select high-level remediation directions only; they do not adopt any concrete rule text, command revision, control implementation, or Stage 1 detail decision, and they change no Field state, gate state, command, or row conclusion.
+At bounded-revision time, these ratified directions were response-only Project Owner decision inputs that were not repository-recorded, committed, pushed, or independently verified. After commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa`, the six high-level directions are recorded in committed-local repository evidence and independently post-commit verified; they remain unpushed, not live-remote verified, and not execution-authorizing. They select high-level remediation directions only; they do not adopt any concrete rule text, command revision, control implementation, or Stage 1 detail decision, and they change no Field state, gate state, command, or row conclusion.
 
 ### Unselected Stage 1 detail decisions
 
