@@ -17,10 +17,11 @@
 | Retrieval Date | 2026-07-17 |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
 | Package Disposition | `BLOCKED_WITH_REMEDIATION` |
-| Historical Working-Tree Classification at Bounded-Revision Completion | `REVISED_UNTRACKED_WORKING_TREE_DRAFT_PENDING_INDEPENDENT_PROJECT_OWNER_VERIFICATION` |
-| Current Classification | `COMMITTED_LOCAL_FIELD_2_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS_PENDING_PUSH_AUTHORIZATION` |
+| Historical Working-Tree Classification at 2026-07-18 Bounded-Revision Completion | `REVISED_UNTRACKED_WORKING_TREE_DRAFT_PENDING_INDEPENDENT_PROJECT_OWNER_VERIFICATION` |
+| Package Classification | `ADOPTED_FIELD_2_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS` |
 | Historical Bounded-Revision Event | Completed 2026-07-18 under response-only Project Owner authorization; at bounded-revision completion, the package was not staged, committed, or pushed |
-| Subsequent Local Commit | Subsequently committed locally in `21a0c858aaa2ba7788d348f1e2b715ab321023fa`; remains unpushed and not live-remote verified |
+| Original Adoption Commit | `21a0c858aaa2ba7788d348f1e2b715ab321023fa` recorded the original package adoption decision |
+| Lifecycle Correction Commit | `b854f4c9f360265fd63690b74fd3c23f295cdc2a` corrected lifecycle metadata while preserving the substantive adoption scope |
 
 ## 2. Purpose
 
@@ -30,7 +31,7 @@ This package verifies documentary semantics. It does not execute a command, disc
 
 ## 3. Authority and Scope
 
-At package creation time, creation of this single artifact was authorized by the Project Owner through response-only instruction. At that time, the creation authorization was classified as `USER_PROVIDED_RESPONSE_ONLY_PROJECT_OWNER_DECISION_INPUT`, was not supported by committed repository evidence, and constituted the historical provenance gap recorded in Section 12. Commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa` prospectively records the authorization classification, adoption decision, and related provenance in committed-local repository evidence; it does not retroactively prove creation-time authorization or remove the historical provenance gap. The single authorized artifact is:
+At package creation time, creation of this single artifact was authorized by the Project Owner through response-only instruction. At that time, the creation authorization was classified as `USER_PROVIDED_RESPONSE_ONLY_PROJECT_OWNER_DECISION_INPUT`, was not supported by committed repository evidence, and constituted the historical provenance gap recorded in Section 12. Commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa` prospectively records the authorization classification, adoption decision, and related provenance in commit-anchored repository evidence at `21a0c858aaa2ba7788d348f1e2b715ab321023fa`; it does not retroactively prove creation-time authorization or remove the historical provenance gap. The single authorized artifact is:
 
 `docs/project/planning/FIELD_2_RETAINED_COMMAND_SEMANTICS_VERIFICATION_PACKAGE.md`
 
@@ -43,19 +44,28 @@ Selected command scope is exactly:
 
 The package does not modify or reinterpret the Main Annex. Annex Version `0.16.0`, Field 2 state `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`, Field 12 state `RESOLVED_AS_CONTROL`, and gate state `BLOCKED` remain unchanged.
 
-## 4. Repository Evidence Basis
+## 4. Creation-Time Repository Evidence Basis
 
 The repository baseline was verified before creation:
 
 - branch: `master`;
 - `HEAD`: `287a52ec25aaf8554878775737ef1a24ed3f04ad`;
 - local `origin/master`: `287a52ec25aaf8554878775737ef1a24ed3f04ad`;
-- live remote `refs/heads/master`: `287a52ec25aaf8554878775737ef1a24ed3f04ad` — self-reported at package creation and unverified within the current authorized evidence boundary; no fetch or live-remote query is authorized, and this value must not be treated as `VERIFIED_REPOSITORY_EVIDENCE`;
+- live remote `refs/heads/master`: `287a52ec25aaf8554878775737ef1a24ed3f04ad` — self-reported and unverified at package creation; no fetch or live-remote query was authorized within that creation-time evidence boundary, and this value must not be treated as `VERIFIED_REPOSITORY_EVIDENCE`;
 - working tree and index: clean;
 - staged paths: none;
 - untracked paths: none.
 
 The selected commands, arguments, intended identities, working directory, outputs, stop conditions, and existing planning classifications are taken directly from the synchronized Annex. Repository evidence establishes the documentary command text; it does not establish executable presence, installed version, or runtime behavior.
+
+### Historical Commit and Publication Evidence
+
+- Commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa` recorded the original package adoption decision.
+- Commit `b854f4c9f360265fd63690b74fd3c23f295cdc2a` corrected lifecycle metadata while preserving the substantive adoption scope.
+- Those two named commits were subsequently published by a verified fast-forward update of `origin/master`.
+- Connected GitHub post-push verification observed remote `master` at `b854f4c9f360265fd63690b74fd3c23f295cdc2a`.
+- These publication facts apply only to the two named commits. The publication state of this transport-neutral document revision is not asserted here.
+- Git commit and ref evidence, not the package classification, is authoritative for current repository publication state.
 
 ## 5. Research Method
 
@@ -210,8 +220,8 @@ The cross-cutting inputs above are Project Owner decision-envelope questions who
 
 ### C. Evidence-layer classification gaps
 
-- At package creation time, the creation authorization was a response-only Project Owner input and was not supported by committed repository evidence. Commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa` prospectively records the authorization classification, adoption decision, and related provenance in committed-local repository evidence without retroactively proving creation-time authorization; the historical provenance gap remains recorded.
-- The live-remote parity statement in Section 4 is self-reported at creation and unverified within the current authorized evidence boundary.
+- At package creation time, the creation authorization was a response-only Project Owner input and was not supported by committed repository evidence. Commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa` prospectively records the authorization classification, adoption decision, and related provenance in commit-anchored repository evidence at `21a0c858aaa2ba7788d348f1e2b715ab321023fa` without retroactively proving creation-time authorization; the historical provenance gap remains recorded.
+- The live-remote parity statement in Section 4 was self-reported and unverified at package creation within the creation-time authorized evidence boundary. Later publication evidence is recorded separately in Section 4.
 - The Claude research memo and Codex reconciliation report cited in Section 16 are user-provided, non-repository, independently unverified inputs.
 - S1–S17 remain externally unverified source descriptions.
 
@@ -290,7 +300,7 @@ The detailed options below are `NON_SELECTED_PROJECT_OWNER_REVIEW_INPUT`. At bou
 
 These options do not modify the Main Annex command text and do not authorize another artifact or operational activity.
 
-### Ratified high-level directions — lifecycle history and current state
+### Ratified high-level directions — decision history and durable state
 
 The Project Owner ratified the following high-level remediation directions only as `USER_PROVIDED_RESPONSE_ONLY_PROJECT_OWNER_DECISION_INPUT`:
 
@@ -303,7 +313,7 @@ The Project Owner ratified the following high-level remediation directions only 
 | `B2-MAN-013` | Option B — require version-scoped Git-for-Windows-under-WSL primary documentation |
 | Output and dependency rules | Option A — make SHA expectations conditional on the repository object format |
 
-At bounded-revision time, these ratified directions were response-only Project Owner decision inputs that were not repository-recorded, committed, pushed, or independently verified. After commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa`, the six high-level directions are recorded in committed-local repository evidence and independently post-commit verified; they remain unpushed, not live-remote verified, and not execution-authorizing. They select high-level remediation directions only; they do not adopt any concrete rule text, command revision, control implementation, or Stage 1 detail decision, and they change no Field state, gate state, command, or row conclusion.
+At bounded-revision time, these ratified directions were response-only Project Owner decision inputs that were not repository-recorded, committed, pushed, or independently verified. Commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa` subsequently recorded the six high-level directions in commit-anchored repository evidence, and commit `b854f4c9f360265fd63690b74fd3c23f295cdc2a` corrected their lifecycle wording while preserving their substance. The verified publication of those named commits is recorded separately in Section 4. The directions are not execution-authorizing. They select high-level remediation directions only; they do not adopt any concrete rule text, command revision, control implementation, or Stage 1 detail decision, and they change no Field state, gate state, command, or row conclusion.
 
 ### Unselected Stage 1 detail decisions
 
