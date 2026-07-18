@@ -6,11 +6,11 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.12.0
+0.13.0
 
 ## Updated At
 
-2026-07-17
+2026-07-18
 
 ## Current Milestone
 
@@ -25,6 +25,8 @@ Current/New Milestone: None established.
 ## Active Phase
 
 Bounded Project Layer planning under activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to resolve or explicitly retain the remaining mandatory Authorization Annex blockers for Fields 2, 3, 8, 9, 10, and 11. The Gate Sequence Decision, the later Field-State Decision, and their synchronization into Main Annex Version `0.16.0` at commit `f9dae1a17d8f3da34fdfec6e9d82445f4edf624e` are recorded. Field 1 and Field 4 are resolved only for mandatory Annex pre-execution documentary planning completeness. Batch 8 Model A remains selected only as the initial documentary assessment-scope model, and the separate Batch 7 Model B selection remains the documentary classification model. Neither decision modifies, replaces, or reopens the other; no actual classification is approved, and the Local Readiness Assessment and assessment-evidence collection remain unauthorized.
+
+The Field 2 retained-command semantics package at `docs/project/planning/FIELD_2_RETAINED_COMMAND_SEMANTICS_VERIFICATION_PACKAGE.md` is adopted as `ADOPTED_FIELD_2_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS`. Its adoption record at `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_FIELD_2_PACKAGE_ADOPTION_DECISION.md` is classified `PROJECT_OWNER_FIELD_2_ADOPTION_DECISION_RECORD`, with standing decision `ADOPTED_AS_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS`. This advances documentary planning under the same active task only; Field 2 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`, Main Annex Version remains `0.16.0`, and the gate remains `BLOCKED`.
 
 ## Current Decision
 
@@ -66,9 +68,15 @@ The only permitted readiness claim is `INITIAL_MINIMAL_CORE_SCOPE_READINESS`, an
 
 Field 1 and Field 4 are `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` only for mandatory Annex pre-execution documentary planning completeness. Fields 2 and 3 remain `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`. Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. Field 10 retains Field 8 and Field 9 dependencies, Field 11 retains evidence dependencies, Field 12 remains `RESOLVED_AS_CONTROL`, and the all-fields-resolved gate remains `BLOCKED`.
 
+The Field 2 package adoption is recorded through the historical commit-anchored chain `21a0c858aaa2ba7788d348f1e2b715ab321023fa` (`docs(project): record Field 2 package adoption decision`), `b854f4c9f360265fd63690b74fd3c23f295cdc2a` (`docs(project): correct Field 2 lifecycle states to committed-local status`), and `47a349832626ec45724f1a83d970c30cf9c55cc8` (`docs(project): stabilize Field 2 lifecycle metadata transport-neutrally`). Seven rows remain documentary semantics-supported or broadly supported: `B2-MAN-001`, `B2-MAN-002`, `B2-MAN-003`, `B2-MAN-004`, `B2-MAN-005`, `B2-MAN-008`, and `B2-MAN-009`. Four substantive blockers remain: `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`.
+
+The Project Owner high-level directions are Common Git invocation envelope Option A; `B2-MAN-006` Option A; `B2-MAN-007` Option A; `B2-MAN-010` Option B; `B2-MAN-013` Option B; and output/dependency rules Option A. These directions do not select any Stage 1 detail. All Stage 1 detail decisions remain unselected. Assessment execution, command execution, and assessment-evidence collection remain `UNAUTHORIZED`.
+
 ## Blockers
 
 Fields outside passing states are exactly 2, 3, 8, 9, 10, and 11. The selected target inventory and five-interaction inventory are documentary-complete for Field 1 and Field 4 and are not remaining blockers for those Fields. Within the selected Batch 8 Model A scope, unresolved planning inputs include retained command semantics and read-only or mutation-risk conclusions for Field 2; command-specific semantic verification and applicable Field 8 and Field 9 handling dependencies for Field 3; exact Windows and WSL identities; exact local group names and memberships; exact UID/GID mapping; exact ACL entries, rights, inheritance, propagation, deny policy, privilege or elevation requirement, rollback mechanism, and verified effective-access results; classification inheritance; encryption scope; plaintext locations and readers; administrator access and verifier decryption; backup, recovery, replica and export treatment; key governance; platform, application, technical, data-flow, compliance and cryptographic evidence; encryption and disposal mechanisms; final incident-notification channel and configuration; exact permitted business-sensitive-information categories; Field 8 and Field 9 reproduction dependencies; and Field 11 evidence-handling dependencies.
+
+Within Field 2, the retained substantive blockers are exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`. The seven supported or broadly supported rows are not executable and do not resolve Field 2. All Stage 1 detail decisions remain unselected.
 
 The excluded historical records `B2-MAN-011`, `B2-MAN-012`, `B2-BLK-002` through `B2-BLK-006`, `B2-INT-005`, and `B2-INT-007` through `B2-INT-011` are not prerequisites for documentary completeness of the selected initial scope. Docker Engine beyond `B2-MAN-010`, Ollama, Hermes, OpenWebUI, and LM Studio are future separate-extension matters, not selected-initial-scope prerequisites. Their exclusion does not resolve the retained Fields 2, 3, 8, 9, 10, and 11 dependencies or change the `BLOCKED` gate.
 
@@ -76,4 +84,4 @@ No assessment-authorization decision may be made until the all-fields-resolved g
 
 ## Next Action
 
-This synchronization records the Gate Sequence Decision, the later Field-State Decision, and Main Annex Version `0.16.0` at commit `f9dae1a17d8f3da34fdfec6e9d82445f4edf624e` while preserving the historical Batch 8 Version `0.14.0` provenance. The next authorized work remains bounded Project Layer planning under the same active task, `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`, to resolve or explicitly retain the remaining dependencies for Fields 2, 3, 8, 9, 10, and 11. Field 1 and Field 4 documentary resolution does not establish target existence, executable availability, service availability, connectivity, environment readiness, criterion satisfaction, assessment results, or operational authority. Batch 8 Model A is an initial documentary assessment-scope model only; Batch 7 Model B remains a separate documentary classification model; no actual classification is approved; and no Batch 6 option or Annex alternative may be selected while the recorded evidence gaps remain unresolved. No Batch 9, successor task, or other documentary planning batch is established automatically. Any Field-state change, new batch, successor task, or scope extension requires direct evidence, separate Project Owner review, and separate explicit authorization. Do not infer or select identities, groups, users, ACL entries, permissions, commands, encryption mechanisms, or key arrangements. Do not execute or simulate the assessment, run assessment commands, inspect the environment, collect evidence, configure access or encryption, or treat planning as assessment or implementation authorization.
+First, independently verify the bounded six-file Field 2 post-adoption synchronization. After separate Project Owner acceptance and authorization, conduct one read-only Main Annex impact review limited to the mutation-risk rationale for `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`, plus the object-format-dependent SHA wording for `B2-MAN-004`, `B2-MAN-005`, and their related reproduction and mapping rows. This synchronization does not authorize a Main Annex edit, Field-state or gate-state change, Stage 1 detail selection, Field 3 consolidation, Batch 9, a successor task, assessment execution, environment inspection, command execution, or evidence collection. The same active task remains active.

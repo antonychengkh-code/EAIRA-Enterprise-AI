@@ -51,6 +51,8 @@ For this task record, `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION` is reus
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_7_REVIEW_DECISION.md`
 - `docs/project/planning/BATCH_8_ASSESSMENT_SCOPE_MINIMIZATION_AND_COMMAND_MANIFEST_CLOSURE_PLANNING_PACKAGE.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_8_REVIEW_DECISION.md`
+- `docs/project/planning/FIELD_2_RETAINED_COMMAND_SEMANTICS_VERIFICATION_PACKAGE.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_FIELD_2_PACKAGE_ADOPTION_DECISION.md`
 - `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_001.md`
 - `docs/project/status/CURRENT_STATUS.md`
 - `docs/project/status/TODAY_OBJECTIVE.md`
@@ -81,6 +83,19 @@ Completed:
 - the Gate Sequence Decision recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_GATE_SEQUENCE_DECISION.md`, correcting lifecycle sequencing without automatically reclassifying a Field or changing the gate;
 - the later Field-State Decision recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_FIELD_STATE_DECISION.md`, reclassifying Field 1 and Field 4 only for mandatory Annex pre-execution documentary planning completeness without performing a formal gate evaluation; and
 - synchronization of that adopted documentary state into Annex Version `0.16.0` at commit `f9dae1a17d8f3da34fdfec6e9d82445f4edf624e`.
+
+Field 2 completed documentary transition:
+
+- original package adoption was recorded at commit `21a0c858aaa2ba7788d348f1e2b715ab321023fa`;
+- lifecycle metadata was corrected at commit `b854f4c9f360265fd63690b74fd3c23f295cdc2a`;
+- transport-neutral lifecycle metadata was stabilized at commit `47a349832626ec45724f1a83d970c30cf9c55cc8`;
+- the package classification is `ADOPTED_FIELD_2_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS`, the adoption record classification is `PROJECT_OWNER_FIELD_2_ADOPTION_DECISION_RECORD`, and the standing adoption decision is `ADOPTED_AS_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS`;
+- the seven documentary semantics-supported or broadly supported rows are `B2-MAN-001`, `B2-MAN-002`, `B2-MAN-003`, `B2-MAN-004`, `B2-MAN-005`, `B2-MAN-008`, and `B2-MAN-009`;
+- the four retained substantive blockers are `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`;
+- the six high-level directions are Common Git invocation envelope Option A; `B2-MAN-006` Option A; `B2-MAN-007` Option A; `B2-MAN-010` Option B; `B2-MAN-013` Option B; and output/dependency rules Option A; and
+- all Stage 1 detail decisions remain unselected.
+
+This evidence advances Field 2 documentary planning only. It does not resolve Field 2, finalize the Annex, satisfy the gate, authorize execution or evidence collection, or establish a new task or Batch 9. Main Annex reconciliation requires a separate Project Owner-authorized read-only impact review before any correction.
 
 Batch 8 selects the following complete closed initial Model A documentary inventory:
 
@@ -178,4 +193,4 @@ No new milestone is established by activation of this planning task or by comple
 Task Status: `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION`
 
 Summary:
-Batch 4 through Batch 8 decision recording, the Gate Sequence Decision, the later Field-State Decision, and authorized Annex synchronization are complete through Annex Version `0.16.0` at commit `f9dae1a17d8f3da34fdfec6e9d82445f4edf624e`. Field 1 and Field 4 are `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` only for mandatory Annex pre-execution documentary planning completeness; Fields 2, 3, 8, 9, 10, and 11 remain outside passing states; Field 12 remains `RESOLVED_AS_CONTROL`; and the gate remains `BLOCKED`. Batch 7 Model B remains selected only as the documentary classification model; Batch 8 Model A remains selected only as the initial documentary assessment-scope model. This separately bounded Project Layer planning task remains active only for resolution or explicit retention of the remaining Annex blockers for future separate Project Owner review. The repository does not record a separate Project Owner decision closing this task, establishing Batch 9, or activating a successor task. It is not authorized for assessment execution, command execution, environment inspection, assessment-evidence collection, configuration, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer activity.
+Batch 4 through Batch 8 decision recording, the Gate Sequence Decision, the later Field-State Decision, and authorized Annex synchronization are complete through Annex Version `0.16.0` at commit `f9dae1a17d8f3da34fdfec6e9d82445f4edf624e`. The Field 2 package adoption, lifecycle correction, and transport-neutral stabilization are recorded through commits `21a0c858aaa2ba7788d348f1e2b715ab321023fa`, `b854f4c9f360265fd63690b74fd3c23f295cdc2a`, and `47a349832626ec45724f1a83d970c30cf9c55cc8`. This evidence advances documentary planning only: Field 2 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`, its four substantive blockers remain, and all Stage 1 detail decisions remain unselected. Field 1 and Field 4 are `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` only for mandatory Annex pre-execution documentary planning completeness; Fields 2, 3, 8, 9, 10, and 11 remain outside passing states; Field 12 remains `RESOLVED_AS_CONTROL`; and the gate remains `BLOCKED`. Batch 7 Model B remains selected only as the documentary classification model; Batch 8 Model A remains selected only as the initial documentary assessment-scope model. This separately bounded Project Layer planning task remains active only for resolution or explicit retention of the remaining Annex blockers for future separate Project Owner review. Main Annex reconciliation requires a separate Project Owner-authorized read-only impact review. The repository does not record a separate Project Owner decision closing this task, establishing Batch 9, or activating a successor task. It is not authorized for assessment execution, command execution, environment inspection, assessment-evidence collection, configuration, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer activity.
