@@ -6,11 +6,11 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.14.0
+0.15.0
 
 ## Updated At
 
-2026-07-18
+2026-07-19
 
 ## Current Milestone
 
@@ -84,4 +84,4 @@ No assessment-authorization decision may be made until the all-fields-resolved g
 
 ## Next Action
 
-After separate Project Owner mutation authorization, perform one bounded downstream synchronization limited to `docs/project/context/CURRENT_CONTEXT.md`, `docs/project/status/CURRENT_STATUS.md`, `docs/project/status/TODAY_OBJECTIVE.md`, `docs/project/status/ACTIVE_TASK.yaml`, `docs/project/status/AGENT_CONTEXT_VERSION.yaml`, and `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` to record the published Main Annex Version `0.17.0` correction at commit `1d6fb56c31c8d00862bc0ab423d30486329c0d05`. Independently verify the complete six-file diff before staging. This synchronization does not authorize a Main Annex edit, Field-state or gate-state change, Stage 1 detail selection, Field 3 consolidation, Batch 9, a successor task, assessment execution, environment inspection, command execution, or evidence collection. The same active task remains active.
+The Main Annex Version `0.17.0` Field 2 semantics correction remains published at commit `1d6fb56c31c8d00862bc0ab423d30486329c0d05`, and its bounded six-file downstream synchronization is complete and published at commit `4f5709e68b27838556813dfd9bcaa8882480a0d0`. No further downstream synchronization remains pending from that correction. Continue only bounded Project Layer planning under the same active task to resolve or explicitly retain the remaining mandatory blockers for Fields 2, 3, 8, 9, 10, and 11. No Main Annex edit, Field-state or gate-state change, Stage 1 detail selection, Field 3 consolidation, Batch 9, successor task, assessment execution, environment inspection, command execution, or evidence collection is authorized. The same active task remains active.
