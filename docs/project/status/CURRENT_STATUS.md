@@ -6,7 +6,7 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.13.0
+0.14.0
 
 ## Updated At
 
@@ -26,7 +26,7 @@ Current/New Milestone: None established.
 
 Bounded Project Layer planning under activated task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to resolve or explicitly retain the remaining mandatory Authorization Annex blockers for Fields 2, 3, 8, 9, 10, and 11. The Gate Sequence Decision, the later Field-State Decision, and their synchronization into Main Annex Version `0.16.0` at commit `f9dae1a17d8f3da34fdfec6e9d82445f4edf624e` are recorded. Field 1 and Field 4 are resolved only for mandatory Annex pre-execution documentary planning completeness. Batch 8 Model A remains selected only as the initial documentary assessment-scope model, and the separate Batch 7 Model B selection remains the documentary classification model. Neither decision modifies, replaces, or reopens the other; no actual classification is approved, and the Local Readiness Assessment and assessment-evidence collection remain unauthorized.
 
-The Field 2 retained-command semantics package at `docs/project/planning/FIELD_2_RETAINED_COMMAND_SEMANTICS_VERIFICATION_PACKAGE.md` is adopted as `ADOPTED_FIELD_2_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS`. Its adoption record at `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_FIELD_2_PACKAGE_ADOPTION_DECISION.md` is classified `PROJECT_OWNER_FIELD_2_ADOPTION_DECISION_RECORD`, with standing decision `ADOPTED_AS_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS`. This advances documentary planning under the same active task only; Field 2 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`, Main Annex Version remains `0.16.0`, and the gate remains `BLOCKED`.
+The Field 2 retained-command semantics package at `docs/project/planning/FIELD_2_RETAINED_COMMAND_SEMANTICS_VERIFICATION_PACKAGE.md` is adopted as `ADOPTED_FIELD_2_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS`. Its adoption record at `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_FIELD_2_PACKAGE_ADOPTION_DECISION.md` is classified `PROJECT_OWNER_FIELD_2_ADOPTION_DECISION_RECORD`, with standing decision `ADOPTED_AS_PLANNING_EVIDENCE_WITH_RECORDED_LIMITATIONS`. The bounded Field 2 semantics correction is published in Main Annex Version `0.17.0` at commit `1d6fb56c31c8d00862bc0ab423d30486329c0d05`. This advances documentary planning under the same active task only; Field 2 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`, and the gate remains `BLOCKED`.
 
 ## Current Decision
 
@@ -84,4 +84,4 @@ No assessment-authorization decision may be made until the all-fields-resolved g
 
 ## Next Action
 
-First, independently verify the bounded six-file Field 2 post-adoption synchronization. After separate Project Owner acceptance and authorization, conduct one read-only Main Annex impact review limited to the mutation-risk rationale for `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`, plus the object-format-dependent SHA wording for `B2-MAN-004`, `B2-MAN-005`, and their related reproduction and mapping rows. This synchronization does not authorize a Main Annex edit, Field-state or gate-state change, Stage 1 detail selection, Field 3 consolidation, Batch 9, a successor task, assessment execution, environment inspection, command execution, or evidence collection. The same active task remains active.
+After separate Project Owner mutation authorization, perform one bounded downstream synchronization limited to `docs/project/context/CURRENT_CONTEXT.md`, `docs/project/status/CURRENT_STATUS.md`, `docs/project/status/TODAY_OBJECTIVE.md`, `docs/project/status/ACTIVE_TASK.yaml`, `docs/project/status/AGENT_CONTEXT_VERSION.yaml`, and `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` to record the published Main Annex Version `0.17.0` correction at commit `1d6fb56c31c8d00862bc0ab423d30486329c0d05`. Independently verify the complete six-file diff before staging. This synchronization does not authorize a Main Annex edit, Field-state or gate-state change, Stage 1 detail selection, Field 3 consolidation, Batch 9, a successor task, assessment execution, environment inspection, command execution, or evidence collection. The same active task remains active.
