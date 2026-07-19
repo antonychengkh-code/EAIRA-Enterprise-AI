@@ -18,6 +18,26 @@ Batch 4 through Batch 8 Project Owner decision recording, the later Gate Sequenc
 
 ## 3. Authorization Basis
 
+The Project Owner accepted the B2-MAN-010 official-source documentary review at the
+response-only decision layer on 2026-07-19 with the required classification correction
+(`DQ-B210-03` corrected to `PARTIALLY_SUFFICIENT` — official documentation defines the
+displayed output as Docker CLI information, but does not establish the entire command
+execution as client-only; any stronger execution-path conclusion remains limited to
+version-pinned official source evidence), selected the Option B route, and adopted the
+specific narrower conclusion as version-scoped documentary planning input (Docker CLI tag
+`v29.6.1`, official tag commit `8900f1d330cb39e93e16d780a26bff1d7e07ba03`). No compact
+Project Owner decision identifier was issued. Network treatment C applies in its bounded
+B2-MAN-010 form: the requested and prohibited network action remains `NONE` and is not
+treated as verified absence of network activity, and the independent interaction-risk
+status `CONDITIONAL_NON_ENGINE_OTLP_ENDPOINT_PROCESSING_NOT_EXCLUDED` is recorded only in
+B2-MAN-010 applicable wording. The adoption establishes no local executable identity,
+version, configuration, credential, plugin, endpoint, telemetry, network, or Engine fact;
+satisfies no criterion; removes no blocker; and grants no assessment-execution,
+command-execution, local-inspection, Gate B, or evidence-collection authority. Every
+Field state, the four substantive blockers, the `BLOCKED` gate, Area 8 dispositions,
+Batch 8 Model A scope, and all execution and evidence-collection prohibitions remain
+unchanged.
+
 The Project Owner issued `ACCEPT_THE_CORRECTED_FIELD_2_STAGE_1_DOCUMENTARY_DECISION_READINESS_MATRIX_WITH_RECORDED_AREA_9_LIFECYCLE_CLARIFICATION_AND_SELECT_AREA_8_OPTION_8A_AS_THE_OBJECT_FORMAT_CONDITIONAL_RULE_TEXT_DIRECTION_WITHOUT_MAIN_ANNEX_MUTATION_FIELD_OR_GATE_CHANGE_GATE_B_AUTHORITY_LOCAL_INSPECTION_COMMAND_EXECUTION_OR_ASSESSMENT_EVIDENCE_COLLECTION_AUTHORITY` at the response-only layer. The repository record is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_FIELD_2_STAGE_1_AREA_8_OPTION_8A_SELECTION_DECISION.md` and the standing selection is `AREA_8_OPTION_8A_SELECTED_AS_DOCUMENTARY_OBJECT_NAME_EXPECTATION_RULE`. No current object format is claimed; the dependency remains future separately authorized repository-object-format verification. Every Field state, the four substantive blockers, the `BLOCKED` gate, Batch 8 Model A scope, commands, targets, working directories, timeouts, privileges, network boundaries, and execution and evidence-collection prohibitions remain unchanged.
 
 
@@ -62,6 +82,8 @@ For this task record, `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION` is reus
 - `docs/project/status/TODAY_OBJECTIVE.md`
 - `docs/project/status/ACTIVE_TASK.yaml`
 - `docs/project/context/CURRENT_CONTEXT.md`
+- `docs/project/planning/B2_MAN_010_OFFICIAL_SOURCE_DOCUMENTARY_REVIEW.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_010_OPTION_B_ADOPTION_DECISION.md`
 
 ## 5. Scope
 
@@ -87,6 +109,13 @@ Completed:
 - the Gate Sequence Decision recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_GATE_SEQUENCE_DECISION.md`, correcting lifecycle sequencing without automatically reclassifying a Field or changing the gate;
 - the later Field-State Decision recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_FIELD_STATE_DECISION.md`, reclassifying Field 1 and Field 4 only for mandatory Annex pre-execution documentary planning completeness without performing a formal gate evaluation; and
 - synchronization of that adopted documentary state into Annex Version `0.16.0` at commit `f9dae1a17d8f3da34fdfec6e9d82445f4edf624e`.
+- the B2-MAN-010 official-source review acceptance with corrected `DQ-B210-03`
+  classification (`PARTIALLY_SUFFICIENT`) and version-scoped Option B adoption (Docker
+  CLI tag `v29.6.1`, tag commit `8900f1d330cb39e93e16d780a26bff1d7e07ba03`), recorded in
+  `docs/project/planning/B2_MAN_010_OFFICIAL_SOURCE_DOCUMENTARY_REVIEW.md` and
+  `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_010_OPTION_B_ADOPTION_DECISION.md`;
+  and synchronization of the adopted conclusion into Main Annex Version `0.19.0` with
+  bounded network treatment C, with commit identity established by Git evidence.
 
 Field 2 completed documentary transition:
 
@@ -199,6 +228,13 @@ Task Status: `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION`
 Summary:
 
 Area 8 Option 8a is selected and recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_FIELD_2_STAGE_1_AREA_8_OPTION_8A_SELECTION_DECISION.md`, and Main Annex Version `0.18.0` records the selection. Area 8 Option 8c remains available and not selected. Area 8 Option 8b remains `NOT_AVAILABLE_WITHOUT_SEPARATE_REOPENING_AND_REVISION_OF_THE_CONTROLLING_HIGH_LEVEL_DIRECTION`. All other Stage 1 details remain unselected.
+
+The B2-MAN-010 official-source review adoption is recorded at its two artifact paths, and
+Main Annex Version `0.19.0` contains the synchronized version-scoped conclusion with
+network treatment C in its bounded B2-MAN-010 form. B2-MAN-010 remains a substantive
+blocker pending future separately authorized local/version verification, and no further
+synchronization remains pending from this decision. The same task remains active; no new
+task, Batch 9, milestone, execution, Gate B, or evidence authority is established.
 
 The repository object format remains unverified and dependent on future separately authorized repository-object-format verification. The four substantive blockers remain exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`.
 

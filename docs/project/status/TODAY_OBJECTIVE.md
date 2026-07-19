@@ -6,7 +6,7 @@
 
 ## Version
 
-0.15.0
+0.16.0
 
 ## Milestone
 
@@ -20,13 +20,27 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-Area 8 Option 8a repository recording is completed through the bounded eight-file documentary mutation. Main Annex Version `0.18.0` records the selection, and the current context, status, objective, active-task metadata, and active task record are synchronized.
+The B2-MAN-010 official-source review adoption recording is completed through the bounded
+nine-path documentary mutation. The Project Owner accepted the review with the required
+classification correction (`DQ-B210-03` corrected to `PARTIALLY_SUFFICIENT`) and adopted
+its specific narrower conclusion as version-scoped documentary planning input (Docker CLI
+tag `v29.6.1`, tag commit `8900f1d330cb39e93e16d780a26bff1d7e07ba03`). No compact
+identifier was issued. Main Annex Version `0.19.0` contains the synchronized conclusion,
+and the current context, status, objective, active-task metadata, and active task record
+are synchronized.
 
-The standing selection value is `AREA_8_OPTION_8A_SELECTED_AS_DOCUMENTARY_OBJECT_NAME_EXPECTATION_RULE`. Area 8 Option 8c remains available and not selected. Area 8 Option 8b remains `NOT_AVAILABLE_WITHOUT_SEPARATE_REOPENING_AND_REVISION_OF_THE_CONTROLLING_HIGH_LEVEL_DIRECTION`. All other Stage 1 details remain unselected.
+Network treatment C is recorded in its bounded B2-MAN-010 form: the requested and
+prohibited network action remains `NONE`, and the independent interaction-risk status
+`CONDITIONAL_NON_ENGINE_OTLP_ENDPOINT_PROCESSING_NOT_EXCLUDED` is recorded only in
+B2-MAN-010 applicable wording.
 
-The repository object format remains unverified and dependent on future separately authorized repository-object-format verification. Field 2 and Field 3 remain `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; the four substantive blockers remain exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`; and the gate remains `BLOCKED`.
+B2-MAN-010 remains a substantive blocker. Field 2 and Field 3 remain
+`PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; the four substantive blockers remain exactly
+`B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`; and the gate remains
+`BLOCKED`.
 
-Remaining bounded Project Layer planning continues under the same active task for the remaining blockers.
+Remaining bounded Project Layer planning continues under the same active task for the
+remaining blockers.
 
 ## Out of Scope
 
@@ -34,10 +48,25 @@ No further Stage 1 selection, Main Annex mutation, Field-state or gate-state cha
 
 ## Expected Deliverables
 
-The Area 8 Option 8a decision recording and eight-file current-state synchronization deliverable is complete. No further deliverable remains pending from this selection recording.
+The B2-MAN-010 official-source review adoption recording and nine-path current-state
+synchronization deliverable is complete. No further deliverable remains pending from this
+decision.
 
 ## Success Criteria
 
-The exact Project Owner decision identifier and separate standing selection value are recorded without alteration. Area 8 Option 8a is selected and recorded in Main Annex Version `0.18.0`; Area 8 Option 8c remains available and not selected; Area 8 Option 8b remains `NOT_AVAILABLE_WITHOUT_SEPARATE_REOPENING_AND_REVISION_OF_THE_CONTROLLING_HIGH_LEVEL_DIRECTION`; and all other Stage 1 details remain unselected.
+The structured Project Owner decision is recorded without alteration and without an
+invented compact identifier. The review artifact and adoption decision record exist at
+their recorded paths with their recorded classifications. Main Annex Version `0.19.0`
+contains the synchronized conclusion with network treatment C in its bounded B2-MAN-010
+form. The exact B2-MAN-010 command, arguments, target, working directory, timeout,
+privilege, and bounded output purpose are unchanged, and no other manifest row's
+semantics changed.
 
-The current context, status, objective, active-task metadata, and active task record are synchronized. No further Area 8 selection-recording synchronization remains pending. Every Field-state value remains unchanged; Field 2 and Field 3 remain `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; the substantive blockers remain exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`; the gate remains `BLOCKED`; Batch 8 Model A scope remains unchanged; and every execution and evidence-collection prohibition remains intact.
+The current context, status, objective, active-task metadata, and active task record are
+synchronized, and no further synchronization remains pending from this decision. Every
+Field-state value remains unchanged; Field 2 and Field 3 remain
+`PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; the substantive blockers remain exactly
+`B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`; the gate remains `BLOCKED`;
+Area 8 dispositions and Batch 8 Model A scope remain unchanged; and every execution and
+evidence-collection prohibition remains intact. No new task, Batch 9, milestone,
+execution, Gate B, or evidence-collection authority is established.
