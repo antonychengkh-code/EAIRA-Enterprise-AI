@@ -6,7 +6,7 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.15.0
+0.16.0
 
 ## Updated At
 
@@ -70,13 +70,13 @@ Field 1 and Field 4 are `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` only for mandat
 
 The Field 2 package adoption is recorded through the historical commit-anchored chain `21a0c858aaa2ba7788d348f1e2b715ab321023fa` (`docs(project): record Field 2 package adoption decision`), `b854f4c9f360265fd63690b74fd3c23f295cdc2a` (`docs(project): correct Field 2 lifecycle states to committed-local status`), and `47a349832626ec45724f1a83d970c30cf9c55cc8` (`docs(project): stabilize Field 2 lifecycle metadata transport-neutrally`). Seven rows remain documentary semantics-supported or broadly supported: `B2-MAN-001`, `B2-MAN-002`, `B2-MAN-003`, `B2-MAN-004`, `B2-MAN-005`, `B2-MAN-008`, and `B2-MAN-009`. Four substantive blockers remain: `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`.
 
-The Project Owner high-level directions are Common Git invocation envelope Option A; `B2-MAN-006` Option A; `B2-MAN-007` Option A; `B2-MAN-010` Option B; `B2-MAN-013` Option B; and output/dependency rules Option A. These directions do not select any Stage 1 detail. All Stage 1 detail decisions remain unselected. Assessment execution, command execution, and assessment-evidence collection remain `UNAUTHORIZED`.
+The high-level directions remain unchanged. The Project Owner issued `ACCEPT_THE_CORRECTED_FIELD_2_STAGE_1_DOCUMENTARY_DECISION_READINESS_MATRIX_WITH_RECORDED_AREA_9_LIFECYCLE_CLARIFICATION_AND_SELECT_AREA_8_OPTION_8A_AS_THE_OBJECT_FORMAT_CONDITIONAL_RULE_TEXT_DIRECTION_WITHOUT_MAIN_ANNEX_MUTATION_FIELD_OR_GATE_CHANGE_GATE_B_AUTHORITY_LOCAL_INSPECTION_COMMAND_EXECUTION_OR_ASSESSMENT_EVIDENCE_COLLECTION_AUTHORITY` and the repository decision record is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_FIELD_2_STAGE_1_AREA_8_OPTION_8A_SELECTION_DECISION.md`. Area 8 Option 8a is `AREA_8_OPTION_8A_SELECTED_AS_DOCUMENTARY_OBJECT_NAME_EXPECTATION_RULE`. Area 8 Option 8c remains available and not selected. Area 8 Option 8b remains `NOT_AVAILABLE_WITHOUT_SEPARATE_REOPENING_AND_REVISION_OF_THE_CONTROLLING_HIGH_LEVEL_DIRECTION`. All other Stage 1 details remain unselected. No current object format is claimed; the dependency remains future separately authorized repository-object-format verification. Field 2 and Field 3 remain `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; the four substantive blockers remain; the gate remains `BLOCKED`; and assessment execution, command execution, and assessment-evidence collection remain `UNAUTHORIZED`.
 
 ## Blockers
 
 Fields outside passing states are exactly 2, 3, 8, 9, 10, and 11. The selected target inventory and five-interaction inventory are documentary-complete for Field 1 and Field 4 and are not remaining blockers for those Fields. Within the selected Batch 8 Model A scope, unresolved planning inputs include retained command semantics and read-only or mutation-risk conclusions for Field 2; command-specific semantic verification and applicable Field 8 and Field 9 handling dependencies for Field 3; exact Windows and WSL identities; exact local group names and memberships; exact UID/GID mapping; exact ACL entries, rights, inheritance, propagation, deny policy, privilege or elevation requirement, rollback mechanism, and verified effective-access results; classification inheritance; encryption scope; plaintext locations and readers; administrator access and verifier decryption; backup, recovery, replica and export treatment; key governance; platform, application, technical, data-flow, compliance and cryptographic evidence; encryption and disposal mechanisms; final incident-notification channel and configuration; exact permitted business-sensitive-information categories; Field 8 and Field 9 reproduction dependencies; and Field 11 evidence-handling dependencies.
 
-Within Field 2, the retained substantive blockers are exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`. The seven supported or broadly supported rows are not executable and do not resolve Field 2. All Stage 1 detail decisions remain unselected.
+Within Field 2, Area 8 Option 8a is selected and recorded, and all other Stage 1 details remain unselected. The repository object format remains unverified and dependent on future separately authorized repository-object-format verification. The retained substantive blockers remain exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`. The seven supported or broadly supported rows are not executable and do not resolve Field 2.
 
 The excluded historical records `B2-MAN-011`, `B2-MAN-012`, `B2-BLK-002` through `B2-BLK-006`, `B2-INT-005`, and `B2-INT-007` through `B2-INT-011` are not prerequisites for documentary completeness of the selected initial scope. Docker Engine beyond `B2-MAN-010`, Ollama, Hermes, OpenWebUI, and LM Studio are future separate-extension matters, not selected-initial-scope prerequisites. Their exclusion does not resolve the retained Fields 2, 3, 8, 9, 10, and 11 dependencies or change the `BLOCKED` gate.
 
@@ -84,4 +84,8 @@ No assessment-authorization decision may be made until the all-fields-resolved g
 
 ## Next Action
 
-The Main Annex Version `0.17.0` Field 2 semantics correction remains published at commit `1d6fb56c31c8d00862bc0ab423d30486329c0d05`, and its bounded six-file downstream synchronization is complete and published at commit `4f5709e68b27838556813dfd9bcaa8882480a0d0`. No further downstream synchronization remains pending from that correction. Continue only bounded Project Layer planning under the same active task to resolve or explicitly retain the remaining mandatory blockers for Fields 2, 3, 8, 9, 10, and 11. No Main Annex edit, Field-state or gate-state change, Stage 1 detail selection, Field 3 consolidation, Batch 9, successor task, assessment execution, environment inspection, command execution, or evidence collection is authorized. The same active task remains active.
+The Area 8 Option 8a decision is recorded in Main Annex Version `0.18.0` and synchronized across the current context, status, objective, active-task metadata, and active task record. No further synchronization remains pending from this decision.
+
+Continue only bounded Project Layer planning under the same active task for the remaining blockers. The four substantive blockers remain exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`; Field 2 and Field 3 remain `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; and the gate remains `BLOCKED`.
+
+No further Stage 1 selection, Annex mutation, Field-state or gate-state change, Gate B, inspection, command execution, assessment execution, or evidence collection is authorized without a new Project Owner decision.
