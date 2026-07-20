@@ -237,7 +237,7 @@ B2-MAN-006 / B2-MAN-007 shared WSL Git package-adoption transition:
 5. Version `0.26.0` recorded the durable version-agnostic lifecycle correction at commit `fe7e507dd090cd0c5a6051b3c57d352ed24716e5`, blob `d42fbdedbf4c4d17fd045e53ad11a6afd0b2554f`.
 6. Independent Version `0.26.0` verification completed response-only with no findings and is not a repository artifact.
 7. A response-only downstream impact review completed separately from synchronization.
-8. The bounded six-file downstream synchronization to the independently verified Main Annex Version `0.26.0`was completed at commit`015c13a0abd8d9a0251ee660176c084429b82987`; publication identity is established by Git evidence.
+8. The bounded six-file downstream synchronization to the independently verified Main Annex Version `0.26.0` was completed at commit `015c13a0abd8d9a0251ee660176c084429b82987`; publication identity is established by Git evidence.
 
 Throughout this transition, shared requirements remain `0` satisfied of `22`; shared acceptance categories remain `0` of `20`; B2-MAN-006 categories remain `0` of `6`; B2-MAN-007 categories remain `0` of `16`; B2-MAN-013 row criteria remain `0`; and B2-MAN-013 Route C categories remain `0` of `20`. The shared models and every row-specific model remain distinct. Package publication, adoption, Annex publication, independent verification, impact review, and downstream synchronization satisfy none of them.
 
