@@ -56,6 +56,10 @@ Main Annex Version `0.22.0`, dated `2026-07-20`, publishes the B2-MAN-013 decisi
 
 The retained command `"/mnt/c/Program Files/Git/cmd/git.exe" --version` remains historical/current documentary text classified `HISTORICAL_AND_CURRENT_RETAINED_DOCUMENTARY_COMMAND_TEXT_WITH_UNVERIFIED_EXECUTABLE_IDENTITY_NOT_THE_SELECTED_FUTURE_VERIFIED_IDENTITY_REPRESENTATION`. The separate future representation `"<FUTURE_VERIFIED_GIT_FOR_WINDOWS_EXECUTABLE_PATH>" --version` is classified `SELECTED_AS_NON_EXECUTABLE_DOCUMENTARY_COMMAND_REPRESENTATION_PENDING_SEPARATELY_AUTHORIZED_GIT_FOR_WINDOWS_ARTIFACT_VERSION_WSL_INTEROPERABILITY_CWD_ENVIRONMENT_CONFIGURATION_CREDENTIAL_HELPER_NETWORK_OUTPUT_AND_NON_MUTATION_VERIFICATION`. No local fact or acceptance-criterion satisfaction is established; B2-MAN-013 remains unresolved.
 
+The later Route C package-adoption chain supplements that historical Stage 1 publication. The planning package is `docs/project/planning/B2_MAN_013_ROUTE_C_FUTURE_LOCAL_IDENTIFICATION_AUTHORIZATION_PACKAGE.md`, commit `1b6504fbe0b7bdfe58fa790cf94a43b8fa5bc477`, blob `8681194afae7f5fb1271453a6dfadd8e6acc8364`. Its response-only independent review and response-only Project Owner disposition are advisory evidence and are not repository artifacts. The repository adoption record is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_013_ROUTE_C_PACKAGE_ADOPTION_DECISION.md`, classified `PROJECT_OWNER_B2_MAN_013_ROUTE_C_PACKAGE_PLANNING_EVIDENCE_ONLY_ADOPTION_DECISION_RECORD`, at commit `105a17e2bfee702abed30743ec0285c9fa49eede`. It records standing decision `APPROVE_B2_MAN_013_ROUTE_C_FUTURE_LOCAL_IDENTIFICATION_AUTHORIZATION_PACKAGE_AS_PLANNING_EVIDENCE_ONLY_WITHOUT_ROUTE_C_EXECUTION_ROUTE_B_REVIEW_COMMAND_EXECUTION_EXECUTABLE_DISCOVERY_LOCAL_INSPECTION_CONFIGURATION_EVIDENCE_COLLECTION_ACCEPTANCE_CRITERION_SATISFACTION_FIELD_OR_GATE_CHANGE_GATE_B_AUTHORITY_BATCH_9_SUCCESSOR_TASK_MILESTONE_M4_PLATFORM_FOUNDATION_OR_FORMAL_EAIRA_EXECUTION_LAYER_AUTHORITY` and adoption state `ADOPTED_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY`.
+
+Main Annex Version `0.23.0`, dated `2026-07-20`, publishes that adoption at commit `0d09c3b0bcdb20cd02dbbb3606cccaa4e4fad447`, blob `6ecb9e6c867a1de5007e75a33886be27061cfa7e`. It passed response-only independent repository verification with no findings; that response is not stored in the repository. The present authority extends only to bounded synchronization of the six named current-state artifacts.
+
 
 
 The bounded planning basis is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`, which records `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE` and permits only bounded Project Layer planning for one finalized Local Readiness Assessment Authorization Annex.
@@ -103,6 +107,8 @@ For this task record, `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION` is reus
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_STAGE_1_DETAIL_SELECTION_DECISION.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_STAGE_1_DETAIL_SELECTION_DECISION.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_013_STAGE_1_DETAIL_SELECTION_DECISION.md`
+- `docs/project/planning/B2_MAN_013_ROUTE_C_FUTURE_LOCAL_IDENTIFICATION_AUTHORIZATION_PACKAGE.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_013_ROUTE_C_PACKAGE_ADOPTION_DECISION.md`
 
 ## 5. Scope
 
@@ -197,6 +203,26 @@ B2-MAN-013 completed documentary transition:
 - no B2-MAN-013 criterion is satisfied, and B2-MAN-013 remains a substantive blocker;
 - Main Annex Version `0.22.0` publishes the transition at commit `6a1839faaf62c7704a461c575b4ca3d94d2962d6`; and
 - downstream current-state synchronization is completed through this bounded six-file mutation, with publication identity established by Git evidence. No further synchronization remains pending from this publication, and no next specific planning scope is automatically established.
+
+B2-MAN-013 Route C package-adoption transition:
+
+1. The Route C planning package was created at commit `1b6504fbe0b7bdfe58fa790cf94a43b8fa5bc477`, blob `8681194afae7f5fb1271453a6dfadd8e6acc8364`.
+2. A response-only independent package review was completed; it is advisory evidence, not a repository artifact.
+3. The Project Owner issued a response-only package disposition; it did not itself create a repository decision record or execution authority.
+4. The repository adoption decision was recorded at commit `105a17e2bfee702abed30743ec0285c9fa49eede` with state `ADOPTED_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY`.
+5. A response-only Main Annex impact review was completed without repository mutation.
+6. The Project Owner separately authorized bounded Main Annex synchronization only.
+7. Main Annex Version `0.23.0` was published at commit `0d09c3b0bcdb20cd02dbbb3606cccaa4e4fad447`, blob `6ecb9e6c867a1de5007e75a33886be27061cfa7e`.
+8. Response-only independent repository verification passed with no findings; the response is not a repository artifact.
+9. The bounded six-file downstream synchronization is performed by the current commit, whose identity is established by Git evidence after commit.
+
+Throughout this transition, `RC-TGT-01` through `RC-TGT-16` remain `FUTURE_SEPARATELY_AUTHORIZED_IDENTIFICATION_REQUIRED`; `RC-OP-01` through `RC-OP-05` remain `PROPOSED_NOT_APPROVED_NOT_AUTHORIZED_FOR_EXECUTION`; and `RC-AC-01` through `RC-AC-20` remain `NOT_SATISFIED_FUTURE_SEPARATELY_AUTHORIZED_VERIFICATION_REQUIRED`. Requested and permitted network action `NONE` remains a planning requirement, not a verified absence-of-network fact. The Route C package satisfied-category count remains `0`.
+
+The existing sixteen-criterion B2-MAN-013 row model and the later twenty-category Route C package model remain distinct. Neither replaces or renumbers the other; their satisfaction counts remain independent and both are `0`. Package adoption and downstream synchronization satisfy no criterion in either model and change no Field or gate state.
+
+The two command representations remain distinct and non-executable under their exact classifications. The retained concrete path remains unverified, the placeholder remains unresolved, neither establishes executable existence, identity, provenance, version, packaging, architecture, WSL compatibility, environment safety, or local applicability, and no replacement path may be inferred or substituted.
+
+Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`; Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. `EVIDENCE_PATH_PENDING_FIELD_8_APPROVAL/B2-MAN-013.txt` remains a planning placeholder only, and `C:\EAIRA\Evidence` plus `/mnt/c/EAIRA/Evidence` remain planning inputs only. No evidence activity is approved.
 
 This evidence advances Field 2 documentary planning only. It does not resolve Field 2, finalize the Annex, satisfy the gate, authorize execution or evidence collection, or establish a new task or Batch 9. The read-only Main Annex impact review is complete, and the bounded Field 2 semantics correction is published in Annex Version `0.17.0` at commit `1d6fb56c31c8d00862bc0ab423d30486329c0d05`. The bounded six-file downstream synchronization is complete and published at commit `4f5709e68b27838556813dfd9bcaa8882480a0d0`; no further downstream synchronization remains pending from the Main Annex Version `0.17.0` Field 2 semantics correction.
 
@@ -303,7 +329,7 @@ The B2-MAN-006 decision record and Main Annex Version `0.20.0` publication are r
 
 The B2-MAN-007 decision record and Main Annex Version `0.21.0` publication are recorded above. The historical/current logical command is preserved separately from the selected non-executable Future Command-Envelope Alternative A. All sixteen future acceptance categories remain unsatisfied, and executable, repository, object, network, credential, configuration, output, delimiter, non-mutation, Field 8, and Field 9 dependencies remain unresolved. B2-MAN-007 remains a substantive blocker.
 
-The B2-MAN-013 decision record, correction chain, and Main Annex Version `0.22.0` publication are recorded above. The retained documentary command is separate from the future verified-identity representation. No criterion is satisfied; all local applicability and verification dependencies remain unresolved; and B2-MAN-013 remains a substantive blocker.
+The B2-MAN-013 Stage 1 decision, Route C package, planning-evidence-only adoption decision, and Main Annex Version `0.23.0` publication are recorded above. The publication passed response-only independent repository verification with no findings, but that response is not a repository artifact. `B2-MAN-013` remains `UNRESOLVED_SUBSTANTIVE_BLOCKER`. All sixteen identification targets remain future requirements; all five proposed operations remain unapproved and non-executable; all twenty Route C package categories remain unsatisfied; and requested network action `NONE` remains a planning requirement only. The sixteen-criterion row model and twenty-category package model remain distinct, with independent satisfied counts of `0`. The retained documentary command remains separate from the future verified-identity representation, and neither is executable or establishes a local fact.
 
 The B2-MAN-010 official-source review adoption is recorded at its two artifact paths, and
 Main Annex Version `0.19.0` contains the synchronized version-scoped conclusion with
@@ -316,6 +342,6 @@ The repository object format remains unverified and dependent on future separate
 
 Every Field-state value remains unchanged. Field 2 and Field 3 remain `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; Field 1 and Field 4 remain `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` only for mandatory Annex pre-execution documentary planning completeness; Fields 2, 3, 8, 9, 10, and 11 remain outside passing states; Field 12 remains `RESOLVED_AS_CONTROL`; and the gate remains `BLOCKED`.
 
-The bounded B2-MAN-006, B2-MAN-007, and B2-MAN-013 six-file downstream current-state synchronizations are complete, and no further synchronization remains pending from those publications. The same task remains active for bounded planning, but selection of the next specific scope returns to the Project Owner; no Batch 9 or successor task is established automatically.
+The B2-MAN-013 Route C adoption-publication cycle is synchronized downstream through this bounded six-file mutation. The same task remains active for bounded planning, but selection of the next substantive bounded planning scope returns to the Project Owner. Route C execution-package preparation is not automatically authorized. No Route C identification or execution, Route B preparation or review, Batch 9, successor task, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer is established.
 
 No further Stage 1 selection, Main Annex mutation, Field-state or gate-state change, Gate B, inspection, repository-object-format verification, command execution, observation, interaction, assessment execution, assessment-evidence collection, configuration, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer activity is authorized without a new Project Owner decision.
