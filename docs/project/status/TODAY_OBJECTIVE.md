@@ -6,7 +6,7 @@
 
 ## Version
 
-0.17.0
+0.18.0
 
 ## Milestone
 
@@ -20,56 +20,69 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-The B2-MAN-006 decision-recording step is complete at
-`docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_STAGE_1_DETAIL_SELECTION_DECISION.md`
-and commit `9d9352e5055717f57eb86b3622712298490b922e`. Main Annex Version
-`0.20.0`, dated `2026-07-20`, is published at commit
-`10cfc8b47be42ed8839114156e6e400d368156ec`. This bounded deliverable synchronizes
+The B2-MAN-007 decision-recording step is complete at
+`docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_STAGE_1_DETAIL_SELECTION_DECISION.md`
+and commit `09da2792021cd709e3cb1be53c4fc58af19ad8f9`. Main Annex Version
+`0.21.0`, dated `2026-07-20`, is published at commit
+`6a3f5e23f5d6da58f14d47b9aedb229a626e76db`. This bounded deliverable synchronizes
 exactly the six current-state artifacts under the same active task.
 
-The selected B2-MAN-006 options are `OL-A`, `FS-C`, `PI-B`, `PG-A`, `EX-A` with
-complementary interim `EX-C`, `RD-A`, and `CE-C`. The historical/current retained logical
-command remains `git status --short --branch --untracked-files=no`; it is not the selected
-future executable envelope. The selected future envelope is
-`"<FUTURE_VERIFIED_ABSOLUTE_WSL_GIT_PATH>" --no-pager --no-optional-locks status --short --branch --untracked-files=no`,
-classified `SELECTED_AS_NON_EXECUTABLE_DOCUMENTARY_COMMAND_ENVELOPE_PENDING_SEPARATELY_AUTHORIZED_EXECUTABLE_CONFIGURATION_AND_NON_MUTATION_VERIFICATION`.
-It remains non-executable and incomplete pending separately authorized verification.
+The selected B2-MAN-007 options are `LF-A`, `PG7-A`, controlling `EX7-A` with
+complementary interim `EX7-B`, complementary `RD7-A` and `RD7-B`, `NV7-A`, `CF7-A`,
+`DL7-A`, `OH7-A`, `F9-7A`, `AC7-A`, Future Command-Envelope Alternative `A`, and the
+controlling retain-blocked fallback. The historical/current retained logical command
+remains `git log -1 --format=%H%x09%an%x09%aI%x09%s`, classified
+`HISTORICAL_AND_CURRENT_RETAINED_LOGICAL_COMMAND_TEXT_NOT_THE_SELECTED_FUTURE_EXECUTABLE_ENVELOPE`.
+It is not the selected future exact executable envelope.
 
-The six mandatory future acceptance categories are documentary command completeness,
-future local executable verification, future configuration verification, future
-non-mutation verification, future output compatibility, and future Field 8 and Field 9
-compliance. None is satisfied.
+The separate selected future envelope is
+`"<FUTURE_VERIFIED_ABSOLUTE_WSL_GIT_PATH>" --no-pager --no-lazy-fetch log -1 --format=%H%x09%an%x09%aI%x09%s`,
+classified
+`SELECTED_AS_NON_EXECUTABLE_DOCUMENTARY_COMMAND_ENVELOPE_PENDING_SEPARATELY_AUTHORIZED_EXECUTABLE_REPOSITORY_CONFIGURATION_NETWORK_CREDENTIAL_OUTPUT_FIELD_8_FIELD_9_AND_NON_MUTATION_VERIFICATION`.
+The placeholder is not an executable path or local fact, is not approved for execution,
+and the envelope is incomplete and not assumed network-safe, credential-safe,
+configuration-safe, output-safe, or mutation-safe.
 
-`B2-MAN-006` remains an unresolved substantive blocker. The four substantive blockers
-remain exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`. Field 2 and
-Field 3 remain `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; every other Field state is
-unchanged; Field 12 remains `RESOLVED_AS_CONTROL`; and the gate remains `BLOCKED`.
+All sixteen mandatory future acceptance categories remain unsatisfied. `B2-MAN-007`
+remains an unresolved substantive blocker. Requested network action remains `NONE`, and
+all executable, repository, object, network, credential, configuration, delimiter,
+output, non-mutation, Field 8, and Field 9 verification dependencies remain open.
 
-No new specific blocker package or successor task is created. After this synchronization,
-the next specific bounded planning scope returns to the Project Owner for separate
-selection.
+This six-file downstream synchronization is the bounded deliverable. It preserves every
+blocker, Field, gate, execution, inspection, configuration, and evidence boundary and
+returns selection of the next specific bounded planning scope to the Project Owner. No
+new specific blocker package, Batch 9, or successor task is created.
 
 ## Out of Scope
 
-No further Stage 1 selection, Main Annex mutation, Field-state or gate-state change, Gate B, inspection, executable discovery, configuration verification, fsmonitor verification, index-write verification, repository-object-format verification, command execution, observation, interaction, Field 3 consolidation, Batch 9, successor task, Local Readiness Assessment execution, assessment-evidence collection, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer is authorized without a new Project Owner decision.
+No further Stage 1 selection, Main Annex mutation, Field-state or gate-state change,
+Gate B, inspection, executable or repository discovery, object or network verification,
+credential or configuration verification, delimiter or output verification, command
+execution, observation, interaction, Field 3 consolidation, Batch 9, successor task,
+Local Readiness Assessment execution, assessment-evidence collection, implementation,
+runtime, deployment, database, production, governance, milestone, M4, Platform
+Foundation, or formal EAIRA Execution Layer is authorized without a new Project Owner
+decision.
 
 ## Expected Deliverables
 
 Exactly six current-state artifacts are synchronized to the published Main Annex Version
-`0.20.0` and the recorded B2-MAN-006 documentary detail selection. No Main Annex,
-decision-record, historical package, daily, governance, milestone, runtime, deployment,
-database, or production artifact is part of this deliverable.
+`0.21.0` and the recorded B2-MAN-007 documentary detail selection. The Main Annex,
+decision records, historical packages, daily reports, governance, milestone, runtime,
+deployment, database, and production artifacts are not modified.
 
 ## Success Criteria
 
-The six files agree on the decision path and commit, Main Annex Version `0.20.0` and
-publication commit, selected options, retained logical command, selected non-executable
-envelope classification, unresolved verification dependencies, and the six mandatory
-future acceptance categories. None of those categories is satisfied.
+The six files agree on the decision path and commit, Main Annex Version `0.21.0` and
+publication commit, selected options, distinct retained-command and future-envelope
+roles, exact selected-envelope classification, unresolved verification dependencies,
+and zero satisfied among all sixteen mandatory future acceptance categories.
 
-Every Field-state value remains unchanged; Field 2 and Field 3 remain
+Every Field state remains unchanged; Field 2 and Field 3 remain
 `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; the substantive blockers remain exactly
-`B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`; the gate remains `BLOCKED`;
-and every execution, local-inspection, Gate B, and evidence-collection prohibition remains
-intact. No new task, Batch 9, milestone, M4, Platform Foundation, formal EAIRA Execution
-Layer, or next substantive blocker package is established.
+`B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`; Field 12 remains
+`RESOLVED_AS_CONTROL`; and the gate remains `BLOCKED`. Assessment execution, command
+execution, local inspection, configuration, Gate B, and evidence collection remain
+unauthorized. After synchronization, the next bounded planning scope requires separate
+Project Owner selection; no next substantive blocker package, new task, Batch 9,
+milestone, M4, Platform Foundation, or formal EAIRA Execution Layer is established.
