@@ -131,10 +131,35 @@
 "B2-MAN-013 Main Annex Publication Commit": "0d09c3b0bcdb20cd02dbbb3606cccaa4e4fad447"
 "B2-MAN-013 Main Annex Publication Blob": "6ecb9e6c867a1de5007e75a33886be27061cfa7e"
 "B2-MAN-013 Main Annex Independent Verification": "Response-only independent repository verification passed with no findings; this verification is advisory evidence and is not a repository artifact"
-"B2-MAN-013 Downstream Synchronization": "The bounded six-file synchronization to Main Annex Version 0.23.0 is authorized and performed by the current commit; publication identity is established by Git evidence after commit"
+"B2-MAN-013 Downstream Synchronization": "Historical bounded six-file synchronization to Main Annex Version 0.23.0 completed at commit 33bb106cb077f1e006b2276323b63bca3363cd03; publication identity is established by Git evidence"
 "B2-MAN-013 Remaining Authority Boundary": "B2-MAN-013 remains UNRESOLVED_SUBSTANTIVE_BLOCKER; Route C execution-package preparation, Route C identification or execution, Route B preparation or review, command execution, executable discovery, local inspection, configuration, remediation, and evidence collection remain unauthorized"
 "B2-MAN-013 Task Continuity": "The same active task continues; no Batch 9, successor task, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer is established"
-"Next Planning Scope": "After this downstream synchronization, selection of the next substantive bounded planning scope returns to the Project Owner; none is automatically authorized"
+"Shared WSL Git Package": "docs/project/planning/B2_MAN_006_007_SHARED_WSL_GIT_EXECUTABLE_BINDING_VERIFICATION_PACKAGE.md"
+"Shared WSL Git Package Publication Commit": "2427bb04e23041923b9fb637648ece94f088c021"
+"Shared WSL Git Package Blob": "e863293b02abf54e0954629a9554ca817eb783e4"
+"Shared WSL Git Package Classification": "REPOSITORY_RECORDED_PROJECT_LAYER_PLANNING_PACKAGE_DERIVED_FROM_CORRECTED_RESPONSE_ONLY_SOURCE"
+"Shared WSL Git Package Adoption Decision": "docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_007_SHARED_WSL_GIT_PACKAGE_ADOPTION_DECISION.md"
+"Shared WSL Git Adoption Decision Commit": "3813d40a8a25541177cb43b8e4189aaecb1add86"
+"Shared WSL Git Adoption Decision Blob": "01dc41a00386fedd41b297153ed929387724eef2"
+"Shared WSL Git Adoption Decision Classification": "PROJECT_OWNER_B2_MAN_006_007_SHARED_WSL_GIT_PACKAGE_PLANNING_EVIDENCE_ONLY_ADOPTION_DECISION_RECORD"
+"Shared WSL Git Adoption State": "ADOPTED_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY"
+"Shared WSL Git Requirement Count": 22
+"Shared WSL Git Satisfied Requirement Count": 0
+"Shared WSL Git Acceptance Category Count": 20
+"Shared WSL Git Satisfied Acceptance Category Count": 0
+"B2-MAN-006 Acceptance Category Count": 6
+"B2-MAN-006 Satisfied Acceptance Category Count": 0
+"B2-MAN-007 Acceptance Category Count": 16
+"B2-MAN-013 Route C Acceptance Category Count": 20
+"B2-MAN-013 Route C Satisfied Acceptance Category Count": 0
+"Acceptance Model Separation": "The shared requirement and twenty-category models, B2-MAN-006 six-category model, B2-MAN-007 sixteen-category model, B2-MAN-013 sixteen-criterion row model, and B2-MAN-013 Route C twenty-category model remain distinct; publication, adoption, Annex publication, independent verification, impact review, and downstream synchronization satisfy none"
+"Shared WSL Git Historical Annex Version 0.24.0": "Historical shared-package-adoption synchronization; commit cb997a1c9d485503f002f8576f5a38948b76e689; blob 88df3991bcc0450c7fc4736b3e038d04b5e76f6d"
+"Shared WSL Git Historical Annex Version 0.25.0": "Historical targeted lifecycle correction; commit 973285438cff6d9a8729ac567c1f6cee108050d5; blob 75c27893325aae33c25c1b20030b7616678e1ee0"
+"Current Main Annex Publication": "Version 0.26.0 dated 2026-07-20; commit fe7e507dd090cd0c5a6051b3c57d352ed24716e5; blob d42fbdedbf4c4d17fd045e53ad11a6afd0b2554f"
+"Current Main Annex Independent Verification": "Response-only independent repository verification passed with no findings; the verification is not a repository artifact"
+"Durable Main Annex Lifecycle Boundary": "Preserve completed Annex versions as version-specific historical evidence; resolve current publication from Section 1 metadata of the Annex in the publication commit under independent verification, with that commit and Annex blob as binding identities; require separate Project Owner decisions for downstream impact review and synchronization; no publication, verification, review, or synchronization automatically authorizes local-verification package preparation, inspection, option testing, execution, evidence, criterion, blocker, Field, or gate activity"
+"Version 0.26.0 Downstream Synchronization": "Completed through the bounded six-file downstream synchronization; publication identity is established by Git evidence; no model is satisfied and no Field, blocker, gate, task, command, or authority state changes"
+"Next Planning Scope": "After this downstream synchronization, selection of the next specific bounded planning scope returns to the Project Owner; local-verification authorization-package preparation and every blocker-specific package remain separately unauthorized and none is automatically selected"
 "Batch 8 Model Disposition": "Batch 8 Model A is SELECTED_AS_INITIAL_DOCUMENTARY_SCOPE_MODEL; Batch 8 Models B and C are REVIEWED_NOT_SELECTED; this does not modify, replace, or reopen the separate Batch 7 Model B documentary-classification-model decision"
 "Batch 8 Selected Targets": "Repository; WSL; Windows Git; WSL Git; Docker limited to B2-MAN-010"
 "Batch 8 Retained Command Manifest": "B2-MAN-001 through B2-MAN-010 and B2-MAN-013; B2-BLK-001 is supporting traceability only"
@@ -149,6 +174,9 @@
 "Field 3 State": "PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS"
 "Field 4 State": "RESOLVED_AND_APPROVED_BY_PROJECT_OWNER"
 "Field 1 and Field 4 Resolution Boundary": "Mandatory Annex pre-execution documentary planning completeness only; does not establish target existence, executable availability, service availability, connectivity, environment readiness, criterion satisfaction, assessment results, or operational authority"
+"Field 5 State": "RESOLVED_AND_APPROVED_BY_PROJECT_OWNER; preservation-only and not reopened, expanded, or newly authorized"
+"Field 6 State": "RESOLVED_AND_APPROVED_BY_PROJECT_OWNER; preservation-only and not reopened, expanded, or newly authorized"
+"Field 7 State": "RESOLVED_AND_APPROVED_BY_PROJECT_OWNER; preservation-only and not reopened, expanded, or newly authorized"
 "Field 8 State": "PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS"
 "Field 9 State": "PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS"
 "Field 10 State": "APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES"
@@ -163,6 +191,8 @@
   - "docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md"
   - "docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE.md"
   - "docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX.md"
+  - "docs/project/planning/B2_MAN_006_007_SHARED_WSL_GIT_EXECUTABLE_BINDING_VERIFICATION_PACKAGE.md"
+  - "docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_007_SHARED_WSL_GIT_PACKAGE_ADOPTION_DECISION.md"
   - "docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_GATE_SEQUENCE_DECISION.md"
   - "docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_FIELD_STATE_DECISION.md"
   - "docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_BATCH_4_REVIEW_DECISION.md"
