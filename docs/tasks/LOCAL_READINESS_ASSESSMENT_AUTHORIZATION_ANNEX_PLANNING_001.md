@@ -222,7 +222,7 @@ B2-MAN-013 Route C package-adoption transition:
 6. The Project Owner separately authorized bounded Main Annex synchronization only.
 7. Main Annex Version `0.23.0` was published at commit `0d09c3b0bcdb20cd02dbbb3606cccaa4e4fad447`, blob `6ecb9e6c867a1de5007e75a33886be27061cfa7e`.
 8. Response-only independent repository verification passed with no findings; the response is not a repository artifact.
-9. The bounded six-file downstream synchronization is performed by the current commit, whose identity is established by Git evidence after commit.
+9. The bounded six-file downstream synchronization was completed at commit `33bb106cb077f1e006b2276323b63bca3363cd03`; publication identity is established by Git evidence.
 
 Throughout this transition, `RC-TGT-01` through `RC-TGT-16` remain `FUTURE_SEPARATELY_AUTHORIZED_IDENTIFICATION_REQUIRED`; `RC-OP-01` through `RC-OP-05` remain `PROPOSED_NOT_APPROVED_NOT_AUTHORIZED_FOR_EXECUTION`; and `RC-AC-01` through `RC-AC-20` remain `NOT_SATISFIED_FUTURE_SEPARATELY_AUTHORIZED_VERIFICATION_REQUIRED`. Requested and permitted network action `NONE` remains a planning requirement, not a verified absence-of-network fact. The Route C package satisfied-category count remains `0`.
 
@@ -237,7 +237,7 @@ B2-MAN-006 / B2-MAN-007 shared WSL Git package-adoption transition:
 5. Version `0.26.0` recorded the durable version-agnostic lifecycle correction at commit `fe7e507dd090cd0c5a6051b3c57d352ed24716e5`, blob `d42fbdedbf4c4d17fd045e53ad11a6afd0b2554f`.
 6. Independent Version `0.26.0` verification completed response-only with no findings and is not a repository artifact.
 7. A response-only downstream impact review completed separately from synchronization.
-8. The bounded six-file downstream synchronization is completed through the current mutation; publication identity is established by Git evidence.
+8. The bounded six-file downstream synchronization to the independently verified Main Annex Version `0.26.0`was completed at commit`015c13a0abd8d9a0251ee660176c084429b82987`; publication identity is established by Git evidence.
 
 Throughout this transition, shared requirements remain `0` satisfied of `22`; shared acceptance categories remain `0` of `20`; B2-MAN-006 categories remain `0` of `6`; B2-MAN-007 categories remain `0` of `16`; B2-MAN-013 row criteria remain `0`; and B2-MAN-013 Route C categories remain `0` of `20`. The shared models and every row-specific model remain distinct. Package publication, adoption, Annex publication, independent verification, impact review, and downstream synchronization satisfy none of them.
 
