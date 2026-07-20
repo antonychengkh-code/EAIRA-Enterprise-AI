@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-07-19
+2026-07-20
 
 ## Version
 
-0.16.0
+0.17.0
 
 ## Milestone
 
@@ -20,53 +20,56 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-The B2-MAN-010 official-source review adoption recording is completed through the bounded
-nine-path documentary mutation. The Project Owner accepted the review with the required
-classification correction (`DQ-B210-03` corrected to `PARTIALLY_SUFFICIENT`) and adopted
-its specific narrower conclusion as version-scoped documentary planning input (Docker CLI
-tag `v29.6.1`, tag commit `8900f1d330cb39e93e16d780a26bff1d7e07ba03`). No compact
-identifier was issued. Main Annex Version `0.19.0` contains the synchronized conclusion,
-and the current context, status, objective, active-task metadata, and active task record
-are synchronized.
+The B2-MAN-006 decision-recording step is complete at
+`docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_STAGE_1_DETAIL_SELECTION_DECISION.md`
+and commit `9d9352e5055717f57eb86b3622712298490b922e`. Main Annex Version
+`0.20.0`, dated `2026-07-20`, is published at commit
+`10cfc8b47be42ed8839114156e6e400d368156ec`. This bounded deliverable synchronizes
+exactly the six current-state artifacts under the same active task.
 
-Network treatment C is recorded in its bounded B2-MAN-010 form: the requested and
-prohibited network action remains `NONE`, and the independent interaction-risk status
-`CONDITIONAL_NON_ENGINE_OTLP_ENDPOINT_PROCESSING_NOT_EXCLUDED` is recorded only in
-B2-MAN-010 applicable wording.
+The selected B2-MAN-006 options are `OL-A`, `FS-C`, `PI-B`, `PG-A`, `EX-A` with
+complementary interim `EX-C`, `RD-A`, and `CE-C`. The historical/current retained logical
+command remains `git status --short --branch --untracked-files=no`; it is not the selected
+future executable envelope. The selected future envelope is
+`"<FUTURE_VERIFIED_ABSOLUTE_WSL_GIT_PATH>" --no-pager --no-optional-locks status --short --branch --untracked-files=no`,
+classified `SELECTED_AS_NON_EXECUTABLE_DOCUMENTARY_COMMAND_ENVELOPE_PENDING_SEPARATELY_AUTHORIZED_EXECUTABLE_CONFIGURATION_AND_NON_MUTATION_VERIFICATION`.
+It remains non-executable and incomplete pending separately authorized verification.
 
-B2-MAN-010 remains a substantive blocker. Field 2 and Field 3 remain
-`PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; the four substantive blockers remain exactly
-`B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`; and the gate remains
-`BLOCKED`.
+The six mandatory future acceptance categories are documentary command completeness,
+future local executable verification, future configuration verification, future
+non-mutation verification, future output compatibility, and future Field 8 and Field 9
+compliance. None is satisfied.
 
-Remaining bounded Project Layer planning continues under the same active task for the
-remaining blockers.
+`B2-MAN-006` remains an unresolved substantive blocker. The four substantive blockers
+remain exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`. Field 2 and
+Field 3 remain `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; every other Field state is
+unchanged; Field 12 remains `RESOLVED_AS_CONTROL`; and the gate remains `BLOCKED`.
+
+No new specific blocker package or successor task is created. After this synchronization,
+the next specific bounded planning scope returns to the Project Owner for separate
+selection.
 
 ## Out of Scope
 
-No further Stage 1 selection, Main Annex mutation, Field-state or gate-state change, Gate B, inspection, repository-object-format verification, command execution, observation, interaction, Field 3 consolidation, Batch 9, successor task, Local Readiness Assessment execution, assessment-evidence collection, configuration, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer is authorized without a new Project Owner decision.
+No further Stage 1 selection, Main Annex mutation, Field-state or gate-state change, Gate B, inspection, executable discovery, configuration verification, fsmonitor verification, index-write verification, repository-object-format verification, command execution, observation, interaction, Field 3 consolidation, Batch 9, successor task, Local Readiness Assessment execution, assessment-evidence collection, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer is authorized without a new Project Owner decision.
 
 ## Expected Deliverables
 
-The B2-MAN-010 official-source review adoption recording and nine-path current-state
-synchronization deliverable is complete. No further deliverable remains pending from this
-decision.
+Exactly six current-state artifacts are synchronized to the published Main Annex Version
+`0.20.0` and the recorded B2-MAN-006 documentary detail selection. No Main Annex,
+decision-record, historical package, daily, governance, milestone, runtime, deployment,
+database, or production artifact is part of this deliverable.
 
 ## Success Criteria
 
-The structured Project Owner decision is recorded without alteration and without an
-invented compact identifier. The review artifact and adoption decision record exist at
-their recorded paths with their recorded classifications. Main Annex Version `0.19.0`
-contains the synchronized conclusion with network treatment C in its bounded B2-MAN-010
-form. The exact B2-MAN-010 command, arguments, target, working directory, timeout,
-privilege, and bounded output purpose are unchanged, and no other manifest row's
-semantics changed.
+The six files agree on the decision path and commit, Main Annex Version `0.20.0` and
+publication commit, selected options, retained logical command, selected non-executable
+envelope classification, unresolved verification dependencies, and the six mandatory
+future acceptance categories. None of those categories is satisfied.
 
-The current context, status, objective, active-task metadata, and active task record are
-synchronized, and no further synchronization remains pending from this decision. Every
-Field-state value remains unchanged; Field 2 and Field 3 remain
+Every Field-state value remains unchanged; Field 2 and Field 3 remain
 `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; the substantive blockers remain exactly
 `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`; the gate remains `BLOCKED`;
-Area 8 dispositions and Batch 8 Model A scope remain unchanged; and every execution and
-evidence-collection prohibition remains intact. No new task, Batch 9, milestone,
-execution, Gate B, or evidence-collection authority is established.
+and every execution, local-inspection, Gate B, and evidence-collection prohibition remains
+intact. No new task, Batch 9, milestone, M4, Platform Foundation, formal EAIRA Execution
+Layer, or next substantive blocker package is established.

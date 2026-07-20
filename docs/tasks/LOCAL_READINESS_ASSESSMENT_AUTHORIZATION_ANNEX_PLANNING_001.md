@@ -40,6 +40,10 @@ unchanged.
 
 The Project Owner issued `ACCEPT_THE_CORRECTED_FIELD_2_STAGE_1_DOCUMENTARY_DECISION_READINESS_MATRIX_WITH_RECORDED_AREA_9_LIFECYCLE_CLARIFICATION_AND_SELECT_AREA_8_OPTION_8A_AS_THE_OBJECT_FORMAT_CONDITIONAL_RULE_TEXT_DIRECTION_WITHOUT_MAIN_ANNEX_MUTATION_FIELD_OR_GATE_CHANGE_GATE_B_AUTHORITY_LOCAL_INSPECTION_COMMAND_EXECUTION_OR_ASSESSMENT_EVIDENCE_COLLECTION_AUTHORITY` at the response-only layer. The repository record is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_FIELD_2_STAGE_1_AREA_8_OPTION_8A_SELECTION_DECISION.md` and the standing selection is `AREA_8_OPTION_8A_SELECTED_AS_DOCUMENTARY_OBJECT_NAME_EXPECTATION_RULE`. No current object format is claimed; the dependency remains future separately authorized repository-object-format verification. Every Field state, the four substantive blockers, the `BLOCKED` gate, Batch 8 Model A scope, commands, targets, working directories, timeouts, privileges, network boundaries, and execution and evidence-collection prohibitions remain unchanged.
 
+The Project Owner recorded `APPROVE_B2_MAN_006_STAGE_1_DOCUMENTARY_DETAIL_SELECTION_WITH_FAIL_CLOSED_FUTURE_VERIFICATION_WITHOUT_COMMAND_EXECUTION_LOCAL_INSPECTION_FIELD_OR_GATE_CHANGE_OR_ASSESSMENT_EVIDENCE_COLLECTION_AUTHORITY` in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_STAGE_1_DETAIL_SELECTION_DECISION.md`, recorded at commit `9d9352e5055717f57eb86b3622712298490b922e`. The selected options are `OL-A`, `FS-C`, `PI-B`, `PG-A`, `EX-A` with complementary interim `EX-C`, `RD-A`, and `CE-C`. Command Representation Alternative B preserves `git status --short --branch --untracked-files=no` as historical/current retained logical command text and records separately the selected future non-executable envelope `"<FUTURE_VERIFIED_ABSOLUTE_WSL_GIT_PATH>" --no-pager --no-optional-locks status --short --branch --untracked-files=no`, classified `SELECTED_AS_NON_EXECUTABLE_DOCUMENTARY_COMMAND_ENVELOPE_PENDING_SEPARATELY_AUTHORIZED_EXECUTABLE_CONFIGURATION_AND_NON_MUTATION_VERIFICATION`.
+
+Main Annex Version `0.20.0`, dated `2026-07-20`, publishes that selection at commit `10cfc8b47be42ed8839114156e6e400d368156ec`. This publication and the bounded six-file downstream current-state synchronization do not resolve B2-MAN-006, satisfy a criterion, change a Field or the gate, or authorize execution, inspection, configuration, or evidence collection.
+
 
 
 The bounded planning basis is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_PACKAGE_DECISION.md`, which records `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE` and permits only bounded Project Layer planning for one finalized Local Readiness Assessment Authorization Annex.
@@ -84,6 +88,7 @@ For this task record, `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION` is reus
 - `docs/project/context/CURRENT_CONTEXT.md`
 - `docs/project/planning/B2_MAN_010_OFFICIAL_SOURCE_DOCUMENTARY_REVIEW.md`
 - `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_010_OPTION_B_ADOPTION_DECISION.md`
+- `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_STAGE_1_DETAIL_SELECTION_DECISION.md`
 
 ## 5. Scope
 
@@ -126,7 +131,18 @@ Field 2 completed documentary transition:
 - the seven documentary semantics-supported or broadly supported rows are `B2-MAN-001`, `B2-MAN-002`, `B2-MAN-003`, `B2-MAN-004`, `B2-MAN-005`, `B2-MAN-008`, and `B2-MAN-009`;
 - the four retained substantive blockers are `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`;
 - the six high-level directions are Common Git invocation envelope Option A; `B2-MAN-006` Option A; `B2-MAN-007` Option A; `B2-MAN-010` Option B; `B2-MAN-013` Option B; and output/dependency rules Option A; and
-- Area 8 Option 8a is selected as `AREA_8_OPTION_8A_SELECTED_AS_DOCUMENTARY_OBJECT_NAME_EXPECTATION_RULE`; Area 8 Option 8c remains available and not selected; Area 8 Option 8b remains `NOT_AVAILABLE_WITHOUT_SEPARATE_REOPENING_AND_REVISION_OF_THE_CONTROLLING_HIGH_LEVEL_DIRECTION`; and all other Stage 1 details remain unselected.
+- Area 8 Option 8a is selected as `AREA_8_OPTION_8A_SELECTED_AS_DOCUMENTARY_OBJECT_NAME_EXPECTATION_RULE`; Area 8 Option 8c remains available and not selected; Area 8 Option 8b remains `NOT_AVAILABLE_WITHOUT_SEPARATE_REOPENING_AND_REVISION_OF_THE_CONTROLLING_HIGH_LEVEL_DIRECTION`; the identified B2-MAN-006 Stage 1 documentary options are selected; and unrelated Stage 1 details remain unselected.
+
+B2-MAN-006 completed documentary transition:
+
+- the decision record exists at `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_STAGE_1_DETAIL_SELECTION_DECISION.md` and commit `9d9352e5055717f57eb86b3622712298490b922e`;
+- the selected options are `OL-A`, `FS-C`, `PI-B`, `PG-A`, `EX-A` with complementary interim `EX-C`, `RD-A`, and `CE-C`;
+- Command Representation Alternative B preserves the historical/current retained logical command `git status --short --branch --untracked-files=no` separately from CE-C;
+- CE-C is `"<FUTURE_VERIFIED_ABSOLUTE_WSL_GIT_PATH>" --no-pager --no-optional-locks status --short --branch --untracked-files=no`, classified `SELECTED_AS_NON_EXECUTABLE_DOCUMENTARY_COMMAND_ENVELOPE_PENDING_SEPARATELY_AUTHORIZED_EXECUTABLE_CONFIGURATION_AND_NON_MUTATION_VERIFICATION`;
+- the six mandatory future acceptance categories are documentary command completeness, future local executable verification, future configuration verification, future non-mutation verification, future output compatibility, and future Field 8 and Field 9 compliance; none is satisfied;
+- unresolved executable, version, configuration, fsmonitor, hook, index-write, environment, non-mutation, output, Field 8, and Field 9 verification dependencies remain open;
+- Main Annex Version `0.20.0` publishes the transition at commit `10cfc8b47be42ed8839114156e6e400d368156ec`; and
+- downstream current-state synchronization is completed through this bounded six-file mutation, with publication identity established by Git evidence. No specific next blocker package is automatically established.
 
 This evidence advances Field 2 documentary planning only. It does not resolve Field 2, finalize the Annex, satisfy the gate, authorize execution or evidence collection, or establish a new task or Batch 9. The read-only Main Annex impact review is complete, and the bounded Field 2 semantics correction is published in Annex Version `0.17.0` at commit `1d6fb56c31c8d00862bc0ab423d30486329c0d05`. The bounded six-file downstream synchronization is complete and published at commit `4f5709e68b27838556813dfd9bcaa8882480a0d0`; no further downstream synchronization remains pending from the Main Annex Version `0.17.0` Field 2 semantics correction.
 
@@ -227,7 +243,9 @@ Task Status: `AUTHORIZED_FOR_AUTHORIZATION_PACKAGE_PREPARATION`
 
 Summary:
 
-Area 8 Option 8a is selected and recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_FIELD_2_STAGE_1_AREA_8_OPTION_8A_SELECTION_DECISION.md`, and Main Annex Version `0.18.0` records the selection. Area 8 Option 8c remains available and not selected. Area 8 Option 8b remains `NOT_AVAILABLE_WITHOUT_SEPARATE_REOPENING_AND_REVISION_OF_THE_CONTROLLING_HIGH_LEVEL_DIRECTION`. All other Stage 1 details remain unselected.
+Area 8 Option 8a is selected and recorded in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_FIELD_2_STAGE_1_AREA_8_OPTION_8A_SELECTION_DECISION.md`, and Main Annex Version `0.18.0` records the selection. Area 8 Option 8c remains available and not selected. Area 8 Option 8b remains `NOT_AVAILABLE_WITHOUT_SEPARATE_REOPENING_AND_REVISION_OF_THE_CONTROLLING_HIGH_LEVEL_DIRECTION`. The identified B2-MAN-006 Stage 1 documentary options are selected; unrelated Stage 1 details remain unselected.
+
+The B2-MAN-006 decision record and Main Annex Version `0.20.0` publication are recorded above. The historical/current logical command is preserved separately from the selected non-executable CE-C envelope. All six future acceptance categories remain unsatisfied, and executable, version, configuration, fsmonitor, hook, index-write, environment, non-mutation, output, Field 8, and Field 9 dependencies remain unresolved. B2-MAN-006 remains a substantive blocker.
 
 The B2-MAN-010 official-source review adoption is recorded at its two artifact paths, and
 Main Annex Version `0.19.0` contains the synchronized version-scoped conclusion with
@@ -240,6 +258,6 @@ The repository object format remains unverified and dependent on future separate
 
 Every Field-state value remains unchanged. Field 2 and Field 3 remain `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; Field 1 and Field 4 remain `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` only for mandatory Annex pre-execution documentary planning completeness; Fields 2, 3, 8, 9, 10, and 11 remain outside passing states; Field 12 remains `RESOLVED_AS_CONTROL`; and the gate remains `BLOCKED`.
 
-The bounded eight-file Area 8 selection-recording synchronization is complete, and no further synchronization remains pending from the Area 8 recording. The same task remains active for bounded planning of the remaining blockers. No Batch 9 or successor task is established.
+The bounded B2-MAN-006 six-file downstream current-state synchronization is complete, and no further synchronization remains pending from that decision. The same task remains active for bounded planning, but no next specific blocker package, Batch 9, or successor task is established automatically.
 
 No further Stage 1 selection, Main Annex mutation, Field-state or gate-state change, Gate B, inspection, repository-object-format verification, command execution, observation, interaction, assessment execution, assessment-evidence collection, configuration, implementation, runtime, deployment, database, production, governance, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer activity is authorized without a new Project Owner decision.
