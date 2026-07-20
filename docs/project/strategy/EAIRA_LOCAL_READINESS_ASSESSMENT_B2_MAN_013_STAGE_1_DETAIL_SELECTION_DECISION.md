@@ -34,7 +34,7 @@ Its final disposition was:
 
 The accepted review is classified:
 
-`ACCEPTED_RESPONSE_ONLY_VERSION_SCOPED_DOCUMENTARY_DECISION_READINESS_REVIEW_WITH_RECORDED_EVIDENCE_GAPS_ANDOUT_LOCAL_APPLICABILITY_CLAIM`
+`ACCEPTED_RESPONSE_ONLY_VERSION_SCOPED_DOCUMENTARY_DECISION_READINESS_REVIEW_WITH_RECORDED_EVIDENCE_GAPS_WITHOUT_LOCAL_APPLICABILITY_CLAIM`
 
 The current external-source review is decision-readiness input only. Git `2.53.0`, Git for Windows `v2.53.0(3)`, and current mutable official pages are not adopted as local-applicability evidence. No prospective release, version, tag, commit, build, packaging variant, executable path, WSL baseline, environment, configuration, credential, helper, process, network, output, mutation, or repository behavior is established as locally applicable by accepting the review.
 
