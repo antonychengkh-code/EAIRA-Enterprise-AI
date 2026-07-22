@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-07-20
+2026-07-22
 
 ## Version
 
-0.21.0
+0.22.0
 
 ## Milestone
 
@@ -20,109 +20,69 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-The bounded objective is to synchronize exactly six existing current-state and task
-artifacts under active task
-`LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to the shared WSL Git
-package-adoption chain and independently verified Main Annex Version `0.26.0`.
+The bounded objective is to synchronize exactly six existing current-state and task artifacts under active task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to the B2-MAN-006 local-verification authorization-package adoption chain and independently verified Main Annex Version `0.27.0`.
 
-The shared package is
-`docs/project/planning/B2_MAN_006_007_SHARED_WSL_GIT_EXECUTABLE_BINDING_VERIFICATION_PACKAGE.md`,
-commit `2427bb04e23041923b9fb637648ece94f088c021`, blob
-`e863293b02abf54e0954629a9554ca817eb783e4`, classified
-`REPOSITORY_RECORDED_PROJECT_LAYER_PLANNING_PACKAGE_DERIVED_FROM_CORRECTED_RESPONSE_ONLY_SOURCE`.
-Its adoption decision is
-`docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_007_SHARED_WSL_GIT_PACKAGE_ADOPTION_DECISION.md`,
-commit `3813d40a8a25541177cb43b8e4189aaecb1add86`, blob
-`01dc41a00386fedd41b297153ed929387724eef2`, classified
-`PROJECT_OWNER_B2_MAN_006_007_SHARED_WSL_GIT_PACKAGE_PLANNING_EVIDENCE_ONLY_ADOPTION_DECISION_RECORD`,
-with state `ADOPTED_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY`.
+The authoritative adoption decision is:
 
-Main Annex Version `0.24.0`, commit
-`cb997a1c9d485503f002f8576f5a38948b76e689`, blob
-`88df3991bcc0450c7fc4736b3e038d04b5e76f6d`, remains historical shared-package-adoption
-synchronization evidence. Version `0.25.0`, commit
-`973285438cff6d9a8729ac567c1f6cee108050d5`, blob
-`75c27893325aae33c25c1b20030b7616678e1ee0`, remains historical targeted lifecycle
-correction evidence. Version `0.26.0`, commit
-`fe7e507dd090cd0c5a6051b3c57d352ed24716e5`, blob
-`d42fbdedbf4c4d17fd045e53ad11a6afd0b2554f`, is the current independently verified
-publication. Verification completed response-only with no findings.
-It is not a repository artifact. The completed Version `0.23.0` Route C cycle remains
-historical.
+`docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_LOCAL_VERIFICATION_AUTHORIZATION_PACKAGE_ADOPTION_DECISION.md`
 
-The durable lifecycle preserves completed Annex versions as version-specific historical
-repository evidence. Current publication resolves from Section 1 metadata of the Annex in
-the publication commit under independent verification, with that commit and its Annex blob
-as binding identities. Downstream impact review and synchronization are separate Project
-Owner decisions. Publication, verification, impact review, or synchronization does not
-automatically authorize local-verification authorization-package preparation or a later
-inspection, test, execution, evidence, criterion, blocker, Field, or gate stage.
+Its repository identity is commit `0f8da9fb453b55bd296468a9102fcaa05c524c09`, blob `a9d265483d017172cb658bf95b39be65a3d1a298`. Its classification is `PROJECT_OWNER_B2_MAN_006_LOCAL_VERIFICATION_AUTHORIZATION_PACKAGE_PLANNING_EVIDENCE_ONLY_ADOPTION_DECISION_RECORD`, its adoption state is `ADOPTED_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY`, and its canonical package text is preserved through `INLINE_CANONICAL_TEXT_PRESERVATION`. No separate package repository artifact exists.
 
-The shared requirements remain `0` satisfied of `22`; shared acceptance categories remain
-`0` of `20`; B2-MAN-006 categories remain `0` of `6`; B2-MAN-007 categories remain `0` of
-`16`; B2-MAN-013 row criteria remain `0`; and B2-MAN-013 Route C categories remain `0` of
-`20`. All model namespaces remain distinct, and this synchronization satisfies none.
+Main Annex Version `0.26.0`, commit `fe7e507dd090cd0c5a6051b3c57d352ed24716e5`, blob `d42fbdedbf4c4d17fd045e53ad11a6afd0b2554f`, remains historical publication evidence.
 
-This six-file downstream synchronization is the bounded deliverable. It preserves every
-Field, blocker, gate, task, command, count, execution, inspection, configuration, and
-evidence boundary and returns selection of the next specific bounded planning scope to the
-Project Owner. No local-verification package, specific blocker package, Batch 9, or
-successor task is created or selected.
+Main Annex Version `0.27.0`, dated `2026-07-22`, is the current independently verified publication at commit `993a89871e1075f9655300b091c8bf0f9b535478`, blob `703351d3d5ff58c486225773dd30a184c1cc5bef`.
+
+The independent repository verification outcome is `VERIFICATION_PASSED_WITH_RECORDED_EVIDENCE_GAPS`. The verification is response-only and not a repository artifact. Direct compare verified a one-commit progression from `0f8da9fb453b55bd296468a9102fcaa05c524c09` to `993a89871e1075f9655300b091c8bf0f9b535478`; the connector did not directly return an explicit native `parents[]` field.
+
+The exact authorized file set is:
+
+1. `docs/project/context/CURRENT_CONTEXT.md`
+2. `docs/project/status/CURRENT_STATUS.md`
+3. `docs/project/status/TODAY_OBJECTIVE.md`
+4. `docs/project/status/ACTIVE_TASK.yaml`
+5. `docs/project/status/AGENT_CONTEXT_VERSION.yaml`
+6. `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`
+
+This synchronization records documentary current-state alignment only. It satisfies no requirement, category, or criterion; resolves no blocker; changes no Field or gate state; and grants no local verification or operational authority.
 
 ## Out of Scope
 
-No Main Annex, package, adoption-decision, historical-record, daily, governance, runtime,
-deployment, database, or production mutation is in scope. No local-verification package
-preparation, Stage 1 selection, Field-state or gate-state change, Gate B, Route C local
-identification, Route B source review, executable or WSL discovery, PATH, wrapper,
-environment, configuration, credential, process, service, socket, endpoint, telemetry, or
-network inspection, option testing, command execution, observation, interaction, Field 3
-consolidation, Batch 9, successor task, Local Readiness Assessment execution,
-assessment-evidence collection, remediation, implementation, milestone, M4, Platform
-Foundation, or formal EAIRA Execution Layer is authorized.
+No Main Annex, adoption decision, package source, historical decision, Bootstrap, daily report, governance, validation, runtime, deployment, database, production, or milestone artifact is modified.
+
+No local executable discovery, local inspection, option testing, command execution, connectivity testing, port probing, observation, interaction, evidence collection, evidence-directory or evidence-file creation, ACL or identity configuration, encryption configuration, hashing, redaction, quarantine, notification, retention, disposal, remediation, implementation, runtime, deployment, automation, CI/CD expansion, database mutation, production mutation, governance modification, Field review, gate evaluation, Gate B, Batch 9, successor task, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer is authorized.
 
 ## Expected Deliverables
 
-Exactly the six authorized existing current-state and task artifacts are synchronized to
-the shared package and adoption decision, historical Versions `0.24.0` and `0.25.0`, and
-current Version `0.26.0` publication identity. No file is created or deleted. The Main
-Annex, package, adoption decision, historical records, daily reports, governance,
-milestone, runtime, deployment, database, and production artifacts are not modified.
+Exactly the six authorized existing artifacts are synchronized to:
+
+- the B2-MAN-006 package-adoption decision path, commit, blob, classification, adoption state, and inline canonical preservation mode;
+- historical Main Annex Version `0.26.0` traceability;
+- current Main Annex Version `0.27.0` publication commit and blob;
+- the response-only independent verification outcome and its recorded limitations;
+- the durable lifecycle separation between publication, verification, impact review, synchronization, and later operational stages.
+
+No file is created or deleted. The synchronization commit identity and resulting file blobs are established only after commit by post-change Git evidence; they are not predicted inside this objective.
 
 ## Success Criteria
 
-The changed-file set is exactly the six authorized existing files; no file is created or
-deleted. All applicable narrative and structured task files agree on the shared package
-and adoption identities and the historical
-Version `0.24.0`, historical Version `0.25.0`, and current Version `0.26.0` publication
-chain. Applicable files contain the durable lifecycle rule without permanently binding
-the active lifecycle to Version `0.26.0`.
-
-Shared requirements remain `0` of `22`; shared acceptance categories remain `0` of `20`;
-B2-MAN-006 remains `0` of `6`; B2-MAN-007 remains `0` of `16`; B2-MAN-013 row criteria
-remain `0`; and B2-MAN-013 Route C categories remain `0` of `20`. All model namespaces
-remain distinct and no publication, verification, review, or synchronization satisfies
-one.
-
-Field 1 and Field 4 remain `RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` only for mandatory
-Annex pre-execution documentary planning completeness. Field 2 and Field 3 remain
-`PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`. Fields 5, 6, and 7 remain
-`RESOLVED_AND_APPROVED_BY_PROJECT_OWNER` as preservation-only states and are not reopened,
-expanded, or newly authorized. Field 8 remains
-`PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`; Field 9 remains
-`PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; Field 10 remains
-`APPROVED_AS_PLANNING_CONTROL_WITH_FIELD_8_AND_9_DEPENDENCIES`; Field 11 remains
-`APPROVED_AS_PLANNING_CONTROL_WITH_EVIDENCE_DEPENDENCIES`; and Field 12 remains
-`RESOLVED_AS_CONTROL`.
-
-The substantive blockers remain exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and
-`B2-MAN-013`; the gate remains `BLOCKED`; and the same active task continues. Every
-operational prohibition is retained. After synchronization, selection of the next specific
-bounded planning scope returns to the Project Owner; no package, new task, Batch 9,
-milestone, M4, Platform Foundation, or formal EAIRA Execution Layer is established.
+- The changed-file set is exactly the six authorized paths.
+- No file is created, deleted, renamed, or modified outside the authorized set.
+- All six files agree on the current Annex Version `0.27.0` publication identity.
+- All applicable files record the B2-MAN-006 adoption as planning evidence only.
+- Shared WSL Git requirements remain `0` of `22`.
+- Shared WSL Git acceptance categories remain `0` of `20`.
+- B2-MAN-006 remains `0` of `6`.
+- B2-MAN-007 remains `0` of `16`.
+- B2-MAN-013 row criteria remain `0`.
+- B2-MAN-013 Route C remains `0` of `20`.
+- Field states remain unchanged.
+- The substantive blockers remain exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`.
+- The all-fields-resolved gate remains `BLOCKED`.
+- Assessment execution, command execution, local inspection, configuration, and evidence collection remain `UNAUTHORIZED`.
+- No new task, Batch 9, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance authority is established.
 
 ## Next Action
 
-After this synchronization, selection of the next specific bounded planning scope returns
-to the Project Owner. Local-verification authorization-package preparation, any specific
-blocker package, Route C activity, and Route B activity remain separately unauthorized.
+Perform post-change independent repository verification of the bounded six-file synchronization. The verification must establish the exact commit, parent where available, exact changed-file set, exact path-scoped diffs, resulting file blobs, and remote publication.
+
+After successful verification, selection of the next specific bounded planning scope returns to the Project Owner. No local verification or blocker-specific operational activity follows automatically.
