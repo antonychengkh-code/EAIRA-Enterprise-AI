@@ -17,14 +17,14 @@ Repository evidence supports the following current state:
 - No current or new milestone is established.
 - The controlling authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`.
 - Only bounded Project Layer planning remains active under task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001`.
-- Main Annex Version `0.27.0`, dated `2026-07-22`, is the current independently verified publication at commit `993a89871e1075f9655300b091c8bf0f9b535478`, blob `703351d3d5ff58c486225773dd30a184c1cc5bef`.
-- The Version `0.27.0` independent repository verification outcome is `VERIFICATION_PASSED_WITH_RECORDED_EVIDENCE_GAPS`; the verification is response-only and not a repository artifact.
-- Direct compare verified a one-commit progression from `0f8da9fb453b55bd296468a9102fcaa05c524c09` to `993a89871e1075f9655300b091c8bf0f9b535478`; the available connector did not directly return an explicit native `parents[]` field.
-- The B2-MAN-006 local-verification authorization-package adoption decision is recorded at `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_LOCAL_VERIFICATION_AUTHORIZATION_PACKAGE_ADOPTION_DECISION.md`, commit `0f8da9fb453b55bd296468a9102fcaa05c524c09`, blob `a9d265483d017172cb658bf95b39be65a3d1a298`.
-- The adoption record classification is `PROJECT_OWNER_B2_MAN_006_LOCAL_VERIFICATION_AUTHORIZATION_PACKAGE_PLANNING_EVIDENCE_ONLY_ADOPTION_DECISION_RECORD`.
-- The package adoption state is `ADOPTED_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY`.
-- The canonical response-layer package text is preserved inline using `INLINE_CANONICAL_TEXT_PRESERVATION`; no separate package repository artifact exists.
-- The package adoption, canonical freeze, repository recording, bounded remote verification, Main Annex publication, independent publication verification, impact review, and this downstream synchronization satisfy no acceptance category, resolve no blocker, change no Field or gate state, and grant no operational authority.
+- Main Annex Version `0.28.0`, dated `2026-07-22`, is the current independently verified publication at commit `6768d85c050d50aa52e8f25c7a46accc28977aba`, parent `92e6e1301fbbda4ece47b4ed9fa26970c1358d5b`, blob `7050272035646fd7c2870f77737a1b4a729694c2`.
+- Response-only independent publication verification established a clean working tree, the exact one-file Main Annex changed set, the expected parent and blob, remote `master` publication at `6768d85c050d50aa52e8f25c7a46accc28977aba`, and repository integrity through `git fsck --full --no-dangling`. GitHub connector readback remained unavailable with `404 Not Found`; the verification response is not a repository artifact.
+- Main Annex Version `0.27.0`, commit `993a89871e1075f9655300b091c8bf0f9b535478`, blob `703351d3d5ff58c486225773dd30a184c1cc5bef`, remains historical B2-MAN-006 local-verification authorization-package adoption synchronization evidence.
+- The B2-MAN-006 Field 8 / Field 9 documentary prerequisite-package adoption decision is recorded at `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_FIELD_8_FIELD_9_DOCUMENTARY_PREREQUISITE_PACKAGE_ADOPTION_DECISION.md`, initial publication commit `76a84c431f868ef5bfc485618a7f49bc7f7feaab`, bounded canonical-boundary correction commit `92e6e1301fbbda4ece47b4ed9fa26970c1358d5b`, final blob `b98df1da9abcdb99b50ce2f606c57a2f7dc9f2f7`.
+- The adoption record classification is `PROJECT_OWNER_B2_MAN_006_FIELD_8_FIELD_9_DOCUMENTARY_PREREQUISITE_PACKAGE_PLANNING_EVIDENCE_ONLY_ADOPTION_DECISION_RECORD`; the standing decision is `APPROVE_B2_MAN_006_FIELD_8_FIELD_9_DOCUMENTARY_PREREQUISITE_PACKAGE_AS_BOUNDED_PLANNING_EVIDENCE_ONLY`; the source form is `RESPONSE_ONLY_PROJECT_OWNER_APPROVED_PACKAGE_TEXT_NOT_A_SEPARATE_REPOSITORY_ARTIFACT`; and the preservation mode is `INLINE_CANONICAL_TEXT_PRESERVATION`.
+- The preserved canonical package identity is SHA-256 `9b18443a104895eccd16e33336399bd81deaeea7a3d38b401f695ae56d030071`, byte count `33425`, and line count `860`; the adoption state is `ADOPTED_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY`.
+- Phase A is accepted only as the documentary Field 9 policy-closure framework, and Phase B is accepted only as the documentary Field 8 evidence-control specification framework. Individual proposed matrix values and decision options remain unselected planning inputs.
+- The prerequisite-package adoption, canonical preservation, repository recording and correction, Main Annex publication, independent publication verification, impact review, and this downstream synchronization satisfy no requirement, category, or criterion; resolve no blocker; change no Field or gate state; and grant no operational authority.
 
 ## Current Milestone
 
@@ -96,7 +96,7 @@ Assessment execution, command execution, local inspection, connectivity testing,
 
 ## Current Planning Direction
 
-This bounded six-file downstream synchronization updates only current-state and task artifacts to the verified Version `0.27.0` publication and B2-MAN-006 package-adoption chain. It does not modify the Main Annex, the adoption decision, governance, runtime, deployment, database, production, milestone, or validation artifacts.
+This bounded six-file downstream synchronization updates only current-state and task artifacts to the verified Version `0.28.0` publication and the B2-MAN-006 Field 8 / Field 9 documentary prerequisite-package adoption chain. It does not modify the Main Annex, either B2-MAN-006 adoption decision, governance, runtime, deployment, database, production, milestone, or validation artifacts.
 
 After post-change independent repository verification establishes the exact changed-file set, commit, blobs, and remote publication, selection of the next specific bounded planning scope returns to the Project Owner. No blocker-specific execution package, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is automatically established.
 
@@ -106,6 +106,7 @@ After post-change independent repository verification establishes the exact chan
 | --- | --- |
 | Current publication | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX.md` |
 | B2-MAN-006 package adoption | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_LOCAL_VERIFICATION_AUTHORIZATION_PACKAGE_ADOPTION_DECISION.md` |
+| B2-MAN-006 Field 8 / Field 9 prerequisite adoption | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_FIELD_8_FIELD_9_DOCUMENTARY_PREREQUISITE_PACKAGE_ADOPTION_DECISION.md` |
 | Current status | `docs/project/status/CURRENT_STATUS.md` |
 | Active task | `docs/project/status/ACTIVE_TASK.yaml` and `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` |
 | Historical validation constraints | `docs/tasks/M3_4_FINANCE_REVENUE_INPUT_TASK_RECORD.md` |
