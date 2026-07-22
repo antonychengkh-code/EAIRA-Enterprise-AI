@@ -222,7 +222,6 @@ This state satisfies no requirement, category or criterion; establishes no local
 ## Appendix A — Canonical Approved Response-Layer Package Text
 
 [BEGIN CANONICAL B2-MAN-006 FIELD 8 FIELD 9 DOCUMENTARY PREREQUISITE PACKAGE TEXT]
-
 # B2-MAN-006 FIELD 8 / FIELD 9 DOCUMENTARY PREREQUISITE PACKAGE
 
 ## 1. Package Metadata
