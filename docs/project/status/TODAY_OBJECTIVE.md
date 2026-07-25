@@ -6,7 +6,7 @@
 
 ## Version
 
-0.24.0
+0.25.0
 
 ## Milestone
 
@@ -20,7 +20,7 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-The bounded objective is to synchronize exactly six existing current-state and task artifacts under active task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` to the independently verified Main Annex Version `0.29.0`, the earlier B2-MAN-006 Field 8 / Field 9 prerequisite-package history, and the three authoritative 2026-07-23 decisions.
+The bounded objective is to record closure of the independently verified Main Annex Version `0.29.0` exact six-file downstream synchronization cycle and preserve its publication evidence without changing any Field, blocker, gate, task, milestone, acceptance count, execution marker, or authority boundary.
 
 The authoritative prerequisite-package adoption decision is:
 
@@ -53,7 +53,11 @@ The exact authorized file set is:
 
 This synchronization records documentary current-state alignment only. It satisfies no requirement, category, or criterion; resolves no blocker; changes no Field or gate state; and grants no local verification or operational authority.
 
-The response-only Version `0.29.0` impact review is complete. The Project Owner separately authorized this bounded exact six-file synchronization. Its resulting commit identity, exact resulting blobs, changed-file verification, and remote publication remain pending post-change independent verification.
+The exact six-file downstream synchronization was committed and published at `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, parent `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, with exactly six changed paths, `91` insertions, and `34` deletions.
+
+The verified resulting blobs of that synchronization commit are `CURRENT_CONTEXT.md` `b18135f4d2293f12d9640f5869ed97c210d16d76`; `CURRENT_STATUS.md` `c33afd513840624cd1e02869bb51d19672420dc2`; `TODAY_OBJECTIVE.md` `bd9cbb4295b735641533f40ace30db9045b182ab`; `ACTIVE_TASK.yaml` `b46ed89c9bba10d263630a8c739acc7f6cb4f7d8`; `AGENT_CONTEXT_VERSION.yaml` `cd07bcd0f07c0bdf7ec6e3546af84db5607de1dc`; and `LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` `2806f4596b9c2c821b6a940b1087f7d0688e2653`.
+
+Response-only independent post-publication verification established matching local `HEAD` and remote `master` at `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, a clean local working tree, the exact six-file changed set, all six remote blobs, and successful GitHub exact-ref readback. The verification response is not a repository artifact.
 
 ## Out of Scope
 
@@ -65,21 +69,20 @@ No local executable discovery, local inspection, option testing, command executi
 
 Exactly the six authorized existing artifacts are synchronized to:
 
-- the B2-MAN-006 Field 8 / Field 9 prerequisite-package adoption decision path, initial publication commit, correction commit, final blob, classification, standing decision, source form, adoption state, and inline canonical preservation mode;
-- the accepted documentary Phase A Field 9 and Phase B Field 8 frameworks, with every individual proposed matrix value and decision option within that earlier prerequisite package remaining unselected;
-- historical Main Annex Versions `0.26.0`, `0.27.0`, and `0.28.0` traceability;
-- current Main Annex Version `0.29.0` publication commit, parent, and blob;
-- the completed response-only impact review and separately authorized exact six-file synchronization lifecycle;
-- the durable lifecycle separation between publication, verification, impact review, synchronization, and later operational stages.
+- verified synchronization commit `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, parent `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, exact six-file changed set, `91` insertions, and `34` deletions;
+- all six verified resulting blobs of that commit;
+- matching local `HEAD` and remote `master`, clean local working-tree state, and successful GitHub exact-ref readback;
+- preservation of the earlier prerequisite package's unselected individual proposals and the later 2026-07-23 documentary selections without implementation, activation, execution, or local-fact promotion; and
+- preservation of all existing acceptance counts, Field states, blockers, gate, task, milestone, execution markers, and authority boundaries.
 
-No file is created or deleted. The synchronization commit identity and resulting file blobs are established only after commit by post-change Git evidence; they are not predicted inside this objective.
+No file is created or deleted outside the exact six authorized paths. The closure synchronization's own publication identity is established by post-change Git evidence; no further current-state update is required solely to restate that closure commit identity.
 
 ## Success Criteria
 
-- The changed-file set is exactly the six authorized paths.
-- No file is created, deleted, renamed, or modified outside the authorized set.
-- All six files agree on the current Annex Version `0.29.0` publication identity.
-- All applicable files preserve the earlier prerequisite package's unselected individual proposals and separately record the later 2026-07-23 documentary selections and package adoptions without implementation, activation, execution, local fact, or operational authority.
+- The closure synchronization changes exactly the six authorized paths.
+- No file is created, deleted, renamed, or modified outside that exact set.
+- The applicable current-state and task files record successful publication and independent verification of synchronization commit `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380` and its six resulting blobs, and `AGENT_CONTEXT_VERSION.yaml` records only the synchronized version identities.
+- All applicable files preserve the earlier prerequisite package's unselected individual proposals and the later 2026-07-23 documentary selections without implementation, activation, execution, local fact, or operational authority.
 - Shared WSL Git requirements remain `0` of `22`.
 - Shared WSL Git acceptance categories remain `0` of `20`.
 - B2-MAN-006 remains `0` of `6`.
@@ -94,6 +97,4 @@ No file is created or deleted. The synchronization commit identity and resulting
 
 ## Next Action
 
-Perform post-change independent repository verification of the bounded six-file synchronization. The verification must establish the exact commit, parent where available, exact changed-file set, exact path-scoped diffs, resulting file blobs, and remote publication.
-
-After successful verification, selection of the next specific bounded planning scope returns to the Project Owner. No local verification or blocker-specific operational activity follows automatically.
+Following independent verification of this bounded closure synchronization, selection of the next specific bounded planning scope remains with the Project Owner. No local verification or blocker-specific operational activity follows automatically. No further current-state update is required solely to restate this closure commit's own identity.
