@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-07-25
+2026-07-27
 
 ## Version
 
-0.25.0
+0.26.0
 
 ## Milestone
 
@@ -20,7 +20,7 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-The bounded objective is to record closure of the independently verified Main Annex Version `0.29.0` exact six-file downstream synchronization cycle and preserve its publication evidence without changing any Field, blocker, gate, task, milestone, acceptance count, execution marker, or authority boundary.
+The bounded objective is to synchronize exactly six current-state and task artifacts to the independently verified Main Annex Version `0.30.0` publication and the independently verified B2-MAN-007 planning-evidence adoption record, without changing any task, milestone, decision, command, reproduction record, mapping, acceptance count, Field, blocker, gate, execution marker, or authority boundary.
 
 The authoritative prerequisite-package adoption decision is:
 
@@ -38,9 +38,9 @@ Main Annex Version `0.26.0`, commit `fe7e507dd090cd0c5a6051b3c57d352ed24716e5`, 
 
 Main Annex Version `0.28.0`, dated `2026-07-22`, remains historical publication evidence at commit `6768d85c050d50aa52e8f25c7a46accc28977aba`, parent `92e6e1301fbbda4ece47b4ed9fa26970c1358d5b`, blob `7050272035646fd7c2870f77737a1b4a729694c2`. Its response-only independent verification established a clean working tree, the exact one-file Main Annex changed set, matching local and remote `master`, and successful repository-integrity verification through `git fsck --full --no-dangling`; GitHub connector readback remained unavailable with `404 Not Found`, and the verification response is not a repository artifact. That historical Version `0.28.0` connector gap does not apply to Version `0.29.0`, whose GitHub exact-ref readback succeeded.
 
-Main Annex Version `0.29.0`, dated `2026-07-23`, is the current independently verified publication at commit `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, parent `4a8125bbd0f54d09e6707e50e415293fa2be9d42`, blob `8bfa25601a09efb2863adb26737c1298aed9c1b9`.
+Main Annex Version `0.30.0`, dated `2026-07-27`, is the current independently verified publication at commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`.
 
-Response-only independent Version `0.29.0` publication verification established commit `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, parent `4a8125bbd0f54d09e6707e50e415293fa2be9d42`, exactly one changed Annex path `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX.md`, Annex blob `8bfa25601a09efb2863adb26737c1298aed9c1b9`, matching local `HEAD` and remote `master`, a clean local working tree, and successful GitHub exact-ref readback. The verification response is not a repository artifact.
+Response-only independent Version `0.30.0` publication verification established commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, exactly one changed Annex path, `22` additions, `6` deletions, Annex blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`, successful GitHub exact-ref readback, and determination `VERIFIED_MAIN_ANNEX_VERSION_0_30_0_PUBLICATION_READY_FOR_SEPARATE_DOWNSTREAM_IMPACT_REVIEW`. Local working-tree, local HEAD, and local-to-remote synchronization were outside that verification scope.
 
 The exact authorized file set is:
 
@@ -52,6 +52,8 @@ The exact authorized file set is:
 6. `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`
 
 This synchronization records documentary current-state alignment only. It satisfies no requirement, category, or criterion; resolves no blocker; changes no Field or gate state; and grants no local verification or operational authority.
+
+The B2-MAN-007 package-adoption record is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_LOCAL_VERIFICATION_AUTHORIZATION_PACKAGE_ADOPTION_DECISION.md`, commit `9d16989125b147ea0ac749bfe8ecf5573be881f7`, blob `ba4aadff5b2226e68439dff313c6325dad91b2f7`. Its standing decision is `ADOPT_B2_MAN_007_COMPLETE_CORRECTED_REPLACEMENT_PACKAGE_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY`; adoption state is `ADOPTED_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY`; preservation mode is `INLINE_CANONICAL_TEXT_PRESERVATION`; and no B2-MAN-007 acceptance category is satisfied.
 
 The exact six-file downstream synchronization was committed and published at `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, parent `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, with exactly six changed paths, `91` insertions, and `34` deletions.
 
@@ -67,34 +69,16 @@ No local executable discovery, local inspection, option testing, command executi
 
 ## Expected Deliverables
 
-Exactly the six authorized existing artifacts are synchronized to:
+Exactly the six authorized existing artifacts are synchronized to Main Annex Version `0.30.0`, publication commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`, and the independently verified B2-MAN-007 adoption record.
 
-- verified synchronization commit `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, parent `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, exact six-file changed set, `91` insertions, and `34` deletions;
-- all six verified resulting blobs of that commit;
-- matching local `HEAD` and remote `master`, clean local working-tree state, and successful GitHub exact-ref readback;
-- preservation of the earlier prerequisite package's unselected individual proposals and the later 2026-07-23 documentary selections without implementation, activation, execution, or local-fact promotion; and
-- preservation of all existing acceptance counts, Field states, blockers, gate, task, milestone, execution markers, and authority boundaries.
-
-No file is created or deleted outside the exact six authorized paths. The closure synchronization's own publication identity is established by post-change Git evidence; no further current-state update is required solely to restate that closure commit identity.
-
+The synchronization creates one exact six-file commit. Its own identity and resulting blobs are established by separate post-publication Git verification. No file is created, deleted, renamed, or modified outside the exact six authorized paths.
 ## Success Criteria
 
-- The closure synchronization changes exactly the six authorized paths.
+- Exactly the six authorized paths change in one commit.
 - No file is created, deleted, renamed, or modified outside that exact set.
-- The applicable current-state and task files record successful publication and independent verification of synchronization commit `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380` and its six resulting blobs, and `AGENT_CONTEXT_VERSION.yaml` records only the synchronized version identities.
-- All applicable files preserve the earlier prerequisite package's unselected individual proposals and the later 2026-07-23 documentary selections without implementation, activation, execution, local fact, or operational authority.
-- Shared WSL Git requirements remain `0` of `22`.
-- Shared WSL Git acceptance categories remain `0` of `20`.
-- B2-MAN-006 remains `0` of `6`.
-- B2-MAN-007 remains `0` of `16`.
-- B2-MAN-013 row criteria remain `0`.
-- B2-MAN-013 Route C remains `0` of `20`.
-- Field states remain unchanged.
-- The substantive blockers remain exactly `B2-MAN-006`, `B2-MAN-007`, `B2-MAN-010`, and `B2-MAN-013`.
-- The all-fields-resolved gate remains `BLOCKED`.
-- Assessment execution, command execution, local inspection, configuration, and evidence collection remain `UNAUTHORIZED`.
-- No new task, Batch 9, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance authority is established.
-
+- Shared requirements remain `0` of `22`; shared categories remain `0` of `20`; B2-MAN-006 remains `0` of `6`; B2-MAN-007 remains `0` of `16`; B2-MAN-013 row criteria remain `0`; and B2-MAN-013 Route C remains `0` of `20`.
+- Field states, substantive blockers, task, milestone, gate, execution marker, and non-authorization states remain unchanged.
+- No Main Annex, adoption record, daily report, governance, runtime, deployment, database, production, validation, or milestone artifact changes.
 ## Next Action
 
-Following independent verification of this bounded closure synchronization, selection of the next specific bounded planning scope remains with the Project Owner. No local verification or blocker-specific operational activity follows automatically. No further current-state update is required solely to restate this closure commit's own identity.
+Perform separate independent post-publication verification of the exact six-file synchronization commit, parent, changed-file set, resulting blobs, remote publication, and preserved states. No downstream mutation, Field review, gate evaluation, local inspection, command execution, evidence collection, or execution authority follows automatically.

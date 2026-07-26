@@ -6,11 +6,11 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.26.0
+0.27.0
 
 ## Updated At
 
-2026-07-25
+2026-07-27
 
 ## Current Milestone
 
@@ -26,9 +26,9 @@ Current/New Milestone: None established.
 
 Bounded Project Layer planning under active task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` remains active to resolve or explicitly retain the remaining mandatory Authorization Annex blockers for Fields 2, 3, 8, 9, 10, and 11.
 
-Main Annex Version `0.29.0`, dated `2026-07-23`, is the current independently verified publication at commit `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, parent `4a8125bbd0f54d09e6707e50e415293fa2be9d42`, blob `8bfa25601a09efb2863adb26737c1298aed9c1b9`. Main Annex Versions `0.26.0`, `0.27.0`, and `0.28.0` remain version-specific historical publication evidence.
+Main Annex Version `0.30.0`, dated `2026-07-27`, is the current independently verified publication at commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`. Main Annex Versions `0.26.0`, `0.27.0`, `0.28.0`, and `0.29.0` remain version-specific historical publication evidence.
 
-Response-only independent Version `0.29.0` publication verification established commit `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, parent `4a8125bbd0f54d09e6707e50e415293fa2be9d42`, exactly one changed Annex path `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX.md`, Annex blob `8bfa25601a09efb2863adb26737c1298aed9c1b9`, matching local `HEAD` and remote `master`, a clean local working tree, and successful GitHub exact-ref readback. The verification response is not a repository artifact.
+Response-only independent Version `0.30.0` publication verification established commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, exactly one changed Annex path, `22` additions, `6` deletions, Annex blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`, successful GitHub exact-ref readback, and determination `VERIFIED_MAIN_ANNEX_VERSION_0_30_0_PUBLICATION_READY_FOR_SEPARATE_DOWNSTREAM_IMPACT_REVIEW`. Local working-tree, local HEAD, and local-to-remote synchronization were outside that verification scope.
 
 Main Annex Version `0.28.0`, dated `2026-07-22`, remains historical publication evidence at commit `6768d85c050d50aa52e8f25c7a46accc28977aba`, parent `92e6e1301fbbda4ece47b4ed9fa26970c1358d5b`, blob `7050272035646fd7c2870f77737a1b4a729694c2`. Its response-only independent verification established a clean working tree, the exact one-file Main Annex changed set, matching local and remote `master`, and successful repository-integrity verification through `git fsck --full --no-dangling`; GitHub connector readback remained unavailable with `404 Not Found`, and the verification response is not a repository artifact. That historical Version `0.28.0` connector gap does not apply to Version `0.29.0`, whose GitHub exact-ref readback succeeded.
 
@@ -39,6 +39,8 @@ The B2-MAN-006 Field 8 / Field 9 documentary prerequisite-package adoption decis
 The later 2026-07-23 decisions are recorded at `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_PRE_EXECUTION_DOCUMENTARY_CLOSURE_DECISION.md`, `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_LOCAL_IDENTIFICATION_PACKAGE_ADOPTION_DECISION.md`, and `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_STAGE_2_LOCAL_IDENTIFICATION_PACKAGE_ADOPTION_DECISION.md`. They separately select named documentary directions only and adopt both local-identification packages only as bounded planning evidence.
 
 General Field 8 documentary selections are `ACL-A`, `ENC-A`, `INT-A`, `XFER-A`, and `SESSION_OPERATOR != INDEPENDENT_VERIFIER`. General Field 9 documentary direction comprises the item-level classification and handling matrix, exact redaction tokens `<ABSOLUTE_WINDOWS_PATH_REDACTED>`, `<ABSOLUTE_WSL_PATH_REDACTED>`, `<WINDOWS_USER_REDACTED>`, `<WSL_USER_REDACTED>`, `BRANCH-###`, `PATH-###`, `<REPOSITORY_URL_REDACTED>`, `<SECRET_REDACTED>`, `<PII_REDACTED>`, and `<ENVIRONMENT_VALUE_REDACTED>`, `DIAG-A`, `RET-A`, `NQ-A`, and no external automated notification or upload. The narrower Stage 2 model is `CONSOLE_ONLY_LOCAL_REVIEW_WITHOUT_PERSISTED_EVIDENCE`; its planning parameters are `EPS-1`, `LI-ALLOWLIST-1`, `Ubuntu`, administrator elevation `NOT_AUTHORIZED`, network action `NONE`, retry authority `NONE`, timeout `30 seconds`, and `UNACTIVATED_PROPOSED_EXECUTION_WINDOW`. `LI-ALLOWLIST-1` authorizes no command and excludes every `git status` command, the retained B2-MAN-006 logical command, the future B2-MAN-006 status-command envelope, and `git fsmonitor--daemon status`. None of these directions is implemented, activated, executed, or evidence of a local fact.
+
+The B2-MAN-007 local-verification authorization package is adopted only as bounded planning evidence in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_LOCAL_VERIFICATION_AUTHORIZATION_PACKAGE_ADOPTION_DECISION.md`, commit `9d16989125b147ea0ac749bfe8ecf5573be881f7`, blob `ba4aadff5b2226e68439dff313c6325dad91b2f7`, with `INLINE_CANONICAL_TEXT_PRESERVATION` and post-recording verification `VERIFIED_REPOSITORY_RECORD_READY_FOR_SEPARATE_IMPACT_REVIEW`. Main Annex Version `0.30.0` records that adoption without changing any command, reproduction record, mapping, acceptance count, Field, blocker, gate, task, milestone, execution marker, or authority boundary.
 
 ## Current Decision
 
@@ -89,6 +91,4 @@ No assessment-authorization decision may be made until the all-fields-resolved g
 
 ## Next Action
 
-The Version `0.29.0` downstream synchronization and its post-publication verification are complete. This bounded closure synchronization records that completion; its own publication identity is established only by post-change Git evidence and does not require a further current-state update solely to restate that identity.
-
-Selection of the next specific bounded planning scope remains with the Project Owner. No local verification, blocker-specific execution package, Route C identification, Route B review, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is automatically authorized.
+The independently verified Main Annex Version `0.30.0` publication and its response-only downstream impact review are complete. This exact six-file current-state synchronization is recorded by the commit containing these changes; its own publication identity and exact changed-file set require separate post-publication Git verification and do not require a further current-state update solely to restate that identity.`n`nSelection of the next specific bounded planning scope remains with the Project Owner. No local verification, blocker-specific execution package, Route C identification, Route B review, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is automatically authorized.
