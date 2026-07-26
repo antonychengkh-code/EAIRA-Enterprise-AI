@@ -6,7 +6,7 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.27.0
+0.28.0
 
 ## Updated At
 
@@ -46,11 +46,15 @@ The B2-MAN-007 local-verification authorization package is adopted only as bound
 
 The controlling authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. `AUTHORIZE_BOUNDED_ASSESSMENT` was not granted, and `AUTHORIZE_WITH_REQUIRED_REVISIONS` was not granted as conditional execution authority.
 
-The exact six-file downstream synchronization was committed and published at `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, parent `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, with exactly six changed paths, `91` insertions, and `34` deletions.
+Version `0.29.0` historical downstream synchronization evidence is commit `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, parent `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, with exactly six changed paths, `91` insertions, and `34` deletions.
 
-The verified resulting blobs of that synchronization commit are `CURRENT_CONTEXT.md` `b18135f4d2293f12d9640f5869ed97c210d16d76`; `CURRENT_STATUS.md` `c33afd513840624cd1e02869bb51d19672420dc2`; `TODAY_OBJECTIVE.md` `bd9cbb4295b735641533f40ace30db9045b182ab`; `ACTIVE_TASK.yaml` `b46ed89c9bba10d263630a8c739acc7f6cb4f7d8`; `AGENT_CONTEXT_VERSION.yaml` `cd07bcd0f07c0bdf7ec6e3546af84db5607de1dc`; and `LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` `2806f4596b9c2c821b6a940b1087f7d0688e2653`.
+The Version `0.29.0` historical synchronization blobs are `CURRENT_CONTEXT.md` `b18135f4d2293f12d9640f5869ed97c210d16d76`; `CURRENT_STATUS.md` `c33afd513840624cd1e02869bb51d19672420dc2`; `TODAY_OBJECTIVE.md` `bd9cbb4295b735641533f40ace30db9045b182ab`; `ACTIVE_TASK.yaml` `b46ed89c9bba10d263630a8c739acc7f6cb4f7d8`; `AGENT_CONTEXT_VERSION.yaml` `cd07bcd0f07c0bdf7ec6e3546af84db5607de1dc`; and `LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` `2806f4596b9c2c821b6a940b1087f7d0688e2653`. They are historical commit-scoped blobs, not Version `0.30.0` or current default-branch blobs.
 
-Response-only independent post-publication verification established matching local `HEAD` and remote `master` at `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, a clean local working tree, the exact six-file changed set, all six remote blobs, and successful GitHub exact-ref readback. The verification response is not a repository artifact.
+Version `0.30.0` downstream synchronization completed at commit `0d0185738309f58d64f143f93cf9e7917d12aa1e`, parent `f7408802a0fba79bdaf81684683d213df217075b`, with exactly six modified paths, `59` additions, and `47` deletions. Formatting correction completed at commit `cd512bd4eb4c8ab2b7897192baf453ef20c7be56`, parent `0d0185738309f58d64f143f93cf9e7917d12aa1e`; only `CURRENT_CONTEXT.md` and `ACTIVE_TASK.yaml` changed, and the correction was formatting-only with no semantic project-state change.
+
+The final verified remote ref is `cd512bd4eb4c8ab2b7897192baf453ef20c7be56`. Its six final blobs are `CURRENT_CONTEXT.md` `4938e06929810a93ba198f74efec1772132397d1`; `CURRENT_STATUS.md` `da8b056fa08a0343bdaad86607139041b08d01de`; `TODAY_OBJECTIVE.md` `3049f901d300c45748c3a95c020412a6493da9fb`; `ACTIVE_TASK.yaml` `612aab2742a429d8de7945172f8b2cd29fdec012`; `AGENT_CONTEXT_VERSION.yaml` `a355164baac10e2127e3b9a158342b528bcd0e13`; and `LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` `6c59a6f5399eda80f8c3f25772715593a9a873cd`.
+
+Remote-chain verification completed as `VERSION_0_30_0_DOWNSTREAM_CHAIN_VERIFIED_WITH_RECORDED_LOCAL_STATE_LIMITATIONS`. Live GitHub `master`, remote ancestry, changed-file sets, final endpoint, and blobs were verified. Codex reported a stale local `HEAD`, stale cached `origin/master`, and unrelated untracked `.claude/settings.local.json`; those local-state facts were not independently verified. No local/remote equality or clean-working-tree claim is made.
 
 These documentary stages satisfy no requirement, category, or criterion; resolve no blocker; change no Field or gate state; and authorize no local executable discovery, local inspection, command execution, evidence collection, implementation, activation, or operational activity.
 
@@ -91,4 +95,6 @@ No assessment-authorization decision may be made until the all-fields-resolved g
 
 ## Next Action
 
-The independently verified Main Annex Version `0.30.0` publication and its response-only downstream impact review are complete. This exact six-file current-state synchronization is recorded by the commit containing these changes; its own publication identity and exact changed-file set require separate post-publication Git verification and do not require a further current-state update solely to restate that identity.`n`nSelection of the next specific bounded planning scope remains with the Project Owner. No local verification, blocker-specific execution package, Route C identification, Route B review, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is automatically authorized.
+Version `0.30.0` publication, downstream synchronization, formatting correction, and remote-chain verification are complete.
+
+Selection of the next specific bounded planning scope remains with the Project Owner. No local verification, blocker-specific operational package, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is automatically authorized.

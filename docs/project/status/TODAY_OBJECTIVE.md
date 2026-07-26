@@ -6,7 +6,7 @@
 
 ## Version
 
-0.26.0
+0.27.0
 
 ## Milestone
 
@@ -20,7 +20,7 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-The bounded objective is to synchronize exactly six current-state and task artifacts to the independently verified Main Annex Version `0.30.0` publication and the independently verified B2-MAN-007 planning-evidence adoption record, without changing any task, milestone, decision, command, reproduction record, mapping, acceptance count, Field, blocker, gate, execution marker, or authority boundary.
+The bounded objective is to correct the documentary attribution and closure wording for the completed Main Annex Version `0.30.0` downstream chain across exactly six current-state and task artifacts, without changing any task, milestone, decision, command, reproduction record, mapping, acceptance count, Field, blocker, gate, execution marker, or authority boundary.
 
 The authoritative prerequisite-package adoption decision is:
 
@@ -34,7 +34,7 @@ The later decisions are `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_
 
 The narrower Stage 2 model is `CONSOLE_ONLY_LOCAL_REVIEW_WITHOUT_PERSISTED_EVIDENCE`. Its planning parameters are `EPS-1`, `LI-ALLOWLIST-1`, proposed WSL distribution `Ubuntu`, administrator elevation `NOT_AUTHORIZED`, network action `NONE`, retry authority `NONE`, timeout `30 seconds`, and `UNACTIVATED_PROPOSED_EXECUTION_WINDOW`. `LI-ALLOWLIST-1` authorizes no command and excludes every `git status` command, the retained B2-MAN-006 logical command, the future B2-MAN-006 status-command envelope, and `git fsmonitor--daemon status`. None of these directions is implemented, activated, executed, or evidence of a local fact.
 
-Main Annex Version `0.26.0`, commit `fe7e507dd090cd0c5a6051b3c57d352ed24716e5`, blob `d42fbdedbf4c4d17fd045e53ad11a6afd0b2554f`, and Version `0.27.0`, commit `993a89871e1075f9655300b091c8bf0f9b535478`, blob `703351d3d5ff58c486225773dd30a184c1cc5bef`, remain historical publication evidence.
+Main Annex Version `0.26.0`, commit `fe7e507dd090cd0c5a6051b3c57d352ed24716e5`, blob `d42fbdedbf4c4d17fd045e53ad11a6afd0b2554f`, and Version `0.27.0`, commit `993a89871e1075f9655300b091c8bf0f9b535478`, blob `703351d3d5ff58c486225773dd30a184c1cc5bef`, remain historical publication evidence. Versions `0.28.0` and `0.29.0` also remain version-specific historical publication evidence.
 
 Main Annex Version `0.28.0`, dated `2026-07-22`, remains historical publication evidence at commit `6768d85c050d50aa52e8f25c7a46accc28977aba`, parent `92e6e1301fbbda4ece47b4ed9fa26970c1358d5b`, blob `7050272035646fd7c2870f77737a1b4a729694c2`. Its response-only independent verification established a clean working tree, the exact one-file Main Annex changed set, matching local and remote `master`, and successful repository-integrity verification through `git fsck --full --no-dangling`; GitHub connector readback remained unavailable with `404 Not Found`, and the verification response is not a repository artifact. That historical Version `0.28.0` connector gap does not apply to Version `0.29.0`, whose GitHub exact-ref readback succeeded.
 
@@ -55,11 +55,15 @@ This synchronization records documentary current-state alignment only. It satisf
 
 The B2-MAN-007 package-adoption record is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_LOCAL_VERIFICATION_AUTHORIZATION_PACKAGE_ADOPTION_DECISION.md`, commit `9d16989125b147ea0ac749bfe8ecf5573be881f7`, blob `ba4aadff5b2226e68439dff313c6325dad91b2f7`. Its standing decision is `ADOPT_B2_MAN_007_COMPLETE_CORRECTED_REPLACEMENT_PACKAGE_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY`; adoption state is `ADOPTED_AS_BOUNDED_PLANNING_EVIDENCE_ONLY_WITHOUT_EXECUTION_AUTHORITY`; preservation mode is `INLINE_CANONICAL_TEXT_PRESERVATION`; and no B2-MAN-007 acceptance category is satisfied.
 
-The exact six-file downstream synchronization was committed and published at `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, parent `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, with exactly six changed paths, `91` insertions, and `34` deletions.
+Version `0.29.0` historical downstream synchronization evidence is commit `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, parent `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, with exactly six changed paths, `91` insertions, and `34` deletions.
 
-The verified resulting blobs of that synchronization commit are `CURRENT_CONTEXT.md` `b18135f4d2293f12d9640f5869ed97c210d16d76`; `CURRENT_STATUS.md` `c33afd513840624cd1e02869bb51d19672420dc2`; `TODAY_OBJECTIVE.md` `bd9cbb4295b735641533f40ace30db9045b182ab`; `ACTIVE_TASK.yaml` `b46ed89c9bba10d263630a8c739acc7f6cb4f7d8`; `AGENT_CONTEXT_VERSION.yaml` `cd07bcd0f07c0bdf7ec6e3546af84db5607de1dc`; and `LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` `2806f4596b9c2c821b6a940b1087f7d0688e2653`.
+The Version `0.29.0` historical synchronization blobs are `CURRENT_CONTEXT.md` `b18135f4d2293f12d9640f5869ed97c210d16d76`; `CURRENT_STATUS.md` `c33afd513840624cd1e02869bb51d19672420dc2`; `TODAY_OBJECTIVE.md` `bd9cbb4295b735641533f40ace30db9045b182ab`; `ACTIVE_TASK.yaml` `b46ed89c9bba10d263630a8c739acc7f6cb4f7d8`; `AGENT_CONTEXT_VERSION.yaml` `cd07bcd0f07c0bdf7ec6e3546af84db5607de1dc`; and `LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` `2806f4596b9c2c821b6a940b1087f7d0688e2653`. These are historical commit-scoped blobs, not Version `0.30.0` or current default-branch blobs.
 
-Response-only independent post-publication verification established matching local `HEAD` and remote `master` at `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, a clean local working tree, the exact six-file changed set, all six remote blobs, and successful GitHub exact-ref readback. The verification response is not a repository artifact.
+Version `0.30.0` downstream synchronization completed at `0d0185738309f58d64f143f93cf9e7917d12aa1e`, parent `f7408802a0fba79bdaf81684683d213df217075b`, with exactly six modified paths, `59` additions, and `47` deletions. Formatting correction completed at `cd512bd4eb4c8ab2b7897192baf453ef20c7be56`, parent `0d0185738309f58d64f143f93cf9e7917d12aa1e`; only `CURRENT_CONTEXT.md` and `ACTIVE_TASK.yaml` changed, and the correction was formatting-only with no semantic project-state change.
+
+The final verified remote ref is `cd512bd4eb4c8ab2b7897192baf453ef20c7be56`. Its six final blobs are `CURRENT_CONTEXT.md` `4938e06929810a93ba198f74efec1772132397d1`; `CURRENT_STATUS.md` `da8b056fa08a0343bdaad86607139041b08d01de`; `TODAY_OBJECTIVE.md` `3049f901d300c45748c3a95c020412a6493da9fb`; `ACTIVE_TASK.yaml` `612aab2742a429d8de7945172f8b2cd29fdec012`; `AGENT_CONTEXT_VERSION.yaml` `a355164baac10e2127e3b9a158342b528bcd0e13`; and `LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` `6c59a6f5399eda80f8c3f25772715593a9a873cd`.
+
+Remote-chain verification completed as `VERSION_0_30_0_DOWNSTREAM_CHAIN_VERIFIED_WITH_RECORDED_LOCAL_STATE_LIMITATIONS`. Live GitHub `master`, remote ancestry, changed-file sets, final endpoint, and blobs were verified. Codex reported a stale local `HEAD`, stale cached `origin/master`, and unrelated untracked `.claude/settings.local.json`; those local-state facts were not independently verified and remain recorded separately as local-state limitations; no local/remote equality or clean-working-tree claim is made.
 
 ## Out of Scope
 
@@ -69,9 +73,10 @@ No local executable discovery, local inspection, option testing, command executi
 
 ## Expected Deliverables
 
-Exactly the six authorized existing artifacts are synchronized to Main Annex Version `0.30.0`, publication commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`, and the independently verified B2-MAN-007 adoption record.
+Exactly the six authorized existing artifacts contain corrected Version `0.30.0` downstream attribution and closure wording tied to publication commit `f7408802a0fba79bdaf81684683d213df217075b`, synchronization commit `0d0185738309f58d64f143f93cf9e7917d12aa1e`, formatting correction `cd512bd4eb4c8ab2b7897192baf453ef20c7be56`, and the independently verified B2-MAN-007 adoption record.
 
-The synchronization creates one exact six-file commit. Its own identity and resulting blobs are established by separate post-publication Git verification. No file is created, deleted, renamed, or modified outside the exact six authorized paths.
+The corrective synchronization creates one exact six-file local commit for independent post-change review. No file is created, deleted, renamed, or modified outside the exact six authorized paths.
+
 ## Success Criteria
 
 - Exactly the six authorized paths change in one commit.
@@ -79,6 +84,7 @@ The synchronization creates one exact six-file commit. Its own identity and resu
 - Shared requirements remain `0` of `22`; shared categories remain `0` of `20`; B2-MAN-006 remains `0` of `6`; B2-MAN-007 remains `0` of `16`; B2-MAN-013 row criteria remain `0`; and B2-MAN-013 Route C remains `0` of `20`.
 - Field states, substantive blockers, task, milestone, gate, execution marker, and non-authorization states remain unchanged.
 - No Main Annex, adoption record, daily report, governance, runtime, deployment, database, production, validation, or milestone artifact changes.
+
 ## Next Action
 
-Perform separate independent post-publication verification of the exact six-file synchronization commit, parent, changed-file set, resulting blobs, remote publication, and preserved states. No downstream mutation, Field review, gate evaluation, local inspection, command execution, evidence collection, or execution authority follows automatically.
+Version `0.30.0` publication, downstream synchronization, formatting correction, and remote-chain verification are complete. Selection of the next specific bounded planning scope remains with the Project Owner. No local verification, blocker-specific operational package, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is automatically authorized.
