@@ -6,7 +6,7 @@
 
 ## Version
 
-0.27.0
+0.28.0
 
 ## Milestone
 
@@ -20,7 +20,7 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-The bounded objective is to correct the documentary attribution and closure wording for the completed Main Annex Version `0.30.0` downstream chain across exactly six current-state and task artifacts, without changing any task, milestone, decision, command, reproduction record, mapping, acceptance count, Field, blocker, gate, execution marker, or authority boundary.
+The bounded objective is to prepare and independently review exact six-file current-state synchronization candidates for Main Annex Version `0.31.0`, without authorizing repository recording or changing any task, milestone, decision, command, reproduction record, mapping, acceptance count, Field, blocker, gate, execution marker, or authority boundary.
 
 The authoritative prerequisite-package adoption decision is:
 
@@ -38,9 +38,17 @@ Main Annex Version `0.26.0`, commit `fe7e507dd090cd0c5a6051b3c57d352ed24716e5`, 
 
 Main Annex Version `0.28.0`, dated `2026-07-22`, remains historical publication evidence at commit `6768d85c050d50aa52e8f25c7a46accc28977aba`, parent `92e6e1301fbbda4ece47b4ed9fa26970c1358d5b`, blob `7050272035646fd7c2870f77737a1b4a729694c2`. Its response-only independent verification established a clean working tree, the exact one-file Main Annex changed set, matching local and remote `master`, and successful repository-integrity verification through `git fsck --full --no-dangling`; GitHub connector readback remained unavailable with `404 Not Found`, and the verification response is not a repository artifact. That historical Version `0.28.0` connector gap does not apply to Version `0.29.0`, whose GitHub exact-ref readback succeeded.
 
-Main Annex Version `0.30.0`, dated `2026-07-27`, is the current independently verified publication at commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`.
+Main Annex Version `0.31.0`, dated `2026-07-27`, is the current independently repository-verified publication at commit `a7816dbb72f04ac12a86943469be36f66c6169a3`, parent `50f48cd4822aa92682ed213b7c7c0702e083413a`, blob `764d7d08797da70a77372091793eca778f7fa7e2`.
 
-Response-only independent Version `0.30.0` publication verification established commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, exactly one changed Annex path, `22` additions, `6` deletions, Annex blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`, successful GitHub exact-ref readback, and determination `VERIFIED_MAIN_ANNEX_VERSION_0_30_0_PUBLICATION_READY_FOR_SEPARATE_DOWNSTREAM_IMPACT_REVIEW`. Local working-tree, local HEAD, and local-to-remote synchronization were outside that verification scope.
+Independent publication verification confirmed exactly one modified Main Annex path, `49` additions, `7` deletions, successful exact-ref GitHub readback, and determination `GITHUB_READ_ONLY_MAIN_ANNEX_V0_31_PUBLICATION_VERIFICATION_PASSED`.
+
+Historical predecessor evidence: Main Annex Version `0.30.0` was published at commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, with Annex blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`. This identity is retained solely as historical predecessor evidence and does not supersede the current Version `0.31.0` authority baseline. The completed Version `0.30.0` downstream chain also remains historical evidence.
+
+The B2-MAN-007 category-disposition decision is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_CATEGORY_BY_CATEGORY_DOCUMENTARY_DISPOSITION_DECISION.md`, recording commit `50f48cd4822aa92682ed213b7c7c0702e083413a`, blob `9457aad0e6509fde3f0581d44e4385bd8ac82c1e`, classification `PROJECT_OWNER_B2_MAN_007_CATEGORY_BY_CATEGORY_DOCUMENTARY_DISPOSITION_DECISION_RECORD`, and standing decision `APPROVE_B2_MAN_007_CATEGORY_BY_CATEGORY_DOCUMENTARY_DISPOSITIONS_WITH_ALL_CATEGORIES_REMAINING_UNSATISFIED_WITHOUT_EXECUTION_EVIDENCE_FIELD_GATE_OR_REPOSITORY_MUTATION_AUTHORITY`.
+
+All sixteen B2-MAN-007 categories remain unsatisfied. Only response-only preparation of `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` is authorized. These authorizations establish no new task, implementation, repository recording, local inspection, evidence, Field movement, category satisfaction, or execution authority.
+
+Six-file downstream synchronization candidate preparation is the current bounded documentary stage. Repository recording remains `NOT_AUTHORIZED_PENDING_INDEPENDENT_CANDIDATE_REVIEW_AND_EXACT_PROJECT_OWNER_RECORDING_AUTHORIZATION`; no downstream stage is automatically authorized by candidate preparation.
 
 The exact authorized file set is:
 
@@ -73,18 +81,18 @@ No local executable discovery, local inspection, option testing, command executi
 
 ## Expected Deliverables
 
-Exactly the six authorized existing artifacts contain corrected Version `0.30.0` downstream attribution and closure wording tied to publication commit `f7408802a0fba79bdaf81684683d213df217075b`, synchronization commit `0d0185738309f58d64f143f93cf9e7917d12aa1e`, formatting correction `cd512bd4eb4c8ab2b7897192baf453ef20c7be56`, and the independently verified B2-MAN-007 adoption record.
+Exactly six complete response-only replacement candidates and one consolidated delta-and-identity report are prepared for independent pre-recording review. Candidate preparation creates no repository commit and authorizes no repository recording.
 
-The corrective synchronization creates one exact six-file local commit for independent post-change review. No file is created, deleted, renamed, or modified outside the exact six authorized paths.
+No seventh repository path is included.
 
 ## Success Criteria
 
-- Exactly the six authorized paths change in one commit.
-- No file is created, deleted, renamed, or modified outside that exact set.
+- Exactly six complete replacement candidates are prepared for the six authorized paths.
+- No seventh path is included, and no repository file is created, deleted, renamed, or modified during preparation.
 - Shared requirements remain `0` of `22`; shared categories remain `0` of `20`; B2-MAN-006 remains `0` of `6`; B2-MAN-007 remains `0` of `16`; B2-MAN-013 row criteria remain `0`; and B2-MAN-013 Route C remains `0` of `20`.
 - Field states, substantive blockers, task, milestone, gate, execution marker, and non-authorization states remain unchanged.
 - No Main Annex, adoption record, daily report, governance, runtime, deployment, database, production, validation, or milestone artifact changes.
 
 ## Next Action
 
-Version `0.30.0` publication, downstream synchronization, formatting correction, and remote-chain verification are complete. Selection of the next specific bounded planning scope remains with the Project Owner. No local verification, blocker-specific operational package, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is automatically authorized.
+Six-file downstream synchronization candidate preparation is the current bounded documentary stage. Repository recording remains `NOT_AUTHORIZED_PENDING_INDEPENDENT_CANDIDATE_REVIEW_AND_EXACT_PROJECT_OWNER_RECORDING_AUTHORIZATION`; no downstream stage is automatically authorized by candidate preparation. Only response-only preparation of `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` is authorized. These authorizations establish no new task, implementation, repository recording, local inspection, evidence, Field movement, category satisfaction, or execution authority. No local verification, blocker-specific operational package, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is authorized.
