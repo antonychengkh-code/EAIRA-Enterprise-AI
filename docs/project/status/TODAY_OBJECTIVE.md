@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-07-27
+2026-08-05
 
 ## Version
 
-0.28.0
+0.29.0
 
 ## Milestone
 
@@ -20,7 +20,7 @@ Current/New Milestone: None established.
 
 ## Current Scope
 
-The bounded objective is to prepare and independently review exact six-file current-state synchronization candidates for Main Annex Version `0.31.0`, without authorizing repository recording or changing any task, milestone, decision, command, reproduction record, mapping, acceptance count, Field, blocker, gate, execution marker, or authority boundary.
+The bounded objective is to preserve the Project Owner `OPTION_B` decision for commit `f317294515d1dc27a261035260e9fcc45e1545f6` through one authoritative decision record and six downstream synchronization files. Revision 3 response-only package preparation and independent review are complete, and the exact seven-path working-tree mutation candidate was separately authorized, materialized, and validated on `2026-08-05`. Future repository recording remains separately unauthorized. No task, milestone, controlling decision, command, reproduction record, mapping, acceptance count, Field, blocker, gate, execution marker, or operational authority changes.
 
 The authoritative prerequisite-package adoption decision is:
 
@@ -48,16 +48,19 @@ The B2-MAN-007 category-disposition decision is `docs/project/strategy/EAIRA_LOC
 
 All sixteen B2-MAN-007 categories remain unsatisfied. Only response-only preparation of `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` is authorized. These authorizations establish no new task, implementation, repository recording, local inspection, evidence, Field movement, category satisfaction, or execution authority.
 
-Six-file downstream synchronization candidate preparation is the current bounded documentary stage. Repository recording remains `NOT_AUTHORIZED_PENDING_INDEPENDENT_CANDIDATE_REVIEW_AND_EXACT_PROJECT_OWNER_RECORDING_AUTHORIZATION`; no downstream stage is automatically authorized by candidate preparation.
+Commit `f317294515d1dc27a261035260e9fcc45e1545f6` is a completed six-file repository-recording fact. Its authoritative Project Owner decision record is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_F317294_AUTHORIZATION_STATE_DECISION.md`.
 
-The exact authorized file set is:
+The preserved historical finding is `REPOSITORY_RECORDED_AUTHORIZATION_EVIDENCE_NOT_FOUND`. This finding does not establish that prior authorization definitively never existed; it means only that qualifying repository-recorded evidence was not found within the documented search scope.
 
-1. `docs/project/context/CURRENT_CONTEXT.md`
-2. `docs/project/status/CURRENT_STATUS.md`
-3. `docs/project/status/TODAY_OBJECTIVE.md`
-4. `docs/project/status/ACTIVE_TASK.yaml`
-5. `docs/project/status/AGENT_CONTEXT_VERSION.yaml`
-6. `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md`
+The Project Owner selected `OPTION_B` and retrospectively accepted and retained `f317294515d1dc27a261035260e9fcc45e1545f6` as authorized EAIRA project evidence effective `2026-08-05`, without representing that prior authorization existed or preceded its mutation, commit, or push. No revert is required.
+
+The reconciliation architecture is exactly one proposed new authoritative decision record and six downstream modifications. The Version `0.30.0` six-file authorization was consumed by commit `2ecc2dd841a9581fa59c480bbb1149937b18db85` and does not authorize `f317294515d1dc27a261035260e9fcc45e1545f6`. The historical predecessor identity does not supersede the current Version `0.31.0` authority baseline.
+
+`INDEPENDENT_REVIEW_TARGET_REVISION=REVISION_3`
+
+`INDEPENDENT_REVIEW_DETERMINATION=READY_WITH_NON_BLOCKING_FINDINGS_FOR_PROJECT_OWNER_MUTATION_CANDIDATE_PREPARATION_DECISION`
+
+The exact seven-path working-tree candidate was materialized on `2026-08-05`. Repository recording remains separately unauthorized, and `2026-08-06` remains intentionally unresolved pending a separate Project Owner decision.
 
 This synchronization records documentary current-state alignment only. It satisfies no requirement, category, or criterion; resolves no blocker; changes no Field or gate state; and grants no local verification or operational authority.
 
@@ -75,24 +78,26 @@ Remote-chain verification completed as `VERSION_0_30_0_DOWNSTREAM_CHAIN_VERIFIED
 
 ## Out of Scope
 
-No Main Annex, adoption decision, package source, historical decision, Bootstrap, daily report, governance, validation, runtime, deployment, database, production, or milestone artifact is modified.
+No Main Annex, adoption decision, package source, historical decision, Bootstrap, daily report, governance, runtime, deployment, database, production, or milestone artifact is modified. No path outside the exact seven-path candidate is modified.
 
 No local executable discovery, local inspection, option testing, command execution, connectivity testing, port probing, observation, interaction, evidence collection, evidence-directory or evidence-file creation, ACL or identity configuration, encryption configuration, hashing, redaction, quarantine, notification, retention, disposal, remediation, implementation, runtime, deployment, automation, CI/CD expansion, database mutation, production mutation, governance modification, Field review, gate evaluation, Gate B, Batch 9, successor task, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer is authorized.
 
 ## Expected Deliverables
 
-Exactly six complete response-only replacement candidates and one consolidated delta-and-identity report are prepared for independent pre-recording review. Candidate preparation creates no repository commit and authorizes no repository recording.
+Revision 3 response-only exact-change-package preparation and its independent review are complete. The exact seven-path working-tree mutation candidate—one new authoritative decision record and six downstream modifications—is materialized and validated for Project Owner review. Candidate preparation creates no repository commit and authorizes no repository recording.
 
-No seventh repository path is included.
+The separately authorized response-only `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` preparations remain accurately represented and are not marked complete by this candidate.
 
 ## Success Criteria
 
-- Exactly six complete replacement candidates are prepared for the six authorized paths.
-- No seventh path is included, and no repository file is created, deleted, renamed, or modified during preparation.
+- Exactly one new authoritative decision-record path and six downstream modifications are prepared and validated, with no eighth path changed.
+- `INDEPENDENT_REVIEW_TARGET_REVISION=REVISION_3` and the determination exactly equals `READY_WITH_NON_BLOCKING_FINDINGS_FOR_PROJECT_OWNER_MUTATION_CANDIDATE_PREPARATION_DECISION`.
+- No unresolved materialization-date or review-determination placeholder remains; `2026-08-06` remains intentionally unresolved pending separate Project Owner authority.
+- The two separately authorized B2-MAN-007 response-only preparations remain authorized but are not represented as completed.
 - Shared requirements remain `0` of `22`; shared categories remain `0` of `20`; B2-MAN-006 remains `0` of `6`; B2-MAN-007 remains `0` of `16`; B2-MAN-013 row criteria remain `0`; and B2-MAN-013 Route C remains `0` of `20`.
 - Field states, substantive blockers, task, milestone, gate, execution marker, and non-authorization states remain unchanged.
 - No Main Annex, adoption record, daily report, governance, runtime, deployment, database, production, validation, or milestone artifact changes.
 
 ## Next Action
 
-Six-file downstream synchronization candidate preparation is the current bounded documentary stage. Repository recording remains `NOT_AUTHORIZED_PENDING_INDEPENDENT_CANDIDATE_REVIEW_AND_EXACT_PROJECT_OWNER_RECORDING_AUTHORIZATION`; no downstream stage is automatically authorized by candidate preparation. Only response-only preparation of `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` is authorized. These authorizations establish no new task, implementation, repository recording, local inspection, evidence, Field movement, category satisfaction, or execution authority. No local verification, blocker-specific operational package, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is authorized.
+The exact seven-path working-tree mutation candidate is prepared and validated and awaits a separate exact Project Owner repository-recording decision. Repository recording, staging, commit, and push remain unauthorized. Only response-only preparation of `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` is authorized; neither is completed by this candidate. These authorizations establish no new task, implementation, repository recording, local inspection, evidence, Field movement, category satisfaction, or execution authority. No local verification, blocker-specific operational package, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is authorized.
