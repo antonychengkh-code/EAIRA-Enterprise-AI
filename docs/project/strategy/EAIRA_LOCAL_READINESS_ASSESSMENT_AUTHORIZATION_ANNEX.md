@@ -25,8 +25,8 @@
 | Evidence Disposal Activity | `UNAUTHORIZED` |
 | Decision Authority | Project Owner |
 | Planning Task | `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` |
-| Date | 2026-08-06 |
-| Version | 0.32.0 |
+| Date | 2026-08-26 |
+| Version | 0.33.0 |
 
 ## 2. Purpose
 
@@ -206,6 +206,23 @@ ALL_FIELDS_RESOLVED_GATE_REMAINS_BLOCKED=YES
 ```
 
 The selection establishes no evidence destination, path existence, identity, group, ACL, encryption, retention, disposal, notification, quarantine, provenance implementation, operator, verifier, command, executable, working-directory, environment, configuration, runtime, deployment, or local fact. It performs no Field review, category evaluation, gate evaluation, evidence activity, implementation, activation, or blocker closure.
+
+### B2-MAN-007 Field 8 Revision 2 Documentary Binding Disposition
+
+The Project Owner Option A decision in `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_FIELD_8_REVISION_2_DISPOSITION_DECISION.md` accepts Revision 2 as the documentary binding selection and authorizes this exact one-file Main Annex candidate only. The accepted source is commit `351fdeb6591ffe767f0fd8f7e982a7a6cf8bef3d`, blob `49dd0e988a8201c977428d160c887fdda845242d`, SHA-256 `533ec64b919eff464b6f6516808d68311a31a79e4804dea50f100eef0a2b477c`.
+
+```text
+PROJECT_OWNER_DISPOSITION=OPTION_A_ACCEPTED
+REVISION_2_DOCUMENTARY_BINDING_SELECTION=ACCEPTED
+BINDING_PROFILE=B7-EPS-1-BINDING-1
+SELECTION_COUNT=19
+CANONICAL_B7_EPS_1_MODIFIED=NO
+BINDING_PROFILE_ACTIVATED=NO
+FIELD_8_STATE_CHANGED=NO
+CATEGORY_14_SATISFIED=NO
+B2_MAN_007_SATISFIED_CATEGORY_COUNT=0_OF_16
+ALL_FIELDS_RESOLVED_GATE=BLOCKED
+```
 
 ### B2-MAN-013 Stage 1 Documentary Detail Selection
 
@@ -1456,6 +1473,360 @@ The pre-execution closure decision selects `ACL-A`, `ENC-A`, `INT-A`, and `XFER-
 
 The general Field 8 evidence-control framework remains documentary planning direction. The Stage 2 package-local `CONSOLE_ONLY_LOCAL_REVIEW_WITHOUT_PERSISTED_EVIDENCE` model is narrower and separately adopted as planning evidence only. Neither model repeals, activates, implements, or executes the other, and neither authorizes evidence capture, persisted evidence, evidence-directory creation, hashing, encryption, access configuration, transfer, retention, or disposal.
 
+### B2-MAN-007 Revision 2 case-first documentary overlay
+
+Version `0.33.0` explicitly extends the class-first Field 8 planning structure with the accepted case-first documentary overlay; it does not replace the class-first controls.
+
+```text
+PERSISTENCE_ROOT_WINDOWS_CONTROLLING_FORM=C:\EAIRA\Evidence
+PERSISTENCE_ROOT_WSL_ACCESS_FORM=/mnt/c/EAIRA/Evidence
+PHYSICAL_TOPOLOGY=CASE_FIRST
+CASE_DIRECTORY_TEMPLATE=<ROOT>/B2-MAN-007/<CASE_ID>/<RECORD_CLASS>/...
+CASE_ID_TEMPLATE=<SESSION_ID>__B2-MAN-007__<CASE_SEQUENCE>
+PATH_EXISTENCE_VERIFIED=NO
+PATH_CREATION_AUTHORIZED=NO
+PATH_USE_AUTHORIZED=NO
+PERSISTENCE_AUTHORIZED=NO
+```
+
+The accepted selections are `F8-RID-00-B`; `F8-RID-01-A` through `F8-RID-09-A`; `F8-RID-10-E`; and `F8-RID-11-A` through `F8-RID-18-A`. They select documentary targets only. Encryption remains unselected. Exact identities, group membership, UID/GID mapping, NTFS rights, privilege method, rollback operation, effective-access evidence, metadata serialization, filenames, Field 9 rules, operator assignment, verifier assignment, and local applicability remain deferred.
+
+Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`; Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`; Category 14 remains unsatisfied; B2-MAN-007 remains `0` of `16` and an unresolved substantive blocker; the gate remains `BLOCKED`. No directory, file, hash, evidence, ACL, encryption, retention, disposal, notification, command, implementation, or execution activity is authorized.
+
+#### Revision 2 controlling-source relationship
+
+The exact values below reproduce the documentary binding targets accepted from Revision 2 by the Project Owner Option A disposition. The existing Main Annex Field 8 controls remain controlling wherever Revision 2 does not expressly refine the B2-MAN-007 binding profile. No value below silently rewrites canonical B7-EPS-1 or replaces a non-conflicting Annex control.
+
+~~~text
+REVISION_2_SOURCE_COMMIT=351fdeb6591ffe767f0fd8f7e982a7a6cf8bef3d
+REVISION_2_SOURCE_BLOB=49dd0e988a8201c977428d160c887fdda845242d
+REVISION_2_SOURCE_SHA256=533ec64b919eff464b6f6516808d68311a31a79e4804dea50f100eef0a2b477c
+PROJECT_OWNER_REVISION_2_DISPOSITION=OPTION_A_ACCEPTED
+BASE_DOCUMENTARY_MODEL=B7-EPS-1
+CANONICAL_B7_EPS_1_MODIFIED=NO
+CANONICAL_B7_EPS_1_HISTORICAL_TEXT_PRESERVED=YES
+BINDING_PROFILE_ID=B7-EPS-1-BINDING-1
+BINDING_PROFILE_FORM=SEPARATE_DOCUMENTARY_OVERLAY
+BINDING_PROFILE_ACTIVATED=NO
+~~~
+
+#### Exact Project Owner selection enumeration
+
+~~~text
+PROJECT_OWNER_SELECTION_F8_RID_00=F8-RID-00-B
+PROJECT_OWNER_SELECTION_F8_RID_01=F8-RID-01-A
+PROJECT_OWNER_SELECTION_F8_RID_02=F8-RID-02-A
+PROJECT_OWNER_SELECTION_F8_RID_03=F8-RID-03-A
+PROJECT_OWNER_SELECTION_F8_RID_04=F8-RID-04-A
+PROJECT_OWNER_SELECTION_F8_RID_05=F8-RID-05-A
+PROJECT_OWNER_SELECTION_F8_RID_06=F8-RID-06-A
+PROJECT_OWNER_SELECTION_F8_RID_07=F8-RID-07-A
+PROJECT_OWNER_SELECTION_F8_RID_08=F8-RID-08-A
+PROJECT_OWNER_SELECTION_F8_RID_09=F8-RID-09-A
+PROJECT_OWNER_SELECTION_F8_RID_10=F8-RID-10-E
+PROJECT_OWNER_SELECTION_F8_RID_11=F8-RID-11-A
+PROJECT_OWNER_SELECTION_F8_RID_12=F8-RID-12-A
+PROJECT_OWNER_SELECTION_F8_RID_13=F8-RID-13-A
+PROJECT_OWNER_SELECTION_F8_RID_14=F8-RID-14-A
+PROJECT_OWNER_SELECTION_F8_RID_15=F8-RID-15-A
+PROJECT_OWNER_SELECTION_F8_RID_16=F8-RID-16-A
+PROJECT_OWNER_SELECTION_F8_RID_17=F8-RID-17-A
+PROJECT_OWNER_SELECTION_F8_RID_18=F8-RID-18-A
+SELECTION_COUNT=19
+UNSELECTED_F8_RID_ITEM=NONE
+~~~
+
+These selections establish controlled documentary targets only.
+
+#### Exact persistence target and topology
+
+~~~text
+PERSISTENCE_ROOT_WINDOWS_CONTROLLING_FORM=C:\EAIRA\Evidence
+PERSISTENCE_ROOT_WSL_ACCESS_FORM=/mnt/c/EAIRA/Evidence
+PERSISTENCE_ROOT_SOURCE=FIELD_WIDE_OPTION_B
+PERSISTENCE_ROOT_INHERITED_FROM_B2_MAN_006=NO
+PATH_EXISTENCE_VERIFIED=NO
+PATH_CREATION_AUTHORIZED=NO
+PATH_USE_AUTHORIZED=NO
+PERSISTENCE_AUTHORIZED=NO
+PHYSICAL_TOPOLOGY=CASE_FIRST
+CASE_DIRECTORY_TEMPLATE=<ROOT>/B2-MAN-007/<CASE_ID>/<RECORD_CLASS>/...
+CASE_ID_TEMPLATE=<SESSION_ID>__B2-MAN-007__<CASE_SEQUENCE>
+ACTUAL_SESSION_ID=DEFERRED
+ACTUAL_CASE_SEQUENCE=DEFERRED
+MAIN_ANNEX_STRUCTURE_SILENTLY_AMENDED=NO
+DOCUMENTARY_TOPOLOGY_EXTENSION_REQUIRED=YES
+DOCUMENTARY_TOPOLOGY_EXTENSION_AUTHORIZED_BY_THIS_DECISION=NO
+~~~
+
+#### Proposed group functions and deferred bindings
+
+~~~text
+PROPOSED_GROUP_READERS=EAIRA_EVIDENCE_READERS
+PROPOSED_GROUP_OPERATORS=EAIRA_EVIDENCE_OPERATORS
+PROPOSED_GROUP_VERIFIERS=EAIRA_EVIDENCE_VERIFIERS
+PROPOSED_GROUP_OWNERS=EAIRA_EVIDENCE_OWNERS
+PROPOSED_GROUP_STOP_METADATA=EAIRA_EVIDENCE_STOP_METADATA
+GROUP_NAMES_CLASSIFICATION=DOCUMENTARY_BINDING_TARGETS_ONLY
+GROUP_EXISTENCE_CLAIMED=NO
+GROUP_CREATION_AUTHORIZED=NO
+WINDOWS_USER_BINDING=DEFERRED
+WINDOWS_SID_BINDING=DEFERRED
+GROUP_MEMBERSHIP_BINDING=DEFERRED
+NESTED_MEMBERSHIP_BINDING=DEFERRED
+WSL_USER_BINDING=DEFERRED
+WSL_UID_GID_BINDING=DEFERRED
+WINDOWS_WSL_MAPPING_BINDING=DEFERRED
+MANDATORY_SYSTEM_ACCESS_BINDING=DEFERRED
+~~~
+
+#### Role separation and selected symbolic role matrix
+
+~~~text
+SESSION_OPERATOR_MUST_DIFFER_FROM_INDEPENDENT_VERIFIER=YES
+ORDINARY_OPERATOR_VERIFIER_MEMBERSHIP_OVERLAP=PROHIBITED
+UNRESTRICTED_OPERATOR_VERIFIER_OVERLAP=PROHIBITED
+HYBRID_EXCEPTION=REQUIRES_SEPARATE_EXACT_PROJECT_OWNER_APPROVAL
+CANDIDATE_PREPARER_SELF_VERIFICATION=PROHIBITED
+~~~
+
+| Boundary | Assessment Operator | Independent Verifier | Project Owner | Stop Authority |
+| --- | --- | --- | --- | --- |
+| Session/case structure | Create, write, read approved metadata | Read | Read | Approved metadata only |
+| Direct output | Create, write, read | Read only | Read only | No access |
+| Redacted output | Create, write, read | Read only | Read only | No access |
+| Verifier review | No write | Create, write, read | Read | No access unless separately approved |
+| Discrepancy log | Submit/write operator discrepancy | Write findings and disposition | Read and decide where authorized | Metadata-only |
+| Stopped assessment | Write minimum metadata | Write verifier stop finding | Read and decide | Write minimum incident metadata |
+| Integrity records | Write initial approved record | Read and independently verify | Read | No access by default |
+
+No broader symbolic right is selected.
+
+#### Access-control target and translation conditions
+
+~~~text
+UNCONTROLLED_PARENT_INHERITANCE=PROHIBITED
+ACCESS_MODEL=EXPLICIT_LEAST_PRIVILEGE_ALLOW
+BROAD_EXPLICIT_DENY=NOT_SELECTED
+EXPLICIT_DENY=PERMITTED_ONLY_WHERE_VERIFIED_NECESSARY
+UNLISTED_IDENTITY_ACCESS=PROHIBITED_EXCEPT_SEPARATELY_APPROVED_MANDATORY_SYSTEM_ACCESS
+EXACT_NTFS_ACE_TRANSLATION=DEFERRED
+EXACT_FILESYSTEM_RIGHTS_TRANSLATION=DEFERRED
+NO_OVERWRITE_PRESERVED=REQUIRED_FUTURE_VERIFICATION
+CROSS_BOUNDARY_SEPARATION_PRESERVED=REQUIRED_FUTURE_VERIFICATION
+UNLISTED_IDENTITY_DENIAL_VERIFIED=REQUIRED_FUTURE_VERIFICATION
+WINDOWS_AND_WSL_EFFECTIVE_ACCESS_CONSISTENT=REQUIRED_FUTURE_VERIFICATION
+~~~
+
+#### Privilege, rollback, and effective access
+
+~~~text
+CONFIGURATION_ELEVATION=PERMITTED_ONLY_UNDER_LATER_EXACT_AUTHORIZATION
+ASSESSMENT_EXECUTION_ELEVATION=PROHIBITED
+PRE_CHANGE_SECURITY_DESCRIPTOR_CAPTURE=REQUIRED
+VALIDATION_FAILURE_ROLLBACK=RESTORE_EXACT_PRIOR_ACCESS_STATE
+ROLLBACK_EVIDENCE_DELETION=PROHIBITED
+ROLLBACK_ACCESS_EXPANSION=PROHIBITED
+EFFECTIVE_ACCESS_VERIFICATION=REQUIRED_BEFORE_EVERY_AUTHORIZED_SESSION
+TRIGGERED_REVERIFICATION=REQUIRED
+MAXIMUM_EFFECTIVE_ACCESS_EVIDENCE_AGE=FOUR_HOURS
+~~~
+
+Reverification is required after any change to identities, nested membership, ACL inheritance, path, WSL mapping, mandatory system access, encryption, backup or copy behavior, exception state, or policy. No configuration method, command, principal, test, elevation, or rollback operation is authorized.
+
+#### Integrity profile
+
+~~~text
+INTEGRITY_ALGORITHM=SHA-256
+HASH_SCOPE=EXACT_RETAINED_ARTIFACT_BYTES
+HASH_TIME=IMMEDIATELY_AFTER_FINAL_WRITE_AND_CLOSE
+DERIVATIVE_HASHING=SEPARATE
+PROHIBITED_CONTENT_HASHING=NO
+SILENT_REHASH_REPLACEMENT=NO
+HASH_MISMATCH_DISPOSITION=CASE_BLOCKED
+SUPERSEDED_ARTIFACT_TREATMENT=RETAIN_VERSIONED_HISTORY
+INTEGRITY_RECORD_FIELD_01=RELATIVE_PATH
+INTEGRITY_RECORD_FIELD_02=BYTE_COUNT
+INTEGRITY_RECORD_FIELD_03=SHA256
+INTEGRITY_RECORD_FIELD_04=CAPTURE_TIME
+INTEGRITY_RECORD_FIELD_05=ARTIFACT_CLASS
+INTEGRITY_RECORD_FIELD_06=SOURCE_RECORD_RELATIONSHIP
+~~~
+
+No hash calculation is authorized.
+
+#### Encryption state
+
+~~~text
+PROJECT_OWNER_SELECTION_F8_RID_10=F8-RID-10-E
+ENCRYPTION_MECHANISM_SELECTED=NO
+ENCRYPTION_MECHANISM_PENDING_PROJECT_OWNER_INPUT=YES
+ENCRYPTION_SELECTION_BLOCKED_PENDING_EVIDENCE=YES
+KEY_LOCATION=UNSELECTED
+KEY_OWNER=UNSELECTED
+KEY_CUSTODIAN=UNSELECTED
+KEY_ADMINISTRATOR=UNSELECTED
+KEY_RECOVERY_PROCESS=UNSELECTED
+ADMINISTRATOR_PLAINTEXT_ACCESS=UNSELECTED
+INDEPENDENT_VERIFIER_DECRYPTION_AUTHORITY=UNSELECTED
+ENCRYPTED_BACKUP_TREATMENT=UNSELECTED
+KEY_DESTRUCTION_MECHANISM=UNSELECTED
+~~~
+
+F8-RID-10-A remains only a possible later consideration and is not provisionally selected.
+
+#### Copy boundary
+
+~~~text
+BACKUP=PROHIBITED
+REPLICA=PROHIBITED
+SNAPSHOT=PROHIBITED
+SYNCHRONIZATION=PROHIBITED
+REPOSITORY_STORAGE=PROHIBITED
+EXPORT=PROHIBITED
+ONEDRIVE_OR_SYNCHRONIZING_ROOT=PROHIBITED
+UNAVOIDABLE_COPY_MECHANISM=BLOCKER_PENDING_EXPLICIT_IDENTIFICATION_AND_GOVERNANCE
+~~~
+
+No actual copy mechanism has been inspected or excluded through evidence.
+
+#### Retention and disposal
+
+~~~text
+RETENTION_PERIOD=30_CALENDAR_DAYS
+RETENTION_START=FINAL_VERIFIER_DISPOSITION_TIMESTAMP
+TIMESTAMP_UTC_OFFSET_REQUIRED=YES
+AUTOMATIC_EXTENSION=NO
+SILENT_HOLD=NO
+CROSS_CASE_RETENTION_INHERITANCE=NO
+PROJECT_OWNER_DECISION_REQUIRED_FOR_EXTENSION_OR_HOLD=YES
+OPEN_INCIDENT_OR_DISCREPANCY_SUSPENDS_NORMAL_DISPOSAL=YES
+DISPOSAL_TARGET=COMPLETE_APPROVED_ARTIFACT_INVENTORY
+DISPOSAL_METHOD=VERIFIED_LOGICAL_DELETION
+POST_DELETION_ABSENCE_CHECKS=REQUIRED_FOR_EVERY_IN_SCOPE_COPY
+SECURE_ERASURE_CLAIM=NO
+PHYSICAL_SANITIZATION_CLAIM=NO
+UNACCOUNTED_REPLICA_DISPOSITION=DISPOSAL_INCOMPLETE
+PARTIAL_DISPOSAL_DISPOSITION=DISPOSAL_INCOMPLETE
+~~~
+
+Exact deletion commands, tools, verification methods, responsible execution principals, and storage behavior remain deferred. No deletion is authorized.
+
+#### Incident, quarantine, and failed capture
+
+~~~text
+INCIDENT_NOTIFICATION_CHANNEL=AUTHORIZED_PROJECT_OWNER_SESSION
+NOTIFICATION_CONTENT=MINIMUM_NON_SENSITIVE_METADATA_ONLY
+EXTERNAL_AUTOMATED_NOTIFICATION=NO
+EXTERNAL_UPLOAD=NO
+PROHIBITED_CONTENT_COPY=NO
+PROHIBITED_CONTENT_HASHING=NO
+PROHIBITED_CONTENT_TRANSFORMATION=NO
+PROHIBITED_CONTENT_RETENTION=NO
+SAFELY_PERSISTED_PARTIAL_CASE_STATE=INCOMPLETE_QUARANTINED
+RETRY_WITHOUT_NEW_AUTHORITY=NO
+REMEDIATION_WITHOUT_NEW_AUTHORITY=NO
+ALTERNATE_COMMAND_WITHOUT_NEW_AUTHORITY=NO
+RESTART_WITHOUT_NEW_AUTHORITY=NO
+RESUMED_ACTIVITY_WITHOUT_NEW_AUTHORITY=NO
+~~~
+
+The exact future Project Owner session and delivery acknowledgement remain execution-time inputs.
+
+#### Provenance and assignment profile
+
+~~~text
+PROVENANCE_SCHEMA=B7-PROV-1
+PROVENANCE_SCHEMA_EFFECT=DOCUMENTARY_BINDING_TARGET
+CASE_MANIFEST_MODE=APPEND_ONLY
+CUSTODY_EVENT_LOG=APPEND_ONLY
+SILENT_HISTORY_REWRITE=PROHIBITED
+ROLE_MODEL_SOURCE=APPROVED_FIELD_5_AND_FIELD_6_MODEL
+EXACT_OPERATOR_INSTANCE=DEFERRED_TO_FUTURE_EXECUTION_AUTHORIZATION
+EXACT_VERIFIER_INSTANCE=DEFERRED_TO_FUTURE_EXECUTION_AUTHORIZATION
+~~~
+
+Selection of B7-PROV-1 does not establish that the provenance dependency has been applied, verified, or satisfied.
+
+#### Required records and format boundaries
+
+~~~text
+REQUIRED_RECORD_01=case-manifest
+REQUIRED_RECORD_02=authority-reference
+REQUIRED_RECORD_03=command-representation
+REQUIRED_RECORD_04=executable-identity-and-version
+REQUIRED_RECORD_05=argument-vector
+REQUIRED_RECORD_06=working-directory-value-and-classification
+REQUIRED_RECORD_07=timeout-value-and-source
+REQUIRED_RECORD_08=environment-input-record
+REQUIRED_RECORD_09=start-and-end-time-record
+REQUIRED_RECORD_10=standard-output-record
+REQUIRED_RECORD_11=standard-error-record
+REQUIRED_RECORD_12=exit-status-record
+REQUIRED_RECORD_13=stop-condition-record
+REQUIRED_RECORD_14=integrity-manifest
+REQUIRED_RECORD_15=verifier-identity-and-attestation
+REQUIRED_RECORD_16=final-verification-disposition
+STDOUT_RECORD=SEPARATE_BYTE_EXACT_RECORD
+STDERR_RECORD=SEPARATE_BYTE_EXACT_RECORD
+METADATA_ENCODING=UTF-8
+METADATA_STRUCTURE=DETERMINISTIC_STRUCTURED_RECORDS
+METADATA_NEWLINES=LF_ONLY
+CASE_MANIFEST_LINKAGE=REQUIRED
+COMBINED_HUMAN_READABLE_REPORT_AS_SUBSTITUTE=NO
+EXACT_METADATA_SERIALIZATION_SYNTAX=DEFERRED
+EXACT_METADATA_SCHEMA_VERSION=DEFERRED
+EXACT_RECORD_FILENAMES=DEFERRED
+EXACT_FILENAME_EXTENSIONS=DEFERRED
+EXACT_RECORD_CLASS_DIRECTORY_SLUGS=DEFERRED
+~~~
+
+The future stdout record remains limited to the separately authorized four-field record, three tab separators, and one permitted terminator. Field 9 must separately decide %an, %s, diagnostic, and unexpected-output retention.
+
+#### Retained dependencies, blockers, and non-authorization
+
+~~~text
+B7-DEP-011=EXECUTABLE_IDENTITY_UNSATISFIED
+B7-DEP-012=ARGUMENT_VECTOR_UNSATISFIED
+B7-DEP-013=ENVIRONMENT_INPUT_UNSATISFIED
+B7-DEP-014=B2_MAN_007_ALLOWLIST_UNSATISFIED
+B7-DEP-015=PERSISTENCE_MODEL_APPLICATION_AND_SATISFACTION_UNSATISFIED
+B7-DEP-016=PROVENANCE_APPLICATION_UNSATISFIED
+B7-DEP-017=INDEPENDENT_VERIFIER_UNSATISFIED
+B7-DEP-018=LIFECYCLE_SEPARATION_UNSATISFIED
+B7-DEP-019=FIELD_8_APPLICATION_AND_REVIEW_UNSATISFIED
+B7-DEP-020=FIELD_9_APPLICATION_AND_REVIEW_UNSATISFIED
+SWG-PR-017=FIELD_8_READINESS_PREREQUISITES_UNSATISFIED
+SWG-PR-018=FIELD_9_READINESS_PREREQUISITES_UNSATISFIED
+SWG-PR-019=EVIDENCE_PROVENANCE_UNSATISFIED
+SWG-PR-020=INDEPENDENT_VERIFIER_UNSATISFIED
+SWG-PR-021=DISCREPANCY_HANDLING_UNSATISFIED
+SWG-PR-022=FAIL_CLOSED_FALLBACK_UNSATISFIED
+B2_MAN_007_BLOCKER_STATE=UNRESOLVED
+CATEGORY_14_EVALUATED=NO
+CATEGORY_14_SATISFIED=NO
+B2_MAN_007_SATISFIED_CATEGORY_COUNT=0_OF_16
+MODEL_ACTIVATED=NO
+FIELD_8_MODEL_ACTIVATION_AUTHORIZED=NO
+FIELD_8_OVERALL_DOCUMENTARY_STATE_RESOLVED=NO
+FIELD_8_OVERALL_STATE=PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS
+IMPLEMENTATION_AUTHORIZED=NO
+CONFIGURATION_AUTHORIZED=NO
+LOCAL_INSPECTION_AUTHORIZED=NO
+EVIDENCE_ACTIVITY_AUTHORIZED=NO
+PERSISTENCE_ACTIVITY_AUTHORIZED=NO
+FIELD_8_REVIEW_PERFORMED=NO
+FIELD_8_TRANSITION_AUTHORIZED=NO
+FIELD_9_WORK_AUTHORIZED=NO
+FIELD_9_SELECTION_AUTHORIZED=NO
+ALL_FIELDS_RESOLVED_GATE_REMAINS_BLOCKED=YES
+REPOSITORY_MAIN_ANNEX_MUTATION=UNAUTHORIZED
+COMMIT_AUTHORIZED=NO
+PUSH_AUTHORIZED=NO
+~~~
+
+All actual identities, paths, access translations, capabilities, evidence, encryption implementation, assignments, Field 9 rules, and operational facts remain deferred or unverified. The overlay supplies documentary targets only and authorizes no local inspection, configuration, hashing, evidence activity, persistence, command execution, Field review, category evaluation, gate change, implementation, repository mutation, commit, or push.
+
 ## 12. Mandatory Field 9 — Sensitive Data, Redaction, and Accidental Exposure
 
 ### Existing prohibition boundary
@@ -2037,6 +2408,8 @@ The shared WSL Git executable-binding package and its adoption decision are repo
 
 The B2-MAN-007 category-by-category documentary disposition remains authoritative historical traceability for all sixteen unsatisfied categories. The later Field 8 decision completes only the documentary model-selection subquestion by selecting `B7-EPS-1`. It changes no command, working-directory controlling value, allowlist, acceptance count, Field-state token, blocker, gate, controlling decision, execution marker, task, milestone, or authority boundary; activates or implements no model; and authorizes no evidence, Field 9, category-evaluation, Field-review, gate-evaluation, runtime, or deployment activity.
 
+Version `0.33.0` is an exact one-file candidate only. Repository Main Annex mutation, commit, push, publication, independent publication verification, and downstream synchronization remain separate later stages requiring exact Project Owner authority.
+
 ## 19. Future Review Requirement
 
 The required immediate documentary lifecycle sequence is:
@@ -2115,6 +2488,8 @@ The B2-MAN-007 local-verification authorization-package adoption and this Versio
 The B2-MAN-007 category-by-category documentary disposition decision and this Version `0.31.0` synchronization retain all sixteen categories as unsatisfied and preserve every command, command envelope, working-directory controlling value, shared requirement, acceptance model, Field-state token, blocker, gate, task, milestone, execution marker, and authority boundary. Preparation only of the separate response-only B2-MAN-007 Field 8 exact implementation-value selection package and Field 9 exact rule-selection package is authorized. No downstream current-state synchronization, local inspection, command execution, evidence collection or persistence, Field review, gate evaluation, category satisfaction, blocker closure, implementation, runtime, deployment, database, production, or governance authority follows.
 
 The recorded B2-MAN-007 Field 8 documentary model-selection decision and this Version `0.32.0` synchronization select `B7-EPS-1` only as the documentary evidence-persistence model and complete only that model-selection subquestion. They activate or implement no model; create, inspect, collect, persist, hash, encrypt, retain, transfer, or dispose no evidence; establish no destination, identity, group, ACL, encryption, retention, notification, quarantine, provenance, operator, verifier, command, executable, configuration, environment, runtime, deployment, or local fact; resolve no Field overall; select no Field 9 rule; satisfy no category or criterion; change no acceptance count, blocker, gate, task, milestone, execution marker, controlling decision, or authority boundary; and authorize no push or downstream current-state/task synchronization.
+
+The Project Owner Revision 2 Option A disposition and this Version `0.33.0` candidate accept nineteen documentary binding targets only. They do not activate or implement `B7-EPS-1-BINDING-1`; establish no local identity, group, ACL, path existence, encryption, evidence, configuration, or execution fact; satisfy no category or criterion; resolve no blocker; change no Field or gate state; and authorize no repository Main Annex mutation, commit, push, downstream synchronization, evidence activity, implementation, runtime, deployment, database, production, or governance activity.
 
 The adopted B2-MAN-013 Stage 1 documentary decision and this Version 0.22.0 synchronization grant no local identification, Route B review, command execution, executable discovery, local inspection, configuration, Gate B, assessment execution, or evidence-collection authority; establish no Git-for-Windows or WSL version, executable presence or identity, path applicability, packaging, cwd translation, environment, configuration, credential, helper, process, network, output, mutation, repository, Field 8, or Field 9 fact; satisfy no criterion; and do not resolve B2-MAN-013 or change any Field or gate state. Downstream Stage 3 requires separate Project Owner authorization after independent publication verification.
 
