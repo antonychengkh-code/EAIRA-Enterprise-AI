@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-08-05
+2026-09-01
 
 ## Version
 
-0.29.0
+0.35.0
 
 ## Milestone
 
@@ -19,6 +19,10 @@ M3.4 Evidence-Driven AI Organization Slice: Completed.
 Current/New Milestone: None established.
 
 ## Current Scope
+
+Reconcile the controlled project state with verified local evidence as of `2026-09-01`, publish the repository-scoped project-memory layer as navigational evidence, and preserve every milestone, Field, category, blocker, gate, and authority boundary that the evidence does not close.
+
+## Historical Objective Retained for Traceability
 
 The bounded objective is to preserve the Project Owner `OPTION_B` decision for commit `f317294515d1dc27a261035260e9fcc45e1545f6` through one authoritative decision record and six downstream synchronization files. Revision 3 response-only package preparation and independent review are complete, and the exact seven-path working-tree mutation candidate was separately authorized, materialized, and validated on `2026-08-05`. Future repository recording remains separately unauthorized. No task, milestone, controlling decision, command, reproduction record, mapping, acceptance count, Field, blocker, gate, execution marker, or operational authority changes.
 
@@ -38,11 +42,11 @@ Main Annex Version `0.26.0`, commit `fe7e507dd090cd0c5a6051b3c57d352ed24716e5`, 
 
 Main Annex Version `0.28.0`, dated `2026-07-22`, remains historical publication evidence at commit `6768d85c050d50aa52e8f25c7a46accc28977aba`, parent `92e6e1301fbbda4ece47b4ed9fa26970c1358d5b`, blob `7050272035646fd7c2870f77737a1b4a729694c2`. Its response-only independent verification established a clean working tree, the exact one-file Main Annex changed set, matching local and remote `master`, and successful repository-integrity verification through `git fsck --full --no-dangling`; GitHub connector readback remained unavailable with `404 Not Found`, and the verification response is not a repository artifact. That historical Version `0.28.0` connector gap does not apply to Version `0.29.0`, whose GitHub exact-ref readback succeeded.
 
-Main Annex Version `0.31.0`, dated `2026-07-27`, is the current independently repository-verified publication at commit `a7816dbb72f04ac12a86943469be36f66c6169a3`, parent `50f48cd4822aa92682ed213b7c7c0702e083413a`, blob `764d7d08797da70a77372091793eca778f7fa7e2`.
+Main Annex Version `0.31.0`, dated `2026-07-27`, remains historical independently verified publication evidence at commit `a7816dbb72f04ac12a86943469be36f66c6169a3`, parent `50f48cd4822aa92682ed213b7c7c0702e083413a`, blob `764d7d08797da70a77372091793eca778f7fa7e2`.
 
 Independent publication verification confirmed exactly one modified Main Annex path, `49` additions, `7` deletions, successful exact-ref GitHub readback, and determination `GITHUB_READ_ONLY_MAIN_ANNEX_V0_31_PUBLICATION_VERIFICATION_PASSED`.
 
-Historical predecessor evidence: Main Annex Version `0.30.0` was published at commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, with Annex blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`. This identity is retained solely as historical predecessor evidence and does not supersede the current Version `0.31.0` authority baseline. The completed Version `0.30.0` downstream chain also remains historical evidence.
+Historical predecessor evidence: Main Annex Version `0.30.0` was published at commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, with Annex blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`. This identity is retained solely as historical predecessor evidence and does not supersede the current Version `0.33.0` authority baseline. The completed Version `0.30.0` downstream chain also remains historical evidence.
 
 The B2-MAN-007 category-disposition decision is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_CATEGORY_BY_CATEGORY_DOCUMENTARY_DISPOSITION_DECISION.md`, recording commit `50f48cd4822aa92682ed213b7c7c0702e083413a`, blob `9457aad0e6509fde3f0581d44e4385bd8ac82c1e`, classification `PROJECT_OWNER_B2_MAN_007_CATEGORY_BY_CATEGORY_DOCUMENTARY_DISPOSITION_DECISION_RECORD`, and standing decision `APPROVE_B2_MAN_007_CATEGORY_BY_CATEGORY_DOCUMENTARY_DISPOSITIONS_WITH_ALL_CATEGORIES_REMAINING_UNSATISFIED_WITHOUT_EXECUTION_EVIDENCE_FIELD_GATE_OR_REPOSITORY_MUTATION_AUTHORITY`.
 
@@ -54,7 +58,7 @@ The preserved historical finding is `REPOSITORY_RECORDED_AUTHORIZATION_EVIDENCE_
 
 The Project Owner selected `OPTION_B` and retrospectively accepted and retained `f317294515d1dc27a261035260e9fcc45e1545f6` as authorized EAIRA project evidence effective `2026-08-05`, without representing that prior authorization existed or preceded its mutation, commit, or push. No revert is required.
 
-The reconciliation architecture is exactly one proposed new authoritative decision record and six downstream modifications. The Version `0.30.0` six-file authorization was consumed by commit `2ecc2dd841a9581fa59c480bbb1149937b18db85` and does not authorize `f317294515d1dc27a261035260e9fcc45e1545f6`. The historical predecessor identity does not supersede the current Version `0.31.0` authority baseline.
+The reconciliation architecture is exactly one proposed new authoritative decision record and six downstream modifications. The Version `0.30.0` six-file authorization was consumed by commit `2ecc2dd841a9581fa59c480bbb1149937b18db85` and does not authorize `f317294515d1dc27a261035260e9fcc45e1545f6`. The historical predecessor identity does not supersede the current Version `0.33.0` authority baseline.
 
 `INDEPENDENT_REVIEW_TARGET_REVISION=REVISION_3`
 
@@ -76,19 +80,19 @@ The final verified remote ref is `cd512bd4eb4c8ab2b7897192baf453ef20c7be56`. Its
 
 Remote-chain verification completed as `VERSION_0_30_0_DOWNSTREAM_CHAIN_VERIFIED_WITH_RECORDED_LOCAL_STATE_LIMITATIONS`. Live GitHub `master`, remote ancestry, changed-file sets, final endpoint, and blobs were verified. Codex reported a stale local `HEAD`, stale cached `origin/master`, and unrelated untracked `.claude/settings.local.json`; those local-state facts were not independently verified and remain recorded separately as local-state limitations; no local/remote equality or clean-working-tree claim is made.
 
-## Out of Scope
+## Historical Out of Scope
 
 No Main Annex, adoption decision, package source, historical decision, Bootstrap, daily report, governance, runtime, deployment, database, production, or milestone artifact is modified. No path outside the exact seven-path candidate is modified.
 
 No local executable discovery, local inspection, option testing, command execution, connectivity testing, port probing, observation, interaction, evidence collection, evidence-directory or evidence-file creation, ACL or identity configuration, encryption configuration, hashing, redaction, quarantine, notification, retention, disposal, remediation, implementation, runtime, deployment, automation, CI/CD expansion, database mutation, production mutation, governance modification, Field review, gate evaluation, Gate B, Batch 9, successor task, milestone, M4, Platform Foundation, or formal EAIRA Execution Layer is authorized.
 
-## Expected Deliverables
+## Historical Expected Deliverables
 
 Revision 3 response-only exact-change-package preparation and its independent review are complete. The exact seven-path working-tree mutation candidate—one new authoritative decision record and six downstream modifications—is materialized and validated for Project Owner review. Candidate preparation creates no repository commit and authorizes no repository recording.
 
 The separately authorized response-only `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` preparations remain accurately represented and are not marked complete by this candidate.
 
-## Success Criteria
+## Historical Success Criteria
 
 - Exactly one new authoritative decision-record path and six downstream modifications are prepared and validated, with no eighth path changed.
 - `INDEPENDENT_REVIEW_TARGET_REVISION=REVISION_3` and the determination exactly equals `READY_WITH_NON_BLOCKING_FINDINGS_FOR_PROJECT_OWNER_MUTATION_CANDIDATE_PREPARATION_DECISION`.
@@ -98,6 +102,37 @@ The separately authorized response-only `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION
 - Field states, substantive blockers, task, milestone, gate, execution marker, and non-authorization states remain unchanged.
 - No Main Annex, adoption record, daily report, governance, runtime, deployment, database, production, validation, or milestone artifact changes.
 
-## Next Action
+## Historical Next Action
 
 The exact seven-path working-tree mutation candidate is prepared and validated and awaits a separate exact Project Owner repository-recording decision. Repository recording, staging, commit, and push remain unauthorized. Only response-only preparation of `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` is authorized; neither is completed by this candidate. These authorizations establish no new task, implementation, repository recording, local inspection, evidence, Field movement, category satisfaction, or execution authority. No local verification, blocker-specific operational package, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is authorized.
+
+## Out of Scope
+
+No Main Annex, strategy decision record, package source, historical record, Bootstrap artifact, daily report, implementation, configuration, runtime, deployment, database, production, governance, or milestone artifact is modified. No Project Owner disposition is invented. No local inspection, command execution, assessment evidence capture or persistence, hashing, encryption, retention, disposal, operational Field review, acceptance-category satisfaction, formal gate evaluation, or blocker closure is authorized.
+
+## Expected Deliverables
+
+Exactly six controlled current-state/task artifacts reconciled with the bounded local-evidence report, two project-memory handoff artifacts updated with verified facts, and fourteen bound supporting files published without semantic alteration.
+
+## 2026-09-01 Reconciliation Results
+
+- The sanitized reconciliation report is `C:\Users\User\EAIRA_CONTROLLED_STATE_AND_LOCAL_EVIDENCE_RECONCILIATION_REPORT_R1_2026-09-01.md`, SHA-256 `5D36A4D90764AC4F6665912596C708F5139D0AC297B857BB47FF22044BCD4CD8`.
+- The five approved local groups exist and are empty. This does not establish service identities, membership assignments, directories, ACLs, encryption, backup boundaries, or operational readiness.
+- Gate 19 through Gate 23 bounded preparation and independent review are complete.
+- Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are ready; legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred.
+- The project-memory validator passes with 16 required files and 9 frontmatters; the memory layer remains navigational and never overrides controlled status or decision artifacts.
+- No current or new milestone is established. The all-fields-resolved gate remains `BLOCKED`.
+
+## Success Criteria
+
+- Main Annex Version `0.33.0` publication identity is recorded as commit `24b28a3d94edb79be36eb745b34372ec65af87b1`, blob `9090bedba5d0201ef77e1ab9246fb364631d9452`, with `POST_PUSH_PUBLICATION_VERIFICATION_PASS`.
+- Exactly the eight semantic reconciliation targets and fourteen bound supporting files form the controlled publication set.
+- Direct evidence and explicit gaps are recorded without inferring implementation, satisfaction, or production readiness.
+- Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`; Field 9 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_REVISIONS`.
+- B2-MAN-007 remains `0` of `16`; Category 14 remains unsatisfied.
+- The four substantive blockers and the `BLOCKED` gate remain unchanged.
+- Repository recording and publication occur only through the separately sequenced exact commit, push, and independent post-push verification gates.
+
+## Next Action
+
+Complete the deferred Gate 24 legal signing identity, provider, certificate, release-volume, and recovery-governance decisions, then re-evaluate eligibility. Do not begin service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, Field review, category evaluation, gate evaluation, signing, or operational activity without the exact later authority and direct evidence required for those actions.

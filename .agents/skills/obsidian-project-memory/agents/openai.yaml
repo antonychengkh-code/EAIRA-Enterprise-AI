@@ -1,0 +1,4 @@
+interface:
+  display_name: "Obsidian Project Memory"
+  short_description: "Recall and curate durable EAIRA project context"
+  default_prompt: "Use $obsidian-project-memory to recall relevant EAIRA context and prepare a safe memory update."

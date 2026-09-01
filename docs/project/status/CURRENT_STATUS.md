@@ -6,11 +6,11 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.30.0
+0.36.0
 
 ## Updated At
 
-2026-08-05
+2026-09-01
 
 ## Current Milestone
 
@@ -26,9 +26,9 @@ Current/New Milestone: None established.
 
 Bounded Project Layer planning under active task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` remains active to resolve or explicitly retain the remaining mandatory Authorization Annex blockers for Fields 2, 3, 8, 9, 10, and 11.
 
-Main Annex Version `0.31.0`, dated `2026-07-27`, is the current independently repository-verified publication at commit `a7816dbb72f04ac12a86943469be36f66c6169a3`, parent `50f48cd4822aa92682ed213b7c7c0702e083413a`, blob `764d7d08797da70a77372091793eca778f7fa7e2`. Main Annex Versions `0.26.0`, `0.27.0`, `0.28.0`, `0.29.0`, and `0.30.0` remain version-specific historical publication evidence.
+Main Annex Version `0.33.0`, dated `2026-08-26`, is the current repository publication at commit `24b28a3d94edb79be36eb745b34372ec65af87b1`, parent `351fdeb6591ffe767f0fd8f7e982a7a6cf8bef3d`, blob `9090bedba5d0201ef77e1ab9246fb364631d9452`. It records the accepted Revision 2 documentary binding targets and case-first extension under provisional overlay `B7-EPS-1-BINDING-1` without activation or implementation.
 
-Independent publication verification confirmed exactly one modified Main Annex path, `49` additions, `7` deletions, successful exact-ref GitHub readback, and determination `GITHUB_READ_ONLY_MAIN_ANNEX_V0_31_PUBLICATION_VERIFICATION_PASSED`. Historical predecessor evidence: Main Annex Version `0.30.0` was published at commit `f7408802a0fba79bdaf81684683d213df217075b`, parent `9d16989125b147ea0ac749bfe8ecf5573be881f7`, with Annex blob `7acc1ad19f04c4527da2080e27b3946033ddbe4f`. This identity is retained solely as historical predecessor evidence and does not supersede the current Version `0.31.0` authority baseline. The completed Version `0.30.0` downstream chain also remains historical evidence.
+Independent post-push publication verification on `2026-08-26` established `refs/heads/master` at `24b28a3d94edb79be36eb745b34372ec65af87b1` and exact published SHA-256 `ebb746bfdeae05a20cc0f125878c4b19d58a6077e2650bac3aa1645e92188689`. Main Annex Version `0.32.0` and Versions `0.26.0` through `0.31.0` remain version-specific historical publication evidence.
 
 Main Annex Version `0.28.0`, dated `2026-07-22`, remains historical publication evidence at commit `6768d85c050d50aa52e8f25c7a46accc28977aba`, parent `92e6e1301fbbda4ece47b4ed9fa26970c1358d5b`, blob `7050272035646fd7c2870f77737a1b4a729694c2`. Its response-only independent verification established a clean working tree, the exact one-file Main Annex changed set, matching local and remote `master`, and successful repository-integrity verification through `git fsck --full --no-dangling`; GitHub connector readback remained unavailable with `404 Not Found`, and the verification response is not a repository artifact. That historical Version `0.28.0` connector gap does not apply to Version `0.29.0`, whose GitHub exact-ref readback succeeded.
 
@@ -44,7 +44,11 @@ The B2-MAN-007 local-verification authorization package is adopted only as bound
 
 The B2-MAN-007 category-disposition decision is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_CATEGORY_BY_CATEGORY_DOCUMENTARY_DISPOSITION_DECISION.md`, recording commit `50f48cd4822aa92682ed213b7c7c0702e083413a`, blob `9457aad0e6509fde3f0581d44e4385bd8ac82c1e`, classification `PROJECT_OWNER_B2_MAN_007_CATEGORY_BY_CATEGORY_DOCUMENTARY_DISPOSITION_DECISION_RECORD`, and standing decision `APPROVE_B2_MAN_007_CATEGORY_BY_CATEGORY_DOCUMENTARY_DISPOSITIONS_WITH_ALL_CATEGORIES_REMAINING_UNSATISFIED_WITHOUT_EXECUTION_EVIDENCE_FIELD_GATE_OR_REPOSITORY_MUTATION_AUTHORITY`.
 
-All sixteen B2-MAN-007 categories remain unsatisfied, and B2-MAN-007 remains unresolved. Only response-only preparation of `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` is authorized. These authorizations establish no new task, implementation, repository recording, local inspection, evidence, Field movement, category satisfaction, or execution authority.
+The B2-MAN-007 Field 8 documentary model-selection decision is recorded at `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_FIELD_8_DOCUMENTARY_MODEL_SELECTION_DECISION.md`, commit `6fabe4a93110fc894f5588cc5502004ea48b45a6`, blob `0487e127912d27bffd3f5f1cc96c6bcd33796664`, selecting `B7-EPS-1` only as the documentary model.
+
+The Revision 2 required-implementation-details selection is repository-recorded at `docs/project/strategy/B2_MAN_007_FIELD_8_REQUIRED_IMPLEMENTATION_DETAILS_SELECTION_DECISION.md`, commit `351fdeb6591ffe767f0fd8f7e982a7a6cf8bef3d`, blob `49dd0e988a8201c977428d160c887fdda845242d`, SHA-256 `533ec64b919eff464b6f6516808d68311a31a79e4804dea50f100eef0a2b477c`. Its nineteen documentary binding targets are now reproduced in the published Version `0.33.0` Main Annex; the source file's embedded candidate-stage markers remain historical source-stage statements.
+
+Claude independent review determined `READY_FOR_EXACT_MAIN_ANNEX_MUTATION_AUTHORIZATION_REQUEST`; independent post-mutation verification determined `POST_MUTATION_VERIFICATION_PASS_READY_FOR_SEPARATE_COMMIT_AUTHORIZATION_REQUEST`; and independent post-push publication verification determined `POST_PUSH_PUBLICATION_VERIFICATION_PASS`. These findings establish exact documentary publication only. Field 8 review, model activation, implementation, evidence activity, encryption selection, Category 14 evaluation, and Field transition are not established. All sixteen B2-MAN-007 categories remain unsatisfied, B2-MAN-007 remains unresolved, and Field 9 package preparation remains separately incomplete.
 
 ## Current Decision
 
@@ -56,7 +60,7 @@ The preserved finding is `REPOSITORY_RECORDED_AUTHORIZATION_EVIDENCE_NOT_FOUND`.
 
 The Project Owner selected `OPTION_B` and retrospectively accepted and retained `f317294515d1dc27a261035260e9fcc45e1545f6` as authorized EAIRA project evidence effective `2026-08-05`. `Decision Date: 2026-08-05` and `Effective Acceptance Date: 2026-08-05` are explicit `PROJECT_OWNER_DECISION` values. This acceptance does not represent that prior authorization existed or preceded the mutation, commit, or push. No revert is required.
 
-The Version `0.30.0` six-file authorization was consumed by commit `2ecc2dd841a9581fa59c480bbb1149937b18db85` and does not authorize `f317294515d1dc27a261035260e9fcc45e1545f6`. That historical predecessor identity does not supersede the current Version `0.31.0` authority baseline.
+The Version `0.30.0` six-file authorization was consumed by commit `2ecc2dd841a9581fa59c480bbb1149937b18db85` and does not authorize `f317294515d1dc27a261035260e9fcc45e1545f6`. The historical predecessor identity does not supersede the current Version `0.33.0` authority baseline.
 
 Version `0.29.0` historical downstream synchronization evidence is commit `93d5d9cbb3fcb9ab02f589bae2d2c1541a72f380`, parent `a2587cfbe59f6247be8b43941f6f8d3514c4b731`, with exactly six changed paths, `91` insertions, and `34` deletions.
 
@@ -107,6 +111,10 @@ No assessment-authorization decision may be made until the all-fields-resolved g
 
 ## Next Action
 
-Revision 3 response-only reconciliation-package preparation and its independent review are complete. `INDEPENDENT_REVIEW_TARGET_REVISION=REVISION_3`; `INDEPENDENT_REVIEW_DETERMINATION=READY_WITH_NON_BLOCKING_FINDINGS_FOR_PROJECT_OWNER_MUTATION_CANDIDATE_PREPARATION_DECISION`. The exact seven-path working-tree mutation candidate was separately authorized, materialized, and validated on `2026-08-05`. Repository recording remains separately unauthorized pending an exact Project Owner repository-recording decision, and `2026-08-06` remains intentionally unresolved.
+Main Annex Version `0.33.0` mutation, commit, normal push, and independent post-push publication verification are complete. The Project Owner authorized sequential execution of the ten remaining lifecycle gates with fail-closed preconditions.
 
-Only response-only preparation of `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` is authorized. Neither preparation is completed by this synchronization. These authorizations establish no new task, implementation, repository recording, local inspection, evidence, Field movement, category satisfaction, or execution authority. No local verification, blocker-specific operational package, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is authorized.
+The local identity, path, capability, backup, encryption, ACL, and WSL evidence gate completed read-only on `2026-08-26` with determination `FAIL_CLOSED_BLOCKED`. At that historical gate, the target evidence path and five proposed groups did not exist. A later authorized Windows change and administrator reconciliation established that the five approved groups now exist and are empty: `EAIRA_EVIDENCE_OPERATORS`, `EAIRA_EVIDENCE_OWNERS`, `EAIRA_EVIDENCE_READERS`, `EAIRA_EVIDENCE_STOP_METADATA`, and `EAIRA_EVIDENCE_VERIFIERS`. This does not establish service accounts, memberships, directories, ACLs, encryption, backup-copy absence, Field 9 implementation, or production readiness.
+
+Gate 19 through Gate 23 bounded preparation and independent review are complete. Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are available and their recorded local evidence matches the sanitized reconciliation report, while the legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred. Gates 25 through 29 remain ineligible until those Gate 24 prerequisites and all other documented blockers are closed.
+
+The next action is to complete the deferred Gate 24 legal signing identity, provider, certificate, release-volume, and recovery-governance decisions, then re-evaluate eligibility without inferring readiness. Exact service-account membership, operator/verifier separation, NTFS/WSL mapping, backup-copy boundary, encryption implementation, and Field 9 implementation decisions also remain open. No current or new milestone is established. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16` and a substantive blocker, and the all-fields-resolved gate remains `BLOCKED`.
