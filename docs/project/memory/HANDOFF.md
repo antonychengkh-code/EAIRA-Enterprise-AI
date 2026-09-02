@@ -12,7 +12,7 @@ authority: provisional
 
 ## State
 
-Obsidian project-memory is operationally stable for report-only scheduled audits. Controlled sources identify M4 Slice 2 as the active product task: initial Gate 9 failed closed with three P1 and two P2 findings; its bounded remediation candidate is technically validated, unstaged, and uncommitted pending a fresh live probe and repeat independent implementation review. The Annex governance workstream remains separately blocked.
+Obsidian project-memory is operationally stable for report-only scheduled audits. M4 Slice 2 is published and independently post-push verified at `d43a4bc170df38e29f6115e927ad2c07190da821`; this six-file post-publication state synchronization is the only active bounded repository task. The Annex governance workstream remains separately blocked.
 
 ## Canonical Context
 
@@ -26,6 +26,7 @@ Obsidian project-memory is operationally stable for report-only scheduled audits
 - M4 Slice 2 direction `SLICE2_A_LOCAL_MODEL_PROVIDER` selected and readiness R4 independently passed with no P0/P1/P2.
 - The remediated exact local `qwen3:4b` candidate passed two byte-identical builds, `34` functional tests, `15` intake tests, `41` fake-provider tests, `10` no-socket transport-policy tests, five service self-tests, non-CLI zero-network/stream checks, and the frozen CLI `18` TypeRef/`35` MemberRef allowlist.
 - Gate 9 remediation rejects additional Content-Type parameters, tests exact 16 KiB/64 KiB/512 boundaries and one shared deadline, exposes sanitized observed tags/chat counts plus pre/post digest results, binds all 22 candidate paths and exact reference versions, and keeps generated evidence hashes external to avoid circular manifest binding.
+- Repeat Gate 9 and staged review both passed with `P0=0`, `P1=0`, and `P2=0`. Product commit `d43a4bc170df38e29f6115e927ad2c07190da821` was normally fast-forward pushed and Gate 17 independently verified the live remote, exact parent/tree, 22-path publication, and evidence hashes. Its only P2 is the retained broken Codex auxiliary checkpoint refs; no repair is authorized in this chain.
 - Safety backup created outside the repository.
 - Repository-scoped project-memory Skill initialized.
 - Navigational memory layer created without replacing controlled context sources.

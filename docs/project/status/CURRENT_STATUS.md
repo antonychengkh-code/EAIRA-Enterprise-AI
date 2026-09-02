@@ -6,7 +6,7 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.37.9
+0.37.10
 
 ## Updated At
 
@@ -24,9 +24,9 @@ M4 Functional Agent MVP: Active.
 
 ## Active Phase
 
-M4 Slice 2, `M4-FUNCTIONAL-AGENT-MVP-SLICE-2`, is the active product task. Its R4 working-tree candidate retains deterministic `mock`, retains fail-closed disabled `real`, and adds `ollama-local` for exact `qwen3:4b` through `127.0.0.1:11434` only. The local provider is request-scoped, uses a two-entry successful-result cache, validates exact name/full digest before and after generation, and returns sanitized `LOCAL_PROVIDER_ERROR/79` on failure. The digest control is trusted-local consistency, not cryptographic pinning.
+M4 Slice 2, `M4-FUNCTIONAL-AGENT-MVP-SLICE-2`, is published and independently post-push verified at commit `d43a4bc170df38e29f6115e927ad2c07190da821`. It retains deterministic `mock`, retains fail-closed disabled `real`, and adds `ollama-local` for exact `qwen3:4b` through `127.0.0.1:11434` only. The local provider is request-scoped, uses a two-entry successful-result cache, validates exact name/full digest before and after generation, and returns sanitized `LOCAL_PROVIDER_ERROR/79` on failure. The digest control is trusted-local consistency, not cryptographic pinning.
 
-Initial Gate 9 independent implementation review failed closed with `P0=0`, `P1=3`, and `P2=2`. The bounded remediation candidate passes two byte-identical deterministic builds, `34` functional tests, `15` intake tests, `41` fake-provider tests, `10` no-socket transport-policy tests, five service self-tests, zero network/stream references in all non-CLI runtime outputs, and the exact CLI allowlist of `18` TypeRefs plus `35` MemberRefs. It adds exact Content-Type parameter rejection, exact-limit acceptance tests, shared-deadline proof, sanitized observed request/digest telemetry, complete 22-path manifest binding, and exact reference versions. Fresh live and external hash evidence plus repeat independent Gate 9 remain required before staging; generated evidence hashes are intentionally not embedded in the repository-bound candidate.
+Initial Gate 9 failed closed at `P0=0`, `P1=3`, `P2=2`; bounded remediation and repeat Gate 9 then passed at `P0=0`, `P1=0`, `P2=0`. Product commit `d43a4bc170df38e29f6115e927ad2c07190da821`, parent `1ad52d9f11374520409ef3569199aff9a06935c8`, tree `443d35edc442d50af0cd175d3a296e0d504b5c75`, contains exactly 22 authorized text paths. Gate 17 verified live `origin/master` at that commit with `P0=0`, `P1=0`, `P2=1`, and `PUBLICATION_VERIFIED=YES`. Final manifest/CLI/report SHA-256 are `7BF8A796AF3D4590FDDE961604CBBEF29EC5A427F31CE044164C63E8BDA71B0E`, `634084A93759E433540A61C68B734869BD46DBA5082EFFC228E1D8D45B48F541`, and `D2463222CC187DBB23B80E3D68B7E98CA42F3C25C994435F80BEB598C8A084DA`. The sole P2 concerns broken Codex auxiliary refs and does not affect the product publication.
 
 The prior task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` remains a separate blocked governance workstream. Its Fields, acceptance counts, blockers, and all-fields-resolved gate are unchanged by M4.
 

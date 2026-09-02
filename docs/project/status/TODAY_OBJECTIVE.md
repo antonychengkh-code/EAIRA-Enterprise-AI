@@ -6,7 +6,7 @@
 
 ## Version
 
-0.36.9
+0.36.10
 
 ## Milestone
 
@@ -20,11 +20,11 @@ M4 Functional Agent MVP: Active.
 
 ## Current Scope
 
-Complete the conditional 25-gate M4 Slice 2 local-model-provider sequence. The current bounded objective is to finish the exact 22-path Gate 9 remediation, run fresh live/external validation, and repeat independent implementation review; staging proceeds only with no P0/P1 blocker.
+Complete the conditional 25-gate M4 Slice 2 local-model-provider sequence. Product publication Gates 1-17 are complete; the current bounded objective is the exact six-file post-publication controlled-state synchronization through independent review, commit, push, and final verification.
 
 ## Current Result
 
-Slice 2 readiness R4 passed independent review. Initial Gate 9 then failed closed at `P0=0`, `P1=3`, `P2=2`. The remediated local candidate passes two byte-identical builds, `34/15/41/10` functional/intake/fake-provider/no-socket-transport test inventories, five service self-tests, exact non-CLI zero-network/stream checks, a frozen CLI allowlist of `18` TypeRefs and `35` MemberRefs, exact boundary tests, sanitized lifecycle observations, all-22-path evidence binding, and exact reference-version checks. It remains unstaged and uncommitted pending fresh live validation and repeat independent Gate 9. Generated evidence hashes remain external; signing eligibility is false and Gate 25 remains incomplete.
+Slice 2 product commit `d43a4bc170df38e29f6115e927ad2c07190da821` was normally fast-forward pushed and independently verified on live `origin/master`. Its parent is `1ad52d9f11374520409ef3569199aff9a06935c8`, tree is `443d35edc442d50af0cd175d3a296e0d504b5c75`, and scope is exactly 22 authorized text paths. Gate 17 returned `PASS_WITH_NON_BLOCKING_FINDING`, `P0=0`, `P1=0`, `P2=1`, and `PUBLICATION_VERIFIED=YES`; the P2 concerns only broken Codex auxiliary refs. This state-sync candidate changes no product function or authority. Signing eligibility remains false and Gate 25 remains incomplete.
 
 ## Historical Objective Retained for Traceability
 
