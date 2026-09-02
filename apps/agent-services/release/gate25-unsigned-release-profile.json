@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "releaseVersion": "0.2.0-m4.1-r3",
+  "releaseVersion": "0.3.0-m4.2-r1",
   "buildContract": "EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_1",
   "targetFramework": ".NETFramework,Version=v4.8",
   "platform": "x64",
-  "network": "NONE",
+  "network": "CLI_LOOPBACK_ONLY",
   "ipc": "PROHIBITED",
   "childProcess": "PROHIBITED",
   "policyScope": "RUNTIME_OUTPUTS",
@@ -17,8 +17,8 @@
   },
   "functionalSlice": {
     "contract": "EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1",
-    "revision": 5,
-    "execution": "OFFLINE_IN_MEMORY_TEST_ONLY",
+    "revision": 6,
+    "execution": "MOCK_OFFLINE_OR_REQUEST_LOCAL_MODEL",
     "flow": [
       "Planning",
       "Guard",
@@ -38,23 +38,133 @@
     "output": "EAIRA.AgentTask.Cli.exe",
     "mockProvider": "ENABLED",
     "realProvider": "FAIL_CLOSED_DISABLED",
-    "network": "NONE",
+    "localProvider": "OLLAMA_LOOPBACK_ENABLED",
+    "network": "MOCK_REAL_NONE_LOCAL_LOOPBACK_ONLY",
     "writes": "NONE"
   },
+  "localModelProvider": {
+    "contract": "EAIRA_LOCAL_MODEL_PROVIDER_V1",
+    "providerId": "ollama-loopback-v1",
+    "model": "qwen3:4b",
+    "digest": "359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
+    "baseUri": "http://127.0.0.1:11434/",
+    "timeoutSeconds": 60,
+    "maximumRequestBytes": 16384,
+    "maximumResponseBytes": 65536,
+    "requestedMaximumOutputUtf16CodeUnits": 128,
+    "numPredict": 32,
+    "maximumOutputUtf16CodeUnits": 512,
+    "writes": "EAIRA_CLIENT_NONE"
+  },
+  "candidateRepositoryPaths": [
+    "apps/agent-services/README.md",
+    "apps/agent-services/build/Invoke-Gate25UnsignedRelease.ps1",
+    "apps/agent-services/contracts/EAIRA_LOCAL_MODEL_PROVIDER_V1.md",
+    "apps/agent-services/contracts/EAIRA_LOCAL_TASK_INTAKE_V1.md",
+    "apps/agent-services/contracts/EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1.md",
+    "apps/agent-services/release/gate25-unsigned-release-profile.json",
+    "apps/agent-services/src/AgentTaskIntakeHost.cs",
+    "apps/agent-services/src/LocalModelProvider.cs",
+    "apps/agent-services/src/LocalTaskIntake.cs",
+    "apps/agent-services/src/ModelProviders.cs",
+    "apps/agent-services/src/OllamaLoopbackTransport.cs",
+    "apps/agent-services/tests/LocalModelProviderHarness.cs",
+    "apps/agent-services/tests/LocalTaskIntakeHarness.cs",
+    "docs/project/context/CURRENT_CONTEXT.md",
+    "docs/project/memory/HANDOFF.md",
+    "docs/project/planning/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_2_TASK.md",
+    "docs/project/planning/EAIRA_M4_SLICE2_LOCAL_MODEL_PROVIDER_THREAT_MODEL.md",
+    "docs/project/status/ACTIVE_TASK.yaml",
+    "docs/project/status/AGENT_CONTEXT_VERSION.yaml",
+    "docs/project/status/CURRENT_STATUS.md",
+    "docs/project/status/TODAY_OBJECTIVE.md",
+    "docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_2_SCOPE_DECISION.md"
+  ],
   "referenceAssemblies": [
     {
       "file": "mscorlib.dll",
-      "sha256": "6B35530467B914B0B195146CA1D1485DDD219AFAAD6461103F16F54E952F75A9"
+      "sha256": "6B35530467B914B0B195146CA1D1485DDD219AFAAD6461103F16F54E952F75A9",
+      "assemblyVersion": "4.0.0.0",
+      "fileVersion": "4.8.3761.0 built by: NET48REL1"
     },
     {
       "file": "System.dll",
-      "sha256": "2FE343569F794F2CA92EE14A41875571A9F21BF92637B8F8EE86306534209CCA"
+      "sha256": "2FE343569F794F2CA92EE14A41875571A9F21BF92637B8F8EE86306534209CCA",
+      "assemblyVersion": "4.0.0.0",
+      "fileVersion": "4.8.3761.0 built by: NET48REL1"
     },
     {
       "file": "System.ServiceProcess.dll",
-      "sha256": "21B013050B46016F8E6D9E92A2986E32E3CFB19487DCE05D672D4A3AB7EDF00C"
+      "sha256": "21B013050B46016F8E6D9E92A2986E32E3CFB19487DCE05D672D4A3AB7EDF00C",
+      "assemblyVersion": "4.0.0.0",
+      "fileVersion": "4.8.3761.0 built by: NET48REL1"
+    },
+    {
+      "file": "System.Net.Http.dll",
+      "sha256": "F5737983CF08DDCCA1F09F93409DC7B85D233643A6AA3A5C550C51EF733E2670",
+      "assemblyVersion": "4.2.0.0",
+      "fileVersion": "4.8.3761.0 built by: NET48REL1"
     }
   ],
+  "cliMetadataAllowlist": {
+    "typeReferences": [
+      "System.IO.Stream|scope=AssemblyReference|count=1",
+      "System.Net.DecompressionMethods|scope=AssemblyReference|count=1",
+      "System.Net.Http.ByteArrayContent|scope=AssemblyReference|count=1",
+      "System.Net.Http.Headers.HttpContentHeaders|scope=AssemblyReference|count=1",
+      "System.Net.Http.Headers.MediaTypeHeaderValue|scope=AssemblyReference|count=1",
+      "System.Net.Http.Headers.NameValueHeaderValue|scope=AssemblyReference|count=1",
+      "System.Net.Http.HttpClient|scope=AssemblyReference|count=1",
+      "System.Net.Http.HttpClientHandler|scope=AssemblyReference|count=1",
+      "System.Net.Http.HttpCompletionOption|scope=AssemblyReference|count=1",
+      "System.Net.Http.HttpContent|scope=AssemblyReference|count=1",
+      "System.Net.Http.HttpMessageHandler|scope=AssemblyReference|count=1",
+      "System.Net.Http.HttpMessageInvoker|scope=AssemblyReference|count=1",
+      "System.Net.Http.HttpMethod|scope=AssemblyReference|count=1",
+      "System.Net.Http.HttpRequestMessage|scope=AssemblyReference|count=1",
+      "System.Net.Http.HttpResponseMessage|scope=AssemblyReference|count=1",
+      "System.Net.HttpStatusCode|scope=AssemblyReference|count=1",
+      "System.Net.ICredentials|scope=AssemblyReference|count=1",
+      "System.Net.IWebProxy|scope=AssemblyReference|count=1"
+    ],
+    "memberReferences": [
+      "System.IO.Stream::get_CanRead|200002|count=1",
+      "System.IO.Stream::ReadAsync|20041512810501081D0508081149|count=1",
+      "System.Net.Http.ByteArrayContent::.ctor|2001011D05|count=1",
+      "System.Net.Http.Headers.HttpContentHeaders::get_ContentEncoding|2000151280BD010E|count=1",
+      "System.Net.Http.Headers.HttpContentHeaders::get_ContentLength|2000151141010A|count=1",
+      "System.Net.Http.Headers.HttpContentHeaders::get_ContentType|2000128101|count=1",
+      "System.Net.Http.Headers.HttpContentHeaders::set_ContentType|200101128101|count=1",
+      "System.Net.Http.Headers.MediaTypeHeaderValue::.ctor|2001010E|count=1",
+      "System.Net.Http.Headers.MediaTypeHeaderValue::get_MediaType|20000E|count=1",
+      "System.Net.Http.Headers.MediaTypeHeaderValue::get_Parameters|2000151280BD01128089|count=1",
+      "System.Net.Http.Headers.NameValueHeaderValue::get_Name|20000E|count=1",
+      "System.Net.Http.Headers.NameValueHeaderValue::get_Value|20000E|count=1",
+      "System.Net.Http.HttpClient::.ctor|2002011280ED02|count=1",
+      "System.Net.Http.HttpClient::SendAsync|200315128105011275126D1181091149|count=1",
+      "System.Net.Http.HttpClient::set_Timeout|2001011180D1|count=1",
+      "System.Net.Http.HttpClientHandler::.ctor|200001|count=1",
+      "System.Net.Http.HttpClientHandler::set_AllowAutoRedirect|20010102|count=1",
+      "System.Net.Http.HttpClientHandler::set_AutomaticDecompression|2001011180E9|count=1",
+      "System.Net.Http.HttpClientHandler::set_Credentials|2001011280E5|count=1",
+      "System.Net.Http.HttpClientHandler::set_PreAuthenticate|20010102|count=1",
+      "System.Net.Http.HttpClientHandler::set_Proxy|2001011280E1|count=1",
+      "System.Net.Http.HttpClientHandler::set_UseCookies|20010102|count=1",
+      "System.Net.Http.HttpClientHandler::set_UseDefaultCredentials|20010102|count=1",
+      "System.Net.Http.HttpClientHandler::set_UseProxy|20010102|count=1",
+      "System.Net.Http.HttpContent::get_Headers|2000128085|count=1",
+      "System.Net.Http.HttpContent::ReadAsStreamAsync|20001512810501127D|count=1",
+      "System.Net.Http.HttpMessageHandler::Dispose|200001|count=1",
+      "System.Net.Http.HttpMessageInvoker::Dispose|200001|count=1",
+      "System.Net.Http.HttpMethod::get_Get|00001269|count=1",
+      "System.Net.Http.HttpMethod::get_Post|00001269|count=1",
+      "System.Net.Http.HttpMethod::op_Inequality|00020212691269|count=1",
+      "System.Net.Http.HttpRequestMessage::.ctor|20020112691280F9|count=1",
+      "System.Net.Http.HttpRequestMessage::set_Content|2001011280FD|count=1",
+      "System.Net.Http.HttpResponseMessage::get_Content|20001280FD|count=1",
+      "System.Net.Http.HttpResponseMessage::get_StatusCode|2000118081|count=1"
+    ]
+  },
   "roles": [
     {
       "role": "Planning",

@@ -1,6 +1,6 @@
 # EAIRA Agent Services — Gate 25 unsigned-release preparation
 
-This directory contains the repository-owned R3 `NOWRITE_A` service-host and five-Agent functional baseline plus the current M4 working-tree candidate. Publication state is defined by the controlled project status, not inferred from directory contents. The component remains a bounded release-engineering and contract-verification input, not a claim that production readiness is complete.
+This directory contains the repository-owned R3 `NOWRITE_A` service-host and five-Agent functional baseline plus the current M4 Slice 2 local-model working-tree candidate. Publication state is defined by controlled project status, not inferred from directory contents. The component remains a bounded release-engineering and contract-verification input, not a production-readiness claim.
 
 ## Bound service profiles
 
@@ -16,7 +16,7 @@ Each executable is a distinct x64 .NET Framework 4.8 `ServiceBase` host with a c
 
 ## Minimum functional Agent slice
 
-Revision 5 of the `EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1` contract is implemented by `src/AgentCore.cs` and exercised by `tests/AgentCoreHarness.cs` entirely in memory:
+Revision 6 of the `EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1` contract is implemented by `src/AgentCore.cs` and exercised by `tests/AgentCoreHarness.cs` entirely in memory:
 
 - allowed flow: Planning candidate -> Guard allow -> Operations no-mutation candidate -> Verification verified -> Audit non-persisted record candidate;
 - denied flow: Planning candidate -> Guard deny -> Audit non-persisted record candidate;
@@ -38,7 +38,13 @@ M4 Slice 1 adds a separate, bounded local command-line intake executable. The ex
 
 The `mock` selection executes the deterministic in-memory pipeline and emits canonical JSON on standard output. The `real` selection is present only as a fail-closed configuration boundary: it returns `PROVIDER_BLOCKED` with exit code `78` and does not use a network, credential or external model. Invalid requests return exit code `64`; a Guard denial returns exit code `77`.
 
-The provider-neutral interface is not a real-provider integration. The CLI performs no runtime writes, starts no listener or child process, and does not activate or connect the five Windows service hosts. The authoritative intake contract is `contracts/EAIRA_LOCAL_TASK_INTAKE_V1.md`.
+The `real` selection remains disabled. M4 Slice 2 adds a separately bounded local selection:
+
+    & .\EAIRA.AgentTask.Cli.exe --provider ollama-local --model qwen3:4b --trace 0123456789ABCDEF0123456789ABCDEF --goal 'prepare bounded release plan'
+
+The local path uses only exact IPv4 loopback `127.0.0.1:11434`, performs exact model-name/full-digest checks before and after generation, uses a request-local two-entry cache, and enforces strict HTTP, UTF-8, JSON, 60-second, 65,536-byte, and 512-UTF-16-unit boundaries. It is a trusted-local consistency design, not cryptographic model pinning. Local failures return only `LOCAL_PROVIDER_ERROR/79`.
+
+The CLI performs no runtime writes, starts no listener or child process, and does not activate or connect the five Windows service hosts. Ollama daemon behavior is outside the EAIRA-client side-effect claim. The authoritative contracts are `contracts/EAIRA_LOCAL_TASK_INTAKE_V1.md` and `contracts/EAIRA_LOCAL_MODEL_PROVIDER_V1.md`.
 
 ## Gate 25 build
 
@@ -50,11 +56,11 @@ The provider-neutral interface is not a real-provider integration. The CLI perfo
 4. performs two isolated clean builds of all five role-bound executables;
 5. scans compiled metadata for prohibited runtime API tokens;
 6. builds a separate x64 functional harness and runs the complete in-memory five-role flow, denial flow and negative contract tests;
-7. builds the local task-intake CLI and its harness, then verifies deterministic mock, Guard denial, disabled-real-provider and malformed-request outcomes;
+7. builds the local task-intake CLI, existing intake harness, 41-test fake-provider harness, and 10-test no-socket transport-policy harness, then verifies mock, Guard denial, disabled-real, malformed request and bounded local-provider behavior;
 8. runs every role-bound service's offline self-test and negative argument test;
 9. verifies x64 PE machine type and `NotSigned` Authenticode state;
 10. requires byte-identical SHA-256 values across both builds; and
-11. emits a sanitized manifest and an unsigned release directory only after every non-signing check passes.
+11. binds the exact 22-path repository candidate and exact reference-assembly hashes/versions, then emits a sanitized manifest and unsigned release directory only after every non-signing check passes.
 
 Example after an approved Roslyn build toolchain is available:
 
@@ -72,4 +78,4 @@ The legacy .NET Framework compiler may be assessed only with `-DevelopmentProbe`
 - The produced functional and service runtimes do not create child processes. The build pipeline necessarily starts the approved compiler and the newly built offline test executables; that bounded build-time activity is recorded separately from the runtime policy.
 - No Windows service, account, group, membership, directory, ACL, TPM object or firewall rule is created or changed.
 - No output is written into the repository unless the caller explicitly chooses such a path; generated release evidence should remain outside the repository.
-- A successful unsigned build means only `M4_SLICE_1_UNSIGNED_TECHNICAL_CHECKS_PASS`. It explicitly records `externalSigningEligible=false` and `signatureOnlyBlocked=false`. Gate 25 remains incomplete, and signing eligibility depends on separately completed Gate 24 governance and release prerequisites.
+- A successful unsigned build means only `M4_SLICE_2_UNSIGNED_TECHNICAL_CHECKS_PASS`. It explicitly records `externalSigningEligible=false` and `signatureOnlyBlocked=false`. Gate 25 remains incomplete, and signing eligibility depends on separately completed Gate 24 governance and release prerequisites.

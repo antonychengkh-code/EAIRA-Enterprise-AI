@@ -1,10 +1,10 @@
 # EAIRA Minimum Functional Agent Slice V1
 
-Contract revision: 5
+Contract revision: 6
 
 ## Scope
 
-This contract defines a deterministic, in-memory, offline functional slice for the five EAIRA Agent roles. It is a development and verification contract only. It does not authorize or implement network access, external AI APIs, credentials, file or registry writes, IPC, child processes, Windows service activation, evidence persistence or production mutation.
+This contract defines the in-memory five-role functional slice. The deterministic mock profile remains offline and byte-reproducible. M4 Slice 2 additionally permits a separately contracted request-scoped local-model provider only through the task-intake CLI. It does not authorize external AI APIs, credentials, file or registry writes, IPC, child processes, Windows service activation, evidence persistence or production mutation.
 
 ## Flow
 
@@ -64,7 +64,7 @@ This SHA-256 model establishes deterministic integrity and semantic equivalence 
 
 The mock model returns only a role-bound SHA-256-derived token. It uses no clock, randomness, environment variable, filesystem, network, process, registry or external state. Identical canonical input must produce identical canonical output.
 
-All five roles receive the same enabled `IModelProvider` instance. Revision 4 separates the deterministic mock behind that provider-neutral interface. Policy rejects disabled or external providers before pipeline execution. This abstraction does not authorize or implement any external-model call; the separately specified local task intake exposes a `real` selection only as a fail-closed disabled state.
+All five roles receive the same enabled `IModelProvider` instance. The deterministic mock guarantees remain unchanged. A local provider may return nondeterministic model content, but semantic replay within one intake request must use its two-entry successful-result cache, so repeated Planning and Operations checks reuse exact validated strings without extra model calls. Cross-request byte identity is not claimed for the local provider. Policy continues to reject disabled or external providers.
 
 ## Prohibited terms
 
@@ -86,10 +86,11 @@ This initial list is intentionally conservative and is not a general production 
 
 - Positive flow contains all five roles in exact order.
 - Denial flow omits Operations and Verification and ends with a non-persisted Audit candidate.
-- Two executions of the same task are byte-identical in canonical JSON form.
+- Two mock executions of the same task are byte-identical in canonical JSON form.
+- One local-provider request replays Planning and Operations semantics from its bounded request-local cache; cross-request model output identity is not required.
 - Unknown schemas, malformed trace IDs, control characters, unpaired UTF-16 surrogates, role bypass and task-digest mismatch fail closed.
 - Forged previous digests, modified payloads, modified result digests and forged Operations-to-Verification handoffs fail closed.
 - Post-Guard task mutation, a correctly linked but policy-invalid Guard Allow, and an Operations payload modified then rehashed fail closed through task recomputation and deterministic semantic replay.
-- Static source and compiled-metadata checks find no network, IPC, file-write, registry-write, runtime child-process, shell, dynamic-load or native-import implementation in the functional core, harness or service outputs.
+- Static source and compiled-metadata checks find no network, IPC, file-write, registry-write, runtime child-process, shell, dynamic-load or native-import implementation in the functional core, non-CLI harnesses or service outputs. The task-intake CLI alone may contain the frozen loopback HTTP/stream metadata allowlist defined by `EAIRA_LOCAL_MODEL_PROVIDER_V1`.
 - Release builds require the exact compiler SHA-256 and Microsoft Authenticode identity bound by the release profile.
 - The deterministic clean-build pipeline remains required for all five service executables.

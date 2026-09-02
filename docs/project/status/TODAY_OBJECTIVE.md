@@ -6,7 +6,7 @@
 
 ## Version
 
-0.36.7
+0.36.9
 
 ## Milestone
 
@@ -20,11 +20,11 @@ M4 Functional Agent MVP: Active.
 
 ## Current Scope
 
-Synchronize the controlled project state after the independently verified publication of M4 Slice 1 R3R3. Record the exact commit, parent, tree, 21-path publication boundary, evidence hashes, verification outcome, remaining non-blocking findings, and continuing signing/production restrictions. This synchronization authorizes documentation mutation and local read-only validation only; no staging, commit, push, runtime, Windows, signing, credential, or external-provider change is included.
+Complete the conditional 25-gate M4 Slice 2 local-model-provider sequence. The current bounded objective is to finish the exact 22-path Gate 9 remediation, run fresh live/external validation, and repeat independent implementation review; staging proceeds only with no P0/P1 blocker.
 
 ## Current Result
 
-M4 Slice 1 R3R3 is published at commit `96573f8b570d39df1e7d7498f361a94783086cb0`, parent `a10c2ae098bb26455cd9004c0c5a503545a2ef7f`, tree `7ec457a39bac24cc8939ad23c99f39168d225a85`. Independent post-push verification established an exact fast-forward, a clean remote checkout, exactly 21 authorized text paths, matching manifest-bound blobs, valid project memory, and exclusion of all three unrelated Claude files. The verdict is `PASS_WITH_NON_BLOCKING_FINDINGS`, `P0=0`, `P1=0`, `P2=3`, `PUBLICATION_VERIFIED=YES`, and `GATE_SEQUENCE_COMPLETE=YES`. The P2 findings cover reflection/dynamic-call test coverage, local Codex checkpoint-ref path length, and the pre-publication status wording corrected by this synchronization. R3R3 manifest SHA-256 is `064698D865D2200A60976F419339FCFDFA18EE0537ABF3FC3A012841B1DFB0BD`; sanitized report SHA-256 is `2F7774587DAB53C6FF4BAF7B26D733DB1762DBD87C326994E085C5BBDC7DD717`; unsigned CLI SHA-256 is `4ED35E7A017ECA3A441AD27C460E1EC3531C5972DA7BB326D65F888563AF5536`. External signing eligibility remains false and Gate 25 remains incomplete. This post-publication state synchronization remains an uncommitted local documentation candidate.
+Slice 2 readiness R4 passed independent review. Initial Gate 9 then failed closed at `P0=0`, `P1=3`, `P2=2`. The remediated local candidate passes two byte-identical builds, `34/15/41/10` functional/intake/fake-provider/no-socket-transport test inventories, five service self-tests, exact non-CLI zero-network/stream checks, a frozen CLI allowlist of `18` TypeRefs and `35` MemberRefs, exact boundary tests, sanitized lifecycle observations, all-22-path evidence binding, and exact reference-version checks. It remains unstaged and uncommitted pending fresh live validation and repeat independent Gate 9. Generated evidence hashes remain external; signing eligibility is false and Gate 25 remains incomplete.
 
 ## Historical Objective Retained for Traceability
 

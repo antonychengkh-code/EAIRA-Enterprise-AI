@@ -44,16 +44,17 @@ function Get-PeMachine {
 }
 
 function Assert-NoForbiddenBinaryMetadata {
-    param([Parameter(Mandatory = $true)][string]$LiteralPath)
+    param(
+        [Parameter(Mandatory = $true)][string]$LiteralPath,
+        [switch]$AllowLoopbackHttp
+    )
 
     $bytes = [System.IO.File]::ReadAllBytes($LiteralPath)
     $metadataText = [System.Text.Encoding]::UTF8.GetString($bytes) + "`n" + [System.Text.Encoding]::Unicode.GetString($bytes)
     $forbiddenMetadata = @(
-        'System.Net',
         'NamedPipe',
         'TcpClient',
         'UdpClient',
-        'HttpClient',
         'ProcessStartInfo',
         'Microsoft.Win32',
         'DllImportAttribute',
@@ -73,10 +74,76 @@ function Assert-NoForbiddenBinaryMetadata {
         'FileStream',
         'StreamWriter'
     )
+    if (-not $AllowLoopbackHttp) {
+        $forbiddenMetadata += 'System.Net'
+        $forbiddenMetadata += 'HttpClient'
+    }
     foreach ($token in $forbiddenMetadata) {
         if ($metadataText.IndexOf($token, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
             throw "Compiled output contains prohibited metadata token '$token': $LiteralPath"
         }
+    }
+}
+
+function Get-LoopbackMetadataReferences {
+    param([Parameter(Mandatory = $true)][string]$LiteralPath)
+
+    $stream = [System.IO.File]::OpenRead($LiteralPath)
+    $peReader = [System.Reflection.PortableExecutable.PEReader]::new($stream)
+    try {
+        $metadataReader = [System.Reflection.Metadata.PEReaderExtensions]::GetMetadataReader($peReader)
+        $typeRows = @()
+        foreach ($handle in $metadataReader.TypeReferences) {
+            $typeReference = $metadataReader.GetTypeReference($handle)
+            $namespace = $metadataReader.GetString($typeReference.Namespace)
+            if ($namespace -cne 'System.IO' -and -not $namespace.StartsWith('System.IO.', [StringComparison]::Ordinal) -and
+                $namespace -cne 'System.Net' -and -not $namespace.StartsWith('System.Net.', [StringComparison]::Ordinal)) { continue }
+            $typeRows += "$namespace.$($metadataReader.GetString($typeReference.Name))|scope=$($typeReference.ResolutionScope.Kind)"
+        }
+
+        $memberRows = @()
+        foreach ($handle in $metadataReader.MemberReferences) {
+            $memberReference = $metadataReader.GetMemberReference($handle)
+            if ($memberReference.Parent.Kind -ne [System.Reflection.Metadata.HandleKind]::TypeReference) { continue }
+            $typeReference = $metadataReader.GetTypeReference(
+                [System.Reflection.Metadata.TypeReferenceHandle]$memberReference.Parent
+            )
+            $namespace = $metadataReader.GetString($typeReference.Namespace)
+            if ($namespace -cne 'System.IO' -and -not $namespace.StartsWith('System.IO.', [StringComparison]::Ordinal) -and
+                $namespace -cne 'System.Net' -and -not $namespace.StartsWith('System.Net.', [StringComparison]::Ordinal)) { continue }
+            $signature = [BitConverter]::ToString(
+                $metadataReader.GetBlobBytes($memberReference.Signature)
+            ).Replace('-', '')
+            $memberRows += "$namespace.$($metadataReader.GetString($typeReference.Name))::$($metadataReader.GetString($memberReference.Name))|$signature"
+        }
+
+        return [ordered]@{
+            typeReferences = @($typeRows | Group-Object | Sort-Object Name | ForEach-Object { "$($_.Name)|count=$($_.Count)" })
+            memberReferences = @($memberRows | Group-Object | Sort-Object Name | ForEach-Object { "$($_.Name)|count=$($_.Count)" })
+        }
+    }
+    finally {
+        $peReader.Dispose()
+        $stream.Dispose()
+    }
+}
+
+function Assert-LoopbackMetadataPolicy {
+    param(
+        [Parameter(Mandatory = $true)][string]$LiteralPath,
+        [Parameter(Mandatory = $true)]$Policy
+    )
+
+    $actual = Get-LoopbackMetadataReferences -LiteralPath $LiteralPath
+    $expectedTypes = @($Policy.typeReferences | ForEach-Object { [string]$_ } | Sort-Object)
+    $expectedMembers = @($Policy.memberReferences | ForEach-Object { [string]$_ } | Sort-Object)
+    $actualTypes = @($actual.typeReferences)
+    $actualMembers = @($actual.memberReferences)
+    if (($expectedTypes -join [Environment]::NewLine) -cne ($actualTypes -join [Environment]::NewLine)) {
+        throw "CLI loopback TypeRef allowlist mismatch. Actual: $($actualTypes -join ', ')"
+    }
+    if (($expectedMembers -join [Environment]::NewLine) -cne ($actualMembers -join [Environment]::NewLine)) {
+        throw "CLI loopback MemberRef allowlist mismatch. Actual: $($actualMembers -join ', ')"
     }
 }
 
@@ -151,16 +218,21 @@ function Invoke-ExitCodeTest {
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $componentRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot '..'))
+$repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $componentRoot '..\..'))
 $buildScriptPath = [System.IO.Path]::GetFullPath($MyInvocation.MyCommand.Path)
 $sourcePath = Join-Path $componentRoot 'src\AgentServiceHost.cs'
 $coreSourcePath = Join-Path $componentRoot 'src\AgentCore.cs'
 $providerSourcePath = Join-Path $componentRoot 'src\ModelProviders.cs'
 $taskIntakeSourcePath = Join-Path $componentRoot 'src\LocalTaskIntake.cs'
 $taskIntakeHostSourcePath = Join-Path $componentRoot 'src\AgentTaskIntakeHost.cs'
+$localProviderSourcePath = Join-Path $componentRoot 'src\LocalModelProvider.cs'
+$loopbackTransportSourcePath = Join-Path $componentRoot 'src\OllamaLoopbackTransport.cs'
 $harnessSourcePath = Join-Path $componentRoot 'tests\AgentCoreHarness.cs'
 $taskIntakeHarnessSourcePath = Join-Path $componentRoot 'tests\LocalTaskIntakeHarness.cs'
+$localProviderHarnessSourcePath = Join-Path $componentRoot 'tests\LocalModelProviderHarness.cs'
 $functionalContractPath = Join-Path $componentRoot 'contracts\EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1.md'
 $taskIntakeContractPath = Join-Path $componentRoot 'contracts\EAIRA_LOCAL_TASK_INTAKE_V1.md'
+$localProviderContractPath = Join-Path $componentRoot 'contracts\EAIRA_LOCAL_MODEL_PROVIDER_V1.md'
 $profilePath = Join-Path $componentRoot 'release\gate25-unsigned-release-profile.json'
 
 if (-not (Test-Path -LiteralPath $buildScriptPath -PathType Leaf)) { throw "Build script missing: $buildScriptPath" }
@@ -169,10 +241,14 @@ if (-not (Test-Path -LiteralPath $coreSourcePath -PathType Leaf)) { throw "Core 
 if (-not (Test-Path -LiteralPath $providerSourcePath -PathType Leaf)) { throw "Provider source file missing: $providerSourcePath" }
 if (-not (Test-Path -LiteralPath $taskIntakeSourcePath -PathType Leaf)) { throw "Task-intake source file missing: $taskIntakeSourcePath" }
 if (-not (Test-Path -LiteralPath $taskIntakeHostSourcePath -PathType Leaf)) { throw "Task-intake host source file missing: $taskIntakeHostSourcePath" }
+if (-not (Test-Path -LiteralPath $localProviderSourcePath -PathType Leaf)) { throw "Local-provider source file missing: $localProviderSourcePath" }
+if (-not (Test-Path -LiteralPath $loopbackTransportSourcePath -PathType Leaf)) { throw "Loopback transport source file missing: $loopbackTransportSourcePath" }
 if (-not (Test-Path -LiteralPath $harnessSourcePath -PathType Leaf)) { throw "Harness source file missing: $harnessSourcePath" }
 if (-not (Test-Path -LiteralPath $taskIntakeHarnessSourcePath -PathType Leaf)) { throw "Task-intake harness source file missing: $taskIntakeHarnessSourcePath" }
+if (-not (Test-Path -LiteralPath $localProviderHarnessSourcePath -PathType Leaf)) { throw "Local-provider harness source file missing: $localProviderHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $functionalContractPath -PathType Leaf)) { throw "Functional contract missing: $functionalContractPath" }
 if (-not (Test-Path -LiteralPath $taskIntakeContractPath -PathType Leaf)) { throw "Task-intake contract missing: $taskIntakeContractPath" }
+if (-not (Test-Path -LiteralPath $localProviderContractPath -PathType Leaf)) { throw "Local-provider contract missing: $localProviderContractPath" }
 if (-not (Test-Path -LiteralPath $profilePath -PathType Leaf)) { throw "Release profile missing: $profilePath" }
 if (-not (Test-Path -LiteralPath $RoslynCscPath -PathType Leaf)) { throw "Compiler missing: $RoslynCscPath" }
 
@@ -189,14 +265,57 @@ $profile = Get-Content -Raw -LiteralPath $profilePath | ConvertFrom-Json
 if ($profile.schemaVersion -ne 1) { throw 'Unsupported release profile schema.' }
 if (@($profile.roles).Count -ne 5) { throw 'Release profile must contain exactly five roles.' }
 if ($profile.functionalSlice.contract -ne 'EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1') { throw 'Functional slice contract mismatch.' }
-if ($profile.functionalSlice.revision -ne 5) { throw 'Functional slice revision mismatch.' }
+if ($profile.functionalSlice.revision -ne 6) { throw 'Functional slice revision mismatch.' }
 if ($profile.taskIntake.contract -ne 'EAIRA_LOCAL_TASK_INTAKE_V1') { throw 'Task-intake contract mismatch.' }
 if ($profile.taskIntake.transport -ne 'LOCAL_COMMAND_LINE_ONLY' -or
     $profile.taskIntake.output -ne 'EAIRA.AgentTask.Cli.exe' -or
     $profile.taskIntake.mockProvider -ne 'ENABLED' -or
     $profile.taskIntake.realProvider -ne 'FAIL_CLOSED_DISABLED' -or
-    $profile.taskIntake.network -ne 'NONE' -or
+    $profile.taskIntake.localProvider -ne 'OLLAMA_LOOPBACK_ENABLED' -or
+    $profile.taskIntake.network -ne 'MOCK_REAL_NONE_LOCAL_LOOPBACK_ONLY' -or
     $profile.taskIntake.writes -ne 'NONE') { throw 'Task-intake policy mismatch.' }
+if ($profile.localModelProvider.contract -ne 'EAIRA_LOCAL_MODEL_PROVIDER_V1' -or
+    $profile.localModelProvider.providerId -ne 'ollama-loopback-v1' -or
+    $profile.localModelProvider.model -ne 'qwen3:4b' -or
+    $profile.localModelProvider.digest -ne '359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7' -or
+    $profile.localModelProvider.baseUri -ne 'http://127.0.0.1:11434/' -or
+    $profile.localModelProvider.timeoutSeconds -ne 60 -or
+    $profile.localModelProvider.maximumRequestBytes -ne 16384 -or
+    $profile.localModelProvider.maximumResponseBytes -ne 65536 -or
+    $profile.localModelProvider.requestedMaximumOutputUtf16CodeUnits -ne 128 -or
+    $profile.localModelProvider.numPredict -ne 32 -or
+    $profile.localModelProvider.maximumOutputUtf16CodeUnits -ne 512 -or
+    $profile.localModelProvider.writes -ne 'EAIRA_CLIENT_NONE') { throw 'Local-provider policy mismatch.' }
+
+$expectedCandidateRepositoryPaths = @(
+    'apps/agent-services/README.md',
+    'apps/agent-services/build/Invoke-Gate25UnsignedRelease.ps1',
+    'apps/agent-services/contracts/EAIRA_LOCAL_MODEL_PROVIDER_V1.md',
+    'apps/agent-services/contracts/EAIRA_LOCAL_TASK_INTAKE_V1.md',
+    'apps/agent-services/contracts/EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1.md',
+    'apps/agent-services/release/gate25-unsigned-release-profile.json',
+    'apps/agent-services/src/AgentTaskIntakeHost.cs',
+    'apps/agent-services/src/LocalModelProvider.cs',
+    'apps/agent-services/src/LocalTaskIntake.cs',
+    'apps/agent-services/src/ModelProviders.cs',
+    'apps/agent-services/src/OllamaLoopbackTransport.cs',
+    'apps/agent-services/tests/LocalModelProviderHarness.cs',
+    'apps/agent-services/tests/LocalTaskIntakeHarness.cs',
+    'docs/project/context/CURRENT_CONTEXT.md',
+    'docs/project/memory/HANDOFF.md',
+    'docs/project/planning/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_2_TASK.md',
+    'docs/project/planning/EAIRA_M4_SLICE2_LOCAL_MODEL_PROVIDER_THREAT_MODEL.md',
+    'docs/project/status/ACTIVE_TASK.yaml',
+    'docs/project/status/AGENT_CONTEXT_VERSION.yaml',
+    'docs/project/status/CURRENT_STATUS.md',
+    'docs/project/status/TODAY_OBJECTIVE.md',
+    'docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_2_SCOPE_DECISION.md'
+)
+$profileCandidateRepositoryPaths = @($profile.candidateRepositoryPaths | ForEach-Object { [string]$_ })
+if ($profileCandidateRepositoryPaths.Count -ne 22 -or
+    ($profileCandidateRepositoryPaths -join [Environment]::NewLine) -cne ($expectedCandidateRepositoryPaths -join [Environment]::NewLine)) {
+    throw 'Candidate repository path binding must match the exact ordered 22-path scope.'
+}
 
 $compilerHash = Get-Sha256 -LiteralPath $resolvedCompiler
 $compilerSignature = Get-AuthenticodeSignature -LiteralPath $resolvedCompiler
@@ -212,11 +331,19 @@ $functionalSourceText = @(
     (Get-Content -Raw -LiteralPath $providerSourcePath),
     (Get-Content -Raw -LiteralPath $taskIntakeSourcePath),
     (Get-Content -Raw -LiteralPath $taskIntakeHostSourcePath),
+    (Get-Content -Raw -LiteralPath $localProviderSourcePath),
     (Get-Content -Raw -LiteralPath $harnessSourcePath),
-    (Get-Content -Raw -LiteralPath $taskIntakeHarnessSourcePath)
+    (Get-Content -Raw -LiteralPath $taskIntakeHarnessSourcePath),
+    (Get-Content -Raw -LiteralPath $localProviderHarnessSourcePath)
 ) -join "`n"
 $serviceHostSourceText = Get-Content -Raw -LiteralPath $sourcePath
-$allRuntimeSourceText = $serviceHostSourceText + "`n" + $functionalSourceText
+$loopbackTransportSourceText = Get-Content -Raw -LiteralPath $loopbackTransportSourcePath
+$loopbackRuntimeSourceText = [Regex]::Replace(
+    $loopbackTransportSourceText,
+    '(?s)#if TRANSPORT_POLICY_TESTS.*?#endif',
+    ''
+)
+$allRuntimeSourceText = $serviceHostSourceText + "`n" + $functionalSourceText + "`n" + $loopbackRuntimeSourceText
 $forbiddenFunctionalPatterns = @(
     'System.IO',
     'System.Net',
@@ -236,6 +363,31 @@ foreach ($pattern in $forbiddenFunctionalPatterns) {
     if ($functionalSourceText.IndexOf($pattern, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
         throw "Functional core or harness contains prohibited implementation token: $pattern"
     }
+}
+$forbiddenTransportPatterns = @(
+    'System.Net.Sockets',
+    'Dns',
+    'HttpListener',
+    'WebClient',
+    'WebRequest',
+    'File.',
+    'Directory.',
+    'FileStream',
+    'MemoryStream',
+    'Process.',
+    'Microsoft.Win32',
+    'DllImport',
+    'Assembly.Load'
+)
+foreach ($pattern in $forbiddenTransportPatterns) {
+    if ($loopbackRuntimeSourceText.IndexOf($pattern, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
+        throw "Loopback transport contains prohibited implementation token: $pattern"
+    }
+}
+if ($loopbackRuntimeSourceText.IndexOf('http://127.0.0.1:11434/', [StringComparison]::Ordinal) -lt 0 -or
+    $loopbackRuntimeSourceText.IndexOf('System.Net.Http', [StringComparison]::Ordinal) -lt 0 -or
+    $loopbackRuntimeSourceText.IndexOf('System.IO', [StringComparison]::Ordinal) -lt 0) {
+    throw 'Loopback transport does not contain the exact endpoint and namespace boundary.'
 }
 $forbiddenRuntimeWritePatterns = @(
     '(?i)\b(?:System\.IO\.)?File\s*\.\s*(?:Create|Delete|Move|Copy|Replace|Open|OpenWrite|CreateText|AppendText|WriteAllText|WriteAllBytes|WriteAllLines|AppendAllText|AppendAllLines|SetAttributes|SetCreationTime|SetLastAccessTime|SetLastWriteTime|Encrypt|Decrypt)\s*\(',
@@ -274,10 +426,17 @@ foreach ($reference in @($profile.referenceAssemblies)) {
         throw "Reference assembly hash mismatch: $($reference.file)"
     }
     $item = Get-Item -LiteralPath $path
+    $actualAssemblyVersion = [Reflection.AssemblyName]::GetAssemblyName($path).Version.ToString()
+    if ($actualAssemblyVersion -cne [string]$reference.assemblyVersion -or
+        $item.VersionInfo.FileVersion -cne [string]$reference.fileVersion) {
+        throw "Reference assembly version mismatch: $($reference.file)"
+    }
     $referenceEvidence += [ordered]@{
         file = [string]$reference.file
         bytes = $item.Length
         sha256 = $actualHash
+        assemblyVersion = $actualAssemblyVersion
+        fileVersion = $item.VersionInfo.FileVersion
         productVersion = $item.VersionInfo.ProductVersion
     }
 }
@@ -301,8 +460,11 @@ $coreSourceHash = Get-Sha256 -LiteralPath $coreSourcePath
 $providerSourceHash = Get-Sha256 -LiteralPath $providerSourcePath
 $taskIntakeSourceHash = Get-Sha256 -LiteralPath $taskIntakeSourcePath
 $taskIntakeHostSourceHash = Get-Sha256 -LiteralPath $taskIntakeHostSourcePath
+$localProviderSourceHash = Get-Sha256 -LiteralPath $localProviderSourcePath
+$loopbackTransportSourceHash = Get-Sha256 -LiteralPath $loopbackTransportSourcePath
 $harnessSourceHash = Get-Sha256 -LiteralPath $harnessSourcePath
 $taskIntakeHarnessSourceHash = Get-Sha256 -LiteralPath $taskIntakeHarnessSourcePath
+$localProviderHarnessSourceHash = Get-Sha256 -LiteralPath $localProviderHarnessSourcePath
 $allBuildEvidence = @()
 
 for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
@@ -393,7 +555,7 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
                              $taskIntakeHarnessInvalidTest.exitCode -eq 64 -and
                              $taskIntakeHarnessJson.status -eq 'PASS' -and
                              $taskIntakeHarnessJson.contract -eq 'EAIRA_LOCAL_TASK_INTAKE_V1' -and
-                             $taskIntakeHarnessJson.testsPassed -eq 14 -and
+                             $taskIntakeHarnessJson.testsPassed -eq 15 -and
                              $taskIntakeHarnessJson.network -eq 'NONE' -and
                              $taskIntakeHarnessJson.writes -eq 'NONE' -and
                              $taskIntakeHarnessJson.realProvider -eq 'BLOCKED' -and
@@ -412,11 +574,110 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         offlineTestsPass = [bool]$taskIntakeHarnessPass
     }
 
+    $localProviderHarnessOutputPath = Join-Path $buildRoot 'EAIRA.LocalModelProvider.Harness.exe'
+    $localProviderHarnessArguments = @(
+        '/nologo', '/noconfig', '/target:exe', '/platform:x64', '/optimize+', '/debug-', '/checked+', '/highentropyva+',
+        '/warn:4', '/warnaserror+', '/nostdlib+',
+        "/reference:$resolvedReferences\mscorlib.dll", "/reference:$resolvedReferences\System.dll",
+        '/main:EAIRA.AgentServices.Tests.LocalModelProviderHarness', "/out:$localProviderHarnessOutputPath"
+    )
+    if (-not $DevelopmentProbe) {
+        $localProviderHarnessArguments += '/deterministic+'
+        $localProviderHarnessArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
+    }
+    $localProviderHarnessArguments += $coreSourcePath
+    $localProviderHarnessArguments += $providerSourcePath
+    $localProviderHarnessArguments += $taskIntakeSourcePath
+    $localProviderHarnessArguments += $localProviderSourcePath
+    $localProviderHarnessArguments += $localProviderHarnessSourcePath
+    $localProviderHarnessCompilerOutput = @(& $resolvedCompiler @localProviderHarnessArguments 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw "Local-provider harness compiler failed: $($localProviderHarnessCompilerOutput -join [Environment]::NewLine)" }
+    Assert-NoForbiddenBinaryMetadata -LiteralPath $localProviderHarnessOutputPath
+    Assert-SystemIoMemberReferencePolicy -LiteralPath $localProviderHarnessOutputPath
+    $localProviderHarnessSelfTest = Invoke-ExitCodeTest -Executable $localProviderHarnessOutputPath -Arguments @('--self-test')
+    $localProviderHarnessInvalidTest = Invoke-ExitCodeTest -Executable $localProviderHarnessOutputPath -Arguments @('--invalid')
+    $localProviderHarnessSignature = Get-AuthenticodeSignature -LiteralPath $localProviderHarnessOutputPath
+    try { $localProviderHarnessJson = $localProviderHarnessSelfTest.output | ConvertFrom-Json } catch { throw 'Local-provider harness output is not valid JSON.' }
+    $localProviderHarnessPass = $localProviderHarnessSelfTest.exitCode -eq 0 -and
+                                $localProviderHarnessInvalidTest.exitCode -eq 64 -and
+                                $localProviderHarnessJson.status -eq 'PASS' -and
+                                $localProviderHarnessJson.contract -eq 'EAIRA_LOCAL_MODEL_PROVIDER_V1' -and
+                                $localProviderHarnessJson.testsPassed -eq 41 -and
+                                $localProviderHarnessJson.network -eq 'NONE' -and
+                                $localProviderHarnessJson.writes -eq 'NONE' -and
+                                $localProviderHarnessJson.transport -eq 'FAKE' -and
+                                (Get-PeMachine -LiteralPath $localProviderHarnessOutputPath) -eq '0x8664' -and
+                                $localProviderHarnessSignature.Status.ToString() -eq 'NotSigned'
+    $localProviderHarnessItem = Get-Item -LiteralPath $localProviderHarnessOutputPath
+    $localProviderHarnessEvidence = [ordered]@{
+        file = $localProviderHarnessItem.Name
+        bytes = $localProviderHarnessItem.Length
+        sha256 = Get-Sha256 -LiteralPath $localProviderHarnessOutputPath
+        peMachine = Get-PeMachine -LiteralPath $localProviderHarnessOutputPath
+        authenticode = $localProviderHarnessSignature.Status.ToString()
+        selfTestExitCode = $localProviderHarnessSelfTest.exitCode
+        invalidArgumentExitCode = $localProviderHarnessInvalidTest.exitCode
+        testsPassed = [int]$localProviderHarnessJson.testsPassed
+        network = [string]$localProviderHarnessJson.network
+        transport = [string]$localProviderHarnessJson.transport
+        offlineTestsPass = [bool]$localProviderHarnessPass
+    }
+
+    $transportPolicyHarnessOutputPath = Join-Path $buildRoot 'EAIRA.LoopbackTransport.PolicyHarness.exe'
+    $transportPolicyHarnessArguments = @(
+        '/nologo', '/noconfig', '/target:exe', '/platform:x64', '/optimize+', '/debug-', '/checked+', '/highentropyva+',
+        '/warn:4', '/warnaserror+', '/nostdlib+', '/define:TRANSPORT_POLICY_TESTS',
+        "/reference:$resolvedReferences\mscorlib.dll", "/reference:$resolvedReferences\System.dll",
+        "/reference:$resolvedReferences\System.Net.Http.dll",
+        '/main:EAIRA.AgentServices.Tests.LoopbackTransportPolicyHarness', "/out:$transportPolicyHarnessOutputPath"
+    )
+    if (-not $DevelopmentProbe) {
+        $transportPolicyHarnessArguments += '/deterministic+'
+        $transportPolicyHarnessArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
+    }
+    $transportPolicyHarnessArguments += $coreSourcePath
+    $transportPolicyHarnessArguments += $providerSourcePath
+    $transportPolicyHarnessArguments += $taskIntakeSourcePath
+    $transportPolicyHarnessArguments += $localProviderSourcePath
+    $transportPolicyHarnessArguments += $loopbackTransportSourcePath
+    $transportPolicyHarnessCompilerOutput = @(& $resolvedCompiler @transportPolicyHarnessArguments 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw "Transport-policy harness compiler failed: $($transportPolicyHarnessCompilerOutput -join [Environment]::NewLine)" }
+    Assert-NoForbiddenBinaryMetadata -LiteralPath $transportPolicyHarnessOutputPath -AllowLoopbackHttp
+    $transportPolicyHarnessSelfTest = Invoke-ExitCodeTest -Executable $transportPolicyHarnessOutputPath -Arguments @('--self-test')
+    $transportPolicyHarnessInvalidTest = Invoke-ExitCodeTest -Executable $transportPolicyHarnessOutputPath -Arguments @('--invalid')
+    $transportPolicyHarnessSignature = Get-AuthenticodeSignature -LiteralPath $transportPolicyHarnessOutputPath
+    try { $transportPolicyHarnessJson = $transportPolicyHarnessSelfTest.output | ConvertFrom-Json } catch { throw 'Transport-policy harness output is not valid JSON.' }
+    $transportPolicyHarnessPass = $transportPolicyHarnessSelfTest.exitCode -eq 0 -and
+                                  $transportPolicyHarnessInvalidTest.exitCode -eq 64 -and
+                                  $transportPolicyHarnessJson.status -eq 'PASS' -and
+                                  $transportPolicyHarnessJson.contract -eq 'EAIRA_LOCAL_MODEL_PROVIDER_V1' -and
+                                  $transportPolicyHarnessJson.testsPassed -eq 10 -and
+                                  $transportPolicyHarnessJson.network -eq 'NONE' -and
+                                  $transportPolicyHarnessJson.writes -eq 'NONE' -and
+                                  $transportPolicyHarnessJson.transport -eq 'POLICY_ONLY_FAKE_STREAM' -and
+                                  (Get-PeMachine -LiteralPath $transportPolicyHarnessOutputPath) -eq '0x8664' -and
+                                  $transportPolicyHarnessSignature.Status.ToString() -eq 'NotSigned'
+    $transportPolicyHarnessItem = Get-Item -LiteralPath $transportPolicyHarnessOutputPath
+    $transportPolicyHarnessEvidence = [ordered]@{
+        file = $transportPolicyHarnessItem.Name
+        bytes = $transportPolicyHarnessItem.Length
+        sha256 = Get-Sha256 -LiteralPath $transportPolicyHarnessOutputPath
+        peMachine = Get-PeMachine -LiteralPath $transportPolicyHarnessOutputPath
+        authenticode = $transportPolicyHarnessSignature.Status.ToString()
+        selfTestExitCode = $transportPolicyHarnessSelfTest.exitCode
+        invalidArgumentExitCode = $transportPolicyHarnessInvalidTest.exitCode
+        testsPassed = [int]$transportPolicyHarnessJson.testsPassed
+        network = [string]$transportPolicyHarnessJson.network
+        transport = [string]$transportPolicyHarnessJson.transport
+        offlineTestsPass = [bool]$transportPolicyHarnessPass
+    }
+
     $taskIntakeOutputPath = Join-Path $buildRoot ([string]$profile.taskIntake.output)
     $taskIntakeArguments = @(
         '/nologo', '/noconfig', '/target:exe', '/platform:x64', '/optimize+', '/debug-', '/checked+', '/highentropyva+',
         '/warn:4', '/warnaserror+', '/nostdlib+',
         "/reference:$resolvedReferences\mscorlib.dll", "/reference:$resolvedReferences\System.dll",
+        "/reference:$resolvedReferences\System.Net.Http.dll",
         '/main:EAIRA.AgentServices.TaskIntake.AgentTaskIntakeHost', "/out:$taskIntakeOutputPath"
     )
     if (-not $DevelopmentProbe) {
@@ -426,11 +687,13 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
     $taskIntakeArguments += $coreSourcePath
     $taskIntakeArguments += $providerSourcePath
     $taskIntakeArguments += $taskIntakeSourcePath
+    $taskIntakeArguments += $localProviderSourcePath
+    $taskIntakeArguments += $loopbackTransportSourcePath
     $taskIntakeArguments += $taskIntakeHostSourcePath
     $taskIntakeCompilerOutput = @(& $resolvedCompiler @taskIntakeArguments 2>&1)
     if ($LASTEXITCODE -ne 0) { throw "Task-intake CLI compiler failed: $($taskIntakeCompilerOutput -join "`n")" }
-    Assert-NoForbiddenBinaryMetadata -LiteralPath $taskIntakeOutputPath
-    Assert-SystemIoMemberReferencePolicy -LiteralPath $taskIntakeOutputPath
+    Assert-NoForbiddenBinaryMetadata -LiteralPath $taskIntakeOutputPath -AllowLoopbackHttp
+    Assert-LoopbackMetadataPolicy -LiteralPath $taskIntakeOutputPath -Policy $profile.cliMetadataAllowlist
 
     $allowedArgs = @('--provider','mock','--trace','ABCDEF0123456789ABCDEF0123456789','--goal','prepare bounded release plan')
     $taskAllowed = Invoke-ExitCodeTest -Executable $taskIntakeOutputPath -Arguments $allowedArgs
@@ -550,6 +813,8 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         build = if ($buildIndex -eq 0) { 'A' } else { 'B' }
         functionalHarness = $harnessEvidence
         taskIntakeHarness = $taskIntakeHarnessEvidence
+        localProviderHarness = $localProviderHarnessEvidence
+        transportPolicyHarness = $transportPolicyHarnessEvidence
         taskIntakeCli = $taskIntakeEvidence
         outputs = $roleEvidence
     }
@@ -562,6 +827,8 @@ if ($allBuildEvidence[0].functionalHarness.file -ne $allBuildEvidence[1].functio
     $reproducible = $false
 }
 if ($allBuildEvidence[0].taskIntakeHarness.sha256 -ne $allBuildEvidence[1].taskIntakeHarness.sha256 -or
+    $allBuildEvidence[0].localProviderHarness.sha256 -ne $allBuildEvidence[1].localProviderHarness.sha256 -or
+    $allBuildEvidence[0].transportPolicyHarness.sha256 -ne $allBuildEvidence[1].transportPolicyHarness.sha256 -or
     $allBuildEvidence[0].taskIntakeCli.sha256 -ne $allBuildEvidence[1].taskIntakeCli.sha256) {
     $reproducible = $false
 }
@@ -573,7 +840,12 @@ for ($index = 0; $index -lt @($profile.roles).Count; $index++) {
 
 $roleTestsPass = (@($allBuildEvidence | ForEach-Object { $_.outputs } | Where-Object { -not $_.offlineTestsPass }).Count -eq 0)
 $functionalTestsPass = (@($allBuildEvidence | Where-Object { -not $_.functionalHarness.offlineTestsPass }).Count -eq 0)
-$taskIntakeTestsPass = (@($allBuildEvidence | Where-Object { -not $_.taskIntakeHarness.offlineTestsPass -or -not $_.taskIntakeCli.offlineTestsPass }).Count -eq 0)
+$taskIntakeTestsPass = (@($allBuildEvidence | Where-Object {
+    -not $_.taskIntakeHarness.offlineTestsPass -or
+    -not $_.localProviderHarness.offlineTestsPass -or
+    -not $_.transportPolicyHarness.offlineTestsPass -or
+    -not $_.taskIntakeCli.offlineTestsPass
+}).Count -eq 0)
 $offlineTestsPass = $roleTestsPass -and $functionalTestsPass -and $taskIntakeTestsPass
 $m4TechnicalChecksPass = -not $DevelopmentProbe -and $compilerPolicyPass -and $supportsDeterministic -and $supportsPathMap -and $reproducible -and $offlineTestsPass
 $releaseOutputs = @()
@@ -602,12 +874,32 @@ if ($m4TechnicalChecksPass) {
     }
 }
 
+$candidateRepositoryEvidence = @()
+foreach ($relativePath in $expectedCandidateRepositoryPaths) {
+    if ([System.IO.Path]::IsPathRooted($relativePath) -or $relativePath.Contains('..') -or $relativePath.Contains('\')) {
+        throw "Invalid candidate repository path: $relativePath"
+    }
+    $candidatePath = [System.IO.Path]::GetFullPath((Join-Path $repositoryRoot $relativePath))
+    $repositoryPrefix = $repositoryRoot.TrimEnd('\') + '\'
+    if (-not $candidatePath.StartsWith($repositoryPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+        -not (Test-Path -LiteralPath $candidatePath -PathType Leaf)) {
+        throw "Candidate repository path is absent or outside the repository: $relativePath"
+    }
+    $candidateItem = Get-Item -LiteralPath $candidatePath
+    $candidateRepositoryEvidence += [ordered]@{
+        file = $relativePath
+        bytes = $candidateItem.Length
+        sha256 = Get-Sha256 -LiteralPath $candidatePath
+    }
+}
+if ($candidateRepositoryEvidence.Count -ne 22) { throw 'Candidate repository evidence count mismatch.' }
+
 $compilerItem = Get-Item -LiteralPath $resolvedCompiler
 $manifest = [ordered]@{
     schemaVersion = 1
     generatedUtc = [DateTime]::UtcNow.ToString('o')
-    classification = if ($DevelopmentProbe) { 'DEVELOPMENT_PROBE_ONLY' } else { 'M4_FUNCTIONAL_AGENT_MVP_SLICE_1_UNSIGNED_CANDIDATE' }
-    status = if ($m4TechnicalChecksPass) { 'M4_SLICE_1_UNSIGNED_TECHNICAL_CHECKS_PASS' } elseif ($DevelopmentProbe -and -not $reproducible) { 'BLOCKED_NONDETERMINISTIC_COMPILER' } else { 'FAIL_CLOSED' }
+    classification = if ($DevelopmentProbe) { 'DEVELOPMENT_PROBE_ONLY' } else { 'M4_FUNCTIONAL_AGENT_MVP_SLICE_2_UNSIGNED_CANDIDATE' }
+    status = if ($m4TechnicalChecksPass) { 'M4_SLICE_2_UNSIGNED_TECHNICAL_CHECKS_PASS' } elseif ($DevelopmentProbe -and -not $reproducible) { 'BLOCKED_NONDETERMINISTIC_COMPILER' } else { 'FAIL_CLOSED' }
     gate25Complete = $false
     externalSigningEligible = $false
     signatureOnlyBlocked = $false
@@ -618,6 +910,8 @@ $manifest = [ordered]@{
         functionalContractSha256 = Get-Sha256 -LiteralPath $functionalContractPath
         taskIntakeContractFile = 'contracts/EAIRA_LOCAL_TASK_INTAKE_V1.md'
         taskIntakeContractSha256 = Get-Sha256 -LiteralPath $taskIntakeContractPath
+        localProviderContractFile = 'contracts/EAIRA_LOCAL_MODEL_PROVIDER_V1.md'
+        localProviderContractSha256 = Get-Sha256 -LiteralPath $localProviderContractPath
         file = 'src/AgentServiceHost.cs'
         sha256 = $sourceHash
         coreFile = 'src/AgentCore.cs'
@@ -628,12 +922,19 @@ $manifest = [ordered]@{
         taskIntakeSha256 = $taskIntakeSourceHash
         taskIntakeHostFile = 'src/AgentTaskIntakeHost.cs'
         taskIntakeHostSha256 = $taskIntakeHostSourceHash
+        localProviderFile = 'src/LocalModelProvider.cs'
+        localProviderSha256 = $localProviderSourceHash
+        loopbackTransportFile = 'src/OllamaLoopbackTransport.cs'
+        loopbackTransportSha256 = $loopbackTransportSourceHash
         harnessFile = 'tests/AgentCoreHarness.cs'
         harnessSha256 = $harnessSourceHash
         taskIntakeHarnessFile = 'tests/LocalTaskIntakeHarness.cs'
         taskIntakeHarnessSha256 = $taskIntakeHarnessSourceHash
+        localProviderHarnessFile = 'tests/LocalModelProviderHarness.cs'
+        localProviderHarnessSha256 = $localProviderHarnessSourceHash
         releaseProfileSha256 = Get-Sha256 -LiteralPath $profilePath
     }
+    candidateRepositoryInputs = $candidateRepositoryEvidence
     compiler = [ordered]@{
         file = $compilerItem.Name
         bytes = $compilerItem.Length
@@ -668,10 +969,30 @@ $manifest = [ordered]@{
         transport = 'LOCAL_COMMAND_LINE_ONLY'
         mockProvider = 'ENABLED'
         realProvider = 'FAIL_CLOSED_DISABLED'
-        network = 'NONE'
+        localProvider = 'OLLAMA_LOOPBACK_ENABLED'
+        network = 'MOCK_REAL_NONE_LOCAL_LOOPBACK_ONLY'
         writes = 'NONE'
         cleanBuildHarnessReproducible = [bool]($allBuildEvidence[0].taskIntakeHarness.sha256 -eq $allBuildEvidence[1].taskIntakeHarness.sha256)
         cleanBuildCliReproducible = [bool]($allBuildEvidence[0].taskIntakeCli.sha256 -eq $allBuildEvidence[1].taskIntakeCli.sha256)
+        testsPass = [bool]$taskIntakeTestsPass
+    }
+    localModelProvider = [ordered]@{
+        contract = 'EAIRA_LOCAL_MODEL_PROVIDER_V1'
+        providerId = [string]$profile.localModelProvider.providerId
+        model = [string]$profile.localModelProvider.model
+        digest = [string]$profile.localModelProvider.digest
+        baseUri = [string]$profile.localModelProvider.baseUri
+        timeoutSeconds = [int]$profile.localModelProvider.timeoutSeconds
+        maximumRequestBytes = [int]$profile.localModelProvider.maximumRequestBytes
+        maximumResponseBytes = [int]$profile.localModelProvider.maximumResponseBytes
+        maximumOutputUtf16CodeUnits = [int]$profile.localModelProvider.maximumOutputUtf16CodeUnits
+        writes = [string]$profile.localModelProvider.writes
+        fakeHarnessTestsPassed = [int]$allBuildEvidence[0].localProviderHarness.testsPassed
+        fakeHarnessReproducible = [bool]($allBuildEvidence[0].localProviderHarness.sha256 -eq $allBuildEvidence[1].localProviderHarness.sha256)
+        transportPolicyHarnessTestsPassed = [int]$allBuildEvidence[0].transportPolicyHarness.testsPassed
+        transportPolicyHarnessReproducible = [bool]($allBuildEvidence[0].transportPolicyHarness.sha256 -eq $allBuildEvidence[1].transportPolicyHarness.sha256)
+        cliMetadataAllowlist = $profile.cliMetadataAllowlist
+        liveProbeIncluded = $false
         testsPass = [bool]$taskIntakeTestsPass
     }
     releaseOutputs = $releaseOutputs
@@ -699,6 +1020,7 @@ Write-Output ("REPRODUCIBLE_BYTE_FOR_BYTE=" + $reproducible.ToString().ToUpperIn
 Write-Output ("OFFLINE_TESTS_PASS=" + $offlineTestsPass.ToString().ToUpperInvariant())
 Write-Output ("FUNCTIONAL_SLICE_TESTS_PASS=" + $functionalTestsPass.ToString().ToUpperInvariant())
 Write-Output ("TASK_INTAKE_TESTS_PASS=" + $taskIntakeTestsPass.ToString().ToUpperInvariant())
+Write-Output ("LOCAL_PROVIDER_FAKE_TESTS_PASS=" + $taskIntakeTestsPass.ToString().ToUpperInvariant())
 Write-Output 'EXTERNAL_SIGNING_ELIGIBLE=FALSE'
 Write-Output 'SIGNATURE_ONLY_BLOCKED=FALSE'
 Write-Output ("MANIFEST_SHA256=" + $manifestHash)

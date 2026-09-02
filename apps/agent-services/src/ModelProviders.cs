@@ -10,6 +10,20 @@ namespace EAIRA.AgentServices.Functional
         string Complete(AgentRole role, string prompt);
     }
 
+    internal interface IRequestLifecycleModelProvider
+    {
+        void BeginRequest();
+        void EndRequest();
+    }
+
+    internal interface ILocalProviderObservations
+    {
+        int TagsCalls { get; }
+        int ChatCalls { get; }
+        bool PreflightDigestValidated { get; }
+        bool PostflightDigestValidated { get; }
+    }
+
     internal static class ModelProviderPolicy
     {
         internal static IModelProvider RequireEnabled(IModelProvider provider)

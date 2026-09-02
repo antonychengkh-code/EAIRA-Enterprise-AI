@@ -47,6 +47,14 @@ namespace EAIRA.AgentServices.Tests
             Require(real.ProviderId == "real-disabled-v1", "disabled real-provider identity emitted");
 
             RequireContractFailure(delegate { intake.Execute(Request("unknown", trace, "prepare bounded release plan")); }, "unknown provider rejected");
+            RequireContractFailure(delegate
+            {
+                intake.Execute(new string[]
+                {
+                    "--provider", "ollama-local", "--model", "qwen3:4b",
+                    "--trace", trace, "--goal", "prepare bounded release plan"
+                });
+            }, "local provider requires injected CLI factory");
             RequireContractFailure(delegate { intake.Execute(new string[] { "--provider", "mock" }); }, "incomplete arguments rejected");
             RequireContractFailure(delegate { intake.Execute(new string[] { "--goal", "x", "--trace", trace, "--provider", "mock" }); }, "argument reordering rejected");
             RequireContractFailure(delegate { intake.Execute(Request("mock", trace, new string((char)0xD800, 1))); }, "unpaired high surrogate rejected");

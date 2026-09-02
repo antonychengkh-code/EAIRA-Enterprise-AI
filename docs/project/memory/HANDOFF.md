@@ -12,7 +12,7 @@ authority: provisional
 
 ## State
 
-Obsidian project-memory is operationally stable for report-only scheduled audits. Controlled sources now identify M4 Functional Agent MVP as active and distinguish its locally verified first slice from the still-blocked Annex governance workstream.
+Obsidian project-memory is operationally stable for report-only scheduled audits. Controlled sources identify M4 Slice 2 as the active product task: initial Gate 9 failed closed with three P1 and two P2 findings; its bounded remediation candidate is technically validated, unstaged, and uncommitted pending a fresh live probe and repeat independent implementation review. The Annex governance workstream remains separately blocked.
 
 ## Canonical Context
 
@@ -23,6 +23,9 @@ Obsidian project-memory is operationally stable for report-only scheduled audits
 
 ## Completed
 
+- M4 Slice 2 direction `SLICE2_A_LOCAL_MODEL_PROVIDER` selected and readiness R4 independently passed with no P0/P1/P2.
+- The remediated exact local `qwen3:4b` candidate passed two byte-identical builds, `34` functional tests, `15` intake tests, `41` fake-provider tests, `10` no-socket transport-policy tests, five service self-tests, non-CLI zero-network/stream checks, and the frozen CLI `18` TypeRef/`35` MemberRef allowlist.
+- Gate 9 remediation rejects additional Content-Type parameters, tests exact 16 KiB/64 KiB/512 boundaries and one shared deadline, exposes sanitized observed tags/chat counts plus pre/post digest results, binds all 22 candidate paths and exact reference versions, and keeps generated evidence hashes external to avoid circular manifest binding.
 - Safety backup created outside the repository.
 - Repository-scoped project-memory Skill initialized.
 - Navigational memory layer created without replacing controlled context sources.
@@ -61,8 +64,8 @@ Obsidian project-memory is operationally stable for report-only scheduled audits
 ## Remaining
 
 - Keep certificate purchase/enrollment deferred until the release-timing decision; when resumed, complete Gate 24.12–24.14 and sign only the accepted Gate 25 hashes.
-- Submit the exact six-file M4 Slice 1 post-publication state-synchronization candidate for separate independent review; staging, commit, and push require later separate gates.
-- After the state synchronization is published, obtain a bounded M4 Slice 2 scope decision, preferably starting with a local-model provider path before any external provider or credential integration.
+- Submit the exact 22-path M4 Slice 2 R4 candidate for independent implementation review; proceed to staging only if P0=0 and P1=0.
+- Complete the remaining conditional staging, commit, push, post-publication verification, and state-sync gates without including the three unrelated Claude paths.
 - Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The new CLI is a separate local task-intake surface; it is not wired to those Windows services, IPC, network, credentials, storage, or external systems.
 - Do not treat R3 publication or M4 Slice 1 local verification as signing eligibility. The binaries remain unsigned and Gate 25 remains incomplete.
 - Keep service-account, membership, directory, ACL, encryption, signing, cloud-resource, and operational mutations fail-closed until separately authorized.

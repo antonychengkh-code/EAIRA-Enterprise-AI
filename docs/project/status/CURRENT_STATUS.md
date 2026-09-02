@@ -6,7 +6,7 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.37.7
+0.37.9
 
 ## Updated At
 
@@ -24,7 +24,9 @@ M4 Functional Agent MVP: Active.
 
 ## Active Phase
 
-M4 Slice 1, `M4-FUNCTIONAL-AGENT-MVP-SLICE-1`, is the active product task. It adds a local command-line task intake and a provider-neutral model boundary while keeping the deterministic mock as the only enabled provider. The `real` selection is fail-closed disabled; network, credentials, persistence, Windows service activation, and external side effects remain absent.
+M4 Slice 2, `M4-FUNCTIONAL-AGENT-MVP-SLICE-2`, is the active product task. Its R4 working-tree candidate retains deterministic `mock`, retains fail-closed disabled `real`, and adds `ollama-local` for exact `qwen3:4b` through `127.0.0.1:11434` only. The local provider is request-scoped, uses a two-entry successful-result cache, validates exact name/full digest before and after generation, and returns sanitized `LOCAL_PROVIDER_ERROR/79` on failure. The digest control is trusted-local consistency, not cryptographic pinning.
+
+Initial Gate 9 independent implementation review failed closed with `P0=0`, `P1=3`, and `P2=2`. The bounded remediation candidate passes two byte-identical deterministic builds, `34` functional tests, `15` intake tests, `41` fake-provider tests, `10` no-socket transport-policy tests, five service self-tests, zero network/stream references in all non-CLI runtime outputs, and the exact CLI allowlist of `18` TypeRefs plus `35` MemberRefs. It adds exact Content-Type parameter rejection, exact-limit acceptance tests, shared-deadline proof, sanitized observed request/digest telemetry, complete 22-path manifest binding, and exact reference versions. Fresh live and external hash evidence plus repeat independent Gate 9 remain required before staging; generated evidence hashes are intentionally not embedded in the repository-bound candidate.
 
 The prior task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` remains a separate blocked governance workstream. Its Fields, acceptance counts, blockers, and all-fields-resolved gate are unchanged by M4.
 
@@ -121,4 +123,4 @@ The local identity, path, capability, backup, encryption, ACL, and WSL evidence 
 
 Gate 19 through Gate 23 bounded preparation and independent review are complete. Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are available and their recorded local evidence matches the sanitized reconciliation report, while the legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred. Gates 25 through 29 remain ineligible until those Gate 24 prerequisites and all other documented blockers are closed.
 
-The M4 Slice 1 publication sequence is complete. This six-file post-publication status synchronization is a local working-tree candidate only; its commit and push require later separate gates. The next product decision is the bounded M4 Slice 2 scope, with a local-model provider path recommended before any external provider or credential work. Real-provider implementation, API credentials, service wiring, signing, and production activation remain outside the current authorization. The deferred Gate 24 legal signing identity, provider, certificate, release-volume, and recovery-governance decisions remain parked until release timing justifies them. Exact service-account membership, operator/verifier separation, NTFS/WSL mapping, backup-copy boundary, encryption implementation, and Field 9 implementation decisions also remain open. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16` and a substantive blocker, and the all-fields-resolved gate remains `BLOCKED`.
+M4 Slice 1 publication and its post-publication state synchronization are complete. The M4 Slice 2 exact 22-path candidate now awaits independent implementation review, followed conditionally by exact staging, staged review, commit, post-commit verification, normal push, and independent post-push verification. External-provider credentials, Windows-service routing, persistence, signing, and production activation remain outside scope. Gate 24 legal signing work remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.
