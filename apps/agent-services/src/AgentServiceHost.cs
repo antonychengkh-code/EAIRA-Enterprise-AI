@@ -10,7 +10,7 @@ using EAIRA.AgentServices.Functional;
 [assembly: AssemblyCopyright("Copyright © 2026")]
 [assembly: AssemblyVersion("0.1.0.0")]
 [assembly: AssemblyFileVersion("0.1.0.0")]
-[assembly: AssemblyInformationalVersion("0.1.0-rc.3-unsigned")]
+[assembly: AssemblyInformationalVersion("0.2.0-m4.1-r3-unsigned")]
 
 #if PLANNING
 [assembly: AssemblyTitle("EAIRA Planning Agent Service")]
@@ -28,7 +28,7 @@ namespace EAIRA.AgentServices
 {
     internal static class RoleProfile
     {
-        internal const string BuildContract = "EAIRA_GATE25_UNSIGNED_RC3";
+        internal const string BuildContract = "EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_1";
         internal const string TargetFramework = ".NETFramework,Version=v4.8";
 
 #if PLANNING

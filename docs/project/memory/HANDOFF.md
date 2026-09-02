@@ -2,7 +2,7 @@
 type: project-memory-handoff
 status: active
 created: 2026-08-26
-updated: 2026-09-01
+updated: 2026-09-02
 source: codex
 project: EAIRA
 authority: provisional
@@ -12,7 +12,7 @@ authority: provisional
 
 ## State
 
-Obsidian project-memory is operationally stable for report-only scheduled audits. The 2026-09-01 reconciliation found and bounded stale controlled summaries without treating memory as authority.
+Obsidian project-memory is operationally stable for report-only scheduled audits. Controlled sources now identify M4 Functional Agent MVP as active and distinguish its locally verified first slice from the still-blocked Annex governance workstream.
 
 ## Canonical Context
 
@@ -48,12 +48,21 @@ Obsidian project-memory is operationally stable for report-only scheduled audits
 - The separately authorized `EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1` is repository-owned under `apps/agent-services/`: Planning, Guard, Operations, Verification, and Audit execute a deterministic in-memory allowed flow and fail-closed denial flow with versioned task/result contracts and digest-linked handoffs. The harness passed 24 offline tests in both isolated builds; every binary and harness output was byte-identical across builds; sanitized manifest SHA-256 is `A562DA6A51675C8A32E3C4C8CCE1AD313381A6B31F3CA69178CA9C4FA7178C19`.
 - Independent review of functional-slice R1 found one blocking digest-chain weakness and two reporting/toolchain issues. R2 remediation now recomputes result integrity, enforces the Planning zero root and exact chain prefix, adds forged-link and tamper tests, binds the approved compiler SHA-256 plus Microsoft Authenticode identity, and distinguishes runtime from bounded build-time child processes. Local R2 verification passed 28 tests in both byte-identical clean builds; sanitized R2 manifest SHA-256 is `9E81E15832F954C4FCBF6DEA71FC24A78421545385798052657ECB2FA23CC0C4`. R2 remains pending a new independent review.
 - R3 closes the R2 review blockers by recomputing TaskEnvelope integrity at every consumer and replaying the complete deterministic semantic prefix. A new independent review returned `P0=0`, `P1=0`, `P2=1`, `GATE_CLOSABLE=YES`, and `REPOSITORY_RECORDING_ELIGIBILITY=YES`; the only P2 is a non-blocking stale description in the contract role table. The exact seven-file `apps/agent-services/` candidate is included in the authorized repository-recording change set with R3 manifest SHA-256 `DB6EF31C00001197C23C8BCF1A1ABAB1FF302A975499628F8DA0CE7C6DC1ED47`. Signing eligibility remains false.
+- Functional-slice R3 was repository-recorded, pushed, and independently post-push verified at commit `a10c2ae098bb26455cd9004c0c5a503545a2ef7f`.
+- M4 Functional Agent MVP is established. Slice 1 adds strict local task intake and a provider-neutral boundary with only `mock-v1` enabled; `real-disabled-v1` fails closed without network or credentials.
+- The first M4 Slice 1 independent review found two P1 and three P2 issues. R2 corrects the active-task history conflict, removes the external-signing readiness claim, requires exact profile safety values and exact `31`/`12` test inventories, and binds the build script plus both contracts in the manifest.
+- A second independent path found that R2 accepted unpaired UTF-16 surrogates which collapsed through encoder replacement fallback. Unicode-safe R3 rejects malformed UTF-16 before hashing/JSON, retains valid supplementary scalars, adds core/intake/CLI regression tests, corrects README ownership wording, and extends service-host write-API scanning.
+- Independent R3 review verified the Unicode behavior but found stale manifest revision and ACTIVE_TASK CLI identity plus one scanner gap. R3R1 derives revision `5` from the validated profile, corrects the CLI hash, and rejects File.Open plus FileInfo/DirectoryInfo and additional mutation APIs at source level.
+- Independent R3R1 review found that setter/access-control aliases could still bypass the write scanner. R3R2 replaces enumeration with a strict service-host IO allowlist: exactly one System.IO import, one File.Exists and two Path.IsPathRooted calls; aliases, qualified extra IO, additional calls and instance IO types fail closed.
+- M4 Slice 1 R3R2 local verification passed two byte-identical clean builds, exactly `34` functional tests and `14` intake tests per build, standard CLI outcomes `0/77/78/64`, malformed-Unicode `64`, and `runtimeIoAllowlistCheckPass=true`. R3R2 manifest SHA-256 is `08967F34336AABC096AE52E9D58CC90EA6993C108BBF1585E5DC7225ADE2D864`; CLI SHA-256 is `4ED35E7A017ECA3A441AD27C460E1EC3531C5972DA7BB326D65F888563AF5536`; sanitized report SHA-256 is `29FA5FFB3810ABA2C62562274D15CFBD5A79A7E0E0DF0A02891943767BAA83ED`. External signing eligibility is false, Gate 25 remains incomplete, and the candidate remains uncommitted and unpushed.
+- Independent R3R2 review found one P1 token/comment bypass in the source-text I/O scanner and failed closed. R3R3 adds a controlling structured PE metadata audit: functional harnesses and intake executables allow zero compiled System.IO member references, while each service host allows only `System.IO.File::Exists` and `System.IO.Path::IsPathRooted`. A `File/*split*/.Delete` negative regression was rejected from compiled metadata. Two byte-identical clean builds and all `34`/`14` tests passed; R3R3 manifest SHA-256 is `064698D865D2200A60976F419339FCFDFA18EE0537ABF3FC3A012841B1DFB0BD`; sanitized report SHA-256 is `2F7774587DAB53C6FF4BAF7B26D733DB1762DBD87C326994E085C5BBDC7DD717`. Independent R3R3 review returned `PASS_WITH_NON_BLOCKING_FINDING`, `P0=0`, `P1=0`, `P2=1`, no blocker, and staging eligibility. The P2 is limited to reflective/dynamic invocation coverage; exact reviewed source contains no reflection, dynamic activation, or P/Invoke.
 
 ## Remaining
 
 - Keep certificate purchase/enrollment deferred until the release-timing decision; when resumed, complete Gate 24.12–24.14 and sign only the accepted Gate 25 hashes.
-- Treat the current five binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The minimum functional slice is not wired to live service task intake, models, IPC, network, credentials, storage, or external systems; those capabilities remain separately gated.
-- Do not treat functional-slice repository recording as signing eligibility. The current unsigned R3 binaries remain offline candidates and Gate 25 remains incomplete.
+- Stage exactly the 21 independently reviewed M4 Slice 1 paths, preserve the three unrelated Claude untracked files, then continue under the existing Project Owner authorization through independent staged-index review, commit, post-commit review, normal push, and post-push verification.
+- Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The new CLI is a separate local task-intake surface; it is not wired to those Windows services, IPC, network, credentials, storage, or external systems.
+- Do not treat R3 publication or M4 Slice 1 local verification as signing eligibility. The binaries remain unsigned and Gate 25 remains incomplete.
 - Keep service-account, membership, directory, ACL, encryption, signing, cloud-resource, and operational mutations fail-closed until separately authorized.
 - Keep API, MCP, automated writes, commit, push, and external synchronization disabled unless separately authorized.
 - Keep the weekly audit report-only; passing the observation gate does not itself authorize automated writes.

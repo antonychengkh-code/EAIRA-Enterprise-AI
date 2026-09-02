@@ -1,6 +1,6 @@
 # EAIRA Minimum Functional Agent Slice V1
 
-Contract revision: 3
+Contract revision: 5
 
 ## Scope
 
@@ -29,7 +29,7 @@ Operations and Verification must not execute after a Guard denial.
 | Planning | Valid V1 task envelope | `Candidate` | Produces a deterministic plan candidate only |
 | Guard | Planning candidate bound to the same task | `Allow` or `Deny` | Denies prohibited `NOWRITE_A` terms |
 | Operations | Guard `Allow` bound to the same task | `Candidate` | Produces an in-memory action candidate with `MUTATION=NONE` |
-| Verification | Operations candidate bound to the same task | `Verified` | Verifies chain and digest structure only |
+| Verification | Operations candidate bound to the same task | `Verified` | Verifies the complete deterministic structural and semantic prefix |
 | Audit | Verification result or Guard denial | `RecordedCandidate` | Produces an audit-event candidate with `PERSISTED=NO` |
 
 ## Task envelope
@@ -41,7 +41,7 @@ The V1 task envelope contains:
 - `goal`: 1–512 characters with no control characters; and
 - `taskDigest`: SHA-256 over a domain-separated, length-prefixed canonical representation.
 
-Unknown schema versions, malformed trace IDs, empty or oversized goals and control characters fail closed.
+Unknown schema versions, malformed trace IDs, empty or oversized goals, control characters and malformed UTF-16 fail closed. Valid paired UTF-16 surrogates remain accepted and distinct from the replacement character in the canonical digest.
 
 ## Agent result and handoff
 
@@ -64,6 +64,8 @@ This SHA-256 model establishes deterministic integrity and semantic equivalence 
 
 The mock model returns only a role-bound SHA-256-derived token. It uses no clock, randomness, environment variable, filesystem, network, process, registry or external state. Identical canonical input must produce identical canonical output.
 
+All five roles receive the same enabled `IModelProvider` instance. Revision 4 separates the deterministic mock behind that provider-neutral interface. Policy rejects disabled or external providers before pipeline execution. This abstraction does not authorize or implement any external-model call; the separately specified local task intake exposes a `real` selection only as a fail-closed disabled state.
+
 ## Prohibited terms
 
 Guard denies goals containing these case-insensitive tokens:
@@ -85,7 +87,7 @@ This initial list is intentionally conservative and is not a general production 
 - Positive flow contains all five roles in exact order.
 - Denial flow omits Operations and Verification and ends with a non-persisted Audit candidate.
 - Two executions of the same task are byte-identical in canonical JSON form.
-- Unknown schemas, malformed trace IDs, control characters, role bypass and task-digest mismatch fail closed.
+- Unknown schemas, malformed trace IDs, control characters, unpaired UTF-16 surrogates, role bypass and task-digest mismatch fail closed.
 - Forged previous digests, modified payloads, modified result digests and forged Operations-to-Verification handoffs fail closed.
 - Post-Guard task mutation, a correctly linked but policy-invalid Guard Allow, and an Operations payload modified then rehashed fail closed through task recomputation and deterministic semantic replay.
 - Static source and compiled-metadata checks find no network, IPC, file-write, registry-write, runtime child-process, shell, dynamic-load or native-import implementation in the functional core, harness or service outputs.

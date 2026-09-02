@@ -33,8 +33,30 @@ namespace EAIRA.AgentServices.Functional
     {
         internal const string ZeroHash = "0000000000000000000000000000000000000000000000000000000000000000";
 
+        internal static void RequireWellFormedUtf16(string value, string fieldName)
+        {
+            if (value == null) { throw new ContractException(fieldName + " cannot be null."); }
+            for (int index = 0; index < value.Length; index++)
+            {
+                char character = value[index];
+                if (Char.IsHighSurrogate(character))
+                {
+                    if (index + 1 >= value.Length || !Char.IsLowSurrogate(value[index + 1]))
+                    {
+                        throw new ContractException(fieldName + " contains malformed UTF-16.");
+                    }
+                    index++;
+                }
+                else if (Char.IsLowSurrogate(character))
+                {
+                    throw new ContractException(fieldName + " contains malformed UTF-16.");
+                }
+            }
+        }
+
         internal static string Sha256Hex(string value)
         {
+            RequireWellFormedUtf16(value, "Digest input");
             using (SHA256 algorithm = SHA256.Create())
             {
                 byte[] digest = algorithm.ComputeHash(Encoding.UTF8.GetBytes(value));
@@ -49,13 +71,14 @@ namespace EAIRA.AgentServices.Functional
 
         internal static string Field(string value)
         {
-            if (value == null) { throw new ContractException("Canonical field cannot be null."); }
+            RequireWellFormedUtf16(value, "Canonical field");
             return value.Length.ToString(CultureInfo.InvariantCulture) + ":" + value;
         }
 
         internal static string Json(string value)
         {
             if (value == null) { return "null"; }
+            RequireWellFormedUtf16(value, "JSON value");
             StringBuilder builder = new StringBuilder(value.Length + 2);
             builder.Append('"');
             for (int index = 0; index < value.Length; index++)
@@ -128,6 +151,7 @@ namespace EAIRA.AgentServices.Functional
                 if (!valid) { throw new ContractException("Trace ID must be uppercase hexadecimal."); }
             }
             if (String.IsNullOrWhiteSpace(Goal) || Goal.Length > 512) { throw new ContractException("Goal must contain 1 to 512 characters."); }
+            ContractCodec.RequireWellFormedUtf16(Goal, "Goal");
             for (int index = 0; index < Goal.Length; index++)
             {
                 if (Char.IsControl(Goal[index])) { throw new ContractException("Goal contains a prohibited control character."); }
@@ -198,6 +222,7 @@ namespace EAIRA.AgentServices.Functional
             ContractCodec.RequireHash(TaskDigest, "Task digest");
             ContractCodec.RequireHash(PreviousResultDigest, "Previous result digest");
             if (String.IsNullOrEmpty(Payload) || Payload.Length > 1024) { throw new ContractException("Result payload must contain 1 to 1024 characters."); }
+            ContractCodec.RequireWellFormedUtf16(Payload, "Result payload");
             for (int index = 0; index < Payload.Length; index++)
             {
                 if (Char.IsControl(Payload[index])) { throw new ContractException("Result payload contains a prohibited control character."); }
@@ -242,21 +267,11 @@ namespace EAIRA.AgentServices.Functional
         }
     }
 
-    internal sealed class DeterministicMockModel
-    {
-        internal string Complete(AgentRole role, string prompt)
-        {
-            if (String.IsNullOrEmpty(prompt)) { throw new ContractException("Mock prompt cannot be empty."); }
-            string digest = ContractCodec.Sha256Hex("EAIRA_DETERMINISTIC_MOCK_V1\0" + ContractCodec.Field(role.ToString()) + ContractCodec.Field(prompt));
-            return "MOCK_" + role.ToString().ToUpperInvariant() + "_" + digest.Substring(0, 24);
-        }
-    }
-
     internal sealed class PlanningAgent
     {
-        private readonly DeterministicMockModel model;
+        private readonly IModelProvider model;
 
-        internal PlanningAgent(DeterministicMockModel model) { this.model = model; }
+        internal PlanningAgent(IModelProvider model) { this.model = ModelProviderPolicy.RequireEnabled(model); }
 
         internal AgentResult Execute(TaskEnvelope task)
         {
@@ -266,7 +281,7 @@ namespace EAIRA.AgentServices.Functional
             return new AgentResult(AgentRole.Planning, AgentDecision.Candidate, task.TaskDigest, ContractCodec.ZeroHash, 0, payload);
         }
 
-        internal static string ExpectedPayload(TaskEnvelope task, DeterministicMockModel deterministicModel)
+        internal static string ExpectedPayload(TaskEnvelope task, IModelProvider deterministicModel)
         {
             if (task == null || deterministicModel == null) { throw new ContractException("Planning semantic inputs are required."); }
             return "PLAN_CANDIDATE|" + deterministicModel.Complete(AgentRole.Planning, task.Goal) + "|STEPS=3";
@@ -275,14 +290,18 @@ namespace EAIRA.AgentServices.Functional
 
     internal sealed class GuardAgent
     {
+        private readonly IModelProvider model;
+
         private static readonly string[] ProhibitedTerms = new string[]
         {
             "NETWORK", "WRITE", "IPC", "CHILD_PROCESS", "SHELL", "CREDENTIAL", "SECRET"
         };
 
+        internal GuardAgent(IModelProvider model) { this.model = ModelProviderPolicy.RequireEnabled(model); }
+
         internal AgentResult Execute(TaskEnvelope task, AgentResult planning)
         {
-            MinimumFunctionalPipeline.ValidateSemanticPrefix(task, new AgentResult[] { planning });
+            MinimumFunctionalPipeline.ValidateSemanticPrefix(task, new AgentResult[] { planning }, model);
             AgentDecision decision = ExpectedDecision(task);
             string payload = ExpectedPayload(task, decision);
             return new AgentResult(AgentRole.Guard, decision, task.TaskDigest, planning.ResultDigest, 1, payload);
@@ -319,19 +338,19 @@ namespace EAIRA.AgentServices.Functional
 
     internal sealed class OperationsAgent
     {
-        private readonly DeterministicMockModel model;
+        private readonly IModelProvider model;
 
-        internal OperationsAgent(DeterministicMockModel model) { this.model = model; }
+        internal OperationsAgent(IModelProvider model) { this.model = ModelProviderPolicy.RequireEnabled(model); }
 
         internal AgentResult Execute(TaskEnvelope task, AgentResult planning, AgentResult guard)
         {
-            MinimumFunctionalPipeline.ValidateSemanticPrefix(task, new AgentResult[] { planning, guard });
+            MinimumFunctionalPipeline.ValidateSemanticPrefix(task, new AgentResult[] { planning, guard }, model);
             if (guard.Decision != AgentDecision.Allow) { throw new ContractException("Operations requires a Guard allow result."); }
             string payload = ExpectedPayload(guard, model);
             return new AgentResult(AgentRole.Operations, AgentDecision.Candidate, task.TaskDigest, guard.ResultDigest, 2, payload);
         }
 
-        internal static string ExpectedPayload(AgentResult guard, DeterministicMockModel deterministicModel)
+        internal static string ExpectedPayload(AgentResult guard, IModelProvider deterministicModel)
         {
             if (guard == null || deterministicModel == null) { throw new ContractException("Operations semantic inputs are required."); }
             return "ACTION_CANDIDATE|" + deterministicModel.Complete(AgentRole.Operations, guard.ResultDigest) + "|MUTATION=NONE";
@@ -340,9 +359,13 @@ namespace EAIRA.AgentServices.Functional
 
     internal sealed class VerificationAgent
     {
+        private readonly IModelProvider model;
+
+        internal VerificationAgent(IModelProvider model) { this.model = ModelProviderPolicy.RequireEnabled(model); }
+
         internal AgentResult Execute(TaskEnvelope task, AgentResult planning, AgentResult guard, AgentResult operations)
         {
-            MinimumFunctionalPipeline.ValidateSemanticPrefix(task, new AgentResult[] { planning, guard, operations });
+            MinimumFunctionalPipeline.ValidateSemanticPrefix(task, new AgentResult[] { planning, guard, operations }, model);
             string payload = ExpectedPayload(operations);
             return new AgentResult(AgentRole.Verification, AgentDecision.Verified, task.TaskDigest, operations.ResultDigest, 3, payload);
         }
@@ -356,9 +379,13 @@ namespace EAIRA.AgentServices.Functional
 
     internal sealed class AuditAgent
     {
+        private readonly IModelProvider model;
+
+        internal AuditAgent(IModelProvider model) { this.model = ModelProviderPolicy.RequireEnabled(model); }
+
         internal AgentResult Execute(TaskEnvelope task, IList<AgentResult> priorResults, string outcome)
         {
-            MinimumFunctionalPipeline.ValidateSemanticPrefix(task, priorResults);
+            MinimumFunctionalPipeline.ValidateSemanticPrefix(task, priorResults, model);
             if (outcome != "PASS" && outcome != "DENIED") { throw new ContractException("Audit outcome is invalid."); }
             AgentResult prior = priorResults[priorResults.Count - 1];
             if (outcome == "PASS" && (priorResults.Count != 4 || prior.Role != AgentRole.Verification || prior.Decision != AgentDecision.Verified))
@@ -416,7 +443,14 @@ namespace EAIRA.AgentServices.Functional
 
     internal sealed class MinimumFunctionalPipeline
     {
-        private readonly DeterministicMockModel model = new DeterministicMockModel();
+        private readonly IModelProvider model;
+
+        internal MinimumFunctionalPipeline() : this(new DeterministicMockModel()) { }
+
+        internal MinimumFunctionalPipeline(IModelProvider modelProvider)
+        {
+            model = ModelProviderPolicy.RequireEnabled(modelProvider);
+        }
 
         internal PipelineResult Execute(TaskEnvelope task)
         {
@@ -425,22 +459,22 @@ namespace EAIRA.AgentServices.Functional
             List<AgentResult> results = new List<AgentResult>();
             AgentResult planning = new PlanningAgent(model).Execute(task);
             results.Add(planning);
-            AgentResult guard = new GuardAgent().Execute(task, planning);
+            AgentResult guard = new GuardAgent(model).Execute(task, planning);
             results.Add(guard);
 
             if (guard.Decision == AgentDecision.Deny)
             {
-                results.Add(new AuditAgent().Execute(task, results, "DENIED"));
-                ValidateChain(task, results);
+                results.Add(new AuditAgent(model).Execute(task, results, "DENIED"));
+                ValidateChain(task, results, model);
                 return new PipelineResult(task.TraceId, "DENIED", results);
             }
 
             AgentResult operations = new OperationsAgent(model).Execute(task, planning, guard);
             results.Add(operations);
-            AgentResult verification = new VerificationAgent().Execute(task, planning, guard, operations);
+            AgentResult verification = new VerificationAgent(model).Execute(task, planning, guard, operations);
             results.Add(verification);
-            results.Add(new AuditAgent().Execute(task, results, "PASS"));
-            ValidateChain(task, results);
+            results.Add(new AuditAgent(model).Execute(task, results, "PASS"));
+            ValidateChain(task, results, model);
             return new PipelineResult(task.TraceId, "PASS", results);
         }
 
@@ -493,10 +527,10 @@ namespace EAIRA.AgentServices.Functional
             }
         }
 
-        internal static void ValidateSemanticPrefix(TaskEnvelope task, IList<AgentResult> results)
+        internal static void ValidateSemanticPrefix(TaskEnvelope task, IList<AgentResult> results, IModelProvider semanticModel)
         {
             ValidatePrefix(task, results);
-            DeterministicMockModel semanticModel = new DeterministicMockModel();
+            ModelProviderPolicy.RequireEnabled(semanticModel);
             RequirePayload(results[0], PlanningAgent.ExpectedPayload(task, semanticModel));
 
             if (results.Count >= 2)
@@ -531,7 +565,12 @@ namespace EAIRA.AgentServices.Functional
 
         internal static void ValidateChain(TaskEnvelope task, IList<AgentResult> results)
         {
-            ValidateSemanticPrefix(task, results);
+            ValidateChain(task, results, new DeterministicMockModel());
+        }
+
+        internal static void ValidateChain(TaskEnvelope task, IList<AgentResult> results, IModelProvider semanticModel)
+        {
+            ValidateSemanticPrefix(task, results, semanticModel);
             bool deniedComplete = results.Count == 3 && results[1].Decision == AgentDecision.Deny;
             bool allowedComplete = results.Count == 5 && results[1].Decision == AgentDecision.Allow;
             if (!deniedComplete && !allowedComplete) { throw new ContractException("Pipeline chain is incomplete."); }

@@ -79,10 +79,19 @@ namespace EAIRA.AgentServices.Tests
             RequireContractFailure(
                 delegate { TaskEnvelope.Create(1, "00112233445566778899AABBCCDDEEFF", "bad\ncontrol"); },
                 "control character rejected");
+            RequireContractFailure(
+                delegate { TaskEnvelope.Create(1, "00112233445566778899AABBCCDDEEFF", new string((char)0xD800, 1)); },
+                "unpaired high surrogate rejected");
+            RequireContractFailure(
+                delegate { TaskEnvelope.Create(1, "00112233445566778899AABBCCDDEEFF", new string((char)0xDC00, 1)); },
+                "unpaired low surrogate rejected");
+            TaskEnvelope scalarTask = TaskEnvelope.Create(1, "00112233445566778899AABBCCDDEEFF", Char.ConvertFromUtf32(0x1F600));
+            TaskEnvelope replacementTask = TaskEnvelope.Create(1, "00112233445566778899AABBCCDDEEFF", "\uFFFD");
+            Require(scalarTask.TaskDigest != replacementTask.TaskDigest, "valid supplementary scalar remains distinct from replacement character");
 
             DeterministicMockModel model = new DeterministicMockModel();
             AgentResult planning = new PlanningAgent(model).Execute(task);
-            AgentResult guard = new GuardAgent().Execute(task, planning);
+            AgentResult guard = new GuardAgent(model).Execute(task, planning);
             RequireContractFailure(
                 delegate { new OperationsAgent(model).Execute(task, planning, planning); },
                 "role boundary rejects planning to operations bypass");
@@ -99,13 +108,13 @@ namespace EAIRA.AgentServices.Tests
             AgentResult tamperedPayload = new PlanningAgent(model).Execute(task);
             Tamper(tamperedPayload, "Payload", "TAMPERED_PAYLOAD");
             RequireContractFailure(
-                delegate { new GuardAgent().Execute(task, tamperedPayload); },
+                delegate { new GuardAgent(model).Execute(task, tamperedPayload); },
                 "tampered payload digest rejected");
 
             AgentResult tamperedDigest = new PlanningAgent(model).Execute(task);
             Tamper(tamperedDigest, "ResultDigest", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
             RequireContractFailure(
-                delegate { new GuardAgent().Execute(task, tamperedDigest); },
+                delegate { new GuardAgent(model).Execute(task, tamperedDigest); },
                 "tampered result digest rejected");
 
             AgentResult forgedOperations = new AgentResult(
@@ -116,12 +125,12 @@ namespace EAIRA.AgentServices.Tests
                 2,
                 "FORGED_OPERATIONS|MUTATION=NONE");
             RequireContractFailure(
-                delegate { new VerificationAgent().Execute(task, planning, guard, forgedOperations); },
+                delegate { new VerificationAgent(model).Execute(task, planning, guard, forgedOperations); },
                 "forged operations handoff rejected");
 
             TaskEnvelope postGuardTamperTask = TaskEnvelope.Create(1, "22223333444455556666777788889999", "prepare bounded release plan");
             AgentResult postGuardPlanning = new PlanningAgent(model).Execute(postGuardTamperTask);
-            AgentResult postGuardAllow = new GuardAgent().Execute(postGuardTamperTask, postGuardPlanning);
+            AgentResult postGuardAllow = new GuardAgent(model).Execute(postGuardTamperTask, postGuardPlanning);
             TamperTask(postGuardTamperTask, "Goal", "write file");
             RequireContractFailure(
                 delegate { new OperationsAgent(model).Execute(postGuardTamperTask, postGuardPlanning, postGuardAllow); },
@@ -142,12 +151,12 @@ namespace EAIRA.AgentServices.Tests
 
             TaskEnvelope semanticTask = TaskEnvelope.Create(1, "444455556666777788889999AAAABBBB", "prepare bounded release plan");
             AgentResult semanticPlanning = new PlanningAgent(model).Execute(semanticTask);
-            AgentResult semanticGuard = new GuardAgent().Execute(semanticTask, semanticPlanning);
+            AgentResult semanticGuard = new GuardAgent(model).Execute(semanticTask, semanticPlanning);
             AgentResult tamperedOperations = new OperationsAgent(model).Execute(semanticTask, semanticPlanning, semanticGuard);
             Tamper(tamperedOperations, "Payload", "ACTION_CANDIDATE|REHASHED_ATTACK|MUTATION=WRITE");
             AdversariallyRehash(tamperedOperations);
             RequireContractFailure(
-                delegate { new VerificationAgent().Execute(semanticTask, semanticPlanning, semanticGuard, tamperedOperations); },
+                delegate { new VerificationAgent(model).Execute(semanticTask, semanticPlanning, semanticGuard, tamperedOperations); },
                 "operations payload tamper plus rehash rejected");
 
             Require(FunctionalSliceSelfTest.ForRole("Planning"), "planning role self-test");

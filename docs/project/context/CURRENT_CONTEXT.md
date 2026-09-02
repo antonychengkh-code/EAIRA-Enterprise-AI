@@ -14,9 +14,11 @@ Repository evidence supports the following current state:
 - M3.3 Cold Start Validation: completed.
 - M3.4 Evidence-Driven AI Organization Slice: completed.
 - M3.4 Finance Revenue Input Task Record: `lifecycle_status = Executed`, `completion_decision = APPROVED WITH FINDINGS`.
-- No current or new milestone is established.
+- M4 Functional Agent MVP is active under the Project Owner decision `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_AUTHORIZATION_DECISION.md` and charter `docs/project/milestones/EAIRA_M4_FUNCTIONAL_AGENT_MVP_PROJECT_CHARTER.md`.
 - The controlling authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`.
-- Only bounded Project Layer planning remains active under task `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001`.
+- The active product task is `M4-FUNCTIONAL-AGENT-MVP-SLICE-1`. The earlier `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` remains a separate blocked governance workstream.
+- Functional-slice R3 is published and independently post-push verified at commit `a10c2ae098bb26455cd9004c0c5a503545a2ef7f`.
+- M4 Slice 1 R3R3 is implemented only as an uncommitted local working-tree candidate: strict local CLI task intake, provider-neutral interface, deterministic mock enabled, real provider fail-closed disabled, malformed UTF-16 rejection, profile-derived manifest revision `5`, functional-source System.IO prohibition, an exact three-call service-host source allowlist, and a controlling structured PE metadata policy. Functional harnesses and intake executables permit zero compiled System.IO member references; each service host permits only `System.IO.File::Exists` and `System.IO.Path::IsPathRooted`. Two clean builds are byte-identical; functional tests are exactly `34` per build and intake tests exactly `14` per build. An isolated `File/*split*/.Delete` regression was rejected from compiled metadata. R3R3 manifest SHA-256 is `064698D865D2200A60976F419339FCFDFA18EE0537ABF3FC3A012841B1DFB0BD`; it records both I/O checks passed, external signing eligibility false and Gate 25 incomplete. Independent R3R3 review returned `PASS_WITH_NON_BLOCKING_FINDING`, `P0=0`, `P1=0`, `P2=1`, no blocker, and staging/repository-recording eligibility. The P2 notes that direct PE MemberReference auditing does not cover reflection; exact reviewed source contains no reflection, dynamic activation, or P/Invoke. Exact staging remains pending.
 - Main Annex Version `0.33.0`, dated `2026-08-26`, is the current repository publication at commit `24b28a3d94edb79be36eb745b34372ec65af87b1`, parent `351fdeb6591ffe767f0fd8f7e982a7a6cf8bef3d`, blob `9090bedba5d0201ef77e1ab9246fb364631d9452`.
 - Independent post-push publication verification on `2026-08-26` established `refs/heads/master` at `24b28a3d94edb79be36eb745b34372ec65af87b1` and determination `POST_PUSH_PUBLICATION_VERIFICATION_PASS`.
 - Main Annex Version `0.32.0` and Versions `0.26.0` through `0.31.0` remain version-specific historical publication evidence and do not supersede the current Version `0.33.0` authority baseline.
@@ -53,7 +55,7 @@ Repository evidence supports the following current state:
 
 The latest completed milestone evidence remains M3, including the completed M3.4 Evidence-Driven AI Organization Slice.
 
-No M4, Platform Foundation, formal EAIRA Execution Layer, implementation capability, runtime capability, or production multi-agent runtime is established.
+M4 Functional Agent MVP is established, but only its first bounded offline slice is locally implemented. Platform Foundation, a formal EAIRA Execution Layer, Windows-service task routing, real-model integration, persistence, deployment capability, and production multi-agent runtime are not established.
 
 ## Current Planning Models
 
@@ -137,7 +139,7 @@ The Project Owner subsequently authorized sequential execution of the ten remain
 
 That local evidence gate completed read-only on `2026-08-26` with `FAIL_CLOSED_BLOCKED`. At that historical point, `C:\EAIRA\Evidence`, its WSL access form, and the five proposed groups did not exist. Later authorized group creation and administrator reconciliation established that the five approved groups now exist and are empty. Exact service identities and role assignments, ACL translation, effective-access proof, encryption implementation, backup-copy absence, and Field 9 implementation rules remain incomplete.
 
-The 2026-09-01 controlled-state reconciliation confirms that Gate 19 through Gate 23 bounded preparation and independent review are complete. Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are available, but the legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred. This evidence establishes no new milestone, service readiness, production readiness, Field transition, category satisfaction, blocker closure, or all-fields gate passage.
+The 2026-09-01 controlled-state reconciliation confirms that Gate 19 through Gate 23 bounded preparation and independent review are complete. Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are available, but the legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred. That evidence did not itself establish a milestone; M4 was established separately on 2026-09-02. Neither the reconciliation nor M4 Slice 1 establishes service readiness, production readiness, Field transition, category satisfaction, blocker closure, or all-fields gate passage.
 
 ## Authoritative Sources
 
@@ -154,9 +156,11 @@ The 2026-09-01 controlled-state reconciliation confirms that Gate 19 through Gat
 | B2-MAN-006 local-identification package adoption | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_LOCAL_IDENTIFICATION_PACKAGE_ADOPTION_DECISION.md` |
 | B2-MAN-006 Stage 2 package adoption | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_STAGE_2_LOCAL_IDENTIFICATION_PACKAGE_ADOPTION_DECISION.md` |
 | Current status | `docs/project/status/CURRENT_STATUS.md` |
-| Active task | `docs/project/status/ACTIVE_TASK.yaml` and `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` |
+| M4 decision and charter | `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_AUTHORIZATION_DECISION.md` and `docs/project/milestones/EAIRA_M4_FUNCTIONAL_AGENT_MVP_PROJECT_CHARTER.md` |
+| Active task | `docs/project/status/ACTIVE_TASK.yaml` and `docs/project/planning/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_1_TASK.md` |
+| Retained blocked Annex task | `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` |
 | Historical validation constraints | `docs/tasks/M3_4_FINANCE_REVENUE_INPUT_TASK_RECORD.md` |
 
 ## Boundary
 
-`CURRENT_CONTEXT.md` is a Project Layer working-context summary only. It does not define governance, modify the context contract, approve a milestone, authorize implementation or execution, establish automation, create a SYSTEM layer, approve M4, establish Platform Foundation, or establish a formal EAIRA Execution Layer.
+`CURRENT_CONTEXT.md` is a Project Layer working-context summary only. It does not itself define governance, modify the context contract, approve a milestone, authorize implementation or execution, establish automation, create a SYSTEM layer, establish Platform Foundation, or establish a formal EAIRA Execution Layer. M4 authority comes only from its separately recorded Project Owner decision.

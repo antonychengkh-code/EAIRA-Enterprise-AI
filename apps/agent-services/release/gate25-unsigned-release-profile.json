@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "releaseVersion": "0.1.0-rc.3",
-  "buildContract": "EAIRA_GATE25_UNSIGNED_RC3",
+  "releaseVersion": "0.2.0-m4.1-r3",
+  "buildContract": "EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_1",
   "targetFramework": ".NETFramework,Version=v4.8",
   "platform": "x64",
   "network": "NONE",
@@ -17,7 +17,7 @@
   },
   "functionalSlice": {
     "contract": "EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1",
-    "revision": 3,
+    "revision": 5,
     "execution": "OFFLINE_IN_MEMORY_TEST_ONLY",
     "flow": [
       "Planning",
@@ -31,6 +31,15 @@
       "Guard",
       "Audit"
     ]
+  },
+  "taskIntake": {
+    "contract": "EAIRA_LOCAL_TASK_INTAKE_V1",
+    "transport": "LOCAL_COMMAND_LINE_ONLY",
+    "output": "EAIRA.AgentTask.Cli.exe",
+    "mockProvider": "ENABLED",
+    "realProvider": "FAIL_CLOSED_DISABLED",
+    "network": "NONE",
+    "writes": "NONE"
   },
   "referenceAssemblies": [
     {

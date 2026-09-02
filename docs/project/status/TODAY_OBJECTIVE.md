@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-09-01
+2026-09-02
 
 ## Version
 
-0.35.0
+0.36.6
 
 ## Milestone
 
@@ -16,11 +16,15 @@ M3.3 Cold Start Validation: Completed.
 
 M3.4 Evidence-Driven AI Organization Slice: Completed.
 
-Current/New Milestone: None established.
+M4 Functional Agent MVP: Active.
 
 ## Current Scope
 
-Reconcile the controlled project state with verified local evidence as of `2026-09-01`, publish the repository-scoped project-memory layer as navigational evidence, and preserve every milestone, Field, category, blocker, gate, and authority boundary that the evidence does not close.
+Establish M4 Functional Agent MVP and complete bounded Slice 1 locally: reconcile the published R3 baseline, provide strict local task intake, separate model access behind a provider-neutral interface, keep the deterministic mock as the only enabled provider, prove the real-provider selection fails closed, and record reproducible offline evidence without commit or push.
+
+## Current Result
+
+M4 Slice 1 R3R3 is implemented, locally verified, and independently reviewed. Gate 8 rejected R3R2 because comments or Unicode escapes could bypass source-text I/O scanning. R3R3 retains malformed UTF-16 fail-closed handling and the exact source allowlist, and adds a controlling compiled-PE policy: functional harnesses and intake executables permit zero System.IO member references; service hosts permit only `System.IO.File::Exists` and `System.IO.Path::IsPathRooted`. An isolated `File/*split*/.Delete` case passed the old text shape but failed closed under the new metadata policy. Two isolated clean builds are byte-identical; the functional harness passes exactly `34` tests and the intake harness exactly `14` tests in each build. Standard CLI checks return `PASS/0`, `DENIED/77`, `PROVIDER_BLOCKED/78`, and `INVALID_REQUEST/64`; malformed Unicode also returns `INVALID_REQUEST/64`. R3R3 status is `M4_SLICE_1_UNSIGNED_TECHNICAL_CHECKS_PASS` with both I/O checks true and external signing eligibility false; manifest SHA-256 is `064698D865D2200A60976F419339FCFDFA18EE0537ABF3FC3A012841B1DFB0BD`; sanitized report SHA-256 is `2F7774587DAB53C6FF4BAF7B26D733DB1762DBD87C326994E085C5BBDC7DD717`. Independent review returned `PASS_WITH_NON_BLOCKING_FINDING`, `P0=0`, `P1=0`, `P2=1`, no blocker, and staging eligibility. The candidate remains unsigned, uncommitted, unpushed, and ready for exact 21-path staging.
 
 ## Historical Objective Retained for Traceability
 
@@ -106,7 +110,7 @@ The separately authorized response-only `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION
 
 The exact seven-path working-tree mutation candidate is prepared and validated and awaits a separate exact Project Owner repository-recording decision. Repository recording, staging, commit, and push remain unauthorized. Only response-only preparation of `B2_MAN_007_FIELD_8_EXACT_IMPLEMENTATION_VALUE_SELECTION_PACKAGE` and `B2_MAN_007_FIELD_9_EXACT_RULE_SELECTION_PACKAGE` is authorized; neither is completed by this candidate. These authorizations establish no new task, implementation, repository recording, local inspection, evidence, Field movement, category satisfaction, or execution authority. No local verification, blocker-specific operational package, Field review, gate evaluation, Batch 9, successor task, milestone, M4, Platform Foundation, formal EAIRA Execution Layer, implementation, runtime, deployment, database, production, or governance activity is authorized.
 
-## Out of Scope
+## 2026-09-01 Reconciliation Out of Scope
 
 No Main Annex, strategy decision record, package source, historical record, Bootstrap artifact, daily report, implementation, configuration, runtime, deployment, database, production, governance, or milestone artifact is modified. No Project Owner disposition is invented. No local inspection, command execution, assessment evidence capture or persistence, hashing, encryption, retention, disposal, operational Field review, acceptance-category satisfaction, formal gate evaluation, or blocker closure is authorized.
 
@@ -121,7 +125,7 @@ Exactly six controlled current-state/task artifacts reconciled with the bounded 
 - Gate 19 through Gate 23 bounded preparation and independent review are complete.
 - Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are ready; legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred.
 - The project-memory validator passes with 16 required files and 9 frontmatters; the memory layer remains navigational and never overrides controlled status or decision artifacts.
-- No current or new milestone is established. The all-fields-resolved gate remains `BLOCKED`.
+- At the 2026-09-01 reconciliation cutoff no new milestone was established. That milestone-only statement is superseded by the 2026-09-02 M4 authorization decision; the all-fields-resolved Annex gate remains `BLOCKED`.
 
 ## Success Criteria
 
@@ -135,4 +139,4 @@ Exactly six controlled current-state/task artifacts reconciled with the bounded 
 
 ## Next Action
 
-Complete the deferred Gate 24 legal signing identity, provider, certificate, release-volume, and recovery-governance decisions, then re-evaluate eligibility. Do not begin service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, Field review, category evaluation, gate evaluation, signing, or operational activity without the exact later authority and direct evidence required for those actions.
+Stage exactly the 21 independently reviewed M4 Slice 1 paths while preserving the three unrelated Claude untracked files, then perform a separate independent staged-index review. Continue under the existing Project Owner all-gates authorization only while each gate passes fail closed. Do not begin real-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, or operational activation.
