@@ -6,7 +6,7 @@
 
 ## Version
 
-0.36.6
+0.36.7
 
 ## Milestone
 
@@ -20,11 +20,11 @@ M4 Functional Agent MVP: Active.
 
 ## Current Scope
 
-Establish M4 Functional Agent MVP and complete bounded Slice 1 locally: reconcile the published R3 baseline, provide strict local task intake, separate model access behind a provider-neutral interface, keep the deterministic mock as the only enabled provider, prove the real-provider selection fails closed, and record reproducible offline evidence without commit or push.
+Synchronize the controlled project state after the independently verified publication of M4 Slice 1 R3R3. Record the exact commit, parent, tree, 21-path publication boundary, evidence hashes, verification outcome, remaining non-blocking findings, and continuing signing/production restrictions. This synchronization authorizes documentation mutation and local read-only validation only; no staging, commit, push, runtime, Windows, signing, credential, or external-provider change is included.
 
 ## Current Result
 
-M4 Slice 1 R3R3 is implemented, locally verified, and independently reviewed. Gate 8 rejected R3R2 because comments or Unicode escapes could bypass source-text I/O scanning. R3R3 retains malformed UTF-16 fail-closed handling and the exact source allowlist, and adds a controlling compiled-PE policy: functional harnesses and intake executables permit zero System.IO member references; service hosts permit only `System.IO.File::Exists` and `System.IO.Path::IsPathRooted`. An isolated `File/*split*/.Delete` case passed the old text shape but failed closed under the new metadata policy. Two isolated clean builds are byte-identical; the functional harness passes exactly `34` tests and the intake harness exactly `14` tests in each build. Standard CLI checks return `PASS/0`, `DENIED/77`, `PROVIDER_BLOCKED/78`, and `INVALID_REQUEST/64`; malformed Unicode also returns `INVALID_REQUEST/64`. R3R3 status is `M4_SLICE_1_UNSIGNED_TECHNICAL_CHECKS_PASS` with both I/O checks true and external signing eligibility false; manifest SHA-256 is `064698D865D2200A60976F419339FCFDFA18EE0537ABF3FC3A012841B1DFB0BD`; sanitized report SHA-256 is `2F7774587DAB53C6FF4BAF7B26D733DB1762DBD87C326994E085C5BBDC7DD717`. Independent review returned `PASS_WITH_NON_BLOCKING_FINDING`, `P0=0`, `P1=0`, `P2=1`, no blocker, and staging eligibility. The candidate remains unsigned, uncommitted, unpushed, and ready for exact 21-path staging.
+M4 Slice 1 R3R3 is published at commit `96573f8b570d39df1e7d7498f361a94783086cb0`, parent `a10c2ae098bb26455cd9004c0c5a503545a2ef7f`, tree `7ec457a39bac24cc8939ad23c99f39168d225a85`. Independent post-push verification established an exact fast-forward, a clean remote checkout, exactly 21 authorized text paths, matching manifest-bound blobs, valid project memory, and exclusion of all three unrelated Claude files. The verdict is `PASS_WITH_NON_BLOCKING_FINDINGS`, `P0=0`, `P1=0`, `P2=3`, `PUBLICATION_VERIFIED=YES`, and `GATE_SEQUENCE_COMPLETE=YES`. The P2 findings cover reflection/dynamic-call test coverage, local Codex checkpoint-ref path length, and the pre-publication status wording corrected by this synchronization. R3R3 manifest SHA-256 is `064698D865D2200A60976F419339FCFDFA18EE0537ABF3FC3A012841B1DFB0BD`; sanitized report SHA-256 is `2F7774587DAB53C6FF4BAF7B26D733DB1762DBD87C326994E085C5BBDC7DD717`; unsigned CLI SHA-256 is `4ED35E7A017ECA3A441AD27C460E1EC3531C5972DA7BB326D65F888563AF5536`. External signing eligibility remains false and Gate 25 remains incomplete. This post-publication state synchronization remains an uncommitted local documentation candidate.
 
 ## Historical Objective Retained for Traceability
 
@@ -116,7 +116,7 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 
 ## Expected Deliverables
 
-Exactly six controlled current-state/task artifacts reconciled with the bounded local-evidence report, two project-memory handoff artifacts updated with verified facts, and fourteen bound supporting files published without semantic alteration.
+Exactly six existing controlled state, context, version, and handoff artifacts synchronized to the independently verified M4 Slice 1 publication without modifying product code, runtime configuration, Windows, signing, credentials, providers, `.obsidian`, staging, commits, or remotes.
 
 ## 2026-09-01 Reconciliation Results
 
@@ -129,6 +129,12 @@ Exactly six controlled current-state/task artifacts reconciled with the bounded 
 
 ## Success Criteria
 
+- M4 Slice 1 publication identity equals commit `96573f8b570d39df1e7d7498f361a94783086cb0`, parent `a10c2ae098bb26455cd9004c0c5a503545a2ef7f`, and tree `7ec457a39bac24cc8939ad23c99f39168d225a85`.
+- The post-push result is recorded as `PUBLICATION_VERIFIED=YES` and `GATE_SEQUENCE_COMPLETE=YES` without claiming signing, production, service, Field, category, or blocker completion.
+- The synchronization changes exactly six authorized documentation paths, preserves the three excluded Claude files, passes project-memory and diff validation, and remains uncommitted and unpushed.
+
+### 2026-09-01 Reconciliation Criteria Retained for Traceability
+
 - Main Annex Version `0.33.0` publication identity is recorded as commit `24b28a3d94edb79be36eb745b34372ec65af87b1`, blob `9090bedba5d0201ef77e1ab9246fb364631d9452`, with `POST_PUSH_PUBLICATION_VERIFICATION_PASS`.
 - Exactly the eight semantic reconciliation targets and fourteen bound supporting files form the controlled publication set.
 - Direct evidence and explicit gaps are recorded without inferring implementation, satisfaction, or production readiness.
@@ -139,4 +145,4 @@ Exactly six controlled current-state/task artifacts reconciled with the bounded 
 
 ## Next Action
 
-Stage exactly the 21 independently reviewed M4 Slice 1 paths while preserving the three unrelated Claude untracked files, then perform a separate independent staged-index review. Continue under the existing Project Owner all-gates authorization only while each gate passes fail closed. Do not begin real-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, or operational activation.
+Submit this exact six-file post-publication state-synchronization candidate for separate independent review. Staging, commit, and push require later separate Project Owner gates. After synchronization publication, request a bounded M4 Slice 2 scope decision. Do not begin real-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, or operational activation.
