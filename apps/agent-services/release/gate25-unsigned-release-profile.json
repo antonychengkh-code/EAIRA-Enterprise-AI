@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "releaseVersion": "0.1.0-rc.3",
+  "buildContract": "EAIRA_GATE25_UNSIGNED_RC3",
+  "targetFramework": ".NETFramework,Version=v4.8",
+  "platform": "x64",
+  "network": "NONE",
+  "ipc": "PROHIBITED",
+  "childProcess": "PROHIBITED",
+  "policyScope": "RUNTIME_OUTPUTS",
+  "buildPipelineChildProcess": "BOUNDED_COMPILER_AND_OFFLINE_TEST_EXECUTION",
+  "compilerPolicy": {
+    "sha256": "2DC1461B1A6E95BE9C1BECEB4B263141B7BB90E704029344A0C2D1A5693D9007",
+    "authenticodeStatus": "Valid",
+    "signerSubject": "CN=.NET, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+    "signerThumbprint": "A3FF353E77E624540BEEB83335690535BE8DF56B"
+  },
+  "functionalSlice": {
+    "contract": "EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1",
+    "revision": 3,
+    "execution": "OFFLINE_IN_MEMORY_TEST_ONLY",
+    "flow": [
+      "Planning",
+      "Guard",
+      "Operations",
+      "Verification",
+      "Audit"
+    ],
+    "denialFlow": [
+      "Planning",
+      "Guard",
+      "Audit"
+    ]
+  },
+  "referenceAssemblies": [
+    {
+      "file": "mscorlib.dll",
+      "sha256": "6B35530467B914B0B195146CA1D1485DDD219AFAAD6461103F16F54E952F75A9"
+    },
+    {
+      "file": "System.dll",
+      "sha256": "2FE343569F794F2CA92EE14A41875571A9F21BF92637B8F8EE86306534209CCA"
+    },
+    {
+      "file": "System.ServiceProcess.dll",
+      "sha256": "21B013050B46016F8E6D9E92A2986E32E3CFB19487DCE05D672D4A3AB7EDF00C"
+    }
+  ],
+  "roles": [
+    {
+      "role": "Planning",
+      "symbol": "PLANNING",
+      "serviceName": "svcEAIRAPlan",
+      "output": "EAIRA.Planning.Service.exe"
+    },
+    {
+      "role": "Operations",
+      "symbol": "OPERATIONS",
+      "serviceName": "svcEAIROps",
+      "output": "EAIRA.Operations.Service.exe"
+    },
+    {
+      "role": "Verification",
+      "symbol": "VERIFICATION",
+      "serviceName": "svcEAIRVerify",
+      "output": "EAIRA.Verification.Service.exe"
+    },
+    {
+      "role": "Guard",
+      "symbol": "GUARD",
+      "serviceName": "svcEAIRGuard",
+      "output": "EAIRA.Guard.Service.exe"
+    },
+    {
+      "role": "Audit",
+      "symbol": "AUDIT",
+      "serviceName": "svcEAIRAudit",
+      "output": "EAIRA.Audit.Service.exe"
+    }
+  ]
+}
