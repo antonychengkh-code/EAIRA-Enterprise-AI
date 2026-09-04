@@ -34,13 +34,20 @@ VAT_SUFFIX = re.compile(r"\s*-\s*(output|input)\s+VAT$", re.IGNORECASE)
 MONTH_COL = 1
 WEEK_COLS = (2, 3, 4, 5)
 STREAM_COLS = (7, 8)
-DEFAULT_CUTOFF = "04:00"
 
 # The sales export's gross-amount column, as titled by each locale the export offers.
 # Matched exactly: neighbouring columns contain this text as a substring.
 D05_TOTAL_HEADERS = ("总金额", "總金額", "Tổng tiền", "Total amount")
 # The export closes with a row of column totals, labelled in the first column.
 D05_TOTAL_MARKERS = ("tổng", "总计", "总额", "總計", "total")
+# The export's heading states the window it covers, and so states its own business day
+# cutoff. Read it from there: a cutoff supplied by hand would not be evidence.
+D05_WINDOW = re.compile(
+    r"(\d{2})/(\d{2})/(\d{4})\s+(\d{2}:\d{2}).*?(\d{2})/(\d{2})/(\d{4})\s+(\d{2}:\d{2})"
+)
+
+AUTHORITATIVE = "AUTHORITATIVE"
+VERIFICATION = "VERIFICATION"
 
 
 class Rejected(Exception):
@@ -240,6 +247,19 @@ def build_expenses(
     return records
 
 
+def declared_window(rows: list[list[Any]]) -> tuple[str, str] | None:
+    """Return the window a sales export states in its heading, as (start date, cutoff)."""
+    for row in rows[:3]:
+        for cell in row:
+            if not isinstance(cell, str):
+                continue
+            found = D05_WINDOW.search(cell)
+            if found:
+                day, month, year, cutoff = found.group(1, 2, 3, 4)
+                return f"{year}-{month}-{day}", cutoff
+    return None
+
+
 def scan_sales_sheet(rows: list[list[Any]]) -> tuple[float, float | None, str] | None:
     """Read one sheet of a sales export, or return None when it is not a usable one."""
     header_index = column = None
@@ -267,7 +287,7 @@ def scan_sales_sheet(rows: list[list[Any]]) -> tuple[float, float | None, str] |
     return data_sum, stated, str(rows[header_index][column]).strip()
 
 
-def read_sales_total(path: Path, sheet: str | None = None) -> tuple[float, str]:
+def read_sales_total(path: Path, sheet: str | None = None) -> tuple[float, str, str | None, str | None]:
     """Return the sales export's gross total, checked against its own stated total.
 
     The export ends in a row repeating each column's sum in the data columns. Summing
@@ -285,7 +305,8 @@ def read_sales_total(path: Path, sheet: str | None = None) -> tuple[float, str]:
 
     seen_column = False
     for name in names:
-        found = scan_sales_sheet([list(r) for r in workbook[name].iter_rows(values_only=True)])
+        rows = [list(r) for r in workbook[name].iter_rows(values_only=True)]
+        found = scan_sales_sheet(rows)
         if found is None:
             continue
         data_sum, stated, header_name = found
@@ -299,7 +320,9 @@ def read_sales_total(path: Path, sheet: str | None = None) -> tuple[float, str]:
                     f"but the export states {stated}; the export is truncated or edited"
                 ]
             )
-        return data_sum, f"{name}:{header_name}"
+        window = declared_window(rows)
+        window_start, cutoff = window if window else (None, None)
+        return data_sum, f"{name}:{header_name}", window_start, cutoff
 
     if seen_column:
         raise Rejected(
@@ -311,7 +334,7 @@ def read_sales_total(path: Path, sheet: str | None = None) -> tuple[float, str]:
 
 
 def build_verification(
-    revenue: list[dict[str, Any]], stream: str, external: float, source_label: str
+    revenue: list[dict[str, Any]], stream: str, external: float, source_id: str
 ) -> dict[str, Any]:
     """Compare one revenue stream against an independent external total."""
     matches = [r for r in revenue if r["breakdown"] == "STREAM" and r["stream"] == stream]
@@ -325,7 +348,7 @@ def build_verification(
     return {
         "stream": stream,
         "authoritative_amount": authoritative,
-        "external_source": source_label,
+        "external_source_id": source_id,
         "external_amount": external,
         "difference": difference,
         "status": "MATCHED" if close_enough(difference, 0.0) else "DIVERGED",
@@ -434,27 +457,61 @@ def parse(path: Path, args: argparse.Namespace) -> dict[str, Any]:
     if failures:
         raise Rejected(failures)
 
+    # The workbook states no cutoff of its own: it aggregates streams whose cutoffs
+    # differ, so a null here records that the cutoff is unknown for this document.
+    authoritative_id = "SRC-1"
+    sources = [
+        {
+            "source_id": authoritative_id,
+            "role": AUTHORITATIVE,
+            "label": args.source_label or path.name,
+            "sha256": sha256_file(path),
+            "stream": None,
+            "business_day_cutoff": None,
+            "window_start": None,
+        }
+    ]
+
     verifications = []
     if args.verify_sales:
-        external, located = read_sales_total(args.verify_sales, args.verify_sheet)
-        verifications.append(
-            build_verification(
-                revenue,
-                args.verify_stream,
-                external,
-                f"{args.verify_sales.name}[{located}]",
-            )
+        external, located, window_start, cutoff = read_sales_total(
+            args.verify_sales, args.verify_sheet
         )
+        if window_start is not None and window_start != args.period_start:
+            raise Rejected(
+                [
+                    f"SOURCE_WINDOW_MISMATCH: {args.verify_sales.name} declares a window "
+                    f"starting {window_start}, but the period starts {args.period_start}"
+                ]
+            )
+        verification_id = "SRC-2"
+        sources.append(
+            {
+                "source_id": verification_id,
+                "role": VERIFICATION,
+                "label": f"{args.verify_sales.name}[{located}]",
+                "sha256": sha256_file(args.verify_sales),
+                "stream": args.verify_stream,
+                "business_day_cutoff": cutoff,
+                "window_start": window_start,
+            }
+        )
+        verifications.append(
+            build_verification(revenue, args.verify_stream, external, verification_id)
+        )
+
+    for record in revenue:
+        record["source_id"] = authoritative_id
+    for record in expenses:
+        record["source_id"] = authoritative_id
 
     return {
         "client_id": args.client_id,
         "project_id": args.project_id,
         "period_start": args.period_start,
         "period_end": args.period_end,
-        "business_day_cutoff": args.business_day_cutoff,
         "currency": args.currency,
-        "source_label": args.source_label or path.name,
-        "source_sha256": sha256_file(path),
+        "sources": sources,
         "revenue_records": revenue,
         "expense_records": expenses,
         "verifications": verifications,
@@ -469,7 +526,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--period-start", required=True, help="YYYY-MM-DD business date")
     parser.add_argument("--period-end", required=True, help="YYYY-MM-DD business date")
     parser.add_argument("--currency", required=True)
-    parser.add_argument("--business-day-cutoff", default=DEFAULT_CUTOFF)
     parser.add_argument("--source-label", default=None)
     parser.add_argument(
         "--verify-sales",
@@ -508,7 +564,7 @@ def main(argv: list[str] | None = None) -> int:
         if verification["status"] == "DIVERGED":
             print(
                 f"warning: stream {verification['stream']} differs from "
-                f"{verification['external_source']} by {verification['difference']:,.0f}; "
+                f"{verification['external_source_id']} by {verification['difference']:,.0f}; "
                 "recorded as DIVERGED for review, the period is still accepted",
                 file=sys.stderr,
             )

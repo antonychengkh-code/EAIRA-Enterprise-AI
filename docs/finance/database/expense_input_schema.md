@@ -32,6 +32,7 @@ Unlike revenue, the group and line levels do nest.
 | --- | --- | --- | --- |
 | expense_input_id | string | Yes | Unique identifier for one expense record. |
 | period_id | string | Yes | Owning period, as defined in the revenue input schema. |
+| source_id | string | Yes | The source document the record was read from. |
 | breakdown | enum | Yes | `TOTAL`, `GROUP`, or `LINE`. |
 | scope | string | No | Week label for a weekly figure; null for a period figure. |
 | group_code | string | No | Group number when `breakdown` is `GROUP` or `LINE`. |
@@ -70,7 +71,8 @@ permitted.
 2. The sum of `LINE` records within a group equals that group's `GROUP` record.
 3. The sum of `GROUP` records equals the `TOTAL` record.
 4. `period_id` refers to an existing period record.
-5. A period carries at most one `TOTAL` expense record.
+5. A period carries at most one `TOTAL` expense record per scope.
+6. `source_id` refers to a source belonging to the same period.
 
 ## Derived Profit
 

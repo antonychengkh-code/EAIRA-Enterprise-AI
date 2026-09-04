@@ -67,12 +67,17 @@ def build(path: Path, spec: dict) -> None:
     book.save(path)
 
 
-def build_sales(path: Path, amounts: list[float], stated: float | None) -> None:
-    """Write a workbook shaped like the POS sales export: a preamble, a header, rows,
-    then a row of column totals."""
+def build_sales(
+    path: Path,
+    amounts: list[float],
+    stated: float | None,
+    window: str = "从 01/08/2026 04:00 到 01/09/2026 03:59",
+) -> None:
+    """Write a workbook shaped like the POS sales export: a heading stating the window
+    it covers, a header, rows, then a row of column totals."""
     book = openpyxl.Workbook()
     sheet = book.active
-    sheet.append(["a preamble line the export always carries"])
+    sheet.append([f"a shop {window} 的销售报告"])
     sheet.append(["店铺", "项目名", "总金额（含佣金）", "总金额"])
     for index, value in enumerate(amounts):
         sheet.append([f"shop", f"item {index}", value, value])
@@ -145,7 +150,12 @@ def main() -> int:
                 check("residual zero rows do not become records",
                       not any(r.get("line_label") == "0" for r in payload["expense_records"]))
             )
-            results.append(check("the source digest is recorded", len(payload["source_sha256"]) == 64))
+            results.append(
+                check(
+                    "the source digest is recorded",
+                    len(payload["sources"][0]["sha256"]) == 64,
+                )
+            )
 
         print("\na workbook whose streams do not sum to the total is rejected")
         broken = dict(BASE, streams=[("2F", 70), ("1F", 25)])
@@ -176,9 +186,11 @@ def main() -> int:
             verification = json.loads(out.read_text())["verifications"][0]
             results.append(check("status is MATCHED", verification["status"] == "MATCHED"))
             results.append(check("difference is zero", verification["difference"] == 0))
-            results.append(
-                check("the compared column is named", "总金额" in verification["external_source"])
+            source = next(
+                s for s in json.loads(out.read_text())["sources"]
+                if s["source_id"] == verification["external_source_id"]
             )
+            results.append(check("the compared column is named", "总金额" in source["label"]))
 
         print("\na sales export that disagrees is DIVERGED, and the period is still accepted")
         book, out = work / "verify_diff.xlsx", work / "verify_diff.json"
@@ -212,6 +224,61 @@ def main() -> int:
         result = run(book, verify=sales, stream="3F")
         results.append(check("exit status is 1", result.returncode == 1))
         results.append(check("the available streams are listed", "'2F'" in result.stderr))
+
+        print("\nthe business day cutoff is read from the export, not asserted")
+        book, out = work / "cutoff.xlsx", work / "cutoff.json"
+        build(book, BASE)
+        sales = work / "sales_cutoff.xlsx"
+        build_sales(sales, [70.0], 70.0, window="从 01/08/2026 03:00 到 01/09/2026 02:59")
+        result = run(book, out, verify=sales, stream="2F")
+        results.append(check("exit status is 0", result.returncode == 0, result.stderr.strip()))
+        if out.exists():
+            payload = json.loads(out.read_text())
+            sources = payload["sources"]
+            results.append(check("both sources are recorded", len(sources) == 2))
+            authoritative = [s for s in sources if s["role"] == "AUTHORITATIVE"]
+            results.append(check("exactly one source is authoritative", len(authoritative) == 1))
+            results.append(
+                check(
+                    "the workbook states no cutoff of its own",
+                    authoritative[0]["business_day_cutoff"] is None,
+                )
+            )
+            verification = [s for s in sources if s["role"] == "VERIFICATION"][0]
+            results.append(
+                check(
+                    "the export's own cutoff is taken",
+                    verification["business_day_cutoff"] == "03:00",
+                    str(verification["business_day_cutoff"]),
+                )
+            )
+            results.append(
+                check("the window start is recorded", verification["window_start"] == "2026-08-01")
+            )
+            results.append(
+                check(
+                    "records reference their source",
+                    all(r["source_id"] == authoritative[0]["source_id"]
+                        for r in payload["revenue_records"] + payload["expense_records"]),
+                )
+            )
+            results.append(
+                check(
+                    "the verification names its source",
+                    payload["verifications"][0]["external_source_id"]
+                    == verification["source_id"],
+                )
+            )
+
+        print("\nan export covering a different period is rejected")
+        book, out = work / "window.xlsx", work / "window.json"
+        build(book, BASE)
+        sales = work / "sales_window.xlsx"
+        build_sales(sales, [70.0], 70.0, window="从 01/07/2026 04:00 到 01/08/2026 03:59")
+        result = run(book, out, verify=sales, stream="2F")
+        results.append(check("exit status is 1", result.returncode == 1))
+        results.append(check("the reason is named", "SOURCE_WINDOW_MISMATCH" in result.stderr))
+        results.append(check("nothing is written", not out.exists()))
 
         print("\na workbook with no P&L sheet is rejected")
         book = work / "no_sheet.xlsx"

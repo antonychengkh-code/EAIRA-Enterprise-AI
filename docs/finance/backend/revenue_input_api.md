@@ -35,16 +35,15 @@ at a time.
 | project_id | string | Yes |
 | period_start | date | Yes |
 | period_end | date | Yes |
-| business_day_cutoff | time | Yes |
 | currency | string | Yes |
-| source_label | string | Yes |
-| source_sha256 | string | Yes |
+| sources | array | Yes |
 | revenue_records | array | Yes |
 | expense_records | array | Yes |
 | verifications | array | No |
 
 Each array element follows the corresponding persistence schema:
 
+- `sources`: the source record in the revenue input schema
 - `revenue_records`: `docs/finance/database/revenue_input_schema.md`
 - `expense_records`: `docs/finance/database/expense_input_schema.md`
 - `verifications`: the verification record in the revenue input schema
@@ -58,6 +57,7 @@ Each array element follows the corresponding persistence schema:
 | revenue_record_count | integer | Number of revenue records persisted. |
 | expense_record_count | integer | Number of expense records persisted. |
 | verification_status | string | `MATCHED`, `DIVERGED`, or `NOT_VERIFIED`. |
+| source_count | integer | Number of source records persisted. |
 
 ## Rejection Response
 
@@ -78,11 +78,16 @@ A rejection persists nothing.
 4. Reject a period whose derived profit does not equal the profit stated by the source.
 5. Persist an accepted period atomically. A partially persisted period is not a valid
    outcome.
-6. Reject a second submission carrying a `source_sha256` already accepted for the same
-   client and project, so that re-ingesting the same document does not double count.
-7. Record a verification as `DIVERGED` without rejecting the period. Divergence is a
+6. Reject a period whose sources are unusable: none or several carrying the
+   `AUTHORITATIVE` role, a record referencing a source outside the period, or a source
+   whose declared `window_start` is not the period's `period_start`. A document covering
+   another period cannot verify this one.
+7. Reject a second submission whose authoritative source carries a `sha256` already
+   accepted for the same client and project, so that re-ingesting the same document does
+   not double count.
+8. Record a verification as `DIVERGED` without rejecting the period. Divergence is a
    finding for human review, not a validation failure.
-8. Return `status = accepted` with the assigned `period_id`.
+9. Return `status = accepted` with the assigned `period_id`.
 
 ## Boundary
 

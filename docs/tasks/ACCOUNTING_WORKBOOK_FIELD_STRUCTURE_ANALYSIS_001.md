@@ -143,12 +143,20 @@ This is a finding about the source records, not a parsing defect. It is exactly 
 verification control exists to surface: the control reports `MATCHED` for the POS-backed
 stream and `DIVERGED` for this one.
 
-## Known Schema Limitation: One Cutoff Per Period
+## Business Day Cutoff Belongs To A Source
 
-The two streams state different business day cutoffs. The period record holds a single
-`business_day_cutoff`, which cannot represent both. The cutoff belongs to a source or a
-stream rather than to the period, and the schema should be corrected before a second
-stream is ingested rather than verified.
+The two streams state different business day cutoffs, so a single period-level cutoff
+cannot describe both. The cutoff is a property of the document it is stated in, and the
+schema now records it on a source record rather than on the period.
+
+Each POS export states its own window in its heading, so the cutoff is read from the
+document rather than asserted by whoever runs the ingestion. The authoritative workbook
+states no cutoff of its own, because it aggregates streams whose cutoffs differ; its
+source record leaves the field null, which records that the value is unknown for that
+document rather than implying a default.
+
+Reading the window also establishes which period a document covers. An export declaring
+a different period cannot verify this one, and is rejected rather than compared.
 
 ## Relationship to the FABi Exports
 

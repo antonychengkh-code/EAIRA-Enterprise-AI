@@ -37,15 +37,41 @@ exactly one period.
 | project_id | string | Yes | Project context. |
 | period_start | date | Yes | First business date in the period. |
 | period_end | date | Yes | Last business date in the period. |
-| business_day_cutoff | time | Yes | Start of the business day. Sources observed to date use `04:00`, not midnight. |
 | currency | string | Yes | ISO-style currency code. |
-| source_label | string | Yes | Human-readable identity of the source document. |
-| source_sha256 | string | Yes | Digest of the exact ingested source document. |
 | ingested_at | datetime | Yes | Timestamp of ingestion. |
 
-`business_day_cutoff` is required because every date in the source sources is a business
-date, not a calendar date. An entry recorded after midnight belongs to the preceding
-business day.
+Every date in the sources is a business date, not a calendar date: an entry recorded
+after midnight belongs to the preceding business day. The cutoff that defines the
+business day is **not** a property of the period. Two revenue streams observed in the
+same period state different cutoffs, so a single period-level cutoff cannot describe
+them. The cutoff belongs to a source, and is recorded there.
+
+## Source Record
+
+One record per document read for a period. A period has exactly one authoritative
+source and any number of verification sources.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| source_id | string | Yes | Unique identifier for one source document. |
+| period_id | string | Yes | Owning period. |
+| role | enum | Yes | `AUTHORITATIVE` or `VERIFICATION`. |
+| label | string | Yes | Human-readable identity, including the sheet actually read. |
+| sha256 | string | Yes | Digest of the exact document read. |
+| stream | string | No | The revenue stream a verification source covers. Null for an authoritative source. |
+| business_day_cutoff | time | No | Start of the business day, as stated by the document itself. |
+| window_start | date | No | First business date the document declares it covers. |
+
+`business_day_cutoff` is read from the document, never asserted by the caller. A POS
+export states its own window in its heading; that statement is the evidence, and a value
+supplied by hand would not be.
+
+It is null on the authoritative workbook, which states no cutoff of its own: it
+aggregates streams whose cutoffs differ, so no single value would be true of it. A null
+here records that the cutoff is unknown for that document, which is the fact.
+
+`window_start` must equal the period's `period_start`. A document covering a different
+period cannot verify this one, and the mismatch is a rejection rather than a finding.
 
 ## Revenue Record
 
@@ -58,6 +84,7 @@ dimensions nest.
 | --- | --- | --- | --- |
 | revenue_input_id | string | Yes | Unique identifier for one revenue record. |
 | period_id | string | Yes | Owning period. |
+| source_id | string | Yes | The source document the record was read from. |
 | breakdown | enum | Yes | `TOTAL`, `CATEGORY`, `WEEK`, or `STREAM`. |
 | scope | string | No | Week label when `breakdown` is `WEEK`; otherwise null. |
 | category | string | No | Item category when `breakdown` is `CATEGORY`; otherwise null. |
@@ -95,7 +122,7 @@ external source.
 | period_id | string | Yes | Owning period. |
 | stream | string | Yes | Revenue stream being verified. |
 | authoritative_amount | decimal | Yes | Amount from the accounting workbook. |
-| external_source | string | Yes | Identity of the verifying source. |
+| external_source_id | string | Yes | The verification source record. |
 | external_amount | decimal | Yes | Amount from that source. |
 | difference | decimal | Yes | `authoritative_amount - external_amount`. |
 | status | enum | Yes | `MATCHED` when the difference is zero, otherwise `DIVERGED`. |
@@ -121,8 +148,11 @@ permitted.
 4. The sum of `WEEK` records equals the `TOTAL` record.
 5. The sum of `STREAM` records equals the `TOTAL` record.
 6. `currency` is not blank.
-7. `period_start`, `period_end`, and `business_day_cutoff` are not blank.
+7. `period_start` and `period_end` are not blank.
 8. `client_id` and `project_id` preserve task traceability.
+9. Every record references a source belonging to the same period.
+10. Exactly one source carries the `AUTHORITATIVE` role.
+11. Every source stating a `window_start` states one equal to `period_start`.
 
 Rules 3 to 5 are the identities observed to hold exactly in the source workbook. A
 source that violates them is malformed and must not be ingested.
