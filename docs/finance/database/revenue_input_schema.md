@@ -101,7 +101,13 @@ external source.
 | status | enum | Yes | `MATCHED` when the difference is zero, otherwise `DIVERGED`. |
 
 A `DIVERGED` status means one of the two records is wrong. It is a finding, not a value
-to be reconciled away by adjusting either side.
+to be reconciled away by adjusting either side. It does not reject the period.
+
+The external source must be checked for internal consistency before it is used. The
+sales export states its own column totals in a closing row; summing its data rows and
+comparing against that stated total detects a truncated or edited export. An export that
+fails this check cannot verify anything, so verification fails rather than silently
+comparing against a partial figure.
 
 ## Validation Rules
 

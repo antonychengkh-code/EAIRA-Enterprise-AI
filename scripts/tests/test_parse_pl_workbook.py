@@ -67,7 +67,26 @@ def build(path: Path, spec: dict) -> None:
     book.save(path)
 
 
-def run(path: Path, out: Path | None = None) -> subprocess.CompletedProcess[str]:
+def build_sales(path: Path, amounts: list[float], stated: float | None) -> None:
+    """Write a workbook shaped like the POS sales export: a preamble, a header, rows,
+    then a row of column totals."""
+    book = openpyxl.Workbook()
+    sheet = book.active
+    sheet.append(["a preamble line the export always carries"])
+    sheet.append(["店铺", "项目名", "总金额（含佣金）", "总金额"])
+    for index, value in enumerate(amounts):
+        sheet.append([f"shop", f"item {index}", value, value])
+    if stated is not None:
+        sheet.append(["Tổng", "-", stated, stated])
+    book.save(path)
+
+
+def run(
+    path: Path,
+    out: Path | None = None,
+    verify: Path | None = None,
+    stream: str | None = None,
+) -> subprocess.CompletedProcess[str]:
     command = [
         sys.executable, str(PARSER), str(path),
         "--client-id", "TEST", "--project-id", "TEST",
@@ -76,6 +95,10 @@ def run(path: Path, out: Path | None = None) -> subprocess.CompletedProcess[str]
     ]
     if out:
         command += ["--out", str(out)]
+    if verify:
+        command += ["--verify-sales", str(verify)]
+    if stream:
+        command += ["--verify-stream", stream]
     return subprocess.run(command, capture_output=True, text=True)
 
 
@@ -141,6 +164,54 @@ def main() -> int:
         result = run(book)
         results.append(check("exit status is 1", result.returncode == 1))
         results.append(check("the failing rule is named", "EXPENSE_LINE_SUM" in result.stderr))
+
+        print("\na sales export matching the stream is recorded as MATCHED")
+        book, out = work / "verify_ok.xlsx", work / "verify_ok.json"
+        build(book, BASE)
+        sales = work / "sales_ok.xlsx"
+        build_sales(sales, [40.0, 30.0], 70.0)  # equals the 2F stream figure
+        result = run(book, out, verify=sales, stream="2F")
+        results.append(check("exit status is 0", result.returncode == 0, result.stderr.strip()))
+        if out.exists():
+            verification = json.loads(out.read_text())["verifications"][0]
+            results.append(check("status is MATCHED", verification["status"] == "MATCHED"))
+            results.append(check("difference is zero", verification["difference"] == 0))
+            results.append(
+                check("the compared column is named", "总金额" in verification["external_source"])
+            )
+
+        print("\na sales export that disagrees is DIVERGED, and the period is still accepted")
+        book, out = work / "verify_diff.xlsx", work / "verify_diff.json"
+        build(book, BASE)
+        sales = work / "sales_diff.xlsx"
+        build_sales(sales, [40.0, 25.0], 65.0)
+        result = run(book, out, verify=sales, stream="2F")
+        results.append(check("exit status is 0", result.returncode == 0))
+        results.append(check("a warning is printed", "DIVERGED" in result.stderr))
+        if out.exists():
+            verification = json.loads(out.read_text())["verifications"][0]
+            results.append(check("status is DIVERGED", verification["status"] == "DIVERGED"))
+            results.append(check("the difference is recorded", verification["difference"] == 5))
+
+        print("\na sales export inconsistent with its own total row is rejected")
+        book = work / "verify_trunc.xlsx"
+        build(book, BASE)
+        sales = work / "sales_trunc.xlsx"
+        build_sales(sales, [40.0], 70.0)  # a row is missing
+        result = run(book, verify=sales, stream="2F")
+        results.append(check("exit status is 1", result.returncode == 1))
+        results.append(
+            check("the reason is named", "SALES_EXPORT_INCONSISTENT" in result.stderr)
+        )
+
+        print("\nverifying a stream the workbook does not have is rejected")
+        book = work / "verify_stream.xlsx"
+        build(book, BASE)
+        sales = work / "sales_stream.xlsx"
+        build_sales(sales, [70.0], 70.0)
+        result = run(book, verify=sales, stream="3F")
+        results.append(check("exit status is 1", result.returncode == 1))
+        results.append(check("the available streams are listed", "'2F'" in result.stderr))
 
         print("\na workbook with no P&L sheet is rejected")
         book = work / "no_sheet.xlsx"

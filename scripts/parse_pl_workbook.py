@@ -36,6 +36,12 @@ WEEK_COLS = (2, 3, 4, 5)
 STREAM_COLS = (7, 8)
 DEFAULT_CUTOFF = "04:00"
 
+# The sales export's gross-amount column, as titled by each locale the export offers.
+# Matched exactly: neighbouring columns contain this text as a substring.
+D05_TOTAL_HEADERS = ("总金额", "總金額", "Tổng tiền", "Total amount")
+# The export closes with a row of column totals, labelled in the first column.
+D05_TOTAL_MARKERS = ("tổng", "总计", "总额", "總計", "total")
+
 
 class Rejected(Exception):
     """A workbook that violates the schemas' identities."""
@@ -234,6 +240,81 @@ def build_expenses(
     return records
 
 
+def read_sales_total(path: Path) -> tuple[float, str]:
+    """Return the sales export's gross total, checked against its own stated total.
+
+    The export ends in a row repeating each column's sum in the data columns. Summing
+    the data rows and comparing against that stated total catches a truncated or
+    edited export, which would otherwise verify against nothing.
+    """
+    workbook = openpyxl.load_workbook(path, read_only=True, data_only=True)
+    rows = [list(row) for row in workbook[workbook.sheetnames[0]].iter_rows(values_only=True)]
+
+    header_index = column = None
+    for index, row in enumerate(rows[:10]):
+        for position, cell in enumerate(row):
+            if isinstance(cell, str) and cell.strip() in D05_TOTAL_HEADERS:
+                header_index, column = index, position
+                break
+        if column is not None:
+            break
+    if column is None:
+        raise Rejected(
+            [f"{path.name}: no gross-total column; expected one of {list(D05_TOTAL_HEADERS)}"]
+        )
+    header_name = str(rows[header_index][column]).strip()
+
+    body = rows[header_index + 1 :]
+    stated = None
+    data_rows = []
+    for row in body:
+        first = row[0] if row else None
+        is_total = isinstance(first, str) and first.strip().lower() in D05_TOTAL_MARKERS
+        if is_total:
+            value = row[column] if column < len(row) else None
+            stated = float(value) if isinstance(value, (int, float)) else None
+        else:
+            data_rows.append(row)
+
+    data_sum = sum(
+        float(row[column])
+        for row in data_rows
+        if column < len(row) and isinstance(row[column], (int, float))
+    )
+    if stated is None:
+        raise Rejected([f"{path.name}: no stated total row, so the export cannot be checked"])
+    if not close_enough(data_sum, stated):
+        raise Rejected(
+            [
+                f"SALES_EXPORT_INCONSISTENT: {path.name} rows sum to {data_sum} "
+                f"but the export states {stated}; the export is truncated or edited"
+            ]
+        )
+    return data_sum, header_name
+
+
+def build_verification(
+    revenue: list[dict[str, Any]], stream: str, external: float, source_label: str
+) -> dict[str, Any]:
+    """Compare one revenue stream against an independent external total."""
+    matches = [r for r in revenue if r["breakdown"] == "STREAM" and r["stream"] == stream]
+    if not matches:
+        available = sorted(
+            r["stream"] for r in revenue if r["breakdown"] == "STREAM"
+        )
+        raise Rejected([f"no stream named {stream!r}; the workbook has {available}"])
+    authoritative = matches[0]["amount_incl_vat"]
+    difference = authoritative - external
+    return {
+        "stream": stream,
+        "authoritative_amount": authoritative,
+        "external_source": source_label,
+        "external_amount": external,
+        "difference": difference,
+        "status": "MATCHED" if close_enough(difference, 0.0) else "DIVERGED",
+    }
+
+
 def close_enough(left: float, right: float) -> bool:
     """Compare two money figures, tolerating float noise but nothing larger."""
     return abs(left - right) < 0.005
@@ -336,6 +417,18 @@ def parse(path: Path, args: argparse.Namespace) -> dict[str, Any]:
     if failures:
         raise Rejected(failures)
 
+    verifications = []
+    if args.verify_sales:
+        external, column = read_sales_total(args.verify_sales)
+        verifications.append(
+            build_verification(
+                revenue,
+                args.verify_stream,
+                external,
+                f"{args.verify_sales.name}:{column}",
+            )
+        )
+
     return {
         "client_id": args.client_id,
         "project_id": args.project_id,
@@ -347,7 +440,7 @@ def parse(path: Path, args: argparse.Namespace) -> dict[str, Any]:
         "source_sha256": sha256_file(path),
         "revenue_records": revenue,
         "expense_records": expenses,
-        "verifications": [],
+        "verifications": verifications,
     }
 
 
@@ -361,6 +454,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--currency", required=True)
     parser.add_argument("--business-day-cutoff", default=DEFAULT_CUTOFF)
     parser.add_argument("--source-label", default=None)
+    parser.add_argument(
+        "--verify-sales",
+        type=Path,
+        help="a POS sales export to verify one revenue stream against",
+    )
+    parser.add_argument(
+        "--verify-stream",
+        default="2F",
+        help="the stream the sales export covers (default: %(default)s)",
+    )
     parser.add_argument("--out", type=Path, help="write the payload here instead of stdout")
     args = parser.parse_args(argv)
 
@@ -379,12 +482,25 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {failure}", file=sys.stderr)
         return 1
 
+    for verification in payload["verifications"]:
+        if verification["status"] == "DIVERGED":
+            print(
+                f"warning: stream {verification['stream']} differs from "
+                f"{verification['external_source']} by {verification['difference']:,.0f}; "
+                "recorded as DIVERGED for review, the period is still accepted",
+                file=sys.stderr,
+            )
+
     text = json.dumps(payload, indent=2, ensure_ascii=False)
     if args.out:
         args.out.write_text(text + "\n", encoding="utf-8")
+        statuses = ", ".join(
+            f"{v['stream']} {v['status']}" for v in payload["verifications"]
+        )
         print(
             f"accepted: {len(payload['revenue_records'])} revenue and "
             f"{len(payload['expense_records'])} expense records -> {args.out}"
+            + (f" [{statuses}]" if statuses else "")
         )
     else:
         print(text)
