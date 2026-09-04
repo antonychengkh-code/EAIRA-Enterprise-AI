@@ -120,6 +120,36 @@ Each `WEEK n` sheet stacks two unrelated regions:
 The `P&L` sheet should therefore be the initial ingestion target, with the week sheets
 deferred until the monthly path is proven.
 
+## Second Finding: The Non-POS Stream Records Cash Only
+
+A POS export covering the `1F` stream was examined after the workbook. It is a separate
+store under the same POS account, with its own store identifier, its own business day
+cutoff, and item categories unrelated to the other stream.
+
+Comparing it against the workbook establishes that the workbook's `1F` net revenue figure
+equals the POS total for cash payments alone. The card and transfer portions of that
+stream's sales do not appear in the workbook's revenue at all:
+
+- The cash book records the `1F` figure under a heading for cash receipts, not revenue.
+- The bank sheet's `1F` block records zero bank credit, zero card fee, and zero transfer
+  for the whole period.
+- That cash figure is then carried into the `P&L` as the whole of `1F` net revenue.
+
+The stream's revenue is therefore understated by its entire non-cash portion, and the
+output VAT on that portion is not recorded either. This also explains an earlier
+observation that the period's total output VAT equals the VAT of the other stream alone.
+
+This is a finding about the source records, not a parsing defect. It is exactly what the
+verification control exists to surface: the control reports `MATCHED` for the POS-backed
+stream and `DIVERGED` for this one.
+
+## Known Schema Limitation: One Cutoff Per Period
+
+The two streams state different business day cutoffs. The period record holds a single
+`business_day_cutoff`, which cannot represent both. The cutoff belongs to a source or a
+stream rather than to the period, and the schema should be corrected before a second
+stream is ingested rather than verified.
+
 ## Relationship to the FABi Exports
 
 | Source | Role |

@@ -240,16 +240,8 @@ def build_expenses(
     return records
 
 
-def read_sales_total(path: Path) -> tuple[float, str]:
-    """Return the sales export's gross total, checked against its own stated total.
-
-    The export ends in a row repeating each column's sum in the data columns. Summing
-    the data rows and comparing against that stated total catches a truncated or
-    edited export, which would otherwise verify against nothing.
-    """
-    workbook = openpyxl.load_workbook(path, read_only=True, data_only=True)
-    rows = [list(row) for row in workbook[workbook.sheetnames[0]].iter_rows(values_only=True)]
-
+def scan_sales_sheet(rows: list[list[Any]]) -> tuple[float, float | None, str] | None:
+    """Read one sheet of a sales export, or return None when it is not a usable one."""
     header_index = column = None
     for index, row in enumerate(rows[:10]):
         for position, cell in enumerate(row):
@@ -259,38 +251,63 @@ def read_sales_total(path: Path) -> tuple[float, str]:
         if column is not None:
             break
     if column is None:
-        raise Rejected(
-            [f"{path.name}: no gross-total column; expected one of {list(D05_TOTAL_HEADERS)}"]
-        )
-    header_name = str(rows[header_index][column]).strip()
+        return None
 
-    body = rows[header_index + 1 :]
-    stated = None
-    data_rows = []
-    for row in body:
+    stated: float | None = None
+    data_sum = 0.0
+    for row in rows[header_index + 1 :]:
         first = row[0] if row else None
-        is_total = isinstance(first, str) and first.strip().lower() in D05_TOTAL_MARKERS
-        if is_total:
-            value = row[column] if column < len(row) else None
-            stated = float(value) if isinstance(value, (int, float)) else None
+        value = row[column] if column < len(row) else None
+        if not isinstance(value, (int, float)):
+            continue
+        if isinstance(first, str) and first.strip().lower() in D05_TOTAL_MARKERS:
+            stated = float(value)
         else:
-            data_rows.append(row)
+            data_sum += float(value)
+    return data_sum, stated, str(rows[header_index][column]).strip()
 
-    data_sum = sum(
-        float(row[column])
-        for row in data_rows
-        if column < len(row) and isinstance(row[column], (int, float))
-    )
-    if stated is None:
-        raise Rejected([f"{path.name}: no stated total row, so the export cannot be checked"])
-    if not close_enough(data_sum, stated):
+
+def read_sales_total(path: Path, sheet: str | None = None) -> tuple[float, str]:
+    """Return the sales export's gross total, checked against its own stated total.
+
+    The export ends in a row repeating each column's sum in the data columns. Summing
+    the data rows and comparing against that stated total catches a truncated or edited
+    export, which would otherwise verify against nothing.
+
+    An export may hold a per-store sheet alongside an all-stores sheet, and only the
+    latter labels its total row. Sheets are therefore tried in order and the first
+    usable one is taken, unless one is named explicitly.
+    """
+    workbook = openpyxl.load_workbook(path, read_only=True, data_only=True)
+    names = [sheet] if sheet else workbook.sheetnames
+    if sheet and sheet not in workbook.sheetnames:
+        raise Rejected([f"{path.name}: no sheet named {sheet!r}; it has {workbook.sheetnames}"])
+
+    seen_column = False
+    for name in names:
+        found = scan_sales_sheet([list(r) for r in workbook[name].iter_rows(values_only=True)])
+        if found is None:
+            continue
+        data_sum, stated, header_name = found
+        seen_column = True
+        if stated is None:
+            continue  # A per-store sheet labels its total row with the store name.
+        if not close_enough(data_sum, stated):
+            raise Rejected(
+                [
+                    f"SALES_EXPORT_INCONSISTENT: {path.name}[{name}] rows sum to {data_sum} "
+                    f"but the export states {stated}; the export is truncated or edited"
+                ]
+            )
+        return data_sum, f"{name}:{header_name}"
+
+    if seen_column:
         raise Rejected(
-            [
-                f"SALES_EXPORT_INCONSISTENT: {path.name} rows sum to {data_sum} "
-                f"but the export states {stated}; the export is truncated or edited"
-            ]
+            [f"{path.name}: no sheet states a total row, so the export cannot be checked"]
         )
-    return data_sum, header_name
+    raise Rejected(
+        [f"{path.name}: no gross-total column; expected one of {list(D05_TOTAL_HEADERS)}"]
+    )
 
 
 def build_verification(
@@ -419,13 +436,13 @@ def parse(path: Path, args: argparse.Namespace) -> dict[str, Any]:
 
     verifications = []
     if args.verify_sales:
-        external, column = read_sales_total(args.verify_sales)
+        external, located = read_sales_total(args.verify_sales, args.verify_sheet)
         verifications.append(
             build_verification(
                 revenue,
                 args.verify_stream,
                 external,
-                f"{args.verify_sales.name}:{column}",
+                f"{args.verify_sales.name}[{located}]",
             )
         )
 
@@ -463,6 +480,11 @@ def main(argv: list[str] | None = None) -> int:
         "--verify-stream",
         default="2F",
         help="the stream the sales export covers (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--verify-sheet",
+        default=None,
+        help="the sheet of the sales export to read; by default the first usable one",
     )
     parser.add_argument("--out", type=Path, help="write the payload here instead of stdout")
     args = parser.parse_args(argv)
