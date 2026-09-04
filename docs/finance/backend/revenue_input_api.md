@@ -1,18 +1,31 @@
-# Finance Revenue Input Backend API
+# Finance Period Input Backend API
 
 ## Purpose
 
-Define the minimal backend service/API artifact for the M3.4 Finance Revenue Input Task.
+Define the backend service/API for Finance revenue and expense input.
 
-This artifact is limited to the candidate validation slice. It does not establish a reusable backend platform API.
+The original endpoint accepted one revenue record carrying a single amount. That shape
+cannot express the authoritative source, in which a period total is decomposed several
+ways and expenses form their own hierarchy. The endpoint is therefore defined at period
+granularity, so that a period is accepted or rejected as a whole.
+
+It does not establish a reusable backend platform API.
+
+## Why a Period, Not a Row
+
+The validation rules in the revenue and expense schemas are cross-record identities: the
+category, week, and stream breakdowns must each sum to the period total, and expense
+lines must sum to their group. None of these can be checked one record at a time. A
+row-level endpoint would accept a period that is internally inconsistent, one valid row
+at a time.
 
 ## Endpoint
 
 | Field | Value |
 | --- | --- |
 | Method | POST |
-| Path | `/finance/revenue-inputs` |
-| Purpose | Accept one revenue input record and return the accepted record identity. |
+| Path | `/finance/periods` |
+| Purpose | Accept one complete reporting period and return the accepted period identity. |
 
 ## Request Body
 
@@ -20,26 +33,58 @@ This artifact is limited to the candidate validation slice. It does not establis
 | --- | --- | --- |
 | client_id | string | Yes |
 | project_id | string | Yes |
-| revenue_date | date | Yes |
-| amount | decimal | Yes |
+| period_start | date | Yes |
+| period_end | date | Yes |
+| business_day_cutoff | time | Yes |
 | currency | string | Yes |
-| source_label | string | No |
+| source_label | string | Yes |
+| source_sha256 | string | Yes |
+| revenue_records | array | Yes |
+| expense_records | array | Yes |
+| verifications | array | No |
+
+Each array element follows the corresponding persistence schema:
+
+- `revenue_records`: `docs/finance/database/revenue_input_schema.md`
+- `expense_records`: `docs/finance/database/expense_input_schema.md`
+- `verifications`: the verification record in the revenue input schema
 
 ## Response Body
 
 | Field | Type | Notes |
 | --- | --- | --- |
-| revenue_input_id | string | Identifier assigned to the accepted record. |
-| status | string | `accepted` for a valid input. |
+| period_id | string | Identifier assigned to the accepted period. |
+| status | string | `accepted` for a valid period. |
+| revenue_record_count | integer | Number of revenue records persisted. |
+| expense_record_count | integer | Number of expense records persisted. |
+| verification_status | string | `MATCHED`, `DIVERGED`, or `NOT_VERIFIED`. |
+
+## Rejection Response
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| status | string | `rejected`. |
+| failed_rules | array | Identities or field rules that failed, by rule identifier. |
+
+A rejection persists nothing.
 
 ## Minimal Service Behavior
 
-1. Reject requests missing `client_id`, `project_id`, `revenue_date`, `amount`, or `currency`.
-2. Reject requests where `amount` is less than zero.
-3. Persist valid input according to the Finance Revenue Input Persistence Schema.
-4. Return `status = accepted` with the assigned `revenue_input_id`.
+1. Reject requests missing any required field.
+2. Reject a period whose revenue records fail any validation rule in the revenue input
+   schema, including the category, week, and stream sum identities.
+3. Reject a period whose expense records fail any validation rule in the expense input
+   schema, including the line-to-group and group-to-total sum identities.
+4. Reject a period whose derived profit does not equal the profit stated by the source.
+5. Persist an accepted period atomically. A partially persisted period is not a valid
+   outcome.
+6. Reject a second submission carrying a `source_sha256` already accepted for the same
+   client and project, so that re-ingesting the same document does not double count.
+7. Record a verification as `DIVERGED` without rejecting the period. Divergence is a
+   finding for human review, not a validation failure.
+8. Return `status = accepted` with the assigned `period_id`.
 
-## Slice Boundary
+## Boundary
 
-This API artifact covers only revenue input creation for the M3.4 validation slice.
-It does not define frontend behavior, authentication, invoicing, reporting, accounting close, or cross-module integration.
+This artifact defines an interface only. It does not authorize ingestion, external
+connection, scheduled execution, or runtime action.
