@@ -62,8 +62,8 @@ dimensions nest.
 | scope | string | No | Week label when `breakdown` is `WEEK`; otherwise null. |
 | category | string | No | Item category when `breakdown` is `CATEGORY`; otherwise null. |
 | stream | string | No | Revenue stream when `breakdown` is `STREAM`; otherwise null. |
-| amount_ex_vat | decimal | Yes | Amount excluding output VAT. Must be zero or greater. |
-| output_vat | decimal | Yes | Output VAT. Must be zero or greater. |
+| amount_ex_vat | decimal | No | Amount excluding output VAT. Must be zero or greater when present. |
+| output_vat | decimal | No | Output VAT. Must be zero or greater when present. |
 | amount_incl_vat | decimal | Yes | Amount including output VAT. |
 | created_at | datetime | Yes | Timestamp when the record is created. |
 
@@ -78,6 +78,11 @@ dimensions nest.
 
 The stream split is available only at period level. It is not available per week or per
 category, and the schema must not imply otherwise.
+
+The source states the stream split as a single figure per stream, with no VAT breakdown.
+`amount_ex_vat` and `output_vat` are therefore null on `STREAM` records. They are
+required on every other breakdown. Deriving a stream VAT split by apportionment would
+invent a figure the source does not hold, and is not permitted.
 
 ## Verification Record
 
@@ -104,7 +109,8 @@ Ingestion must reject a period that fails any of these. Partial ingestion is not
 permitted.
 
 1. `amount_ex_vat` and `output_vat` are zero or greater.
-2. `amount_incl_vat` equals `amount_ex_vat + output_vat` for every record.
+2. `amount_incl_vat` equals `amount_ex_vat + output_vat` for every record that carries
+   both, and both are present on every breakdown except `STREAM`.
 3. The sum of `CATEGORY` records equals the `TOTAL` record.
 4. The sum of `WEEK` records equals the `TOTAL` record.
 5. The sum of `STREAM` records equals the `TOTAL` record.
