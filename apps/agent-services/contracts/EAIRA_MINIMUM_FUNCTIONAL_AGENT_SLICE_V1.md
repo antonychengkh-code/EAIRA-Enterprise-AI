@@ -1,10 +1,12 @@
 # EAIRA Minimum Functional Agent Slice V1
 
-Contract revision: 6
+Contract revision: 7
 
 ## Scope
 
 This contract defines the in-memory five-role functional slice. The deterministic mock profile remains offline and byte-reproducible. M4 Slice 2 additionally permits a separately contracted request-scoped local-model provider only through the task-intake CLI. It does not authorize external AI APIs, credentials, file or registry writes, IPC, child processes, Windows service activation, evidence persistence or production mutation.
+
+M4 Slice 3 adds an opt-in Planning-only prompt defined by `EAIRA_READ_ONLY_PROJECT_CONTEXT_V1`. The context path does not replace or weaken the legacy semantic path.
 
 ## Flow
 
@@ -58,6 +60,8 @@ Each handoff is the preceding result itself. Before accepting it, the next Agent
 
 Every Agent receiving a task recomputes the task digest from its current schema, trace identifier and goal. Every downstream role also replays the complete deterministic semantic prefix: Planning payload, Guard policy decision and payload, Operations `MUTATION=NONE` payload, Verification payload and Audit outcome payload must exactly match the values derived from the verified task and preceding results. A structurally valid rehashed payload is insufficient.
 
+For a context request, Planning and the seal factory alone receive the exact context prompt. After Planning is validated, `ContextPlanningSeal` retains only task digest, Planning result digest and provider ID. Context-specific Guard, Operations, Verification and Audit overloads validate through that seal and never receive the prompt, projection, source text or paths. Altering the task, Planning result, seal, provider identity or sealed preauthorization fails before the next Agent. Operations provider input remains only the Guard result digest.
+
 This SHA-256 model establishes deterministic integrity and semantic equivalence inside the offline single-process slice. It does not authenticate which principal produced a result and is not a security boundary against hostile code already executing in the same process. Cross-service hostile-principal handoff requires a separately reviewed MAC or digital-signature design.
 
 ## Deterministic mock
@@ -94,3 +98,4 @@ This initial list is intentionally conservative and is not a general production 
 - Static source and compiled-metadata checks find no network, IPC, file-write, registry-write, runtime child-process, shell, dynamic-load or native-import implementation in the functional core, non-CLI harnesses or service outputs. The task-intake CLI alone may contain the frozen loopback HTTP/stream metadata allowlist defined by `EAIRA_LOCAL_MODEL_PROVIDER_V1`.
 - Release builds require the exact compiler SHA-256 and Microsoft Authenticode identity bound by the release profile.
 - The deterministic clean-build pipeline remains required for all five service executables.
+- Context and legacy overloads remain separately validated; context content cannot enter Guard, Operations, Verification or Audit inputs.

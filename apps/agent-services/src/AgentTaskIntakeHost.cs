@@ -24,7 +24,7 @@ namespace EAIRA.AgentServices.TaskIntake
         {
             try
             {
-                TaskIntakeResponse response = new LocalTaskIntake(new CliLocalModelProviderFactory()).Execute(args);
+                TaskIntakeResponse response = LocalTaskIntake.CreateNative(new CliLocalModelProviderFactory()).Execute(args);
                 Console.WriteLine(response.ToCanonicalJson());
                 return response.ExitCode;
             }
@@ -33,9 +33,14 @@ namespace EAIRA.AgentServices.TaskIntake
                 Console.WriteLine(LocalProviderFailureContract.CanonicalJson);
                 return LocalProviderFailureContract.ExitCode;
             }
-            catch (ContractException exception)
+            catch (ProjectContextException)
             {
-                Console.WriteLine("{\"schemaVersion\":1,\"status\":\"INVALID_REQUEST\",\"errorType\":" + ContractCodec.Json(exception.GetType().Name) + ",\"network\":\"NONE\",\"writes\":\"NONE\"}");
+                Console.WriteLine("{\"schemaVersion\":1,\"status\":\"CONTEXT_ERROR\",\"errorType\":\"ProjectContextException\",\"network\":\"NONE\",\"writes\":\"NONE\",\"context\":null}");
+                return 80;
+            }
+            catch (ContractException)
+            {
+                Console.WriteLine("{\"schemaVersion\":1,\"status\":\"INVALID_REQUEST\",\"errorType\":\"ContractException\",\"network\":\"NONE\",\"writes\":\"NONE\"}");
                 return 64;
             }
         }

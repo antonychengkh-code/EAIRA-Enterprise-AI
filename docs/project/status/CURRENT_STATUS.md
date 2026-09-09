@@ -6,11 +6,11 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.37.10
+0.37.19
 
 ## Updated At
 
-2026-09-02
+2026-09-09
 
 ## Current Milestone
 
@@ -24,7 +24,11 @@ M4 Functional Agent MVP: Active.
 
 ## Active Phase
 
-M4 Slice 2, `M4-FUNCTIONAL-AGENT-MVP-SLICE-2`, is published and independently post-push verified at commit `d43a4bc170df38e29f6115e927ad2c07190da821`. It retains deterministic `mock`, retains fail-closed disabled `real`, and adds `ollama-local` for exact `qwen3:4b` through `127.0.0.1:11434` only. The local provider is request-scoped, uses a two-entry successful-result cache, validates exact name/full digest before and after generation, and returns sanitized `LOCAL_PROVIDER_ERROR/79` on failure. The digest control is trusted-local consistency, not cryptographic pinning.
+M4 Slice 3, decision `SLICE3_A_READ_ONLY_PROJECT_CONTEXT`, is the active bounded working-tree task. The published repository baseline and cached `origin/master` are both `b3bd69683ae873be59bf5a78e5df4dd6a4e71eec`, which records the completed six-file Slice 2 post-publication state synchronization. Slice 3 remains uncommitted and unpushed.
+
+The current Slice 3 candidate is exact implementation design Revision 20, R10R6, on baseline `b3bd69683ae873be59bf5a78e5df4dd6a4e71eec`. The independent R10R5 review returned `CANNOT_CLOSE`, `P0=0`, `P1=1`, and `P2=0`: it confirmed the exact V19/R10R5 design identity, Revision, readiness row, lifecycle summaries and technical evidence, but current machine-like readiness fields mixed `READY_FOR_INDEPENDENT_REVIEW` and `READY_FOR_NEW_INDEPENDENT_REVIEW`. The separately authorized R10R6 candidate changes no product code, allowlist, parser, test policy or capability. It assigns one exact canonical review-readiness identifier to every current design, readiness and active-task state field, records the R10R5 review, and advances only to an independent R10R6 review. Release-profile-pinned verification retains two byte-identical builds, 52 project-context tests, 31 seam specimens and 17 native specimens with status `M4_SLICE_3_UNSIGNED_TECHNICAL_CHECKS_PASS`. The candidate remains uncommitted and unpushed. No staging, commit, push, Windows mutation, service activation, signing, or production activation is authorized.
+
+M4 Slice 2, `M4-FUNCTIONAL-AGENT-MVP-SLICE-2`, remains published and independently post-push verified at commit `d43a4bc170df38e29f6115e927ad2c07190da821`. It retains deterministic `mock`, retains fail-closed disabled `real`, and adds `ollama-local` for exact `qwen3:4b` through `127.0.0.1:11434` only. The local provider is request-scoped, uses a two-entry successful-result cache, validates exact name/full digest before and after generation, and returns sanitized `LOCAL_PROVIDER_ERROR/79` on failure. The digest control is trusted-local consistency, not cryptographic pinning.
 
 Initial Gate 9 failed closed at `P0=0`, `P1=3`, `P2=2`; bounded remediation and repeat Gate 9 then passed at `P0=0`, `P1=0`, `P2=0`. Product commit `d43a4bc170df38e29f6115e927ad2c07190da821`, parent `1ad52d9f11374520409ef3569199aff9a06935c8`, tree `443d35edc442d50af0cd175d3a296e0d504b5c75`, contains exactly 22 authorized text paths. Gate 17 verified live `origin/master` at that commit with `P0=0`, `P1=0`, `P2=1`, and `PUBLICATION_VERIFIED=YES`. Final manifest/CLI/report SHA-256 are `7BF8A796AF3D4590FDDE961604CBBEF29EC5A427F31CE044164C63E8BDA71B0E`, `634084A93759E433540A61C68B734869BD46DBA5082EFFC228E1D8D45B48F541`, and `D2463222CC187DBB23B80E3D68B7E98CA42F3C25C994435F80BEB598C8A084DA`. The sole P2 concerns broken Codex auxiliary refs and does not affect the product publication.
 
@@ -123,4 +127,4 @@ The local identity, path, capability, backup, encryption, ACL, and WSL evidence 
 
 Gate 19 through Gate 23 bounded preparation and independent review are complete. Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are available and their recorded local evidence matches the sanitized reconciliation report, while the legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred. Gates 25 through 29 remain ineligible until those Gate 24 prerequisites and all other documented blockers are closed.
 
-M4 Slice 1 publication and its post-publication state synchronization are complete. The M4 Slice 2 exact 22-path candidate now awaits independent implementation review, followed conditionally by exact staging, staged review, commit, post-commit verification, normal push, and independent post-push verification. External-provider credentials, Windows-service routing, persistence, signing, and production activation remain outside scope. Gate 24 legal signing work remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.
+R10R6 review-readiness state-identifier consistency remediation plus refreshed release-profile-pinned verification are complete as an uncommitted working-tree candidate. Execute `SEPARATE_INDEPENDENT_EAIRA_M4_SLICE3_S3_R10R6_REVIEW_READINESS_STATE_IDENTIFIER_CONSISTENCY_REMEDIATION_REVIEW`. External-provider credentials, Windows-service routing, persistence, signing, and production activation remain outside scope. Gate 24 legal signing work remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.

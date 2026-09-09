@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseVersion": "0.3.0-m4.2-r1",
+  "releaseVersion": "0.3.0-m4.3-r3",
   "buildContract": "EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_1",
   "targetFramework": ".NETFramework,Version=v4.8",
   "platform": "x64",
@@ -17,7 +17,7 @@
   },
   "functionalSlice": {
     "contract": "EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1",
-    "revision": 6,
+    "revision": 7,
     "execution": "MOCK_OFFLINE_OR_REQUEST_LOCAL_MODEL",
     "flow": [
       "Planning",
@@ -40,6 +40,72 @@
     "realProvider": "FAIL_CLOSED_DISABLED",
     "localProvider": "OLLAMA_LOOPBACK_ENABLED",
     "network": "MOCK_REAL_NONE_LOCAL_LOOPBACK_ONLY",
+    "writes": "NONE"
+  },
+  "projectContext": {
+    "contract": "EAIRA_READ_ONLY_PROJECT_CONTEXT_V1",
+    "allowlistId": "EAIRA_M4_SLICE3_CONTEXT_ALLOWLIST_V1",
+    "outputHarness": "EAIRA.ProjectContext.Harness.exe",
+    "maximumFileBytes": 262144,
+    "maximumAggregateBytes": 1048576,
+    "maximumProjectionBytes": 10000,
+    "maximumCanonicalRequestBytes": 16384,
+    "nativeSymbol": "EAIRA_PROJECT_CONTEXT_NATIVE",
+    "testSeamSymbol": "EAIRA_PROJECT_CONTEXT_TEST_SEAM",
+    "module": "kernel32.dll",
+    "declaringType": "EAIRA.AgentServices.Functional.ProjectContextLoader+ProjectContextWin32Platform",
+    "entryPoints": [
+      "CreateFileW",
+      "GetFileInformationByHandle",
+      "GetFileInformationByHandleEx",
+      "GetFinalPathNameByHandleW",
+      "ReadFile",
+      "CloseHandle"
+    ],
+    "methodImportAttributes": 4453,
+    "methodAttributes": 8337,
+    "methodImplAttributes": 128,
+    "interfaceTypeAttributes": 1048736,
+    "nativeLeaseTypeAttributes": 1048835,
+    "nativeLeaseCloseMethodAttributes": 131,
+    "nativeLeaseInterfaceCount": 0,
+    "nativeImportSignatures": {
+      "Cli": {
+        "CloseHandle": "00010218",
+        "CreateFileW": "0007180E090918090918",
+        "GetFileInformationByHandle": "00020218101180F0",
+        "GetFileInformationByHandleEx": "0004021808101180F409",
+        "GetFinalPathNameByHandleW": "0004091812350909",
+        "ReadFile": "000502181D0509100918"
+      },
+      "ContextHarness": {
+        "CloseHandle": "00010218",
+        "CreateFileW": "0007180E090918090918",
+        "GetFileInformationByHandle": "00020218101180F8",
+        "GetFileInformationByHandleEx": "0004021808101180FC09",
+        "GetFinalPathNameByHandleW": "0004091812350909",
+        "ReadFile": "000502181D0509100918"
+      }
+    },
+    "nativeCallerIlInventory": {
+      "Cli": { "count": 8, "sha256": "E4CCA423C6E1B236E275A50A3DCC4F5A8927B52F7727E15D351FF92AEA94D85D" },
+      "ContextHarness": { "count": 8, "sha256": "85298B95F908F9AD54D3C80CAF70A8F066A6A408EA32AE10436CEFACE8AC7869" }
+    },
+    "expectedHarnessTests": 52,
+    "seamMethodInventory": {
+      "Cli": { "count": 30, "sha256": "630418596A8FF64DE1A5CD55BEC3DC6157FABF9CFF9D02DD7E9425946369F350" },
+      "ContextHarness": { "count": 40, "sha256": "243412F68C72291B0D6BE60A7ABFA19494B7FA2C3CF12C33FFB5FC6AA7F8F184" },
+      "IntakeHarness": { "count": 10, "sha256": "9B8CF3B768846AC2D7393027731024C7850F53CF536A7AF96323E8DB1415E057" },
+      "ProviderHarness": { "count": 5, "sha256": "3561FF30FF3BE3F6E75D91FD0EBAA24FB5A5102AB4E73B7C8517E5B2A699A61D" },
+      "TransportHarness": { "count": 5, "sha256": "252D0FD0A5FD52C11089380BA2F056A000C9F94F808BF81BB24CB7DAD9063AB4" }
+    },
+    "outputIsolationMethodIlInventory": {
+      "Cli": { "count": 21, "sha256": "A7199663563D2AD0B1464792789954AEB8AE9817C906B05FC110749A3DC627D0" },
+      "ContextHarness": { "count": 16, "sha256": "F7AE7296BA2D9FC463D4667F52E71A4285A5659129510230201EE3921CBC72A3" },
+      "IntakeHarness": { "count": 21, "sha256": "C4C873E303047266B48D5F1CABB27F9A3BA89E2BAB607F0DF2465F0530D5F6D6" },
+      "ProviderHarness": { "count": 21, "sha256": "D5038801A82C5630F713BD80FD3D74DED069B1E75EBB801BBF74B422502BFAC0" },
+      "TransportHarness": { "count": 21, "sha256": "10511B5E06FE00A16D60A80A5B13DA4E568ADB71190EAF3E3AF61C0B418636A8" }
+    },
     "writes": "NONE"
   },
   "localModelProvider": {
@@ -78,7 +144,17 @@
     "docs/project/status/AGENT_CONTEXT_VERSION.yaml",
     "docs/project/status/CURRENT_STATUS.md",
     "docs/project/status/TODAY_OBJECTIVE.md",
-    "docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_2_SCOPE_DECISION.md"
+    "docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_2_SCOPE_DECISION.md",
+    "apps/agent-services/src/AgentCore.cs",
+    "apps/agent-services/contracts/EAIRA_READ_ONLY_PROJECT_CONTEXT_V1.md",
+    "apps/agent-services/src/ProjectContext.cs",
+    "apps/agent-services/tests/AgentCoreHarness.cs",
+    "apps/agent-services/tests/ProjectContextHarness.cs",
+    "docs/project/planning/EAIRA_M4_SLICE3_EXACT_IMPLEMENTATION_DESIGN_AND_CHANGED_PATH_MANIFEST.md",
+    "docs/project/planning/EAIRA_M4_SLICE3_READ_ONLY_PROJECT_CONTEXT_ALLOWLIST.md",
+    "docs/project/planning/EAIRA_M4_SLICE3_READ_ONLY_PROJECT_CONTEXT_READINESS_PACKAGE.md",
+    "docs/project/planning/EAIRA_M4_SLICE3_READ_ONLY_PROJECT_CONTEXT_THREAT_MODEL.md",
+    "docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_3_SCOPE_DECISION.md"
   ],
   "referenceAssemblies": [
     {
@@ -131,18 +207,18 @@
       "System.IO.Stream::get_CanRead|200002|count=1",
       "System.IO.Stream::ReadAsync|20041512810501081D0508081149|count=1",
       "System.Net.Http.ByteArrayContent::.ctor|2001011D05|count=1",
-      "System.Net.Http.Headers.HttpContentHeaders::get_ContentEncoding|2000151280BD010E|count=1",
+      "System.Net.Http.Headers.HttpContentHeaders::get_ContentEncoding|2000151280C1010E|count=1",
       "System.Net.Http.Headers.HttpContentHeaders::get_ContentLength|2000151141010A|count=1",
       "System.Net.Http.Headers.HttpContentHeaders::get_ContentType|2000128101|count=1",
       "System.Net.Http.Headers.HttpContentHeaders::set_ContentType|200101128101|count=1",
       "System.Net.Http.Headers.MediaTypeHeaderValue::.ctor|2001010E|count=1",
       "System.Net.Http.Headers.MediaTypeHeaderValue::get_MediaType|20000E|count=1",
-      "System.Net.Http.Headers.MediaTypeHeaderValue::get_Parameters|2000151280BD01128089|count=1",
+      "System.Net.Http.Headers.MediaTypeHeaderValue::get_Parameters|2000151280C101128089|count=1",
       "System.Net.Http.Headers.NameValueHeaderValue::get_Name|20000E|count=1",
       "System.Net.Http.Headers.NameValueHeaderValue::get_Value|20000E|count=1",
       "System.Net.Http.HttpClient::.ctor|2002011280ED02|count=1",
       "System.Net.Http.HttpClient::SendAsync|200315128105011275126D1181091149|count=1",
-      "System.Net.Http.HttpClient::set_Timeout|2001011180D1|count=1",
+      "System.Net.Http.HttpClient::set_Timeout|2001011180D5|count=1",
       "System.Net.Http.HttpClientHandler::.ctor|200001|count=1",
       "System.Net.Http.HttpClientHandler::set_AllowAutoRedirect|20010102|count=1",
       "System.Net.Http.HttpClientHandler::set_AutomaticDecompression|2001011180E9|count=1",

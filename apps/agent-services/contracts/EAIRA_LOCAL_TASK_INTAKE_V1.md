@@ -1,6 +1,6 @@
 # EAIRA Local Task Intake V1
 
-Contract revision: 3
+Contract revision: 5
 
 ## Purpose
 
@@ -20,6 +20,8 @@ The exact local-model form is:
 
     EAIRA.AgentTask.Cli.exe --provider ollama-local --model qwen3:4b --trace <32-uppercase-hex> --goal <1-to-512-character-goal>
 
+Slice 3 opt-in context forms append exactly `--context-root <absolute-Windows-repository-root>` to the mock or local-model form. `real` with context is invalid. Context-free forms retain byte-identical behavior.
+
 ## Provider policy
 
 | Selection | Provider ID | Behavior |
@@ -29,7 +31,7 @@ The exact local-model form is:
 | `ollama-local` | `ollama-loopback-v1` | Executes through `EAIRA_LOCAL_MODEL_PROVIDER_V1` |
 | Any other value | none | Returns `INVALID_REQUEST` and fails closed |
 
-The provider interface is neutral, but the only enabled implementation is the deterministic mock. Selecting `real` proves the configuration switch and safety boundary only; it does not constitute a real-model integration.
+The provider interface is neutral. Enabled implementations are the deterministic mock and the separately contracted `ollama-local` provider. Selecting `real` proves the fail-closed external-provider boundary only; it does not constitute an external-model integration.
 
 ## Outcomes
 
@@ -40,6 +42,7 @@ The provider interface is neutral, but the only enabled implementation is the de
 | `DENIED` | `77` | Guard denied; Operations and Verification did not execute |
 | `PROVIDER_BLOCKED` | `78` | External/real provider execution is disabled by policy |
 | `LOCAL_PROVIDER_ERROR` | `79` | Local listener, timeout, protocol, digest, response, or validation failed closed |
+| `CONTEXT_ERROR` | `80` | Allowlisted context acquisition, validation, projection or canonical-request preflight failed closed |
 
 ## Safety boundary
 
@@ -52,6 +55,7 @@ The provider interface is neutral, but the only enabled implementation is the de
 - Windows service activation or configuration: none.
 - External model provider execution: disabled.
 - The local provider is request-scoped and injected only by the CLI host.
+- Context is request-scoped, read-only and limited by `EAIRA_READ_ONLY_PROJECT_CONTEXT_V1`; it is never read after static Guard preauthorization denies.
 
 ## Acceptance
 
@@ -64,3 +68,4 @@ The provider interface is neutral, but the only enabled implementation is the de
 - Unknown providers and malformed arguments fail closed.
 - Unpaired UTF-16 surrogates fail closed as `INVALID_REQUEST`; valid supplementary Unicode scalars remain accepted.
 - Two clean builds of the CLI and harness are byte-identical.
+- Context success emits only sanitized bundle/projection metadata; context failure and preauthorization denial are byte-exact and leak no path or content.

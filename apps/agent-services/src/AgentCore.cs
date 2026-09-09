@@ -281,10 +281,32 @@ namespace EAIRA.AgentServices.Functional
             return new AgentResult(AgentRole.Planning, AgentDecision.Candidate, task.TaskDigest, ContractCodec.ZeroHash, 0, payload);
         }
 
+        internal AgentResult Execute(TaskEnvelope task, string exactPlanningPrompt)
+        {
+            if (task == null) { throw new ContractException("Planning task is required."); }
+            task.ValidateIntegrity();
+            string payload = ExpectedPayload(task, model, exactPlanningPrompt);
+            return new AgentResult(AgentRole.Planning, AgentDecision.Candidate, task.TaskDigest, ContractCodec.ZeroHash, 0, payload);
+        }
+
         internal static string ExpectedPayload(TaskEnvelope task, IModelProvider deterministicModel)
         {
             if (task == null || deterministicModel == null) { throw new ContractException("Planning semantic inputs are required."); }
             return "PLAN_CANDIDATE|" + deterministicModel.Complete(AgentRole.Planning, task.Goal) + "|STEPS=3";
+        }
+
+        internal static string ExpectedPayload(TaskEnvelope task, IModelProvider deterministicModel, string exactPlanningPrompt)
+        {
+            if (task == null || deterministicModel == null || exactPlanningPrompt == null)
+            {
+                throw new ContractException("Context Planning semantic inputs are required.");
+            }
+            ContractCodec.RequireWellFormedUtf16(exactPlanningPrompt, "Context Planning prompt");
+            string providerOutput = deterministicModel.Complete(AgentRole.Planning, exactPlanningPrompt);
+            string outputDigest = ContractCodec.Sha256Hex(
+                "EAIRA_CONTEXT_PLANNING_OUTPUT_V1\0" + ContractCodec.Field(providerOutput));
+            providerOutput = null;
+            return "PLAN_CANDIDATE_CONTEXT_REDACTED|OUTPUT_SHA256=" + outputDigest + "|STEPS=3";
         }
     }
 
@@ -303,6 +325,26 @@ namespace EAIRA.AgentServices.Functional
         {
             MinimumFunctionalPipeline.ValidateSemanticPrefix(task, new AgentResult[] { planning }, model);
             AgentDecision decision = ExpectedDecision(task);
+            string payload = ExpectedPayload(task, decision);
+            return new AgentResult(AgentRole.Guard, decision, task.TaskDigest, planning.ResultDigest, 1, payload);
+        }
+
+        internal AgentResult Execute(
+            TaskEnvelope task,
+            AgentResult planning,
+            ContextPlanningSeal contextSeal,
+            AgentDecision sealedPreauthorization)
+        {
+            MinimumFunctionalPipeline.ValidateContextSemanticPrefix(
+                task,
+                new AgentResult[] { planning },
+                model,
+                contextSeal);
+            AgentDecision decision = ExpectedDecision(task);
+            if (sealedPreauthorization != decision)
+            {
+                throw new ContractException("Context preauthorization does not match replayed Guard policy.");
+            }
             string payload = ExpectedPayload(task, decision);
             return new AgentResult(AgentRole.Guard, decision, task.TaskDigest, planning.ResultDigest, 1, payload);
         }
@@ -350,6 +392,22 @@ namespace EAIRA.AgentServices.Functional
             return new AgentResult(AgentRole.Operations, AgentDecision.Candidate, task.TaskDigest, guard.ResultDigest, 2, payload);
         }
 
+        internal AgentResult Execute(
+            TaskEnvelope task,
+            AgentResult planning,
+            AgentResult guard,
+            ContextPlanningSeal contextSeal)
+        {
+            MinimumFunctionalPipeline.ValidateContextSemanticPrefix(
+                task,
+                new AgentResult[] { planning, guard },
+                model,
+                contextSeal);
+            if (guard.Decision != AgentDecision.Allow) { throw new ContractException("Operations requires a Guard allow result."); }
+            string payload = ExpectedPayload(guard, model);
+            return new AgentResult(AgentRole.Operations, AgentDecision.Candidate, task.TaskDigest, guard.ResultDigest, 2, payload);
+        }
+
         internal static string ExpectedPayload(AgentResult guard, IModelProvider deterministicModel)
         {
             if (guard == null || deterministicModel == null) { throw new ContractException("Operations semantic inputs are required."); }
@@ -370,6 +428,22 @@ namespace EAIRA.AgentServices.Functional
             return new AgentResult(AgentRole.Verification, AgentDecision.Verified, task.TaskDigest, operations.ResultDigest, 3, payload);
         }
 
+        internal AgentResult Execute(
+            TaskEnvelope task,
+            AgentResult planning,
+            AgentResult guard,
+            AgentResult operations,
+            ContextPlanningSeal contextSeal)
+        {
+            MinimumFunctionalPipeline.ValidateContextSemanticPrefix(
+                task,
+                new AgentResult[] { planning, guard, operations },
+                model,
+                contextSeal);
+            string payload = ExpectedPayload(operations);
+            return new AgentResult(AgentRole.Verification, AgentDecision.Verified, task.TaskDigest, operations.ResultDigest, 3, payload);
+        }
+
         internal static string ExpectedPayload(AgentResult operations)
         {
             if (operations == null) { throw new ContractException("Verification semantic input is required."); }
@@ -386,6 +460,28 @@ namespace EAIRA.AgentServices.Functional
         internal AgentResult Execute(TaskEnvelope task, IList<AgentResult> priorResults, string outcome)
         {
             MinimumFunctionalPipeline.ValidateSemanticPrefix(task, priorResults, model);
+            if (outcome != "PASS" && outcome != "DENIED") { throw new ContractException("Audit outcome is invalid."); }
+            AgentResult prior = priorResults[priorResults.Count - 1];
+            if (outcome == "PASS" && (priorResults.Count != 4 || prior.Role != AgentRole.Verification || prior.Decision != AgentDecision.Verified))
+            {
+                throw new ContractException("PASS audit requires verification.");
+            }
+            if (outcome == "DENIED" && (priorResults.Count != 2 || prior.Role != AgentRole.Guard || prior.Decision != AgentDecision.Deny))
+            {
+                throw new ContractException("DENIED audit requires a Guard denial.");
+            }
+
+            string payload = ExpectedPayload(outcome);
+            return new AgentResult(AgentRole.Audit, AgentDecision.RecordedCandidate, task.TaskDigest, prior.ResultDigest, prior.ChainDepth + 1, payload);
+        }
+
+        internal AgentResult Execute(
+            TaskEnvelope task,
+            IList<AgentResult> priorResults,
+            string outcome,
+            ContextPlanningSeal contextSeal)
+        {
+            MinimumFunctionalPipeline.ValidateContextSemanticPrefix(task, priorResults, model, contextSeal);
             if (outcome != "PASS" && outcome != "DENIED") { throw new ContractException("Audit outcome is invalid."); }
             AgentResult prior = priorResults[priorResults.Count - 1];
             if (outcome == "PASS" && (priorResults.Count != 4 || prior.Role != AgentRole.Verification || prior.Decision != AgentDecision.Verified))
@@ -441,6 +537,56 @@ namespace EAIRA.AgentServices.Functional
         }
     }
 
+    internal sealed class ContextPlanningSeal
+    {
+        internal string TaskDigest { get; private set; }
+        internal string PlanningResultDigest { get; private set; }
+        internal string ProviderId { get; private set; }
+
+        private ContextPlanningSeal(string taskDigest, string planningResultDigest, string providerId)
+        {
+            TaskDigest = taskDigest;
+            PlanningResultDigest = planningResultDigest;
+            ProviderId = providerId;
+        }
+
+        internal static ContextPlanningSeal Create(
+            TaskEnvelope task,
+            AgentResult planning,
+            IModelProvider semanticModel,
+            string exactPlanningPrompt)
+        {
+            if (task == null || planning == null || semanticModel == null || exactPlanningPrompt == null)
+            {
+                throw new ContractException("Context Planning seal inputs are required.");
+            }
+            ModelProviderPolicy.RequireEnabled(semanticModel);
+            MinimumFunctionalPipeline.ValidatePrefix(task, new AgentResult[] { planning });
+            string expectedPayload = PlanningAgent.ExpectedPayload(task, semanticModel, exactPlanningPrompt);
+            if (!String.Equals(planning.Payload, expectedPayload, StringComparison.Ordinal))
+            {
+                throw new ContractException("Context Planning result does not match its exact prompt.");
+            }
+            return new ContextPlanningSeal(task.TaskDigest, planning.ResultDigest, semanticModel.ProviderId);
+        }
+
+        internal void Validate(TaskEnvelope task, AgentResult planning, IModelProvider semanticModel)
+        {
+            if (task == null || planning == null || semanticModel == null)
+            {
+                throw new ContractException("Context Planning seal validation inputs are required.");
+            }
+            ContractCodec.RequireHash(TaskDigest, "Context seal task digest");
+            ContractCodec.RequireHash(PlanningResultDigest, "Context seal Planning digest");
+            if (!String.Equals(TaskDigest, task.TaskDigest, StringComparison.Ordinal) ||
+                !String.Equals(PlanningResultDigest, planning.ResultDigest, StringComparison.Ordinal) ||
+                !String.Equals(ProviderId, semanticModel.ProviderId, StringComparison.Ordinal))
+            {
+                throw new ContractException("Context Planning seal binding failed.");
+            }
+        }
+    }
+
     internal sealed class MinimumFunctionalPipeline
     {
         private readonly IModelProvider model;
@@ -475,6 +621,42 @@ namespace EAIRA.AgentServices.Functional
             results.Add(verification);
             results.Add(new AuditAgent(model).Execute(task, results, "PASS"));
             ValidateChain(task, results, model);
+            return new PipelineResult(task.TraceId, "PASS", results);
+        }
+
+        internal PipelineResult Execute(
+            TaskEnvelope task,
+            string exactPlanningPrompt,
+            AgentDecision sealedPreauthorization)
+        {
+            if (task == null || exactPlanningPrompt == null)
+            {
+                throw new ContractException("Context pipeline inputs are required.");
+            }
+            if (sealedPreauthorization != AgentDecision.Allow)
+            {
+                throw new ContractException("Context pipeline requires an Allow preauthorization.");
+            }
+            task.ValidateIntegrity();
+            List<AgentResult> results = new List<AgentResult>();
+            AgentResult planning = new PlanningAgent(model).Execute(task, exactPlanningPrompt);
+            results.Add(planning);
+            ContextPlanningSeal contextSeal = ContextPlanningSeal.Create(task, planning, model, exactPlanningPrompt);
+            exactPlanningPrompt = null;
+
+            AgentResult guard = new GuardAgent(model).Execute(task, planning, contextSeal, sealedPreauthorization);
+            results.Add(guard);
+            if (guard.Decision != AgentDecision.Allow)
+            {
+                throw new ContractException("Context pipeline cannot continue after a Guard denial.");
+            }
+
+            AgentResult operations = new OperationsAgent(model).Execute(task, planning, guard, contextSeal);
+            results.Add(operations);
+            AgentResult verification = new VerificationAgent(model).Execute(task, planning, guard, operations, contextSeal);
+            results.Add(verification);
+            results.Add(new AuditAgent(model).Execute(task, results, "PASS", contextSeal));
+            ValidateContextChain(task, results, model, contextSeal);
             return new PipelineResult(task.TraceId, "PASS", results);
         }
 
@@ -563,6 +745,47 @@ namespace EAIRA.AgentServices.Functional
             }
         }
 
+        internal static void ValidateContextSemanticPrefix(
+            TaskEnvelope task,
+            IList<AgentResult> results,
+            IModelProvider semanticModel,
+            ContextPlanningSeal contextSeal)
+        {
+            ValidatePrefix(task, results);
+            ModelProviderPolicy.RequireEnabled(semanticModel);
+            if (contextSeal == null) { throw new ContractException("Context Planning seal is required."); }
+            contextSeal.Validate(task, results[0], semanticModel);
+
+            if (results.Count >= 2)
+            {
+                AgentDecision expectedGuardDecision = GuardAgent.ExpectedDecision(task);
+                if (results[1].Decision != expectedGuardDecision)
+                {
+                    throw new ContractException("Guard decision does not match replayed policy.");
+                }
+                RequirePayload(results[1], GuardAgent.ExpectedPayload(task, expectedGuardDecision));
+            }
+            if (results.Count >= 3)
+            {
+                if (results[1].Decision == AgentDecision.Deny)
+                {
+                    RequirePayload(results[2], AuditAgent.ExpectedPayload("DENIED"));
+                }
+                else
+                {
+                    RequirePayload(results[2], OperationsAgent.ExpectedPayload(results[1], semanticModel));
+                }
+            }
+            if (results.Count >= 4)
+            {
+                RequirePayload(results[3], VerificationAgent.ExpectedPayload(results[2]));
+            }
+            if (results.Count == 5)
+            {
+                RequirePayload(results[4], AuditAgent.ExpectedPayload("PASS"));
+            }
+        }
+
         internal static void ValidateChain(TaskEnvelope task, IList<AgentResult> results)
         {
             ValidateChain(task, results, new DeterministicMockModel());
@@ -574,6 +797,18 @@ namespace EAIRA.AgentServices.Functional
             bool deniedComplete = results.Count == 3 && results[1].Decision == AgentDecision.Deny;
             bool allowedComplete = results.Count == 5 && results[1].Decision == AgentDecision.Allow;
             if (!deniedComplete && !allowedComplete) { throw new ContractException("Pipeline chain is incomplete."); }
+        }
+
+        internal static void ValidateContextChain(
+            TaskEnvelope task,
+            IList<AgentResult> results,
+            IModelProvider semanticModel,
+            ContextPlanningSeal contextSeal)
+        {
+            ValidateContextSemanticPrefix(task, results, semanticModel, contextSeal);
+            bool deniedComplete = results.Count == 3 && results[1].Decision == AgentDecision.Deny;
+            bool allowedComplete = results.Count == 5 && results[1].Decision == AgentDecision.Allow;
+            if (!deniedComplete && !allowedComplete) { throw new ContractException("Context pipeline chain is incomplete."); }
         }
 
         private static void RequireRoleDecision(AgentResult result, AgentRole role, AgentDecision decision)
