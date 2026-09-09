@@ -6,7 +6,7 @@
 
 ## Version
 
-0.36.20
+0.36.21
 
 ## Milestone
 
@@ -20,15 +20,15 @@ M4 Functional Agent MVP: Active.
 
 ## Current Scope
 
-Remediate the independent R10R5 machine-like readiness-state identifier mismatch without changing product code or capability, then produce a bounded Revision 20/R10R6 documentary candidate and refreshed hash-bound evidence for an independent review. Slice 2 publication remains the baseline `b3bd69683ae873be59bf5a78e5df4dd6a4e71eec`.
+Synchronize the six controlled status, context and handoff artifacts to the independently verified M4 Slice 3 publication at `a0e172f34ebc09f76e1bd894d680614ed901113d`, without changing product code, Windows state, service routing, signing state or production capability.
 
 ## Current Result
 
-Slice 3 design Revision 20/R10R6 is present as working-tree evidence. The independent R10R5 review confirmed the exact design identity, Revision, readiness row, lifecycle summaries and technical evidence, but failed closed because current machine-like readiness fields mixed `READY_FOR_INDEPENDENT_REVIEW` and `READY_FOR_NEW_INDEPENDENT_REVIEW`. R10R6 assigns one canonical identifier unchanged to every current design, readiness and active-task state field and records the R10R5 review. Refreshed pinned-toolchain verification retains two byte-identical builds and 52 context tests; an independent R10R6 review is next. The candidate remains uncommitted and unpushed. Signing eligibility remains false and Gate 25 remains incomplete.
+R10R6 independent review closed with `P0=0`, `P1=0`, and `P2=0`. R11/R11R1 established the exact 24-path staged snapshot, R12 committed it as `a0e172f34ebc09f76e1bd894d680614ed901113d`, R13 normally pushed it, and R14 independently verified live `origin/master` at that commit with `publication_verified=YES`, `P0=0`, `P1=0`, and `P2=2`. The publication retains two byte-identical builds, 52 context tests, 31 seam specimens, 17 native specimens, three isolation specimens and manifest SHA-256 `ACE552E00EAB9BEFD6DAA4C50C3FD315F2401C514298138E2005B2DFDEE8FB3A`. Signing eligibility remains false and Gate 25 remains incomplete.
 
 ## Out of Scope
 
-External-provider credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, and any work beyond the current separately authorized bounded task remain out of scope. No repository recording, staging, commit, or push is implied by documentary or feasibility work.
+External-provider credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, checkpoint-ref repair, and any work beyond this six-file synchronization remain out of scope. Further staging, commit, or push requires separate Project Owner authorization.
 
 ## Historical Objective Retained for Traceability
 
@@ -120,7 +120,7 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 
 ## Expected Deliverables
 
-One bounded Revision 20/R10R6 documentary working-tree candidate that makes every current review-readiness state identifier exactly equal, with refreshed hash-bound evidence and no product, allowlist, runtime-write, service, signing, staging, commit or push change.
+One exact six-file post-publication synchronization candidate recording the verified Slice 3 commit, publication evidence, retained authority boundaries and next independent review gate, with no product, runtime-write, Windows, service, signing, staging, commit or push change.
 
 ## 2026-09-01 Reconciliation Results
 
@@ -137,7 +137,7 @@ One bounded Revision 20/R10R6 documentary working-tree candidate that makes ever
 - A malicious Planning provider echo cannot appear in any downstream AgentResult or canonical CLI JSON; only its domain-separated SHA-256 summary is retained.
 - The exact root/ancestor/final-file Cloud Files matrices, hostile-root and substitution matrices, duplicate/missing required fields, canonical repository shape, boundary/golden-vector tests and output-isolation tests pass under the pinned build profile.
 - The production verifier rejects directory enumeration, raw-content output and per-file-digest output specimens, and both clean builds reproduce the same outputs.
-- Project-memory and diff validation pass, the three unrelated Claude files remain untouched, and the candidate remains unstaged, uncommitted and unpushed.
+- Project-memory and diff validation pass, the three unrelated Claude files remain untouched and untracked, and exactly the six authorized synchronization files are modified but unstaged.
 
 ### 2026-09-01 Reconciliation Criteria Retained for Traceability
 
@@ -151,4 +151,4 @@ One bounded Revision 20/R10R6 documentary working-tree candidate that makes ever
 
 ## Next Action
 
-Execute `SEPARATE_INDEPENDENT_EAIRA_M4_SLICE3_S3_R10R6_REVIEW_READINESS_STATE_IDENTIFIER_CONSISTENCY_REMEDIATION_REVIEW`. Staging, commit, and push require later separate Project Owner gates. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, or operational activation.
+Execute `SEPARATE_INDEPENDENT_EAIRA_M4_SLICE3_S3_R15_POST_PUBLICATION_CONTROLLED_STATE_AND_HANDOFF_SYNCHRONIZATION_REVIEW`. Staging, commit, and push require later separate Project Owner gates. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, checkpoint-ref repair, or operational activation.
