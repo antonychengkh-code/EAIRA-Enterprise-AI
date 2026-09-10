@@ -6,7 +6,7 @@
 
 ## Version
 
-0.36.41
+0.36.42
 
 ## Milestone
 
@@ -24,11 +24,11 @@ Complete the independently gated repository lifecycle for the exact six-file Sli
 
 ## Current Result
 
-Slice 4 Gates 23-28 are complete. The independently verified publication is commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`; live, cached and local master agree. Gate 28 returned `PUBLICATION_VERIFIED=YES`, `GATE_SEQUENCE_COMPLETE=YES`, `P0=0`, `P1=0`, `P2=0`. The exact six-file synchronization is staged; the first staged review failed closed only because the files still described a pre-staging state. This remediated staged snapshot now awaits a fresh independent review and has not been committed or pushed.
+Slice 4 Gates 23-28 are complete. The independently verified publication is commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`; live, cached and local master agree. Gate 28 returned `PUBLICATION_VERIFIED=YES`, `GATE_SEQUENCE_COMPLETE=YES`, `P0=0`, `P1=0`, `P2=0`. The first six-file synchronization commit `904c52698a00051f9af27e917d61b057a944d79f` was stopped before push when independent post-commit review found one P1 self-referential materialization-state defect and one response-only P2 path typo. This replacement snapshot is phase-stable: it records that finding and the external-evidence rule without asserting whether this replacement itself is staged, committed or pushed.
 
 ## Out of Scope
 
-Product implementation, release profile or build-script changes, model/provider invocation, arbitrary vault search, external credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, checkpoint-ref repair and force push remain outside scope. Only the exact six-file staged review, normal commit, post-commit verification, normal push and post-push verification may proceed under the Project Owner authorization.
+Product implementation, release profile or build-script changes, model/provider invocation, arbitrary vault search, external credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, checkpoint-ref repair and force push remain outside scope. Repository-recording authority is limited to the exact six files, normal commit and normal push, with each transition gated by separate independent evidence.
 
 ## Historical Objective Retained for Traceability
 
@@ -120,7 +120,7 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 
 ## Expected Deliverables
 
-Exactly six modified files—four controlled status artifacts, `CURRENT_CONTEXT.md`, and `HANDOFF.md`—with evidence-backed Slice 4 publication state and passing read-only validation, ready for a separate independent synchronization review.
+Exactly six phase-stable files—four controlled status artifacts, `CURRENT_CONTEXT.md`, and `HANDOFF.md`—that record the verified Slice 4 product publication and require external Git evidence for their own repository-recording transitions.
 
 ## 2026-09-01 Reconciliation Results
 
@@ -137,7 +137,7 @@ Exactly six modified files—four controlled status artifacts, `CURRENT_CONTEXT.
 
 - Local `HEAD`, cached `origin/master` and live `refs/heads/master` all equal `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`.
 - Commit parent, tree, exact 21-path publication, sealed manifest/profile hashes and Gate 28 verdict are recorded without inference.
-- All six current-state/context/handoff files use one staged-snapshot synchronization identity and matching version references.
+- All six current-state/context/handoff files use one phase-stable synchronization identity and matching version references without claiming their own staging, commit or push position.
 - Project-memory and diff validation pass, tracked files outside the six-file set remain unchanged, and the three unrelated Claude API paths remain untouched and untracked.
 
 ### 2026-09-01 Reconciliation Criteria Retained for Traceability
@@ -152,4 +152,4 @@ Exactly six modified files—four controlled status artifacts, `CURRENT_CONTEXT.
 
 ## Next Action
 
-Repeat the independent review of the remediated exact six-file staged snapshot. If it passes with no P0 or P1, create the already authorized normal commit, independently verify it, normally push it, and independently verify live publication. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, checkpoint-ref repair or operational activation.
+Use current external Git evidence and the latest independent verdict to advance only the next eligible transition in the exact-six repository-recording lifecycle; a P0 or P1 stops fail-closed. The controlled snapshot does not self-assert its materialization, so no later edit is required solely to mirror stage, commit or push. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, checkpoint-ref repair or operational activation.

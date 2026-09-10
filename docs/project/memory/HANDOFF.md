@@ -12,7 +12,7 @@ authority: provisional
 
 ## State
 
-[Clause S4-STATE-HANDOFF] Obsidian project-memory structure is valid for report-only scheduled audits. M4 Slice 1 through Slice 4 are published. Slice 4 commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`, contains exactly 21 authorized text paths. Gate 28 independently verified live publication with `P0=0`, `P1=0`, `P2=0`, `PUBLICATION_VERIFIED=YES` and `GATE_SEQUENCE_COMPLETE=YES`. Final profile SHA-256 is `C8BFBB36D344D547035E97A4CB13AE1B10A3A533BA644CC9BBE52F208D6D8464`; sealed manifest SHA-256 is `D2EA61380DEA299BF856FFB4634B8A8B720EB6EE7481A7D89F17885DD262C086`. The exact six-file post-publication synchronization is staged after remediation of the first staged review's two materialization-state findings; it is not committed or pushed and awaits a fresh independent staged review.
+[Clause S4-STATE-HANDOFF] Obsidian project-memory structure is valid for report-only scheduled audits. M4 Slice 1 through Slice 4 are published. Slice 4 commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`, contains exactly 21 authorized text paths. Gate 28 independently verified live publication with `P0=0`, `P1=0`, `P2=0`, `PUBLICATION_VERIFIED=YES` and `GATE_SEQUENCE_COMPLETE=YES`. Final profile SHA-256 is `C8BFBB36D344D547035E97A4CB13AE1B10A3A533BA644CC9BBE52F208D6D8464`; sealed manifest SHA-256 is `D2EA61380DEA299BF856FFB4634B8A8B720EB6EE7481A7D89F17885DD262C086`. The first six-file synchronization commit `904c52698a00051f9af27e917d61b057a944d79f` was not pushed because independent post-commit review returned one P1 for self-referential staged-state wording and one response-only P2 path typo. This replacement snapshot is phase-stable and delegates its own repository materialization facts to external Git evidence and independent reviews.
 
 ## Canonical Context
 
@@ -87,8 +87,7 @@ authority: provisional
 ## Remaining
 
 - Keep certificate purchase/enrollment deferred until the release-timing decision; when resumed, complete Gate 24.12–24.14 and sign only the accepted Gate 25 hashes.
-- Independently review the exact six-file Slice 4 post-publication controlled-state and HANDOFF synchronization candidate.
-- Repeat the independent review of the remediated exact six-file staged snapshot; if it passes, proceed through the authorized normal commit/post-commit and normal push/post-push Gates.
+- Preserve the exact-six Slice 4 post-publication synchronization boundary and advance only the repository-recording transition authorized by current external Git evidence and the latest independent verdict; stop fail-closed on any P0 or P1.
 - Begin no new Slice scope or product implementation until a later Project Owner decision.
 - Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The new CLI is a separate local task-intake surface; it is not wired to those Windows services, IPC, network, credentials, storage, or external systems.
 - Do not treat R3 publication or M4 Slice 1 local verification as signing eligibility. The binaries remain unsigned and Gate 25 remains incomplete.
