@@ -6,7 +6,7 @@
 
 ## Version
 
-0.36.42
+0.36.43
 
 ## Milestone
 
@@ -24,7 +24,7 @@ Complete the independently gated repository lifecycle for the exact six-file Sli
 
 ## Current Result
 
-Slice 4 Gates 23-28 are complete. The independently verified publication is commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`; live, cached and local master agree. Gate 28 returned `PUBLICATION_VERIFIED=YES`, `GATE_SEQUENCE_COMPLETE=YES`, `P0=0`, `P1=0`, `P2=0`. The first six-file synchronization commit `904c52698a00051f9af27e917d61b057a944d79f` was stopped before push when independent post-commit review found one P1 self-referential materialization-state defect and one response-only P2 path typo. This replacement snapshot is phase-stable: it records that finding and the external-evidence rule without asserting whether this replacement itself is staged, committed or pushed.
+Slice 4 Gates 23-28 are complete. The independently verified publication is commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`; live, cached and local master agree. Gate 28 returned `PUBLICATION_VERIFIED=YES`, `GATE_SEQUENCE_COMPLETE=YES`, `P0=0`, `P1=0`, `P2=0`. The first six-file synchronization commit `904c52698a00051f9af27e917d61b057a944d79f` stopped at a post-commit review with `P1=1` and `P2=1`. The next phase-stable commit `50b5ed2fc252dfea7dd6f0771c143c1e161e9072` reached a separate post-commit gate where no push operation was performed and review found one P1 temporal ambiguity in HANDOFF. This replacement records both historical gate outcomes without asserting whether the replacement itself is staged, committed or pushed.
 
 ## Out of Scope
 
