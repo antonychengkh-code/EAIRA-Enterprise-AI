@@ -6,7 +6,7 @@
 
 ## Version
 
-0.36.39
+0.36.41
 
 ## Milestone
 
@@ -20,15 +20,15 @@ M4 Functional Agent MVP: Active.
 
 ## Current Scope
 
-Complete the authorized phase-stable Slice 4 Gate 24-28 lifecycle while preserving exact 21-path scope, all existing checks and independent review of every new clean A/B baseline.
+Complete the independently gated repository lifecycle for the exact six-file Slice 4 post-publication controlled-state and HANDOFF synchronization without changing product code.
 
 ## Current Result
 
-Gate 24 initial and R1 reviews failed closed. D08 profile-calibration review returned one P1 for external profile SHA comparison after JSON parsing; R2R1 corrected that order. The later R2R1 sealed-final review returned `CANNOT_CLOSE`, `P0=0`, `P1=2`, `P2=0`, for missing named stable abuse cases and one stale allowlist state. Gate 23 R2R2 adds the complete cross-matrix, eighth-file, Unicode, explicit query-rejection and zero-result non-emission cases while preserving all prior controls. Lifecycle completion requires a new clean A/B baseline and independent evidence.
+Slice 4 Gates 23-28 are complete. The independently verified publication is commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`; live, cached and local master agree. Gate 28 returned `PUBLICATION_VERIFIED=YES`, `GATE_SEQUENCE_COMPLETE=YES`, `P0=0`, `P1=0`, `P2=0`. The exact six-file synchronization is staged; the first staged review failed closed only because the files still described a pre-staging state. This remediated staged snapshot now awaits a fresh independent review and has not been committed or pushed.
 
 ## Out of Scope
 
-Model/provider invocation, arbitrary vault search, external credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, checkpoint-ref repair and force push remain outside this Slice. Only the exact authorized Gate 23-28 repository lifecycle may advance after its independent checks pass.
+Product implementation, release profile or build-script changes, model/provider invocation, arbitrary vault search, external credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, checkpoint-ref repair and force push remain outside scope. Only the exact six-file staged review, normal commit, post-commit verification, normal push and post-push verification may proceed under the Project Owner authorization.
 
 ## Historical Objective Retained for Traceability
 
@@ -120,7 +120,7 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 
 ## Expected Deliverables
 
-Four bounded Slice 4 scope artifacts plus synchronized controlled status/context/handoff records, ready for an independent scope/readiness review.
+Exactly six modified files—four controlled status artifacts, `CURRENT_CONTEXT.md`, and `HANDOFF.md`—with evidence-backed Slice 4 publication state and passing read-only validation, ready for a separate independent synchronization review.
 
 ## 2026-09-01 Reconciliation Results
 
@@ -135,11 +135,10 @@ Four bounded Slice 4 scope artifacts plus synchronized controlled status/context
 
 [Clause S4-STATE-TODAY-CRITERIA]
 
-- Digest inputs have one exact byte representation, including `0x00` separators, boolean bytes and emitted-match framing/order.
-- Frontmatter acceptance has exact LF/CRLF, BOM, raw-byte, delimiter, line-number and empty-document semantics.
-- Current-context authority links point only to the active Slice 4 scope package and do not name a nonexistent or stale design.
-- A new independent Gate 24 review returns no P0 or P1 before staging.
-- Project-memory and diff validation pass, and the three unrelated Claude files remain untouched and untracked.
+- Local `HEAD`, cached `origin/master` and live `refs/heads/master` all equal `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`.
+- Commit parent, tree, exact 21-path publication, sealed manifest/profile hashes and Gate 28 verdict are recorded without inference.
+- All six current-state/context/handoff files use one staged-snapshot synchronization identity and matching version references.
+- Project-memory and diff validation pass, tracked files outside the six-file set remain unchanged, and the three unrelated Claude API paths remain untouched and untracked.
 
 ### 2026-09-01 Reconciliation Criteria Retained for Traceability
 
@@ -153,4 +152,4 @@ Four bounded Slice 4 scope artifacts plus synchronized controlled status/context
 
 ## Next Action
 
-Execute the authorized phase-stable Slice 4 Gate 24-28 lifecycle in order: independently review the calibrated profile; create and review new sealed A/B evidence; stage and independently review exactly 21 paths; create one normal commit and independently verify it; normally push and independently verify live publication. A P0 or P1 stops fail-closed and requires bounded remediation plus a new clean A/B baseline. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, checkpoint-ref repair or operational activation.
+Repeat the independent review of the remediated exact six-file staged snapshot. If it passes with no P0 or P1, create the already authorized normal commit, independently verify it, normally push it, and independently verify live publication. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, checkpoint-ref repair or operational activation.
