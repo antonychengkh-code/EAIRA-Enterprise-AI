@@ -53,7 +53,7 @@
     "nativeSymbol": "EAIRA_PROJECT_CONTEXT_NATIVE",
     "testSeamSymbol": "EAIRA_PROJECT_CONTEXT_TEST_SEAM",
     "module": "kernel32.dll",
-    "declaringType": "EAIRA.AgentServices.Functional.ProjectContextLoader+ProjectContextWin32Platform",
+    "declaringType": "EAIRA.AgentServices.Functional.ProjectContextWin32Platform",
     "entryPoints": [
       "CreateFileW",
       "GetFileInformationByHandle",
@@ -70,11 +70,19 @@
     "nativeLeaseCloseMethodAttributes": 131,
     "nativeLeaseInterfaceCount": 0,
     "nativeImportSignatures": {
+      "KnowledgeCli": {
+        "CloseHandle": "00010218",
+        "CreateFileW": "0007180E090918090918",
+        "GetFileInformationByHandle": "00020218101160",
+        "GetFileInformationByHandleEx": "000402180810116409",
+        "GetFinalPathNameByHandleW": "00040918123D0909",
+        "ReadFile": "000502181D0509100918"
+      },
       "Cli": {
         "CloseHandle": "00010218",
         "CreateFileW": "0007180E090918090918",
-        "GetFileInformationByHandle": "00020218101180F0",
-        "GetFileInformationByHandleEx": "0004021808101180F409",
+        "GetFileInformationByHandle": "00020218101180F4",
+        "GetFileInformationByHandleEx": "0004021808101180F809",
         "GetFinalPathNameByHandleW": "0004091812350909",
         "ReadFile": "000502181D0509100918"
       },
@@ -88,24 +96,139 @@
       }
     },
     "nativeCallerIlInventory": {
-      "Cli": { "count": 8, "sha256": "E4CCA423C6E1B236E275A50A3DCC4F5A8927B52F7727E15D351FF92AEA94D85D" },
-      "ContextHarness": { "count": 8, "sha256": "85298B95F908F9AD54D3C80CAF70A8F066A6A408EA32AE10436CEFACE8AC7869" }
+      "KnowledgeCli": { "count": 8, "sha256": "4B11B9713D98FA2FD23DFDEE33C77E571732F06548A8834199B46DB250B63614" },
+      "Cli": { "count": 8, "sha256": "27739C999654A474EA203DFFE369820CF6DAF09FA07AD79B1E15C052A7F49775" },
+      "ContextHarness": { "count": 8, "sha256": "4461DF03ECEA25ADD6315841076EAAFC200CF24F634B6DBEDF7552CACE3ECADC" }
     },
     "expectedHarnessTests": 52,
     "seamMethodInventory": {
-      "Cli": { "count": 30, "sha256": "630418596A8FF64DE1A5CD55BEC3DC6157FABF9CFF9D02DD7E9425946369F350" },
-      "ContextHarness": { "count": 40, "sha256": "243412F68C72291B0D6BE60A7ABFA19494B7FA2C3CF12C33FFB5FC6AA7F8F184" },
-      "IntakeHarness": { "count": 10, "sha256": "9B8CF3B768846AC2D7393027731024C7850F53CF536A7AF96323E8DB1415E057" },
-      "ProviderHarness": { "count": 5, "sha256": "3561FF30FF3BE3F6E75D91FD0EBAA24FB5A5102AB4E73B7C8517E5B2A699A61D" },
-      "TransportHarness": { "count": 5, "sha256": "252D0FD0A5FD52C11089380BA2F056A000C9F94F808BF81BB24CB7DAD9063AB4" }
+      "Cli": { "count": 30, "sha256": "BEA2F9E7FD642D6647E6DC2797CD2D569C1EE8475D4E8D82FABD7BD11CB67185" },
+      "ContextHarness": { "count": 40, "sha256": "5C08987E1875CEAFB484B45884584AA6801B7D907822CA8C9A29EEFE0FC9BFA7" },
+      "IntakeHarness": { "count": 10, "sha256": "993DB1E2954F72121C9200E39BE95A09F9DB19A35CE94A7E93765FFD6D27C10D" },
+      "ProviderHarness": { "count": 5, "sha256": "36817E4E0E92E3742CC88F3DDBEC86D480F2E33FE1957D3DB7C3B2C0C0DA3EA4" },
+      "TransportHarness": { "count": 5, "sha256": "5182405DBA3C165CDBFD1E44E7B2F2442C3F9325E129383CD4291B8537F48919" }
     },
     "outputIsolationMethodIlInventory": {
-      "Cli": { "count": 21, "sha256": "A7199663563D2AD0B1464792789954AEB8AE9817C906B05FC110749A3DC627D0" },
-      "ContextHarness": { "count": 16, "sha256": "F7AE7296BA2D9FC463D4667F52E71A4285A5659129510230201EE3921CBC72A3" },
-      "IntakeHarness": { "count": 21, "sha256": "C4C873E303047266B48D5F1CABB27F9A3BA89E2BAB607F0DF2465F0530D5F6D6" },
-      "ProviderHarness": { "count": 21, "sha256": "D5038801A82C5630F713BD80FD3D74DED069B1E75EBB801BBF74B422502BFAC0" },
-      "TransportHarness": { "count": 21, "sha256": "10511B5E06FE00A16D60A80A5B13DA4E568ADB71190EAF3E3AF61C0B418636A8" }
+      "Cli": { "count": 21, "sha256": "D09EF87337BD5467EE575EF34013F97F49C2A0CCE2EFC2CE0FFF484DE89BF21F" },
+      "ContextHarness": { "count": 16, "sha256": "2F18768EDB870BEC88144810C3067F557601CCDD03A60CC19449C6AF997BBB10" },
+      "IntakeHarness": { "count": 21, "sha256": "EC1AD70965D8C8D5F2970ADFA2525CDA002A6285D098307C1C4A8851B47AD0D1" },
+      "ProviderHarness": { "count": 21, "sha256": "4AE4D2BED04A92139DDECCDE5D727F5BA6CD9857637EDE2E86016D55289BC2A2" },
+      "TransportHarness": { "count": 21, "sha256": "9D6B57B1ADE32AB1332600EBD7CEE569037D9F025B6F7D6B9304D20044B26B95" }
     },
+    "writes": "NONE"
+  },
+  "projectKnowledge": {
+    "contract": "EAIRA_PROJECT_KNOWLEDGE_QUERY_V1",
+    "output": "EAIRA.ProjectKnowledge.Cli.exe",
+    "outputHarness": "EAIRA.ProjectKnowledge.Harness.exe",
+    "nativeSymbol": "EAIRA_PROJECT_KNOWLEDGE_NATIVE",
+    "testSeamSymbol": "EAIRA_PROJECT_KNOWLEDGE_TEST_SEAM",
+    "platformNativeSymbol": "EAIRA_PROJECT_READONLY_NATIVE",
+    "sources": [
+      "src/ContractCodec.cs",
+      "src/ProjectReadOnlyPlatform.cs",
+      "src/ProjectKnowledge.cs",
+      "src/ProjectKnowledgeHost.cs"
+    ],
+    "harnessSources": [
+      "src/ContractCodec.cs",
+      "src/ProjectReadOnlyPlatform.cs",
+      "src/ProjectKnowledge.cs",
+      "src/ProjectKnowledgeHost.cs",
+      "tests/ProjectKnowledgeHarness.cs"
+    ],
+    "frameworkReferences": [
+      { "file": "mscorlib.dll", "sha256": "6B35530467B914B0B195146CA1D1485DDD219AFAAD6461103F16F54E952F75A9" },
+      { "file": "System.dll", "sha256": "2FE343569F794F2CA92EE14A41875571A9F21BF92637B8F8EE86306534209CCA" }
+    ],
+    "pathLiterals": [
+      "docs/project/memory/README.md",
+      "docs/project/memory/DECISION_INDEX.md",
+      "docs/project/memory/DISCOVERY_INDEX.md",
+      "docs/project/memory/PROCEDURE_INDEX.md",
+      "docs/project/memory/OPEN_QUESTIONS.md",
+      "docs/project/memory/STABILITY_CHECKLIST.md",
+      "docs/project/memory/MEMORY_SCHEMA.md"
+    ],
+    "boundRepositoryInputs": [
+      { "file": "docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_4_SCOPE_DECISION.md", "sha256": "894C3A7769E2C290F2C652FFC6C2E986AD3E14B8580DAE475B223EB34112052A" },
+      { "file": "docs/project/planning/EAIRA_M4_SLICE4_BOUNDED_READ_ONLY_PROJECT_KNOWLEDGE_QUERY_ALLOWLIST.md", "sha256": "505F1A8F770F5B27C81CDACFCED4D915197CC9F64172C2C2609C9955CF66DEF9" },
+      { "file": "docs/project/planning/EAIRA_M4_SLICE4_BOUNDED_READ_ONLY_PROJECT_KNOWLEDGE_QUERY_THREAT_MODEL.md", "sha256": "C58414CAE61AF9198061B68B76195CA2810F280BF067A11ABB7A3802C8D77271" },
+      { "file": "docs/project/planning/EAIRA_M4_SLICE4_BOUNDED_READ_ONLY_PROJECT_KNOWLEDGE_QUERY_READINESS_PACKAGE.md", "sha256": "FFF8BD2F46A637980BB3DBCE6F89CE53D3BEB7611F20767FCE4921F7BF94BF1D" },
+      { "file": "docs/project/planning/EAIRA_M4_SLICE4_EXACT_IMPLEMENTATION_DESIGN_AND_CHANGED_PATH_MANIFEST.md", "sha256": "C2C111FD667EBBA432520CEC234C549CF8CBAFFB815FCE1ED58F9C8B50B10156" },
+      { "file": "apps/agent-services/contracts/EAIRA_PROJECT_KNOWLEDGE_QUERY_V1.md", "sha256": "836B24556B5A5C0C67E798A4B3CFA85FF75B5B5D696C0C8813C6D17FDA5BF677" },
+      { "file": "apps/agent-services/src/ContractCodec.cs", "sha256": "B0AB23001BAF7A5FC3CCE095138C69CD0E588906B06A68593F350D1E6663241C" },
+      { "file": "apps/agent-services/src/AgentCore.cs", "sha256": "26EA45FA683F210A5F1C264E3391195B7FB655D3EFBC1D7D1E0504EB89D03AC0" },
+      { "file": "apps/agent-services/src/ProjectReadOnlyPlatform.cs", "sha256": "B84BDF996EA7C8BFAC4204537A7BB8A16D94EC289175BFD6BD0F0C12C19ACCA7" },
+      { "file": "apps/agent-services/src/ProjectContext.cs", "sha256": "1F9666438A81658F1702F3343E9E646F5ABC87B7B5B046C73916400C766A037E" },
+      { "file": "apps/agent-services/src/ProjectKnowledge.cs", "sha256": "3294FAFD0CCFE61049073AA1A80A252673DF8D67EDECEA13F5E67CDC211C5723" },
+      { "file": "apps/agent-services/src/ProjectKnowledgeHost.cs", "sha256": "E82FEBED7AD5E032F42B35FD7A5D5AC1B5B1ED27DD4123E202C2F018135E0DB1" },
+      { "file": "apps/agent-services/tests/ProjectKnowledgeHarness.cs", "sha256": "E0BEF91BE4A296DA21A37525BFAE91353D4D081AEE28B72AE2F0090106C7378E" },
+      { "file": "apps/agent-services/build/Invoke-Gate25UnsignedRelease.ps1", "sha256": "CCC62FA43DDA9EAD696F3A807CAB5B0079AB13E39A7FD47489E0F771E7CDADBD" },
+      { "file": "docs/project/status/CURRENT_STATUS.md", "sha256": "8DC994749D1F7FC764C1DFE842EA61701004BF11FFD470C2CB307B01D67AE9B7" },
+      { "file": "docs/project/status/TODAY_OBJECTIVE.md", "sha256": "FFFC7D755189613338D9536684C676043AEDE82D71177CCB9EADBF6952D27347" },
+      { "file": "docs/project/status/ACTIVE_TASK.yaml", "sha256": "56F53C684E60A67585F7170C7C4193C0285D1CFF6B4FC2EE88B81DB308F63B73" },
+      { "file": "docs/project/status/AGENT_CONTEXT_VERSION.yaml", "sha256": "EADB6F7050CEF9CCB03392C41C0EC886FAA773F2CE66CD981A42D8A770C10106" },
+      { "file": "docs/project/context/CURRENT_CONTEXT.md", "sha256": "973324650F59BF6C9954E6296C53F4B71C0BEE876C30B659A6A5BAEC34E99B78" },
+      { "file": "docs/project/memory/HANDOFF.md", "sha256": "5E8372A380ACFB63C1C006E949DA8CF67F4490638B068B7716F34A97324765BE" }
+    ],
+    "metadataInventories": {
+      "Cli": {
+        "image": { "count": 22016, "sha256": "86B0397AA7D5F72AB8041C979A6B9071FE179335BE6343EEB07E7040A3CB84E6" },
+        "typeDefs": { "count": 26, "sha256": "8D0FD410DC19CA429E89F6D3DE06A4820100DB2DF29DD1BCB1614E051ACD9E14" },
+        "methodDefs": { "count": 104, "sha256": "A0F8233E7B999123AE45C58DE29BD7524647A645040470FCA57FC602A86D800C" },
+        "memberRefs": { "count": 77, "sha256": "B3806C066840801084C662931A8B81EB1F8B88F357C5A32978D588AEFE0DBAE9" },
+        "callGraph": { "count": 436, "sha256": "D51F42BF4E3B875A2C684CA49F1A0E39AA96438962337A0B05723355A582F12E" },
+        "codecClosure": { "count": 79, "sha256": "0E27D3864188393C7A5141B39592781A2CBF474F5F20102032B48B6EA93F7ED7" },
+        "codecSemanticClosure": { "count": 79, "sha256": "3A2B115DFE1C4BC7CD86A5F3126CDBB0D14B70CC8F0863833D3D2725DBDEB800" }
+      },
+      "Harness": {
+        "image": { "count": 48640, "sha256": "A9E60D7229D45C9FB71FF644C01D6F1A5300D86E6F946FC035E642B962DC61A6" },
+        "typeDefs": { "count": 67, "sha256": "7360417F6ADD1EB242DB2947E8FD84D00E8C953822A0435364E309BE72C1FB1F" },
+        "methodDefs": { "count": 236, "sha256": "537D5F13A1EE3AA8910B7D38E6C1E95696F498B2AF3A5F80B001D28A10EB0325" },
+        "memberRefs": { "count": 96, "sha256": "C666705F0B6C5ADC3FC388EB24F4CAF874488D65DDE5161D09EA2A8039788089" },
+        "callGraph": { "count": 1363, "sha256": "02F931360E521FFA9C2C8FD52EF5AE7AA5F99DDAA19C62BAC04C503C4B46FAEE" },
+        "codecClosure": { "count": 79, "sha256": "7F3726B2C56C4DEECED677468ADBFAB3F93C8ED05850869922C2B44060AC6CC2" },
+        "codecSemanticClosure": { "count": 79, "sha256": "3A2B115DFE1C4BC7CD86A5F3126CDBB0D14B70CC8F0863833D3D2725DBDEB800" }
+      }
+    },
+    "normalizedNativeInventory": {
+      "pInvokeTuple": { "count": 6, "sha256": "135E81286F7C46FB759911426A6737160D514A39FF01E20B0358B824C3024F0B" },
+      "callGraph": { "count": 8, "sha256": "95B7AC73505DE411A4FC60A501D5909CE8D06D99C19D6722D061871DCBEB8F2B" },
+      "normalizedCallerIl": { "count": 47, "sha256": "7A03E73B8AA72DE3B16F0B70175062B9208DF83EDF6F6BA9207EA4ACB790EB6B" }
+    },
+    "maximumPhysicalBytes": 65539,
+    "maximumContentBytes": 65536,
+    "maximumAggregateBytes": 262144,
+    "maximumStdoutBytes": 16384,
+    "maximumMatches": 8,
+    "expectedHarnessTests": 465,
+    "expectedHarnessCaseNameSha256": "4D938BBEB62914787E96DF381953D9BE0A8EB0D723F9483CF5638A4EDB372DA3",
+    "querySha256A": "AC87D75CD0EDF9A4DFEA57A1503749811E01E2362DFEF7B4503F4CDF029A6FAF",
+    "zeroResultSha256": "9F73299A3BBE37839C2F3B2105027A59E001B06ACC1216849FF6873437B05DC5",
+    "oneResultSha256": "F1A152FD8406D4464E796603AF513B956D6F68F500FE95788D4D1D2D96019D73",
+    "zeroStdoutBytes": 362,
+    "zeroStdoutSha256": "406C4FCF3040C1ACD9D1272DC098164FE17545A120C612AC403A6205B30A0019",
+    "oneStdoutBytes": 479,
+    "oneStdoutSha256": "7D425FFAA9DA666FB500B1D4FE0A395320132EDFE67BF715522EA957E73FFDF5",
+    "channelMatrix": {
+      "invalid": { "exitCode": 64, "stdoutBytes": 106, "stdoutSha256": "392354E45E0385700D1A25802F9872940F613035F69FFBBBE9624C4D9174964F", "stderrBytes": 0 },
+      "zero": { "exitCode": 0, "stdoutBytes": 362, "stdoutSha256": "406C4FCF3040C1ACD9D1272DC098164FE17545A120C612AC403A6205B30A0019", "stderrBytes": 0 },
+      "one": { "exitCode": 0, "stdoutBytes": 479, "stdoutSha256": "7D425FFAA9DA666FB500B1D4FE0A395320132EDFE67BF715522EA957E73FFDF5", "stderrBytes": 0 },
+      "knowledgeError": { "exitCode": 81, "stdoutBytes": 106, "stdoutSha256": "731C6CB040AEFF16CAE87EE541FF097598FEBD6AFBE7399F7A213D61FFCD1D23", "stderrBytes": 0 }
+    },
+    "specimenNames": [
+      "EXTRA_PATH_LITERAL", "ARBITRARY_PATH_METHOD", "OUTPUT_SCHEMA_CHANGE", "RAW_CONTENT_OUTPUT",
+      "RAW_PATH_OUTPUT", "RAW_QUERY_OUTPUT", "WRONG_DIGEST_FRAMING", "ALTERNATE_FACTORY",
+      "ALTERNATE_CONSTRUCTOR", "ALTERNATE_CALLER", "REFLECTION_DISPATCH", "DYNAMIC_DISPATCH",
+      "WRITE_REFERENCE", "NETWORK_REFERENCE", "DIRECTORY_ENUMERATION", "DUPLICATE_PINVOKE",
+      "MOVED_PINVOKE_VISIBILITY"
+    ],
+    "expectedCliBytes": 22016,
+    "expectedCliSha256": "86B0397AA7D5F72AB8041C979A6B9071FE179335BE6343EEB07E7040A3CB84E6",
+    "expectedHarnessBytes": 48640,
+    "expectedHarnessSha256": "A9E60D7229D45C9FB71FF644C01D6F1A5300D86E6F946FC035E642B962DC61A6",
+    "network": "NONE",
     "writes": "NONE"
   },
   "localModelProvider": {
@@ -205,40 +328,40 @@
     ],
     "memberReferences": [
       "System.IO.Stream::get_CanRead|200002|count=1",
-      "System.IO.Stream::ReadAsync|20041512810501081D0508081149|count=1",
+      "System.IO.Stream::ReadAsync|20041512811101081D0508081151|count=1",
       "System.Net.Http.ByteArrayContent::.ctor|2001011D05|count=1",
-      "System.Net.Http.Headers.HttpContentHeaders::get_ContentEncoding|2000151280C1010E|count=1",
-      "System.Net.Http.Headers.HttpContentHeaders::get_ContentLength|2000151141010A|count=1",
-      "System.Net.Http.Headers.HttpContentHeaders::get_ContentType|2000128101|count=1",
-      "System.Net.Http.Headers.HttpContentHeaders::set_ContentType|200101128101|count=1",
+      "System.Net.Http.Headers.HttpContentHeaders::get_ContentEncoding|2000151280CD010E|count=1",
+      "System.Net.Http.Headers.HttpContentHeaders::get_ContentLength|2000151149010A|count=1",
+      "System.Net.Http.Headers.HttpContentHeaders::get_ContentType|200012810D|count=1",
+      "System.Net.Http.Headers.HttpContentHeaders::set_ContentType|20010112810D|count=1",
       "System.Net.Http.Headers.MediaTypeHeaderValue::.ctor|2001010E|count=1",
       "System.Net.Http.Headers.MediaTypeHeaderValue::get_MediaType|20000E|count=1",
-      "System.Net.Http.Headers.MediaTypeHeaderValue::get_Parameters|2000151280C101128089|count=1",
+      "System.Net.Http.Headers.MediaTypeHeaderValue::get_Parameters|2000151280CD01128091|count=1",
       "System.Net.Http.Headers.NameValueHeaderValue::get_Name|20000E|count=1",
       "System.Net.Http.Headers.NameValueHeaderValue::get_Value|20000E|count=1",
-      "System.Net.Http.HttpClient::.ctor|2002011280ED02|count=1",
-      "System.Net.Http.HttpClient::SendAsync|200315128105011275126D1181091149|count=1",
-      "System.Net.Http.HttpClient::set_Timeout|2001011180D5|count=1",
+      "System.Net.Http.HttpClient::.ctor|2002011280F902|count=1",
+      "System.Net.Http.HttpClient::SendAsync|20031512811101127D12751181151151|count=1",
+      "System.Net.Http.HttpClient::set_Timeout|2001011180E1|count=1",
       "System.Net.Http.HttpClientHandler::.ctor|200001|count=1",
       "System.Net.Http.HttpClientHandler::set_AllowAutoRedirect|20010102|count=1",
-      "System.Net.Http.HttpClientHandler::set_AutomaticDecompression|2001011180E9|count=1",
-      "System.Net.Http.HttpClientHandler::set_Credentials|2001011280E5|count=1",
+      "System.Net.Http.HttpClientHandler::set_AutomaticDecompression|2001011180F5|count=1",
+      "System.Net.Http.HttpClientHandler::set_Credentials|2001011280F1|count=1",
       "System.Net.Http.HttpClientHandler::set_PreAuthenticate|20010102|count=1",
-      "System.Net.Http.HttpClientHandler::set_Proxy|2001011280E1|count=1",
+      "System.Net.Http.HttpClientHandler::set_Proxy|2001011280ED|count=1",
       "System.Net.Http.HttpClientHandler::set_UseCookies|20010102|count=1",
       "System.Net.Http.HttpClientHandler::set_UseDefaultCredentials|20010102|count=1",
       "System.Net.Http.HttpClientHandler::set_UseProxy|20010102|count=1",
-      "System.Net.Http.HttpContent::get_Headers|2000128085|count=1",
-      "System.Net.Http.HttpContent::ReadAsStreamAsync|20001512810501127D|count=1",
+      "System.Net.Http.HttpContent::get_Headers|200012808D|count=1",
+      "System.Net.Http.HttpContent::ReadAsStreamAsync|20001512811101128085|count=1",
       "System.Net.Http.HttpMessageHandler::Dispose|200001|count=1",
       "System.Net.Http.HttpMessageInvoker::Dispose|200001|count=1",
-      "System.Net.Http.HttpMethod::get_Get|00001269|count=1",
-      "System.Net.Http.HttpMethod::get_Post|00001269|count=1",
-      "System.Net.Http.HttpMethod::op_Inequality|00020212691269|count=1",
-      "System.Net.Http.HttpRequestMessage::.ctor|20020112691280F9|count=1",
-      "System.Net.Http.HttpRequestMessage::set_Content|2001011280FD|count=1",
-      "System.Net.Http.HttpResponseMessage::get_Content|20001280FD|count=1",
-      "System.Net.Http.HttpResponseMessage::get_StatusCode|2000118081|count=1"
+      "System.Net.Http.HttpMethod::get_Get|00001271|count=1",
+      "System.Net.Http.HttpMethod::get_Post|00001271|count=1",
+      "System.Net.Http.HttpMethod::op_Inequality|00020212711271|count=1",
+      "System.Net.Http.HttpRequestMessage::.ctor|2002011271128105|count=1",
+      "System.Net.Http.HttpRequestMessage::set_Content|200101128109|count=1",
+      "System.Net.Http.HttpResponseMessage::get_Content|2000128109|count=1",
+      "System.Net.Http.HttpResponseMessage::get_StatusCode|2000118089|count=1"
     ]
   },
   "roles": [

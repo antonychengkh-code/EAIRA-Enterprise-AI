@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-09-09
+2026-09-10
 
 ## Version
 
-0.36.21
+0.36.39
 
 ## Milestone
 
@@ -20,15 +20,15 @@ M4 Functional Agent MVP: Active.
 
 ## Current Scope
 
-Synchronize the six controlled status, context and handoff artifacts to the independently verified M4 Slice 3 publication at `a0e172f34ebc09f76e1bd894d680614ed901113d`, without changing product code, Windows state, service routing, signing state or production capability.
+Complete the authorized phase-stable Slice 4 Gate 24-28 lifecycle while preserving exact 21-path scope, all existing checks and independent review of every new clean A/B baseline.
 
 ## Current Result
 
-R10R6 independent review closed with `P0=0`, `P1=0`, and `P2=0`. R11/R11R1 established the exact 24-path staged snapshot, R12 committed it as `a0e172f34ebc09f76e1bd894d680614ed901113d`, R13 normally pushed it, and R14 independently verified live `origin/master` at that commit with `publication_verified=YES`, `P0=0`, `P1=0`, and `P2=2`. The publication retains two byte-identical builds, 52 context tests, 31 seam specimens, 17 native specimens, three isolation specimens and manifest SHA-256 `ACE552E00EAB9BEFD6DAA4C50C3FD315F2401C514298138E2005B2DFDEE8FB3A`. Signing eligibility remains false and Gate 25 remains incomplete.
+Gate 24 initial and R1 reviews failed closed. D08 profile-calibration review returned one P1 for external profile SHA comparison after JSON parsing; R2R1 corrected that order. The later R2R1 sealed-final review returned `CANNOT_CLOSE`, `P0=0`, `P1=2`, `P2=0`, for missing named stable abuse cases and one stale allowlist state. Gate 23 R2R2 adds the complete cross-matrix, eighth-file, Unicode, explicit query-rejection and zero-result non-emission cases while preserving all prior controls. Lifecycle completion requires a new clean A/B baseline and independent evidence.
 
 ## Out of Scope
 
-External-provider credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, checkpoint-ref repair, and any work beyond this six-file synchronization remain out of scope. Further staging, commit, or push requires separate Project Owner authorization.
+Model/provider invocation, arbitrary vault search, external credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, checkpoint-ref repair and force push remain outside this Slice. Only the exact authorized Gate 23-28 repository lifecycle may advance after its independent checks pass.
 
 ## Historical Objective Retained for Traceability
 
@@ -120,7 +120,7 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 
 ## Expected Deliverables
 
-One exact six-file post-publication synchronization candidate recording the verified Slice 3 commit, publication evidence, retained authority boundaries and next independent review gate, with no product, runtime-write, Windows, service, signing, staging, commit or push change.
+Four bounded Slice 4 scope artifacts plus synchronized controlled status/context/handoff records, ready for an independent scope/readiness review.
 
 ## 2026-09-01 Reconciliation Results
 
@@ -133,11 +133,13 @@ One exact six-file post-publication synchronization candidate recording the veri
 
 ## Success Criteria
 
-- The current four controlled artifacts produce a canonical projection and no longer fail with `CONTEXT_ERROR/80` solely because of quoted keys, additional top-level status fields, or multi-entry milestone sections.
-- A malicious Planning provider echo cannot appear in any downstream AgentResult or canonical CLI JSON; only its domain-separated SHA-256 summary is retained.
-- The exact root/ancestor/final-file Cloud Files matrices, hostile-root and substitution matrices, duplicate/missing required fields, canonical repository shape, boundary/golden-vector tests and output-isolation tests pass under the pinned build profile.
-- The production verifier rejects directory enumeration, raw-content output and per-file-digest output specimens, and both clean builds reproduce the same outputs.
-- Project-memory and diff validation pass, the three unrelated Claude files remain untouched and untracked, and exactly the six authorized synchronization files are modified but unstaged.
+[Clause S4-STATE-TODAY-CRITERIA]
+
+- Digest inputs have one exact byte representation, including `0x00` separators, boolean bytes and emitted-match framing/order.
+- Frontmatter acceptance has exact LF/CRLF, BOM, raw-byte, delimiter, line-number and empty-document semantics.
+- Current-context authority links point only to the active Slice 4 scope package and do not name a nonexistent or stale design.
+- A new independent Gate 24 review returns no P0 or P1 before staging.
+- Project-memory and diff validation pass, and the three unrelated Claude files remain untouched and untracked.
 
 ### 2026-09-01 Reconciliation Criteria Retained for Traceability
 
@@ -151,4 +153,4 @@ One exact six-file post-publication synchronization candidate recording the veri
 
 ## Next Action
 
-Execute `SEPARATE_INDEPENDENT_EAIRA_M4_SLICE3_S3_R15_POST_PUBLICATION_CONTROLLED_STATE_AND_HANDOFF_SYNCHRONIZATION_REVIEW`. Staging, commit, and push require later separate Project Owner gates. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, checkpoint-ref repair, or operational activation.
+Execute the authorized phase-stable Slice 4 Gate 24-28 lifecycle in order: independently review the calibrated profile; create and review new sealed A/B evidence; stage and independently review exactly 21 paths; create one normal commit and independently verify it; normally push and independently verify live publication. A P0 or P1 stops fail-closed and requires bounded remediation plus a new clean A/B baseline. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, checkpoint-ref repair or operational activation.

@@ -2,7 +2,7 @@
 type: project-memory-handoff
 status: active
 created: 2026-08-26
-updated: 2026-09-09
+updated: 2026-09-10
 source: codex
 project: EAIRA
 authority: provisional
@@ -12,7 +12,7 @@ authority: provisional
 
 ## State
 
-Obsidian project-memory structure is valid for report-only scheduled audits. M4 Slice 1, Slice 2 and Slice 3 are published. Slice 3 decision `SLICE3_A_READ_ONLY_PROJECT_CONTEXT` is independently live-remote verified at commit `a0e172f34ebc09f76e1bd894d680614ed901113d`, parent `b3bd69683ae873be59bf5a78e5df4dd6a4e71eec`, tree `bfbdd21b7a633d8801d436e5b4271f860d8f3bd6`, with exactly 24 authorized paths and the three unrelated Claude API paths excluded. R15 is an exact six-file post-publication status/context/handoff synchronization awaiting independent review. The Annex governance workstream remains separately blocked.
+[Clause S4-STATE-HANDOFF] Obsidian project-memory structure is valid for report-only scheduled audits. M4 Slice 1 through Slice 3 are published. Slice 4 Gate 24 initial/R1 reviews and D08 profile-calibration review failed closed; R2R1 fixed the SHA-before-parse ordering, but its later sealed-final review returned `CANNOT_CLOSE`, `P0=0`, `P1=2`, `P2=0`. Prior sealed/profile candidates are superseded. Gate 23 R2R2 adds the omitted named Cloud Files cross-matrix, unrelated physical eighth-file, Unicode scalar/whitespace, explicit query-control rejection and zero-result query non-emission coverage and synchronizes the allowlist state. This handoff records the phase-stable authorized Gate 24-28 lifecycle and does not assert completion of a new discovery or later review, staging, commit, push or publication transitions.
 
 ## Canonical Context
 
@@ -79,14 +79,16 @@ Obsidian project-memory structure is valid for report-only scheduled audits. M4 
 - R12 committed the exact snapshot as `a0e172f34ebc09f76e1bd894d680614ed901113d`. Independent post-commit verification returned `CLOSEABLE_WITH_NON_BLOCKING_FINDINGS`, `P0=0`, `P1=0`, and `P2=2`. R13 normally pushed it to `origin/master`.
 - R14 independently queried live `origin/master` and returned `publication_verified=YES`, `P0=0`, `P1=0`, and `P2=2`. Manifest SHA-256 is `ACE552E00EAB9BEFD6DAA4C50C3FD315F2401C514298138E2005B2DFDEE8FB3A`; 32 inputs had zero mismatch, A/B outputs were byte-identical, and functional/intake/context/provider/transport plus 31 seam, 17 native and three isolation checks passed.
 - The retained maintenance P2 comprises 18 valid but overlong Codex checkpoint refs that trigger Windows legacy `MAX_PATH` warnings for full maintenance. They did not affect the commit or publication and are not authorized for repair by R15.
+- R20 independently verified live `origin/master` at Slice 3 state-sync commit `7e1c1d04e6b92fcbf89f0b1268d189da9892071b` and returned `PUBLICATION_VERIFIED=YES`, `GATE_SEQUENCE_COMPLETE=YES`, `P0=0`, `P1=0`, and `P2=2`.
+- Slice 4 S4-R04R1 design review returned `CANNOT_CLOSE`, `P0=0`, `P1=1`, and `P2=2`. Design revision 3/S4-R03R2 binds the release profile through a separately reviewed invocation SHA, binds the other 20 inputs inside the profile, fixes seven-BOM physical aggregate vectors and records all Gate 22 findings.
 - The 2026-09-07 read-only reconciliation found no OneDrive/Git conflict copy, no Git conflict marker, no duplicate candidate memory, and no `.obsidian` Git-visible change. The project-memory validator again passed 16 required files and 9 frontmatters.
 
 ## Remaining
 
 - Keep certificate purchase/enrollment deferred until the release-timing decision; when resumed, complete Gate 24.12–24.14 and sign only the accepted Gate 25 hashes.
-- Execute `SEPARATE_INDEPENDENT_EAIRA_M4_SLICE3_S3_R15_POST_PUBLICATION_CONTROLLED_STATE_AND_HANDOFF_SYNCHRONIZATION_REVIEW`.
-- If the R15 review reports any P0 or P1, stop fail-closed and require a separately authorized bounded remediation; otherwise proceed only through later separate synchronization-recording gates.
-- Keep this exact six-file R15 synchronization unstaged and uncommitted until later separate Project Owner gates.
+- Complete the authorized phase-stable Slice 4 Gate 24-28 lifecycle: independently review calibrated profile, generate and review a new sealed clean A/B baseline, review the exact staged 21-path snapshot, normally commit and verify, then normally push and independently verify live publication.
+- If the Slice 4 scope review reports any P0 or P1, stop fail-closed and remediate only within the selected no-write, no-network query boundary.
+- Do not begin implementation until the exact design and changed-path manifest pass their later independent gate.
 - Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The new CLI is a separate local task-intake surface; it is not wired to those Windows services, IPC, network, credentials, storage, or external systems.
 - Do not treat R3 publication or M4 Slice 1 local verification as signing eligibility. The binaries remain unsigned and Gate 25 remains incomplete.
 - Keep service-account, membership, directory, ACL, encryption, signing, cloud-resource, and operational mutations fail-closed until separately authorized.

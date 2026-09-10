@@ -11,7 +11,12 @@ param(
     [ValidateNotNullOrEmpty()]
     [string]$ReferenceAssemblyRoot = 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8',
 
-    [switch]$DevelopmentProbe
+    [switch]$DevelopmentProbe,
+
+    [switch]$ProjectKnowledgeDiscovery,
+
+    [ValidatePattern('^[0-9A-F]{64}$')]
+    [string]$ExpectedReleaseProfileSha256
 )
 
 Set-StrictMode -Version Latest
@@ -124,7 +129,7 @@ function Get-MetadataEntityTypeName {
     }
 }
 function Get-ByteArraySha256 {
-    param([Parameter(Mandatory = $true)][byte[]]$Bytes)
+    param([Parameter(Mandatory = $true)][AllowEmptyCollection()][byte[]]$Bytes)
     $sha = [Security.Cryptography.SHA256]::Create()
     try { return [BitConverter]::ToString($sha.ComputeHash($Bytes)).Replace('-', '') }
     finally { $sha.Dispose() }
@@ -200,6 +205,7 @@ function Get-ProjectContextIlGraph {
         }
 
         $memberReferences = @{}
+        $memberReferenceRows = @()
         foreach ($memberHandleRaw in $reader.MemberReferences) {
             $memberHandle = [System.Reflection.Metadata.MemberReferenceHandle]$memberHandleRaw
             $member = $reader.GetMemberReference($memberHandle)
@@ -218,7 +224,7 @@ function Get-ProjectContextIlGraph {
             $resolvedRows = @($methodRows | Where-Object {
                 $null -ne $parentType -and $_.declaringType -ceq $parentType -and $_.name -ceq $memberName -and $_.signature -ceq $memberSignature
             })
-            $memberReferences[$memberToken] = [pscustomobject][ordered]@{
+            $memberReferenceRow = [pscustomobject][ordered]@{
                 token = $memberToken
                 declaringType = $parentType
                 name = $memberName
@@ -227,6 +233,8 @@ function Get-ProjectContextIlGraph {
                 resolvedTarget = $(if ($resolvedRows.Count -eq 1) { $resolvedRows[0] } else { $null })
                 ambiguousResolution = ($resolvedRows.Count -gt 1)
             }
+            $memberReferences[$memberToken] = $memberReferenceRow
+            $memberReferenceRows += $memberReferenceRow
         }
 
         $methodSpecifications = @{}
@@ -392,6 +400,7 @@ function Get-ProjectContextIlGraph {
             methods = $methodRows
             types = $typeRows
             fields = $fieldRows
+            memberReferences = $memberReferenceRows
             directEdges = $allDirectEdges
             methodOperands = $methodOperandRows
             nativeEdges = $nativeEdges
@@ -407,13 +416,14 @@ function Assert-ProjectContextPInvokeCallerPolicy {
     param(
         [Parameter(Mandatory = $true)][string]$LiteralPath,
         [Parameter(Mandatory = $true)]$Policy,
-        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness')][string]$OutputKind
+        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness','KnowledgeCli')][string]$OutputKind,
+        [switch]$Discovery
     )
 
     $graph = Get-ProjectContextIlGraph -LiteralPath $LiteralPath
     if ($graph.calliCount -ne 0) { throw "Compiled output contains indirect calli: $LiteralPath" }
 
-    $platform = 'EAIRA.AgentServices.Functional.ProjectContextLoader+ProjectContextWin32Platform'
+    $platform = 'EAIRA.AgentServices.Functional.ProjectContextWin32Platform'
     $lease = $platform + '+ProjectContextNativeLease'
     $expected = [ordered]@{
         CreateFileW = @(
@@ -472,10 +482,11 @@ function Assert-ProjectContextPInvokeCallerPolicy {
     [Array]::Sort($canonicalCallerIl, [StringComparer]::Ordinal)
     $callerIlSha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($canonicalCallerIl -join "`n")))
     $inventoryProperty = $Policy.nativeCallerIlInventory.PSObject.Properties[$OutputKind]
-    if ($null -eq $inventoryProperty) { throw "Missing profile-bound native caller IL inventory '$OutputKind': $LiteralPath" }
+    if ($null -eq $inventoryProperty -and -not ($Discovery -and $OutputKind -ceq 'KnowledgeCli')) { throw "Missing profile-bound native caller IL inventory '$OutputKind': $LiteralPath" }
     $expectedInventory = $inventoryProperty.Value
-    if ([int]$expectedInventory.count -ne $canonicalCallerIl.Count -or
-        [string]$expectedInventory.sha256 -cne $callerIlSha256) {
+    if (-not ($Discovery -and $OutputKind -ceq 'KnowledgeCli') -and
+        ([int]$expectedInventory.count -ne $canonicalCallerIl.Count -or
+        [string]$expectedInventory.sha256 -cne $callerIlSha256)) {
         throw "Profile-bound native caller IL inventory mismatch '$OutputKind': expected count=$([int]$expectedInventory.count) sha256=$([string]$expectedInventory.sha256); actual count=$($canonicalCallerIl.Count) sha256=$callerIlSha256; output=$LiteralPath"
     }
     return [ordered]@{
@@ -485,7 +496,7 @@ function Assert-ProjectContextPInvokeCallerPolicy {
         approvedCallerIl = @($callerIl | Sort-Object declaringType, managedName)
         approvedCallerIlCount = [int]$canonicalCallerIl.Count
         approvedCallerIlSha256 = $callerIlSha256
-        approvedCallerIlProfileMatch = $true
+        approvedCallerIlProfileMatch = [bool](-not ($Discovery -and $OutputKind -ceq 'KnowledgeCli'))
         graph = $graph
     }
 }
@@ -494,6 +505,115 @@ function Get-MethodParameterCount {
     param([Parameter(Mandatory = $true)][string]$Signature)
     if ($Signature.Length -lt 4) { throw "Invalid method signature blob '$Signature'." }
     return [Convert]::ToInt32($Signature.Substring(2, 2), 16)
+}
+
+function Get-ProjectKnowledgeMetadataClosure {
+    param([Parameter(Mandatory = $true)][string]$LiteralPath)
+    $graph = Get-ProjectContextIlGraph -LiteralPath $LiteralPath
+    [string[]]$types = @($graph.types | Sort-Object fullName | ForEach-Object {
+        [string]$_.fullName + '|' + [int]$_.attributes + '|' + [string]$_.baseType + '|' +
+        (@($_.interfaces | Sort-Object) -join ',') + '|' + [int]$_.genericParameterCount
+    })
+    [string[]]$methods = @($graph.methods | Sort-Object declaringType,name,signature | ForEach-Object {
+        [string]$_.declaringType + '|' + [string]$_.name + '|' + [string]$_.signature + '|' +
+        [int]$_.attributes + '|' + [int]$_.implAttributes + '|' + [int]$_.genericParameterCount + '|' + [string]$_.ilSha256
+    })
+    [string[]]$members = @($graph.memberReferences | Sort-Object declaringType,name,signature,parentKind | ForEach-Object {
+        [string]$_.declaringType + '|' + [string]$_.name + '|' + [string]$_.signature + '|' + [string]$_.parentKind
+    })
+    [string[]]$calls = @($graph.methodOperands | Sort-Object callerType,callerName,callerSignature,offset | ForEach-Object {
+        [string]$_.callerType + '::' + [string]$_.callerName + '|' + [string]$_.callerSignature + '|' +
+        [string]$_.opcode + '|' + [string]$_.targetOperandKind + '|' + [string]$_.targetType + '::' +
+        [string]$_.targetName + '|' + [string]$_.targetSignature + '|' + [string]$_.methodSpecificationSignature
+    })
+    $codecTypes = @('EAIRA.AgentServices.Functional.ContractException','EAIRA.AgentServices.Functional.ContractCodec')
+    [string[]]$codec = @(
+        $types | Where-Object { $name = ($_ -split '\|',2)[0]; $codecTypes -ccontains $name }
+        $methods | Where-Object { $name = ($_ -split '\|',2)[0]; $codecTypes -ccontains $name }
+        $calls | Where-Object { $surface = ($_ -split '\|',2)[0]; @($codecTypes | Where-Object { $surface.StartsWith($_ + '::',[StringComparison]::Ordinal) }).Count -ne 0 }
+    )
+    [string[]]$codecSemantic = @(
+        $graph.types | Where-Object { $codecTypes -ccontains [string]$_.fullName } | Sort-Object fullName | ForEach-Object {
+            'T|' + [string]$_.fullName + '|' + [int]$_.attributes + '|' + [string]$_.baseType + '|' + [int]$_.genericParameterCount
+        }
+        $graph.methods | Where-Object { $codecTypes -ccontains [string]$_.declaringType } | Sort-Object declaringType,name,signature | ForEach-Object {
+            'M|' + [string]$_.declaringType + '|' + [string]$_.name + '|' + (Get-MethodParameterCount -Signature ([string]$_.signature)) + '|' +
+            [int]$_.attributes + '|' + [int]$_.implAttributes + '|' + [int]$_.genericParameterCount
+        }
+        $graph.methodOperands | Where-Object { $codecTypes -ccontains [string]$_.callerType } | Sort-Object callerType,callerName,offset | ForEach-Object {
+            'C|' + [string]$_.callerType + '|' + [string]$_.callerName + '|' + [string]$_.opcode + '|' +
+            [string]$_.targetType + '::' + [string]$_.targetName
+        }
+    )
+    return [ordered]@{
+        image = [ordered]@{ count = (Get-Item -LiteralPath $LiteralPath).Length; sha256 = Get-Sha256 -LiteralPath $LiteralPath }
+        typeDefs = [ordered]@{ count = $types.Count; sha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($types -join "`n"))) }
+        methodDefs = [ordered]@{ count = $methods.Count; sha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($methods -join "`n"))) }
+        memberRefs = [ordered]@{ count = $members.Count; sha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($members -join "`n"))) }
+        callGraph = [ordered]@{ count = $calls.Count; sha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($calls -join "`n"))) }
+        codecClosure = [ordered]@{ count = $codec.Count; sha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($codec -join "`n"))) }
+        codecSemanticClosure = [ordered]@{ count = $codecSemantic.Count; sha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($codecSemantic -join "`n"))) }
+        codecRawRows = $codec
+        codecSemanticRows = $codecSemantic
+    }
+}
+
+function Assert-ProjectKnowledgeMetadataPolicy {
+    param(
+        [Parameter(Mandatory = $true)][string]$LiteralPath,
+        [Parameter(Mandatory = $true)]$Policy,
+        [Parameter(Mandatory = $true)][ValidateSet('Cli','Harness')][string]$OutputKind,
+        [switch]$Discovery
+    )
+    $actual = Get-ProjectKnowledgeMetadataClosure -LiteralPath $LiteralPath
+    if (-not $Discovery) {
+        $property = $Policy.metadataInventories.PSObject.Properties[$OutputKind]
+        if ($null -eq $property) { throw "Missing project-knowledge metadata inventory '$OutputKind': $LiteralPath" }
+        $expected = $property.Value
+        foreach ($name in @('image','typeDefs','methodDefs','memberRefs','callGraph','codecClosure','codecSemanticClosure')) {
+            if ($null -eq $expected.$name -or [int]$expected.$name.count -ne [int]$actual.$name.count -or
+                [string]$expected.$name.sha256 -cne [string]$actual.$name.sha256) {
+                throw "Project-knowledge metadata inventory mismatch '$OutputKind/$name': $LiteralPath"
+            }
+        }
+    }
+    return $actual
+}
+
+function Get-NormalizedNativeSemanticInventory {
+    param([Parameter(Mandatory = $true)]$PInvokeMetadata, [Parameter(Mandatory = $true)]$CallerEvidence)
+    $signatures = [ordered]@{
+        CloseHandle = 'BOOL(INTPTR)'
+        CreateFileW = 'INTPTR(STRING,U32,U32,INTPTR,U32,U32,INTPTR)'
+        GetFileInformationByHandle = 'BOOL(INTPTR,OUT:BY_HANDLE_FILE_INFORMATION)'
+        GetFileInformationByHandleEx = 'BOOL(INTPTR,I32,OUT:FILE_ATTRIBUTE_TAG_INFO,U32)'
+        GetFinalPathNameByHandleW = 'U32(INTPTR,STRINGBUILDER,U32,U32)'
+        ReadFile = 'BOOL(INTPTR,BYTE[],U32,OUT:U32,INTPTR)'
+    }
+    [string[]]$imports = @($PInvokeMetadata.rows | Sort-Object managedName | ForEach-Object {
+        'PLATFORM|' + [string]$_.module + '|' + [string]$_.managedName + '|' + [string]$signatures[[string]$_.managedName] + '|' +
+        [int]$_.methodImportAttributes + '|' + [int]$_.methodAttributes + '|' + [int]$_.methodImplAttributes
+    })
+    $platform = 'EAIRA.AgentServices.Functional.ProjectContextWin32Platform'
+    $lease = $platform + '+ProjectContextNativeLease'
+    $role = { param([string]$Name) if ($Name -ceq $platform) { 'PLATFORM' } elseif ($Name -ceq $lease) { 'LEASE' } else { $Name } }
+    [string[]]$edges = @($CallerEvidence.nativeEdges | Sort-Object targetName,callerType,callerName,offset | ForEach-Object {
+        (& $role ([string]$_.callerType)) + '::' + [string]$_.callerName + '|' + [string]$_.opcode + '|' +
+        (& $role ([string]$_.targetType)) + '::' + [string]$_.targetName
+    })
+    $approved = @('OpenPinnedAncestor','OpenLeafProbe','OpenApprovedContent','QueryIdentityAndMetadata','QueryAttributeTag','QueryCanonicalFinalPath','ReadApprovedContent','Close')
+    [string[]]$normalizedIl = @($CallerEvidence.graph.methodOperands | Where-Object {
+        $approved -ccontains [string]$_.callerName -and
+        ([string]$_.callerType -ceq $platform -or [string]$_.callerType -ceq $lease)
+    } | Sort-Object callerType,callerName,offset | ForEach-Object {
+        (& $role ([string]$_.callerType)) + '::' + [string]$_.callerName + '|' + [string]$_.opcode + '|' +
+        (& $role ([string]$_.targetType)) + '::' + [string]$_.targetName
+    })
+    return [ordered]@{
+        pInvokeTuple = [ordered]@{ count = $imports.Count; sha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($imports -join "`n"))) }
+        callGraph = [ordered]@{ count = $edges.Count; sha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($edges -join "`n"))) }
+        normalizedCallerIl = [ordered]@{ count = $normalizedIl.Count; sha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($normalizedIl -join "`n"))) }
+    }
 }
 
 function Assert-ProjectContextDynamicConstructionPolicy {
@@ -556,7 +676,7 @@ function Assert-ProjectContextSeamPolicy {
     $functional = 'EAIRA.AgentServices.Functional.'
     $tests = 'EAIRA.AgentServices.Tests.'
     $loader = $functional + 'ProjectContextLoader'
-    $platform = $loader + '+ProjectContextWin32Platform'
+    $platform = $functional + 'ProjectContextWin32Platform'
     $lease = $platform + '+ProjectContextNativeLease'
     $coordinator = $functional + 'ProjectContextRequestCoordinator'
     $intake = $functional + 'LocalTaskIntake'
@@ -651,7 +771,7 @@ function Assert-ProjectContextSeamPolicy {
         if ($rows.Count -ne 1) { throw "TypeDef identity/count mismatch '$TypeName': $LiteralPath" }
         $row = $rows[0]
         if ([int]$row.attributes -ne $Attributes -or [int]$row.genericParameterCount -ne 0 -or [string]$row.baseType -cne [string]$BaseType) {
-            throw "TypeDef flags/base/generic mismatch '$TypeName': $LiteralPath"
+            throw "TypeDef flags/base/generic mismatch '$TypeName': expected attributes=$Attributes base=$BaseType generic=0; actual attributes=$($row.attributes) base=$($row.baseType) generic=$($row.genericParameterCount): $LiteralPath"
         }
         $actualInterfaces = @($row.interfaces | Sort-Object)
         $expectedInterfaces = @($Interfaces | Sort-Object)
@@ -717,7 +837,7 @@ function Assert-ProjectContextSeamPolicy {
     }
 
     $native = $OutputKind -ceq 'Cli' -or $OutputKind -ceq 'ContextHarness'
-    & $assertType $platform $native 1048835 'System.Object' @($iPlatform)
+    & $assertType $platform $native 1048832 'System.Object' @($iPlatform)
     & $assertType $lease $native ([int]$Policy.nativeLeaseTypeAttributes) 'System.Object' @()
     & $assertType $coordinator $native 1048832 'System.Object' @($iCoordinator)
     & $assertType $fakePlatform ($OutputKind -ceq 'ContextHarness') 1048835 'System.Object' @($iPlatform)
@@ -1019,25 +1139,26 @@ function Assert-ProjectContextPInvokePolicy {
     param(
         [Parameter(Mandatory = $true)][string]$LiteralPath,
         [Parameter(Mandatory = $true)]$Policy,
-        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness')][string]$OutputKind
+        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness','KnowledgeCli')][string]$OutputKind,
+        [switch]$Discovery
     )
     $actual = Get-ProjectContextPInvokeMetadata -LiteralPath $LiteralPath
     if ($actual.modules.Count -ne 1 -or $actual.modules[0] -cne [string]$Policy.module) { throw "Project-context ModuleRef set mismatch: $LiteralPath" }
     $expectedNames = @($Policy.entryPoints | ForEach-Object { [string]$_ } | Sort-Object)
     if ($actual.rows.Count -ne 6 -or ($actual.rows.managedName -join "`n") -cne ($expectedNames -join "`n")) { throw "Project-context P/Invoke set mismatch: $LiteralPath" }
     $signatureProperty = $Policy.nativeImportSignatures.PSObject.Properties[$OutputKind]
-    if ($null -eq $signatureProperty) { throw "Missing profile-bound P/Invoke signatures '$OutputKind': $LiteralPath" }
+    if ($null -eq $signatureProperty -and -not ($Discovery -and $OutputKind -ceq 'KnowledgeCli')) { throw "Missing profile-bound P/Invoke signatures '$OutputKind': $LiteralPath" }
     $expectedSignatures = $signatureProperty.Value
     foreach ($row in $actual.rows) {
         $expectedSignatureProperty = $expectedSignatures.PSObject.Properties[[string]$row.managedName]
-        if ($null -eq $expectedSignatureProperty -or
-            $row.declaringType -cne [string]$Policy.declaringType -or $row.managedName -cne $row.importName -or
+        if ($row.declaringType -cne [string]$Policy.declaringType -or $row.managedName -cne $row.importName -or
             $row.module -cne [string]$Policy.module -or
             $row.methodImportAttributes -ne [int]$Policy.methodImportAttributes -or
             $row.methodAttributes -ne [int]$Policy.methodAttributes -or
             $row.methodImplAttributes -ne [int]$Policy.methodImplAttributes -or
-            $row.signature -cne [string]$expectedSignatureProperty.Value) {
-            throw "Project-context P/Invoke row/signature mismatch: $($row.managedName): $LiteralPath"
+            (-not ($Discovery -and $OutputKind -ceq 'KnowledgeCli') -and
+             ($null -eq $expectedSignatureProperty -or $row.signature -cne [string]$expectedSignatureProperty.Value))) {
+            throw "Project-context P/Invoke row/signature mismatch: actualRows=$($actual.rows | ConvertTo-Json -Compress) expectedKind=${OutputKind}: $LiteralPath"
         }
     }
     return $actual
@@ -1146,10 +1267,19 @@ function Get-SystemIoMemberReferences {
 function Assert-SystemIoMemberReferencePolicy {
     param(
         [Parameter(Mandatory = $true)][string]$LiteralPath,
-        [switch]$AllowServiceHostReadOnly
+        [switch]$AllowServiceHostReadOnly,
+        [switch]$AllowProjectKnowledgeStdout
     )
 
     $references = @(Get-SystemIoMemberReferences -LiteralPath $LiteralPath)
+    if ($AllowProjectKnowledgeStdout) {
+        $allowedReferences = @('System.IO.Stream::Write')
+        if (($references -join [Environment]::NewLine) -cne ($allowedReferences -join [Environment]::NewLine)) {
+            throw "Project-knowledge System.IO references do not match the exact stdout-only allowlist: $($references -join ', '): $LiteralPath"
+        }
+        return
+    }
+
     if (-not $AllowServiceHostReadOnly) {
         if ($references.Count -ne 0) {
             throw "Compiled output contains prohibited System.IO member reference(s): $($references -join ', '): $LiteralPath"
@@ -1179,6 +1309,50 @@ function Invoke-ExitCodeTest {
     return [ordered]@{
         exitCode = $LASTEXITCODE
         output = ($output -join "`n")
+    }
+}
+
+function Invoke-ExactChannelTest {
+    param([Parameter(Mandatory = $true)][string]$Executable,
+          [Parameter(Mandatory = $true)][AllowEmptyCollection()][string[]]$Arguments)
+    $info = [Diagnostics.ProcessStartInfo]::new()
+    $info.FileName = $Executable
+    $info.UseShellExecute = $false
+    $info.CreateNoWindow = $true
+    $info.RedirectStandardOutput = $true
+    $info.RedirectStandardError = $true
+    foreach ($argument in $Arguments) { [void]$info.ArgumentList.Add($argument) }
+    $process = [Diagnostics.Process]::new()
+    $process.StartInfo = $info
+    $stdout = [IO.MemoryStream]::new()
+    $stderr = [IO.MemoryStream]::new()
+    try {
+        if (-not $process.Start()) { throw "Unable to start channel test: $Executable" }
+        $process.StandardOutput.BaseStream.CopyTo($stdout)
+        $process.StandardError.BaseStream.CopyTo($stderr)
+        $process.WaitForExit()
+        return [ordered]@{
+            exitCode = $process.ExitCode
+            stdoutBytes = [byte[]]$stdout.ToArray()
+            stderrBytes = [byte[]]$stderr.ToArray()
+            stdoutSha256 = Get-ByteArraySha256 -Bytes ([byte[]]$stdout.ToArray())
+            stderrSha256 = Get-ByteArraySha256 -Bytes ([byte[]]$stderr.ToArray())
+        }
+    }
+    finally { $stdout.Dispose(); $stderr.Dispose(); $process.Dispose() }
+}
+
+function New-ProjectKnowledgeFixtureRoot {
+    param([Parameter(Mandatory = $true)][string]$LiteralRoot,
+          [Parameter(Mandatory = $true)][string[]]$PathLiterals,
+          [ValidateSet('ZERO','ONE','MISSING')][string]$Mode)
+    New-Item -ItemType Directory -Path $LiteralRoot | Out-Null
+    for ($index = 0; $index -lt $PathLiterals.Count; $index++) {
+        if ($Mode -ceq 'MISSING' -and $index -eq $PathLiterals.Count - 1) { continue }
+        $path = Join-Path $LiteralRoot ($PathLiterals[$index].Replace('/','\'))
+        New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($path)) -Force | Out-Null
+        $body = if ($Mode -ceq 'ONE' -and $index -eq 0) { "---`nx: y`n---`na`n" } else { "---`nx: y`n---`nz`n" }
+        [IO.File]::WriteAllText($path,$body,[Text.UTF8Encoding]::new($false))
     }
 }
 
@@ -1288,11 +1462,58 @@ function Invoke-NativeNegativeSpecimen {
         outputKind = $OutputKind
     }
 }
+
+function Invoke-ProjectKnowledgeNegativeSpecimen {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$CompilerPath,
+        [Parameter(Mandatory = $true)][object[]]$CompilerArguments,
+        [Parameter(Mandatory = $true)][System.Collections.IDictionary]$ReplacementSources,
+        [Parameter(Mandatory = $true)][string]$SpecimenRoot,
+        [Parameter(Mandatory = $true)]$ProjectKnowledgePolicy,
+        [Parameter(Mandatory = $true)]$ProjectContextPolicy,
+        [Parameter(Mandatory = $true)]$BaselineMetadata
+    )
+    $safeName = $Name.ToLowerInvariant().Replace('_','-')
+    $root = Join-Path $SpecimenRoot $safeName
+    New-Item -ItemType Directory -Path $root | Out-Null
+    $arguments = @($CompilerArguments)
+    foreach ($originalPath in @($ReplacementSources.Keys)) {
+        $specimenPath = Join-Path $root ([IO.Path]::GetFileName([string]$originalPath))
+        [IO.File]::WriteAllText($specimenPath,[string]$ReplacementSources[$originalPath],[Text.UTF8Encoding]::new($false))
+        $index = [Array]::IndexOf($arguments,[string]$originalPath)
+        if ($index -lt 0) { throw "Knowledge specimen source argument missing '$Name'." }
+        $arguments[$index] = $specimenPath
+    }
+    $output = Join-Path $root ($safeName + '.exe')
+    $outputIndexes = @(for($i=0;$i-lt$arguments.Count;$i++){if([string]$arguments[$i] -clike '/out:*'){$i}})
+    if ($outputIndexes.Count -ne 1) { throw "Knowledge specimen output argument mismatch '$Name'." }
+    $arguments[$outputIndexes[0]] = "/out:$output"
+    $compilerOutput = @(& $CompilerPath @arguments 2>&1)
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $output -PathType Leaf)) {
+        throw "Knowledge specimen did not compile '$Name': $($compilerOutput -join [Environment]::NewLine)"
+    }
+    $rejection = $null
+    try {
+        Assert-NoForbiddenBinaryMetadata -LiteralPath $output -AllowProjectContextPInvoke
+        Assert-SystemIoMemberReferencePolicy -LiteralPath $output -AllowProjectKnowledgeStdout
+        [void](Assert-ProjectContextPInvokePolicy -LiteralPath $output -Policy $ProjectContextPolicy -OutputKind 'KnowledgeCli' -Discovery)
+        [void](Assert-ProjectContextPInvokeCallerPolicy -LiteralPath $output -Policy $ProjectContextPolicy -OutputKind 'KnowledgeCli' -Discovery)
+        $actualMetadata = Get-ProjectKnowledgeMetadataClosure -LiteralPath $output
+        if (($actualMetadata | ConvertTo-Json -Depth 8 -Compress) -cne ($BaselineMetadata | ConvertTo-Json -Depth 8 -Compress)) {
+            throw "Project-knowledge baseline metadata closure mismatch: $output"
+        }
+    }
+    catch { $rejection = $_.Exception.Message }
+    if ([String]::IsNullOrEmpty($rejection)) { throw "Knowledge negative specimen was not rejected '$Name'." }
+    return [ordered]@{ name=$Name; compileExitCode=0; verifierRejected=$true; outputKind='KnowledgeCli' }
+}
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $componentRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot '..'))
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $componentRoot '..\..'))
 $buildScriptPath = [System.IO.Path]::GetFullPath($MyInvocation.MyCommand.Path)
 $sourcePath = Join-Path $componentRoot 'src\AgentServiceHost.cs'
+$codecSourcePath = Join-Path $componentRoot 'src\ContractCodec.cs'
 $coreSourcePath = Join-Path $componentRoot 'src\AgentCore.cs'
 $providerSourcePath = Join-Path $componentRoot 'src\ModelProviders.cs'
 $taskIntakeSourcePath = Join-Path $componentRoot 'src\LocalTaskIntake.cs'
@@ -1300,18 +1521,24 @@ $taskIntakeHostSourcePath = Join-Path $componentRoot 'src\AgentTaskIntakeHost.cs
 $localProviderSourcePath = Join-Path $componentRoot 'src\LocalModelProvider.cs'
 $loopbackTransportSourcePath = Join-Path $componentRoot 'src\OllamaLoopbackTransport.cs'
 $projectContextSourcePath = Join-Path $componentRoot 'src\ProjectContext.cs'
+$projectReadOnlyPlatformSourcePath = Join-Path $componentRoot 'src\ProjectReadOnlyPlatform.cs'
+$projectKnowledgeSourcePath = Join-Path $componentRoot 'src\ProjectKnowledge.cs'
+$projectKnowledgeHostSourcePath = Join-Path $componentRoot 'src\ProjectKnowledgeHost.cs'
 $harnessSourcePath = Join-Path $componentRoot 'tests\AgentCoreHarness.cs'
 $taskIntakeHarnessSourcePath = Join-Path $componentRoot 'tests\LocalTaskIntakeHarness.cs'
 $localProviderHarnessSourcePath = Join-Path $componentRoot 'tests\LocalModelProviderHarness.cs'
 $projectContextHarnessSourcePath = Join-Path $componentRoot 'tests\ProjectContextHarness.cs'
+$projectKnowledgeHarnessSourcePath = Join-Path $componentRoot 'tests\ProjectKnowledgeHarness.cs'
 $functionalContractPath = Join-Path $componentRoot 'contracts\EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1.md'
 $taskIntakeContractPath = Join-Path $componentRoot 'contracts\EAIRA_LOCAL_TASK_INTAKE_V1.md'
 $localProviderContractPath = Join-Path $componentRoot 'contracts\EAIRA_LOCAL_MODEL_PROVIDER_V1.md'
 $projectContextContractPath = Join-Path $componentRoot 'contracts\EAIRA_READ_ONLY_PROJECT_CONTEXT_V1.md'
+$projectKnowledgeContractPath = Join-Path $componentRoot 'contracts\EAIRA_PROJECT_KNOWLEDGE_QUERY_V1.md'
 $profilePath = Join-Path $componentRoot 'release\gate25-unsigned-release-profile.json'
 
 if (-not (Test-Path -LiteralPath $buildScriptPath -PathType Leaf)) { throw "Build script missing: $buildScriptPath" }
 if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf)) { throw "Source file missing: $sourcePath" }
+if (-not (Test-Path -LiteralPath $codecSourcePath -PathType Leaf)) { throw "Codec source file missing: $codecSourcePath" }
 if (-not (Test-Path -LiteralPath $coreSourcePath -PathType Leaf)) { throw "Core source file missing: $coreSourcePath" }
 if (-not (Test-Path -LiteralPath $providerSourcePath -PathType Leaf)) { throw "Provider source file missing: $providerSourcePath" }
 if (-not (Test-Path -LiteralPath $taskIntakeSourcePath -PathType Leaf)) { throw "Task-intake source file missing: $taskIntakeSourcePath" }
@@ -1319,14 +1546,19 @@ if (-not (Test-Path -LiteralPath $taskIntakeHostSourcePath -PathType Leaf)) { th
 if (-not (Test-Path -LiteralPath $localProviderSourcePath -PathType Leaf)) { throw "Local-provider source file missing: $localProviderSourcePath" }
 if (-not (Test-Path -LiteralPath $loopbackTransportSourcePath -PathType Leaf)) { throw "Loopback transport source file missing: $loopbackTransportSourcePath" }
 if (-not (Test-Path -LiteralPath $projectContextSourcePath -PathType Leaf)) { throw "Project-context source file missing: $projectContextSourcePath" }
+if (-not (Test-Path -LiteralPath $projectReadOnlyPlatformSourcePath -PathType Leaf)) { throw "Read-only platform source file missing: $projectReadOnlyPlatformSourcePath" }
+if (-not (Test-Path -LiteralPath $projectKnowledgeSourcePath -PathType Leaf)) { throw "Project-knowledge source file missing: $projectKnowledgeSourcePath" }
+if (-not (Test-Path -LiteralPath $projectKnowledgeHostSourcePath -PathType Leaf)) { throw "Project-knowledge host source file missing: $projectKnowledgeHostSourcePath" }
 if (-not (Test-Path -LiteralPath $harnessSourcePath -PathType Leaf)) { throw "Harness source file missing: $harnessSourcePath" }
 if (-not (Test-Path -LiteralPath $taskIntakeHarnessSourcePath -PathType Leaf)) { throw "Task-intake harness source file missing: $taskIntakeHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $localProviderHarnessSourcePath -PathType Leaf)) { throw "Local-provider harness source file missing: $localProviderHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $projectContextHarnessSourcePath -PathType Leaf)) { throw "Project-context harness source file missing: $projectContextHarnessSourcePath" }
+if (-not (Test-Path -LiteralPath $projectKnowledgeHarnessSourcePath -PathType Leaf)) { throw "Project-knowledge harness source file missing: $projectKnowledgeHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $functionalContractPath -PathType Leaf)) { throw "Functional contract missing: $functionalContractPath" }
 if (-not (Test-Path -LiteralPath $taskIntakeContractPath -PathType Leaf)) { throw "Task-intake contract missing: $taskIntakeContractPath" }
 if (-not (Test-Path -LiteralPath $localProviderContractPath -PathType Leaf)) { throw "Local-provider contract missing: $localProviderContractPath" }
 if (-not (Test-Path -LiteralPath $projectContextContractPath -PathType Leaf)) { throw "Project-context contract missing: $projectContextContractPath" }
+if (-not (Test-Path -LiteralPath $projectKnowledgeContractPath -PathType Leaf)) { throw "Project-knowledge contract missing: $projectKnowledgeContractPath" }
 if (-not (Test-Path -LiteralPath $profilePath -PathType Leaf)) { throw "Release profile missing: $profilePath" }
 if (-not (Test-Path -LiteralPath $RoslynCscPath -PathType Leaf)) { throw "Compiler missing: $RoslynCscPath" }
 
@@ -1339,6 +1571,11 @@ if ([String]::Equals($resolvedOutput.TrimEnd('\'), $outputRootOnly.TrimEnd('\'),
 }
 if (Test-Path -LiteralPath $resolvedOutput) { throw "OutputRoot already exists; refusing overwrite: $resolvedOutput" }
 
+$releaseProfileSha256 = Get-Sha256 -LiteralPath $profilePath
+if (-not $ProjectKnowledgeDiscovery -and -not $DevelopmentProbe) {
+    if ([String]::IsNullOrEmpty($ExpectedReleaseProfileSha256)) { throw 'ExpectedReleaseProfileSha256 is mandatory outside discovery.' }
+    if (-not [String]::Equals($releaseProfileSha256, $ExpectedReleaseProfileSha256, [StringComparison]::Ordinal)) { throw 'Release profile SHA-256 does not match the separately reviewed value.' }
+}
 $profile = Get-Content -Raw -LiteralPath $profilePath | ConvertFrom-Json
 if ($profile.schemaVersion -ne 1) { throw 'Unsupported release profile schema.' }
 if (@($profile.roles).Count -ne 5) { throw 'Release profile must contain exactly five roles.' }
@@ -1374,17 +1611,37 @@ if ($profile.projectContext.contract -ne 'EAIRA_READ_ONLY_PROJECT_CONTEXT_V1' -o
     $profile.projectContext.nativeSymbol -ne 'EAIRA_PROJECT_CONTEXT_NATIVE' -or
     $profile.projectContext.testSeamSymbol -ne 'EAIRA_PROJECT_CONTEXT_TEST_SEAM' -or
     $profile.projectContext.module -ne 'kernel32.dll' -or
-    $profile.projectContext.declaringType -ne 'EAIRA.AgentServices.Functional.ProjectContextLoader+ProjectContextWin32Platform' -or
+     $profile.projectContext.declaringType -ne 'EAIRA.AgentServices.Functional.ProjectContextWin32Platform' -or
     @($profile.projectContext.entryPoints).Count -ne 6 -or
     $profile.projectContext.methodImportAttributes -ne 4453 -or
     $profile.projectContext.methodAttributes -ne 8337 -or
     $profile.projectContext.methodImplAttributes -ne 128 -or
-    $profile.projectContext.interfaceTypeAttributes -ne 1048736 -or
+     $profile.projectContext.interfaceTypeAttributes -ne 1048736 -or
     $profile.projectContext.nativeLeaseTypeAttributes -ne 1048835 -or
     $profile.projectContext.nativeLeaseCloseMethodAttributes -ne 131 -or
     $profile.projectContext.nativeLeaseInterfaceCount -ne 0 -or
     $profile.projectContext.expectedHarnessTests -ne 52 -or
-    $profile.projectContext.writes -ne 'NONE') { throw 'Project-context policy mismatch.' }
+     $profile.projectContext.writes -ne 'NONE') { throw 'Project-context policy mismatch.' }
+if ($profile.projectKnowledge.contract -ne 'EAIRA_PROJECT_KNOWLEDGE_QUERY_V1' -or
+    $profile.projectKnowledge.output -ne 'EAIRA.ProjectKnowledge.Cli.exe' -or
+    $profile.projectKnowledge.outputHarness -ne 'EAIRA.ProjectKnowledge.Harness.exe' -or
+    $profile.projectKnowledge.nativeSymbol -ne 'EAIRA_PROJECT_KNOWLEDGE_NATIVE' -or
+    $profile.projectKnowledge.testSeamSymbol -ne 'EAIRA_PROJECT_KNOWLEDGE_TEST_SEAM' -or
+    $profile.projectKnowledge.platformNativeSymbol -ne 'EAIRA_PROJECT_READONLY_NATIVE' -or
+    $profile.projectKnowledge.maximumPhysicalBytes -ne 65539 -or
+    $profile.projectKnowledge.maximumContentBytes -ne 65536 -or
+    $profile.projectKnowledge.maximumAggregateBytes -ne 262144 -or
+    $profile.projectKnowledge.maximumStdoutBytes -ne 16384 -or
+    $profile.projectKnowledge.maximumMatches -ne 8 -or
+    $profile.projectKnowledge.writes -ne 'NONE' -or
+    $profile.projectKnowledge.network -ne 'NONE') { throw 'Project-knowledge policy mismatch.' }
+if (@($profile.projectKnowledge.frameworkReferences).Count -ne 2 -or
+    [string]$profile.projectKnowledge.frameworkReferences[0].file -cne 'mscorlib.dll' -or
+    [string]$profile.projectKnowledge.frameworkReferences[0].sha256 -cne [string]$profile.referenceAssemblies[0].sha256 -or
+    [string]$profile.projectKnowledge.frameworkReferences[1].file -cne 'System.dll' -or
+    [string]$profile.projectKnowledge.frameworkReferences[1].sha256 -cne [string]$profile.referenceAssemblies[1].sha256) {
+    throw 'Project-knowledge framework-reference binding mismatch.'
+}
 
 $expectedCandidateRepositoryPaths = @(
     'apps/agent-services/README.md',
@@ -1426,6 +1683,55 @@ if ($profileCandidateRepositoryPaths.Count -ne 32 -or
     throw 'Candidate repository path binding must match the exact ordered 32-path scope.'
 }
 
+$slice4ManifestPaths = @(
+    'docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_4_SCOPE_DECISION.md',
+    'docs/project/planning/EAIRA_M4_SLICE4_BOUNDED_READ_ONLY_PROJECT_KNOWLEDGE_QUERY_ALLOWLIST.md',
+    'docs/project/planning/EAIRA_M4_SLICE4_BOUNDED_READ_ONLY_PROJECT_KNOWLEDGE_QUERY_THREAT_MODEL.md',
+    'docs/project/planning/EAIRA_M4_SLICE4_BOUNDED_READ_ONLY_PROJECT_KNOWLEDGE_QUERY_READINESS_PACKAGE.md',
+    'docs/project/planning/EAIRA_M4_SLICE4_EXACT_IMPLEMENTATION_DESIGN_AND_CHANGED_PATH_MANIFEST.md',
+    'apps/agent-services/contracts/EAIRA_PROJECT_KNOWLEDGE_QUERY_V1.md',
+    'apps/agent-services/src/ContractCodec.cs',
+    'apps/agent-services/src/AgentCore.cs',
+    'apps/agent-services/src/ProjectReadOnlyPlatform.cs',
+    'apps/agent-services/src/ProjectContext.cs',
+    'apps/agent-services/src/ProjectKnowledge.cs',
+    'apps/agent-services/src/ProjectKnowledgeHost.cs',
+    'apps/agent-services/tests/ProjectKnowledgeHarness.cs',
+    'apps/agent-services/build/Invoke-Gate25UnsignedRelease.ps1',
+    'apps/agent-services/release/gate25-unsigned-release-profile.json',
+    'docs/project/status/CURRENT_STATUS.md',
+    'docs/project/status/TODAY_OBJECTIVE.md',
+    'docs/project/status/ACTIVE_TASK.yaml',
+    'docs/project/status/AGENT_CONTEXT_VERSION.yaml',
+    'docs/project/context/CURRENT_CONTEXT.md',
+    'docs/project/memory/HANDOFF.md'
+)
+$slice4BoundPaths = @($slice4ManifestPaths | Where-Object { $_ -cne 'apps/agent-services/release/gate25-unsigned-release-profile.json' })
+$profileSlice4Inputs = @($profile.projectKnowledge.boundRepositoryInputs)
+if ($profileSlice4Inputs.Count -ne 20 -or
+    ((@($profileSlice4Inputs | ForEach-Object { [string]$_.file })) -join [Environment]::NewLine) -cne ($slice4BoundPaths -join [Environment]::NewLine)) {
+    throw 'Project-knowledge profile must bind the exact ordered 20 non-profile Slice 4 inputs.'
+}
+$slice4InputsBound = $true
+$slice4RepositoryEvidence = @()
+for ($slice4Index = 0; $slice4Index -lt $slice4ManifestPaths.Count; $slice4Index++) {
+    $relativePath = $slice4ManifestPaths[$slice4Index]
+    $candidatePath = [System.IO.Path]::GetFullPath((Join-Path $repositoryRoot $relativePath))
+    if (-not (Test-Path -LiteralPath $candidatePath -PathType Leaf)) { throw "Slice 4 input missing: $relativePath" }
+    $item = Get-Item -LiteralPath $candidatePath
+    $actualHash = Get-Sha256 -LiteralPath $candidatePath
+    if ($relativePath -cne 'apps/agent-services/release/gate25-unsigned-release-profile.json') {
+        $expected = $profileSlice4Inputs | Where-Object { [string]$_.file -ceq $relativePath } | Select-Object -First 1
+        $expectedHash = [string]$expected.sha256
+        if (-not $ProjectKnowledgeDiscovery -and -not $DevelopmentProbe -and
+            ($expectedHash -notmatch '^[0-9A-F]{64}$' -or $actualHash -cne $expectedHash)) {
+            throw "Project-knowledge bound input hash mismatch: $relativePath"
+        }
+        if ($actualHash -cne $expectedHash) { $slice4InputsBound = $false }
+    }
+    $slice4RepositoryEvidence += [ordered]@{ file = $relativePath; bytes = $item.Length; sha256 = $actualHash }
+}
+
 $compilerHash = Get-Sha256 -LiteralPath $resolvedCompiler
 $compilerSignature = Get-AuthenticodeSignature -LiteralPath $resolvedCompiler
 $compilerPolicyPass = $compilerHash -eq ([string]$profile.compilerPolicy.sha256).ToUpperInvariant() -and
@@ -1448,14 +1754,44 @@ $functionalSourceText = @(
 $serviceHostSourceText = Get-Content -Raw -LiteralPath $sourcePath
 $loopbackTransportSourceText = Get-Content -Raw -LiteralPath $loopbackTransportSourcePath
 $projectContextSourceText = Get-Content -Raw -LiteralPath $projectContextSourcePath
+$projectReadOnlyPlatformSourceText = Get-Content -Raw -LiteralPath $projectReadOnlyPlatformSourcePath
+$projectKnowledgeSourceText = Get-Content -Raw -LiteralPath $projectKnowledgeSourcePath
+$projectKnowledgeHostSourceText = Get-Content -Raw -LiteralPath $projectKnowledgeHostSourcePath
+$projectKnowledgeHarnessSourceText = Get-Content -Raw -LiteralPath $projectKnowledgeHarnessSourcePath
 $projectContextHarnessSourceText = Get-Content -Raw -LiteralPath $projectContextHarnessSourcePath
 $taskIntakeHarnessSourceText = Get-Content -Raw -LiteralPath $taskIntakeHarnessSourcePath
+$expectedKnowledgeSources = @('src/ContractCodec.cs','src/ProjectReadOnlyPlatform.cs','src/ProjectKnowledge.cs','src/ProjectKnowledgeHost.cs')
+$expectedKnowledgeHarnessSources = @('src/ContractCodec.cs','src/ProjectReadOnlyPlatform.cs','src/ProjectKnowledge.cs','src/ProjectKnowledgeHost.cs','tests/ProjectKnowledgeHarness.cs')
+$expectedKnowledgePaths = @(
+    'docs/project/memory/README.md','docs/project/memory/DECISION_INDEX.md','docs/project/memory/DISCOVERY_INDEX.md',
+    'docs/project/memory/PROCEDURE_INDEX.md','docs/project/memory/OPEN_QUESTIONS.md',
+    'docs/project/memory/STABILITY_CHECKLIST.md','docs/project/memory/MEMORY_SCHEMA.md'
+)
+if ((@($profile.projectKnowledge.sources | ForEach-Object { [string]$_ }) -join [Environment]::NewLine) -cne ($expectedKnowledgeSources -join [Environment]::NewLine) -or
+    (@($profile.projectKnowledge.harnessSources | ForEach-Object { [string]$_ }) -join [Environment]::NewLine) -cne ($expectedKnowledgeHarnessSources -join [Environment]::NewLine) -or
+    (@($profile.projectKnowledge.pathLiterals | ForEach-Object { [string]$_ }) -join [Environment]::NewLine) -cne ($expectedKnowledgePaths -join [Environment]::NewLine)) {
+    throw 'Project-knowledge exact source order or path literal profile mismatch.'
+}
+foreach ($knowledgePathLiteral in $expectedKnowledgePaths) {
+    if ([Regex]::Matches($projectKnowledgeSourceText, [Regex]::Escape('"' + $knowledgePathLiteral + '"')).Count -ne 1) {
+        throw "Project-knowledge source path literal closure mismatch: $knowledgePathLiteral"
+    }
+}
+if ([Regex]::Matches($projectKnowledgeSourceText, '"docs/project/memory/[^"]+"').Count -ne 7) {
+    throw 'Project-knowledge source contains an eighth or missing memory path literal.'
+}
+$knowledgeCapabilityText = $projectKnowledgeSourceText + [Environment]::NewLine + $projectKnowledgeHostSourceText
+foreach ($forbiddenKnowledgeToken in @('System.Net','HttpClient','WebClient','Socket','Directory.','GetFiles','EnumerateFiles','GetDirectories','EnumerateDirectories','Process','Environment.','Microsoft.Win32','System.Reflection','Activator','CallSite','BinaryFormatter','DataContractSerializer','XmlSerializer','WriteAllText','WriteAllBytes','AppendAllText','CreateDirectory','OpenWrite','FileStream','StreamWriter')) {
+    if ($knowledgeCapabilityText.IndexOf($forbiddenKnowledgeToken, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
+        throw "Project-knowledge source contains forbidden capability token '$forbiddenKnowledgeToken'."
+    }
+}
 $loopbackRuntimeSourceText = [Regex]::Replace(
     $loopbackTransportSourceText,
     '(?s)#if TRANSPORT_POLICY_TESTS.*?#endif',
     ''
 )
-$allRuntimeSourceText = $serviceHostSourceText + "`n" + $functionalSourceText + "`n" + $loopbackRuntimeSourceText + "`n" + $projectContextSourceText + "`n" + $projectContextHarnessSourceText
+$allRuntimeSourceText = $serviceHostSourceText + "`n" + $functionalSourceText + "`n" + $loopbackRuntimeSourceText + "`n" + $projectReadOnlyPlatformSourceText + "`n" + $projectContextSourceText + "`n" + $projectContextHarnessSourceText
 $forbiddenFunctionalPatterns = @(
     'System.IO',
     'System.Net',
@@ -1483,21 +1819,24 @@ $forbiddenProjectContextPatterns = @(
 )
 foreach ($pattern in $forbiddenProjectContextPatterns) {
     if ($projectContextSourceText.IndexOf($pattern, [StringComparison]::OrdinalIgnoreCase) -ge 0 -or
+        $projectReadOnlyPlatformSourceText.IndexOf($pattern, [StringComparison]::OrdinalIgnoreCase) -ge 0 -or
         $projectContextHarnessSourceText.IndexOf($pattern, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
         throw "Project-context source or harness contains prohibited implementation token: $pattern"
     }
 }
 if ($projectContextSourceText -cmatch '\b(?:System\.IO\.)?(?:File|Directory|Path)\s*\.' -or
+    $projectReadOnlyPlatformSourceText -cmatch '\b(?:System\.IO\.)?(?:File|Directory|Path)\s*\.' -or
     $projectContextHarnessSourceText -cmatch '\b(?:System\.IO\.)?(?:File|Directory|Path)\s*\.') {
     throw 'Project-context source or harness contains a prohibited System.IO static API reference.'
 }
 if ([regex]::Matches($projectContextSourceText, '(?m)^#if EAIRA_PROJECT_CONTEXT_NATIVE\s*$').Count -ne 1 -or
     [regex]::Matches($projectContextSourceText, '(?m)^#if EAIRA_PROJECT_CONTEXT_TEST_SEAM\s*$').Count -ne 1 -or
-    [regex]::Matches($projectContextSourceText, '\[DllImport\(').Count -ne 6 -or
-    [regex]::Matches($projectContextSourceText, '(?m)^\s*private static extern\s+').Count -ne 6 -or
+    [regex]::Matches($projectReadOnlyPlatformSourceText, '(?m)^#if EAIRA_PROJECT_READONLY_NATIVE\s*$').Count -ne 1 -or
+    [regex]::Matches($projectReadOnlyPlatformSourceText, '\[DllImport\(').Count -ne 6 -or
+    [regex]::Matches($projectReadOnlyPlatformSourceText, '\bprivate static extern\s+').Count -ne 6 -or
     $projectContextSourceText -match '\bProjectContextNative\b' -or
-    $projectContextSourceText.IndexOf('private sealed class ProjectContextWin32Platform', [StringComparison]::Ordinal) -lt 0 -or
-    [regex]::Matches($projectContextSourceText, '(?m)^\s*internal ProjectContextWin32Platform\(\) \{ \}\s*$').Count -ne 1 -or
+    $projectReadOnlyPlatformSourceText.IndexOf('internal sealed class ProjectContextWin32Platform', [StringComparison]::Ordinal) -lt 0 -or
+    [regex]::Matches($projectReadOnlyPlatformSourceText, '(?m)^\s*internal ProjectContextWin32Platform\(\) \{ \}\s*$').Count -ne 1 -or
     [regex]::Matches($projectContextHarnessSourceText, '(?m)^\s*internal FakePlatform\(\) \{ \}\s*$').Count -ne 1 -or
     [regex]::Matches($taskIntakeHarnessSourceText, '(?m)^\s*internal FakeCoordinator\(\) \{ \}\s*$').Count -ne 1) {
     throw 'Project-context conditional/native source topology mismatch.'
@@ -1609,6 +1948,11 @@ $taskIntakeHostSourceHash = Get-Sha256 -LiteralPath $taskIntakeHostSourcePath
 $localProviderSourceHash = Get-Sha256 -LiteralPath $localProviderSourcePath
 $loopbackTransportSourceHash = Get-Sha256 -LiteralPath $loopbackTransportSourcePath
 $projectContextSourceHash = Get-Sha256 -LiteralPath $projectContextSourcePath
+$codecSourceHash = Get-Sha256 -LiteralPath $codecSourcePath
+$projectReadOnlyPlatformSourceHash = Get-Sha256 -LiteralPath $projectReadOnlyPlatformSourcePath
+$projectKnowledgeSourceHash = Get-Sha256 -LiteralPath $projectKnowledgeSourcePath
+$projectKnowledgeHostSourceHash = Get-Sha256 -LiteralPath $projectKnowledgeHostSourcePath
+$projectKnowledgeHarnessSourceHash = Get-Sha256 -LiteralPath $projectKnowledgeHarnessSourcePath
 $harnessSourceHash = Get-Sha256 -LiteralPath $harnessSourcePath
 $taskIntakeHarnessSourceHash = Get-Sha256 -LiteralPath $taskIntakeHarnessSourcePath
 $localProviderHarnessSourceHash = Get-Sha256 -LiteralPath $localProviderHarnessSourcePath
@@ -1616,6 +1960,7 @@ $projectContextHarnessSourceHash = Get-Sha256 -LiteralPath $projectContextHarnes
 $allBuildEvidence = @()
 $seamNegativeSpecimenEvidence = @()
 $nativeNegativeSpecimenEvidence = @()
+$knowledgeNegativeSpecimenEvidence = @()
 
 for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
     $buildRoot = $buildRoots[$buildIndex]
@@ -1642,6 +1987,7 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         $harnessArguments += '/deterministic+'
         $harnessArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
     }
+    $harnessArguments += $codecSourcePath
     $harnessArguments += $coreSourcePath
     $harnessArguments += $providerSourcePath
     $harnessArguments += $harnessSourcePath
@@ -1689,9 +2035,11 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         $taskIntakeHarnessArguments += '/deterministic+'
         $taskIntakeHarnessArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
     }
+    $taskIntakeHarnessArguments += $codecSourcePath
     $taskIntakeHarnessArguments += $coreSourcePath
     $taskIntakeHarnessArguments += $providerSourcePath
     $taskIntakeHarnessArguments += $taskIntakeSourcePath
+    $taskIntakeHarnessArguments += $projectReadOnlyPlatformSourcePath
     $taskIntakeHarnessArguments += $projectContextSourcePath
     $taskIntakeHarnessArguments += $taskIntakeHarnessSourcePath
     $taskIntakeHarnessCompilerOutput = @(& $resolvedCompiler @taskIntakeHarnessArguments 2>&1)
@@ -1730,7 +2078,7 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
     $projectContextHarnessOutputPath = Join-Path $buildRoot ([string]$profile.projectContext.outputHarness)
     $projectContextHarnessArguments = @(
         '/nologo', '/noconfig', '/target:exe', '/platform:x64', '/optimize+', '/debug-', '/checked+', '/highentropyva+',
-        '/warn:4', '/warnaserror+', '/nostdlib+', '/define:EAIRA_PROJECT_CONTEXT_NATIVE,EAIRA_PROJECT_CONTEXT_TEST_SEAM',
+        '/warn:4', '/warnaserror+', '/nostdlib+', '/define:EAIRA_PROJECT_READONLY_NATIVE,EAIRA_PROJECT_CONTEXT_NATIVE,EAIRA_PROJECT_CONTEXT_TEST_SEAM',
         "/reference:$resolvedReferences\mscorlib.dll", "/reference:$resolvedReferences\System.dll",
         '/main:EAIRA.AgentServices.Tests.ProjectContextHarness', "/out:$projectContextHarnessOutputPath"
     )
@@ -1738,9 +2086,11 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         $projectContextHarnessArguments += '/deterministic+'
         $projectContextHarnessArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
     }
+    $projectContextHarnessArguments += $codecSourcePath
     $projectContextHarnessArguments += $coreSourcePath
     $projectContextHarnessArguments += $providerSourcePath
     $projectContextHarnessArguments += $localProviderSourcePath
+    $projectContextHarnessArguments += $projectReadOnlyPlatformSourcePath
     $projectContextHarnessArguments += $projectContextSourcePath
     $projectContextHarnessArguments += $projectContextHarnessSourcePath
     $projectContextHarnessCompilerOutput = @(& $resolvedCompiler @projectContextHarnessArguments 2>&1)
@@ -1785,6 +2135,128 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         offlineTestsPass = [bool]$projectContextHarnessPass
     }
 
+    $projectKnowledgeHarnessOutputPath = Join-Path $buildRoot ([string]$profile.projectKnowledge.outputHarness)
+    $projectKnowledgeHarnessArguments = @(
+        '/nologo', '/noconfig', '/target:exe', '/platform:x64', '/optimize+', '/debug-', '/checked+', '/highentropyva+',
+        '/warn:4', '/warnaserror+', '/nostdlib+', '/define:EAIRA_PROJECT_KNOWLEDGE_TEST_SEAM',
+        "/reference:$resolvedReferences\mscorlib.dll", "/reference:$resolvedReferences\System.dll",
+        '/main:EAIRA.AgentServices.Tests.ProjectKnowledgeHarness', "/out:$projectKnowledgeHarnessOutputPath"
+    )
+    if (-not $DevelopmentProbe) {
+        $projectKnowledgeHarnessArguments += '/deterministic+'
+        $projectKnowledgeHarnessArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
+    }
+    $projectKnowledgeHarnessArguments += $codecSourcePath
+    $projectKnowledgeHarnessArguments += $projectReadOnlyPlatformSourcePath
+    $projectKnowledgeHarnessArguments += $projectKnowledgeSourcePath
+    $projectKnowledgeHarnessArguments += $projectKnowledgeHostSourcePath
+    $projectKnowledgeHarnessArguments += $projectKnowledgeHarnessSourcePath
+    $projectKnowledgeHarnessCompilerOutput = @(& $resolvedCompiler @projectKnowledgeHarnessArguments 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw "Project-knowledge harness compiler failed: $($projectKnowledgeHarnessCompilerOutput -join [Environment]::NewLine)" }
+    Assert-NoForbiddenBinaryMetadata -LiteralPath $projectKnowledgeHarnessOutputPath
+    Assert-SystemIoMemberReferencePolicy -LiteralPath $projectKnowledgeHarnessOutputPath
+    $projectKnowledgeHarnessMetadata = Assert-ProjectKnowledgeMetadataPolicy -LiteralPath $projectKnowledgeHarnessOutputPath -Policy $profile.projectKnowledge -OutputKind 'Harness' -Discovery:$ProjectKnowledgeDiscovery
+    $projectKnowledgeHarnessSelfTest = Invoke-ExitCodeTest -Executable $projectKnowledgeHarnessOutputPath -Arguments @('--self-test')
+    $projectKnowledgeHarnessInvalidTest = Invoke-ExitCodeTest -Executable $projectKnowledgeHarnessOutputPath -Arguments @('--invalid')
+    try { $projectKnowledgeHarnessJson = $projectKnowledgeHarnessSelfTest.output | ConvertFrom-Json } catch { throw 'Project-knowledge harness output is not valid JSON.' }
+    $projectKnowledgeHarnessPass = $projectKnowledgeHarnessSelfTest.exitCode -eq 0 -and
+                                   $projectKnowledgeHarnessInvalidTest.exitCode -eq 64 -and
+                                   $projectKnowledgeHarnessJson.status -eq 'PASS' -and
+                                   $projectKnowledgeHarnessJson.schema -eq 'EAIRA_PROJECT_KNOWLEDGE_HARNESS_V1' -and
+                                   (($ProjectKnowledgeDiscovery -and [int]$projectKnowledgeHarnessJson.testsPassed -ge 350) -or
+                                    (-not $ProjectKnowledgeDiscovery -and [int]$projectKnowledgeHarnessJson.testsPassed -eq [int]$profile.projectKnowledge.expectedHarnessTests)) -and
+                                   [string]$projectKnowledgeHarnessJson.caseNameSha256 -match '^[0-9A-F]{64}$' -and
+                                   ($ProjectKnowledgeDiscovery -or [string]$projectKnowledgeHarnessJson.caseNameSha256 -ceq [string]$profile.projectKnowledge.expectedHarnessCaseNameSha256) -and
+                                   $projectKnowledgeHarnessJson.network -eq 'NONE' -and
+                                   $projectKnowledgeHarnessJson.writes -eq 'NONE' -and
+                                   (Get-PeMachine -LiteralPath $projectKnowledgeHarnessOutputPath) -eq '0x8664' -and
+                                   (Get-AuthenticodeSignature -LiteralPath $projectKnowledgeHarnessOutputPath).Status.ToString() -eq 'NotSigned'
+    $projectKnowledgeHarnessEvidence = [ordered]@{
+        file = (Get-Item -LiteralPath $projectKnowledgeHarnessOutputPath).Name
+        bytes = (Get-Item -LiteralPath $projectKnowledgeHarnessOutputPath).Length
+        sha256 = Get-Sha256 -LiteralPath $projectKnowledgeHarnessOutputPath
+        testsPassed = [int]$projectKnowledgeHarnessJson.testsPassed
+        caseNameSha256 = [string]$projectKnowledgeHarnessJson.caseNameSha256
+        invalidArgumentExitCode = $projectKnowledgeHarnessInvalidTest.exitCode
+        metadataInventory = $projectKnowledgeHarnessMetadata
+        offlineTestsPass = [bool]$projectKnowledgeHarnessPass
+    }
+
+    $projectKnowledgeOutputPath = Join-Path $buildRoot ([string]$profile.projectKnowledge.output)
+    $projectKnowledgeArguments = @(
+        '/nologo', '/noconfig', '/target:exe', '/platform:x64', '/optimize+', '/debug-', '/checked+', '/highentropyva+',
+        '/warn:4', '/warnaserror+', '/nostdlib+', '/define:EAIRA_PROJECT_READONLY_NATIVE,EAIRA_PROJECT_KNOWLEDGE_NATIVE',
+        "/reference:$resolvedReferences\mscorlib.dll", "/reference:$resolvedReferences\System.dll",
+        '/main:EAIRA.AgentServices.ProjectKnowledge.ProjectKnowledgeHost', "/out:$projectKnowledgeOutputPath"
+    )
+    if (-not $DevelopmentProbe) {
+        $projectKnowledgeArguments += '/deterministic+'
+        $projectKnowledgeArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
+    }
+    $projectKnowledgeArguments += $codecSourcePath
+    $projectKnowledgeArguments += $projectReadOnlyPlatformSourcePath
+    $projectKnowledgeArguments += $projectKnowledgeSourcePath
+    $projectKnowledgeArguments += $projectKnowledgeHostSourcePath
+    $projectKnowledgeCompilerOutput = @(& $resolvedCompiler @projectKnowledgeArguments 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw "Project-knowledge CLI compiler failed: $($projectKnowledgeCompilerOutput -join [Environment]::NewLine)" }
+    Assert-NoForbiddenBinaryMetadata -LiteralPath $projectKnowledgeOutputPath -AllowProjectContextPInvoke
+    Assert-SystemIoMemberReferencePolicy -LiteralPath $projectKnowledgeOutputPath -AllowProjectKnowledgeStdout
+    $projectKnowledgePInvokeMetadata = Assert-ProjectContextPInvokePolicy -LiteralPath $projectKnowledgeOutputPath -Policy $profile.projectContext -OutputKind 'KnowledgeCli' -Discovery:$ProjectKnowledgeDiscovery
+    $projectKnowledgeCallerEvidence = Assert-ProjectContextPInvokeCallerPolicy -LiteralPath $projectKnowledgeOutputPath -Policy $profile.projectContext -OutputKind 'KnowledgeCli' -Discovery:$ProjectKnowledgeDiscovery
+    $projectKnowledgeMetadata = Assert-ProjectKnowledgeMetadataPolicy -LiteralPath $projectKnowledgeOutputPath -Policy $profile.projectKnowledge -OutputKind 'Cli' -Discovery:$ProjectKnowledgeDiscovery
+    $projectKnowledgeNativeSemantic = Get-NormalizedNativeSemanticInventory -PInvokeMetadata $projectKnowledgePInvokeMetadata -CallerEvidence $projectKnowledgeCallerEvidence
+    $knowledgeFixtureBase = Join-Path $buildRoot 'knowledge-cli-fixtures'
+    $knowledgeZeroRoot = Join-Path $knowledgeFixtureBase 'ZERO'
+    $knowledgeOneRoot = Join-Path $knowledgeFixtureBase 'ONE'
+    $knowledgeMissingRoot = Join-Path $knowledgeFixtureBase 'MISSING'
+    New-ProjectKnowledgeFixtureRoot -LiteralRoot $knowledgeZeroRoot -PathLiterals @($profile.projectKnowledge.pathLiterals) -Mode ZERO
+    New-ProjectKnowledgeFixtureRoot -LiteralRoot $knowledgeOneRoot -PathLiterals @($profile.projectKnowledge.pathLiterals) -Mode ONE
+    New-ProjectKnowledgeFixtureRoot -LiteralRoot $knowledgeMissingRoot -PathLiterals @($profile.projectKnowledge.pathLiterals) -Mode MISSING
+    $projectKnowledgeInvalid = Invoke-ExactChannelTest -Executable $projectKnowledgeOutputPath -Arguments @('--invalid')
+    $projectKnowledgeZero = Invoke-ExactChannelTest -Executable $projectKnowledgeOutputPath -Arguments @('--root',$knowledgeZeroRoot,'--query','a')
+    $projectKnowledgeOne = Invoke-ExactChannelTest -Executable $projectKnowledgeOutputPath -Arguments @('--root',$knowledgeOneRoot,'--query','a')
+    $projectKnowledgeFailure = Invoke-ExactChannelTest -Executable $projectKnowledgeOutputPath -Arguments @('--root',$knowledgeMissingRoot,'--query','a')
+    $invalidBytes = [Text.Encoding]::UTF8.GetBytes("{`"schema`":`"EAIRA_PROJECT_KNOWLEDGE_ERROR_V1`",`"status`":`"INVALID_REQUEST`",`"network`":`"NONE`",`"writes`":`"NONE`"}`n")
+    $failureBytes = [Text.Encoding]::UTF8.GetBytes("{`"schema`":`"EAIRA_PROJECT_KNOWLEDGE_ERROR_V1`",`"status`":`"KNOWLEDGE_ERROR`",`"network`":`"NONE`",`"writes`":`"NONE`"}`n")
+    $projectKnowledgeInvalidPass = $projectKnowledgeInvalid.exitCode -eq 64 -and
+        ([Convert]::ToBase64String($projectKnowledgeInvalid.stdoutBytes) -ceq [Convert]::ToBase64String($invalidBytes)) -and
+        $projectKnowledgeInvalid.stderrBytes.Length -eq 0
+    $projectKnowledgeActualChannels = [ordered]@{
+        invalid = [ordered]@{ exitCode=$projectKnowledgeInvalid.exitCode; stdoutBytes=$projectKnowledgeInvalid.stdoutBytes.Length; stdoutSha256=$projectKnowledgeInvalid.stdoutSha256; stderrBytes=$projectKnowledgeInvalid.stderrBytes.Length }
+        zero = [ordered]@{ exitCode=$projectKnowledgeZero.exitCode; stdoutBytes=$projectKnowledgeZero.stdoutBytes.Length; stdoutSha256=$projectKnowledgeZero.stdoutSha256; stderrBytes=$projectKnowledgeZero.stderrBytes.Length }
+        one = [ordered]@{ exitCode=$projectKnowledgeOne.exitCode; stdoutBytes=$projectKnowledgeOne.stdoutBytes.Length; stdoutSha256=$projectKnowledgeOne.stdoutSha256; stderrBytes=$projectKnowledgeOne.stderrBytes.Length }
+        knowledgeError = [ordered]@{ exitCode=$projectKnowledgeFailure.exitCode; stdoutBytes=$projectKnowledgeFailure.stdoutBytes.Length; stdoutSha256=$projectKnowledgeFailure.stdoutSha256; stderrBytes=$projectKnowledgeFailure.stderrBytes.Length }
+    }
+    $projectKnowledgeChannelProfilePass = $ProjectKnowledgeDiscovery -or
+        (($projectKnowledgeActualChannels | ConvertTo-Json -Depth 4 -Compress) -ceq
+         ($profile.projectKnowledge.channelMatrix | ConvertTo-Json -Depth 4 -Compress))
+    $projectKnowledgeChannelPass = $projectKnowledgeChannelProfilePass -and $projectKnowledgeInvalidPass -and
+        $projectKnowledgeZero.exitCode -eq 0 -and $projectKnowledgeZero.stderrBytes.Length -eq 0 -and
+        $projectKnowledgeZero.stdoutBytes.Length -eq [int]$profile.projectKnowledge.zeroStdoutBytes -and
+        $projectKnowledgeZero.stdoutSha256 -ceq [string]$profile.projectKnowledge.zeroStdoutSha256 -and
+        $projectKnowledgeOne.exitCode -eq 0 -and $projectKnowledgeOne.stderrBytes.Length -eq 0 -and
+        $projectKnowledgeOne.stdoutBytes.Length -eq [int]$profile.projectKnowledge.oneStdoutBytes -and
+        $projectKnowledgeOne.stdoutSha256 -ceq [string]$profile.projectKnowledge.oneStdoutSha256 -and
+        $projectKnowledgeFailure.exitCode -eq 81 -and $projectKnowledgeFailure.stderrBytes.Length -eq 0 -and
+        ([Convert]::ToBase64String($projectKnowledgeFailure.stdoutBytes) -ceq [Convert]::ToBase64String($failureBytes))
+    $projectKnowledgeEvidence = [ordered]@{
+        file = (Get-Item -LiteralPath $projectKnowledgeOutputPath).Name
+        bytes = (Get-Item -LiteralPath $projectKnowledgeOutputPath).Length
+        sha256 = Get-Sha256 -LiteralPath $projectKnowledgeOutputPath
+        invalidRequestExitCode = $projectKnowledgeInvalid.exitCode
+        invalidRequestPass = [bool]$projectKnowledgeInvalidPass
+        channelMatrixPass = [bool]$projectKnowledgeChannelPass
+        channelMatrixProfileMatch = [bool]$projectKnowledgeChannelProfilePass
+        channels = $projectKnowledgeActualChannels
+        moduleRefs = @($projectKnowledgePInvokeMetadata.modules)
+        pInvokeRows = @($projectKnowledgePInvokeMetadata.rows)
+        nativeCallSiteCount = [int]$projectKnowledgeCallerEvidence.nativeCallSiteCount
+        approvedNativeCallerIlCount = [int]$projectKnowledgeCallerEvidence.approvedCallerIlCount
+        approvedNativeCallerIlSha256 = [string]$projectKnowledgeCallerEvidence.approvedCallerIlSha256
+        metadataInventory = $projectKnowledgeMetadata
+        normalizedNativeInventory = $projectKnowledgeNativeSemantic
+    }
+
     $localProviderHarnessOutputPath = Join-Path $buildRoot 'EAIRA.LocalModelProvider.Harness.exe'
     $localProviderHarnessArguments = @(
         '/nologo', '/noconfig', '/target:exe', '/platform:x64', '/optimize+', '/debug-', '/checked+', '/highentropyva+',
@@ -1796,10 +2268,12 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         $localProviderHarnessArguments += '/deterministic+'
         $localProviderHarnessArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
     }
+    $localProviderHarnessArguments += $codecSourcePath
     $localProviderHarnessArguments += $coreSourcePath
     $localProviderHarnessArguments += $providerSourcePath
     $localProviderHarnessArguments += $taskIntakeSourcePath
     $localProviderHarnessArguments += $localProviderSourcePath
+    $localProviderHarnessArguments += $projectReadOnlyPlatformSourcePath
     $localProviderHarnessArguments += $projectContextSourcePath
     $localProviderHarnessArguments += $localProviderHarnessSourcePath
     $localProviderHarnessCompilerOutput = @(& $resolvedCompiler @localProviderHarnessArguments 2>&1)
@@ -1849,11 +2323,13 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         $transportPolicyHarnessArguments += '/deterministic+'
         $transportPolicyHarnessArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
     }
+    $transportPolicyHarnessArguments += $codecSourcePath
     $transportPolicyHarnessArguments += $coreSourcePath
     $transportPolicyHarnessArguments += $providerSourcePath
     $transportPolicyHarnessArguments += $taskIntakeSourcePath
     $transportPolicyHarnessArguments += $localProviderSourcePath
     $transportPolicyHarnessArguments += $loopbackTransportSourcePath
+    $transportPolicyHarnessArguments += $projectReadOnlyPlatformSourcePath
     $transportPolicyHarnessArguments += $projectContextSourcePath
     $transportPolicyHarnessCompilerOutput = @(& $resolvedCompiler @transportPolicyHarnessArguments 2>&1)
     if ($LASTEXITCODE -ne 0) { throw "Transport-policy harness compiler failed: $($transportPolicyHarnessCompilerOutput -join [Environment]::NewLine)" }
@@ -1894,18 +2370,20 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         '/nologo', '/noconfig', '/target:exe', '/platform:x64', '/optimize+', '/debug-', '/checked+', '/highentropyva+',
         '/warn:4', '/warnaserror+', '/nostdlib+',
         "/reference:$resolvedReferences\mscorlib.dll", "/reference:$resolvedReferences\System.dll",
-        "/reference:$resolvedReferences\System.Net.Http.dll", '/define:EAIRA_PROJECT_CONTEXT_NATIVE',
+        "/reference:$resolvedReferences\System.Net.Http.dll", '/define:EAIRA_PROJECT_READONLY_NATIVE,EAIRA_PROJECT_CONTEXT_NATIVE',
         '/main:EAIRA.AgentServices.TaskIntake.AgentTaskIntakeHost', "/out:$taskIntakeOutputPath"
     )
     if (-not $DevelopmentProbe) {
         $taskIntakeArguments += '/deterministic+'
         $taskIntakeArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
     }
+    $taskIntakeArguments += $codecSourcePath
     $taskIntakeArguments += $coreSourcePath
     $taskIntakeArguments += $providerSourcePath
     $taskIntakeArguments += $taskIntakeSourcePath
     $taskIntakeArguments += $localProviderSourcePath
     $taskIntakeArguments += $loopbackTransportSourcePath
+    $taskIntakeArguments += $projectReadOnlyPlatformSourcePath
     $taskIntakeArguments += $projectContextSourcePath
     $taskIntakeArguments += $taskIntakeHostSourcePath
     $taskIntakeCompilerOutput = @(& $resolvedCompiler @taskIntakeArguments 2>&1)
@@ -1913,6 +2391,7 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
     Assert-NoForbiddenBinaryMetadata -LiteralPath $taskIntakeOutputPath -AllowLoopbackHttp -AllowProjectContextPInvoke
     $taskIntakePInvokeMetadata = Assert-ProjectContextPInvokePolicy -LiteralPath $taskIntakeOutputPath -Policy $profile.projectContext -OutputKind 'Cli'
     $taskIntakeCallerEvidence = Assert-ProjectContextPInvokeCallerPolicy -LiteralPath $taskIntakeOutputPath -Policy $profile.projectContext -OutputKind 'Cli'
+    $taskIntakeNativeSemantic = Get-NormalizedNativeSemanticInventory -PInvokeMetadata $taskIntakePInvokeMetadata -CallerEvidence $taskIntakeCallerEvidence
     $taskIntakeSeamEvidence = Assert-ProjectContextSeamPolicy -LiteralPath $taskIntakeOutputPath -OutputKind 'Cli' -Policy $profile.projectContext
     Assert-LoopbackMetadataPolicy -LiteralPath $taskIntakeOutputPath -Policy $profile.cliMetadataAllowlist -DevelopmentProbe:$DevelopmentProbe
 
@@ -1972,12 +2451,43 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         approvedNativeCallerIlCount = [int]$taskIntakeCallerEvidence.approvedCallerIlCount
         approvedNativeCallerIlSha256 = [string]$taskIntakeCallerEvidence.approvedCallerIlSha256
         approvedNativeCallerIlProfileMatch = [bool]$taskIntakeCallerEvidence.approvedCallerIlProfileMatch
+        normalizedNativeInventory = $taskIntakeNativeSemantic
         seamPolicy = $taskIntakeSeamEvidence
         deterministicOutput = [bool]($taskAllowed.output -eq $taskAllowedRepeat.output)
         offlineTestsPass = [bool]$taskIntakePass
     }
 
     if ($buildIndex -eq 0) {
+        $knowledgeSpecimenRoot = Join-Path $buildRoot 'knowledge-negative-specimens'
+        New-Item -ItemType Directory -Path $knowledgeSpecimenRoot | Out-Null
+        $knowledgeCases = @(
+            [ordered]@{ Name='EXTRA_PATH_LITERAL'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='"docs/project/memory/STABILITY_CHECKLIST.md", "docs/project/memory/MEMORY_SCHEMA.md"'; New='"docs/project/memory/STABILITY_CHECKLIST.md", "docs/project/memory/MEMORY_SCHEMA.md", "docs/project/memory/EXTRA.md"' },
+            [ordered]@{ Name='ARBITRARY_PATH_METHOD'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        internal static string NormalizeQueryOrThrowRequest(string value)'; New="        internal ILeafProbeHandle OpenArbitraryPath(string value) { return platform.OpenLeafProbe(value); }`n`n        internal static string NormalizeQueryOrThrowRequest(string value)" },
+            [ordered]@{ Name='OUTPUT_SCHEMA_CHANGE'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='EAIRA_PROJECT_KNOWLEDGE_QUERY_V1'; New='EAIRA_PROJECT_KNOWLEDGE_QUERY_V2' },
+            [ordered]@{ Name='RAW_CONTENT_OUTPUT'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        internal string Path, Heading, Excerpt;'; New="        internal string Path, Heading, Excerpt;`n        internal string RawContent { get { return Excerpt; } }" },
+            [ordered]@{ Name='RAW_PATH_OUTPUT'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        internal string Path, Heading, Excerpt;'; New="        internal string Path, Heading, Excerpt;`n        internal string RawAbsolutePath { get { return Path; } }" },
+            [ordered]@{ Name='RAW_QUERY_OUTPUT'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        internal string QuerySha256, ResultSetSha256;'; New="        internal string QuerySha256, ResultSetSha256;`n        internal string RawQuery { get { return QuerySha256; } }" },
+            [ordered]@{ Name='WRONG_DIGEST_FRAMING'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='EAIRA-KNOWLEDGE-QUERY-V1'; New='EAIRA-KNOWLEDGE-QUERY-V1-BAD' },
+            [ordered]@{ Name='ALTERNATE_FACTORY'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        internal static ProjectKnowledgeQuery CreateNative() { return new ProjectKnowledgeQuery(new ProjectContextWin32Platform()); }'; New="        internal static ProjectKnowledgeQuery CreateNative() { return new ProjectKnowledgeQuery(new ProjectContextWin32Platform()); }`n        internal static ProjectKnowledgeQuery CreateAlternate() { return new ProjectKnowledgeQuery(new ProjectContextWin32Platform()); }" },
+            [ordered]@{ Name='ALTERNATE_CONSTRUCTOR'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        private ProjectKnowledgeQuery(IProjectContextReadOnlyPlatform value) { if (value == null) { throw new ProjectKnowledgeException(); } platform = value; }'; New="        private ProjectKnowledgeQuery(IProjectContextReadOnlyPlatform value) { if (value == null) { throw new ProjectKnowledgeException(); } platform = value; }`n        private ProjectKnowledgeQuery(IProjectContextReadOnlyPlatform value, int ignored) : this(value) { if (ignored == Int32.MinValue) { throw new ProjectKnowledgeException(); } }" },
+            [ordered]@{ Name='ALTERNATE_CALLER'; Path=$projectKnowledgeHostSourcePath; Text=$projectKnowledgeHostSourceText; Old='        internal static int RunCore(string[] args, Func<ProjectKnowledgeQuery> factory, Action<string> write)'; New="        private static ProjectKnowledgeQuery AlternateCaller() { return ProjectKnowledgeQuery.CreateNative(); }`n`n        internal static int RunCore(string[] args, Func<ProjectKnowledgeQuery> factory, Action<string> write)" },
+            [ordered]@{ Name='REFLECTION_DISPATCH'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        internal static string NormalizeQueryOrThrowRequest(string value)'; New="        private static object ReflectionBad() { return Activator.CreateInstance(typeof(StringBuilder)); }`n`n        internal static string NormalizeQueryOrThrowRequest(string value)" },
+            [ordered]@{ Name='DYNAMIC_DISPATCH'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        internal static string NormalizeQueryOrThrowRequest(string value)'; New="        private static object DynamicBad(Delegate value) { return value.DynamicInvoke(new object[0]); }`n`n        internal static string NormalizeQueryOrThrowRequest(string value)" },
+            [ordered]@{ Name='WRITE_REFERENCE'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        internal static string NormalizeQueryOrThrowRequest(string value)'; New="        private static void WriteBad() { System.IO.File.WriteAllText(`"x`", `"x`"); }`n`n        internal static string NormalizeQueryOrThrowRequest(string value)" },
+            [ordered]@{ Name='NETWORK_REFERENCE'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        internal static string NormalizeQueryOrThrowRequest(string value)'; New="        private static string NetworkBad() { return System.Net.Dns.GetHostName(); }`n`n        internal static string NormalizeQueryOrThrowRequest(string value)" },
+            [ordered]@{ Name='DIRECTORY_ENUMERATION'; Path=$projectKnowledgeSourcePath; Text=$projectKnowledgeSourceText; Old='        internal static string NormalizeQueryOrThrowRequest(string value)'; New="        private static string[] EnumerateBad() { return System.IO.Directory.GetFiles(`"x`"); }`n`n        internal static string NormalizeQueryOrThrowRequest(string value)" },
+            [ordered]@{ Name='DUPLICATE_PINVOKE'; Path=$projectReadOnlyPlatformSourcePath; Text=$projectReadOnlyPlatformSourceText; Old='        [return: MarshalAs(UnmanagedType.Bool)] private static extern bool CloseHandle(IntPtr handle);'; New="        [return: MarshalAs(UnmanagedType.Bool)] private static extern bool CloseHandle(IntPtr handle);`n        [DllImport(`"kernel32.dll`", EntryPoint = `"CloseHandle`", ExactSpelling = true, CallingConvention = CallingConvention.Winapi, CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true, PreserveSig = true)]`n        [return: MarshalAs(UnmanagedType.Bool)] private static extern bool CloseHandleDuplicate(IntPtr handle);" },
+            [ordered]@{ Name='MOVED_PINVOKE_VISIBILITY'; Path=$projectReadOnlyPlatformSourcePath; Text=$projectReadOnlyPlatformSourceText; Old='        [return: MarshalAs(UnmanagedType.Bool)] private static extern bool CloseHandle(IntPtr handle);'; New='        [return: MarshalAs(UnmanagedType.Bool)] internal static extern bool CloseHandle(IntPtr handle);' }
+        )
+        foreach ($case in $knowledgeCases) {
+            $changed = Replace-ExactSpecimenText -Text ([string]$case.Text) -Old ([string]$case.Old) -New ([string]$case.New) -SpecimenName ([string]$case.Name)
+            $replacements = @{}
+            $replacements[[string]$case.Path] = $changed
+            $knowledgeNegativeSpecimenEvidence += Invoke-ProjectKnowledgeNegativeSpecimen -Name ([string]$case.Name) `
+                -CompilerPath $resolvedCompiler -CompilerArguments $projectKnowledgeArguments -ReplacementSources $replacements `
+                -SpecimenRoot $knowledgeSpecimenRoot -ProjectKnowledgePolicy $profile.projectKnowledge `
+                -ProjectContextPolicy $profile.projectContext -BaselineMetadata $projectKnowledgeMetadata
+        }
         $specimenRoot = Join-Path $buildRoot 'seam-negative-specimens'
         New-Item -ItemType Directory -Path $specimenRoot | Out-Null
         $mainConstructionLine = '                LocalTaskIntake intake = CreateIntakeForTests();'
@@ -2220,42 +2730,42 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
             -CompilerPath $resolvedCompiler -CompilerArguments $taskIntakeHarnessArguments -ReplacementSources $replacementSources `
             -SpecimenRoot $specimenRoot -OutputKind 'IntakeHarness' -Policy $profile.projectContext
 
-        $leaseConstructorSource = Replace-ExactSpecimenText -Text $projectContextSourceText `
-            -Old '                    private ProjectContextNativeLease(IntPtr handle) { Handle = handle; }' `
-            -New "                    private ProjectContextNativeLease(IntPtr handle) { Handle = handle; }`n                    private ProjectContextNativeLease(IntPtr handle, bool ignored) { Handle = ignored ? IntPtr.Zero : handle; }" `
+        $leaseConstructorSource = Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText `
+            -Old '            private ProjectContextNativeLease(IntPtr handle) { Handle = handle; }' `
+            -New "            private ProjectContextNativeLease(IntPtr handle) { Handle = handle; }`n            private ProjectContextNativeLease(IntPtr handle, bool ignored) { Handle = ignored ? IntPtr.Zero : handle; }" `
             -SpecimenName 'EXTRA_NATIVE_LEASE_CONSTRUCTOR'
         $replacementSources = @{}
-        $replacementSources[$projectContextSourcePath] = $leaseConstructorSource
+        $replacementSources[$projectReadOnlyPlatformSourcePath] = $leaseConstructorSource
         $seamNegativeSpecimenEvidence += Invoke-SeamNegativeSpecimen -Name 'EXTRA_NATIVE_LEASE_CONSTRUCTOR' `
             -CompilerPath $resolvedCompiler -CompilerArguments $projectContextHarnessArguments -ReplacementSources $replacementSources `
             -SpecimenRoot $specimenRoot -OutputKind 'ContextHarness' -Policy $profile.projectContext
 
-        $leaseFactorySource = Replace-ExactSpecimenText -Text $projectContextSourceText `
-            -Old '                    internal static ProjectContextNativeLease Create(IntPtr handle)' `
-            -New "                    internal static ProjectContextNativeLease Create(IntPtr handle, bool ignored) { return Create(ignored ? IntPtr.Zero : handle); }`n                    internal static ProjectContextNativeLease Create(IntPtr handle)" `
+        $leaseFactorySource = Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText `
+            -Old '            internal static ProjectContextNativeLease Create(IntPtr handle)' `
+            -New "            internal static ProjectContextNativeLease Create(IntPtr handle, bool ignored) { return Create(ignored ? IntPtr.Zero : handle); }`n            internal static ProjectContextNativeLease Create(IntPtr handle)" `
             -SpecimenName 'EXTRA_NATIVE_LEASE_FACTORY_OVERLOAD'
         $replacementSources = @{}
-        $replacementSources[$projectContextSourcePath] = $leaseFactorySource
+        $replacementSources[$projectReadOnlyPlatformSourcePath] = $leaseFactorySource
         $seamNegativeSpecimenEvidence += Invoke-SeamNegativeSpecimen -Name 'EXTRA_NATIVE_LEASE_FACTORY_OVERLOAD' `
             -CompilerPath $resolvedCompiler -CompilerArguments $projectContextHarnessArguments -ReplacementSources $replacementSources `
             -SpecimenRoot $specimenRoot -OutputKind 'ContextHarness' -Policy $profile.projectContext
 
-        $leaseCallerAnchor = "            public IApprovedContentHandle OpenApprovedContent(string exactPath)`n            {`n                IntPtr handle = CreateFileW(exactPath, GenericRead, FileShareRead, IntPtr.Zero, OpenExisting, SequentialScan | OpenNoRecall, IntPtr.Zero);`n                return new ApprovedContentToken(ProjectContextNativeLease.Create(handle));`n            }"
-        $leaseCallerSource = Replace-ExactSpecimenText -Text $projectContextSourceText -Old $leaseCallerAnchor `
+        $leaseCallerAnchor = "        public IApprovedContentHandle OpenApprovedContent(string exactPath)`n        {`n            IntPtr handle = CreateFileW(exactPath, GenericRead, FileShareRead, IntPtr.Zero, OpenExisting, SequentialScan | OpenNoRecall, IntPtr.Zero);`n            return new ApprovedContentToken(ProjectContextNativeLease.Create(handle));`n        }"
+        $leaseCallerSource = Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText -Old $leaseCallerAnchor `
             -New ($leaseCallerAnchor + "`n`n            private static ProjectContextNativeLease ForbiddenNativeLeaseCaller()`n            {`n                return ProjectContextNativeLease.Create(IntPtr.Zero);`n            }") `
             -SpecimenName 'EXTRA_NATIVE_LEASE_CALLER'
         $replacementSources = @{}
-        $replacementSources[$projectContextSourcePath] = $leaseCallerSource
+        $replacementSources[$projectReadOnlyPlatformSourcePath] = $leaseCallerSource
         $seamNegativeSpecimenEvidence += Invoke-SeamNegativeSpecimen -Name 'EXTRA_NATIVE_LEASE_CALLER' `
             -CompilerPath $resolvedCompiler -CompilerArguments $projectContextHarnessArguments -ReplacementSources $replacementSources `
             -SpecimenRoot $specimenRoot -OutputKind 'ContextHarness' -Policy $profile.projectContext
 
-        $leaseInterfaceOld = "            private sealed class ProjectContextNativeLease`n                {`n                    internal IntPtr Handle { get; private set; }"
-        $leaseInterfaceNew = "            private sealed class ProjectContextNativeLease : IDisposable`n                {`n                    internal IntPtr Handle { get; private set; }`n                    void IDisposable.Dispose() { Close(); }"
-        $leaseInterfaceSource = Replace-ExactSpecimenText -Text $projectContextSourceText -Old $leaseInterfaceOld `
+        $leaseInterfaceOld = "        private sealed class ProjectContextNativeLease`n        {`n            internal IntPtr Handle { get; private set; }"
+        $leaseInterfaceNew = "        private sealed class ProjectContextNativeLease : IDisposable`n        {`n            internal IntPtr Handle { get; private set; }`n            void IDisposable.Dispose() { Close(); }"
+        $leaseInterfaceSource = Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText -Old $leaseInterfaceOld `
             -New $leaseInterfaceNew -SpecimenName 'NATIVE_LEASE_IDISPOSABLE_INTERFACE_DISPATCH'
         $replacementSources = @{}
-        $replacementSources[$projectContextSourcePath] = $leaseInterfaceSource
+        $replacementSources[$projectReadOnlyPlatformSourcePath] = $leaseInterfaceSource
         $seamNegativeSpecimenEvidence += Invoke-SeamNegativeSpecimen -Name 'NATIVE_LEASE_IDISPOSABLE_INTERFACE_DISPATCH' `
             -CompilerPath $resolvedCompiler -CompilerArguments $projectContextHarnessArguments -ReplacementSources $replacementSources `
             -SpecimenRoot $specimenRoot -OutputKind 'ContextHarness' -Policy $profile.projectContext
@@ -2309,24 +2819,24 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         $nativeSpecimenRoot = Join-Path $buildRoot 'native-negative-specimens'
         New-Item -ItemType Directory -Path $nativeSpecimenRoot | Out-Null
         $constantCases = @(
-            [ordered]@{ Name='GENERIC_READ_VALUE_CHANGE'; Old='            private const uint GenericRead = 0x80000000;'; New='            private const uint GenericRead = 0x40000000;' },
-            [ordered]@{ Name='FILE_SHARE_READ_VALUE_CHANGE'; Old='            private const uint FileShareRead = 0x00000001;'; New='            private const uint FileShareRead = 0x00000002;' },
-            [ordered]@{ Name='OPEN_EXISTING_VALUE_CHANGE'; Old='            private const uint OpenExisting = 3;'; New='            private const uint OpenExisting = 4;' },
-            [ordered]@{ Name='OPEN_REPARSE_POINT_VALUE_CHANGE'; Old='            private const uint OpenReparsePoint = 0x00200000;'; New='            private const uint OpenReparsePoint = 0x00400000;' },
-            [ordered]@{ Name='BACKUP_SEMANTICS_VALUE_CHANGE'; Old='            private const uint BackupSemantics = 0x02000000;'; New='            private const uint BackupSemantics = 0x01000000;' },
-            [ordered]@{ Name='OPEN_NO_RECALL_VALUE_CHANGE'; Old='            private const uint OpenNoRecall = 0x00100000;'; New='            private const uint OpenNoRecall = 0x00080000;' },
-            [ordered]@{ Name='SEQUENTIAL_SCAN_VALUE_CHANGE'; Old='            private const uint SequentialScan = 0x08000000;'; New='            private const uint SequentialScan = 0x04000000;' }
+            [ordered]@{ Name='GENERIC_READ_VALUE_CHANGE'; Old='        private const uint GenericRead = 0x80000000;'; New='        private const uint GenericRead = 0x40000000;' },
+            [ordered]@{ Name='FILE_SHARE_READ_VALUE_CHANGE'; Old='        private const uint FileShareRead = 0x00000001;'; New='        private const uint FileShareRead = 0x00000002;' },
+            [ordered]@{ Name='OPEN_EXISTING_VALUE_CHANGE'; Old='        private const uint OpenExisting = 3;'; New='        private const uint OpenExisting = 4;' },
+            [ordered]@{ Name='OPEN_REPARSE_POINT_VALUE_CHANGE'; Old='        private const uint OpenReparsePoint = 0x00200000;'; New='        private const uint OpenReparsePoint = 0x00400000;' },
+            [ordered]@{ Name='BACKUP_SEMANTICS_VALUE_CHANGE'; Old='        private const uint BackupSemantics = 0x02000000;'; New='        private const uint BackupSemantics = 0x01000000;' },
+            [ordered]@{ Name='OPEN_NO_RECALL_VALUE_CHANGE'; Old='        private const uint OpenNoRecall = 0x00100000;'; New='        private const uint OpenNoRecall = 0x00080000;' },
+            [ordered]@{ Name='SEQUENTIAL_SCAN_VALUE_CHANGE'; Old='        private const uint SequentialScan = 0x08000000;'; New='        private const uint SequentialScan = 0x04000000;' }
         )
         foreach ($case in $constantCases) {
-            $specimenSource = Replace-ExactSpecimenText -Text $projectContextSourceText -Old $case.Old -New $case.New -SpecimenName $case.Name
+            $specimenSource = Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText -Old $case.Old -New $case.New -SpecimenName $case.Name
             $replacementSources = @{}
-            $replacementSources[$projectContextSourcePath] = $specimenSource
+            $replacementSources[$projectReadOnlyPlatformSourcePath] = $specimenSource
             $nativeNegativeSpecimenEvidence += Invoke-NativeNegativeSpecimen -Name $case.Name `
                 -CompilerPath $resolvedCompiler -CompilerArguments $projectContextHarnessArguments -ReplacementSources $replacementSources `
                 -SpecimenRoot $nativeSpecimenRoot -OutputKind 'ContextHarness' -Policy $profile.projectContext
         }
 
-        $createFileAttributeLine = '                [DllImport("kernel32.dll", EntryPoint = "CreateFileW", ExactSpelling = true, CallingConvention = CallingConvention.Winapi, CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true, PreserveSig = true)]'
+        $createFileAttributeLine = '        [DllImport("kernel32.dll", EntryPoint = "CreateFileW", ExactSpelling = true, CallingConvention = CallingConvention.Winapi, CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true, PreserveSig = true)]'
         $attributeCases = @(
             [ordered]@{ Name='EXACT_SPELLING_FALSE'; Old='ExactSpelling = true'; New='ExactSpelling = false' },
             [ordered]@{ Name='CALLING_CONVENTION_CDECL'; Old='CallingConvention = CallingConvention.Winapi'; New='CallingConvention = CallingConvention.Cdecl' },
@@ -2338,39 +2848,39 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         )
         foreach ($case in $attributeCases) {
             $changedAttributeLine = $createFileAttributeLine.Replace([string]$case.Old, [string]$case.New)
-            $specimenSource = Replace-ExactSpecimenText -Text $projectContextSourceText -Old $createFileAttributeLine -New $changedAttributeLine -SpecimenName $case.Name
+            $specimenSource = Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText -Old $createFileAttributeLine -New $changedAttributeLine -SpecimenName $case.Name
             $replacementSources = @{}
-            $replacementSources[$projectContextSourcePath] = $specimenSource
+            $replacementSources[$projectReadOnlyPlatformSourcePath] = $specimenSource
             $nativeNegativeSpecimenEvidence += Invoke-NativeNegativeSpecimen -Name $case.Name `
                 -CompilerPath $resolvedCompiler -CompilerArguments $projectContextHarnessArguments -ReplacementSources $replacementSources `
                 -SpecimenRoot $nativeSpecimenRoot -OutputKind 'ContextHarness' -Policy $profile.projectContext
         }
 
-        $visibilitySource = Replace-ExactSpecimenText -Text $projectContextSourceText `
-            -Old '                private static extern IntPtr CreateFileW(string fileName, uint desiredAccess, uint shareMode, IntPtr securityAttributes, uint creationDisposition, uint flagsAndAttributes, IntPtr templateFile);' `
-            -New '                internal static extern IntPtr CreateFileW(string fileName, uint desiredAccess, uint shareMode, IntPtr securityAttributes, uint creationDisposition, uint flagsAndAttributes, IntPtr templateFile);' `
+        $visibilitySource = Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText `
+            -Old '        private static extern IntPtr CreateFileW(string fileName, uint desiredAccess, uint shareMode, IntPtr securityAttributes, uint creationDisposition, uint flagsAndAttributes, IntPtr templateFile);' `
+            -New '        internal static extern IntPtr CreateFileW(string fileName, uint desiredAccess, uint shareMode, IntPtr securityAttributes, uint creationDisposition, uint flagsAndAttributes, IntPtr templateFile);' `
             -SpecimenName 'NATIVE_IMPORT_VISIBILITY_INTERNAL'
         $replacementSources = @{}
-        $replacementSources[$projectContextSourcePath] = $visibilitySource
+        $replacementSources[$projectReadOnlyPlatformSourcePath] = $visibilitySource
         $nativeNegativeSpecimenEvidence += Invoke-NativeNegativeSpecimen -Name 'NATIVE_IMPORT_VISIBILITY_INTERNAL' `
             -CompilerPath $resolvedCompiler -CompilerArguments $projectContextHarnessArguments -ReplacementSources $replacementSources `
             -SpecimenRoot $nativeSpecimenRoot -OutputKind 'ContextHarness' -Policy $profile.projectContext
 
-        $closeDeclaration = "                [DllImport(`"kernel32.dll`", EntryPoint = `"CloseHandle`", ExactSpelling = true, CallingConvention = CallingConvention.Winapi, CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true, PreserveSig = true)]`n                [return: MarshalAs(UnmanagedType.Bool)]`n                private static extern bool CloseHandle(IntPtr handle);"
-        $extraImportSource = Replace-ExactSpecimenText -Text $projectContextSourceText -Old $closeDeclaration `
-            -New ($closeDeclaration + "`n`n                [DllImport(`"kernel32.dll`", EntryPoint = `"DeleteFileW`", ExactSpelling = true, CallingConvention = CallingConvention.Winapi, CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true, PreserveSig = true)]`n                [return: MarshalAs(UnmanagedType.Bool)]`n                private static extern bool DeleteFileW(string path);") `
+        $closeDeclaration = "        [DllImport(`"kernel32.dll`", EntryPoint = `"CloseHandle`", ExactSpelling = true, CallingConvention = CallingConvention.Winapi, CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true, PreserveSig = true)]`n        [return: MarshalAs(UnmanagedType.Bool)] private static extern bool CloseHandle(IntPtr handle);"
+        $extraImportSource = Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText -Old $closeDeclaration `
+            -New ($closeDeclaration + "`n`n        [DllImport(`"kernel32.dll`", EntryPoint = `"DeleteFileW`", ExactSpelling = true, CallingConvention = CallingConvention.Winapi, CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true, PreserveSig = true)]`n        [return: MarshalAs(UnmanagedType.Bool)] private static extern bool DeleteFileW(string path);") `
             -SpecimenName 'EXTRA_NATIVE_IMPORT'
         $replacementSources = @{}
-        $replacementSources[$projectContextSourcePath] = $extraImportSource
+        $replacementSources[$projectReadOnlyPlatformSourcePath] = $extraImportSource
         $nativeNegativeSpecimenEvidence += Invoke-NativeNegativeSpecimen -Name 'EXTRA_NATIVE_IMPORT' `
             -CompilerPath $resolvedCompiler -CompilerArguments $projectContextHarnessArguments -ReplacementSources $replacementSources `
             -SpecimenRoot $nativeSpecimenRoot -OutputKind 'ContextHarness' -Policy $profile.projectContext
 
-        $extraNativeCallerSource = Replace-ExactSpecimenText -Text $projectContextSourceText -Old $leaseCallerAnchor `
+        $extraNativeCallerSource = Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText -Old $leaseCallerAnchor `
             -New ($leaseCallerAnchor + "`n`n            private static IntPtr ForbiddenExtraNativeCaller(string exactPath)`n            {`n                return CreateFileW(exactPath, GenericRead, FileShareRead, IntPtr.Zero, OpenExisting, OpenReparsePoint, IntPtr.Zero);`n            }") `
             -SpecimenName 'EXTRA_NATIVE_CALLER'
         $replacementSources = @{}
-        $replacementSources[$projectContextSourcePath] = $extraNativeCallerSource
+        $replacementSources[$projectReadOnlyPlatformSourcePath] = $extraNativeCallerSource
         $nativeNegativeSpecimenEvidence += Invoke-NativeNegativeSpecimen -Name 'EXTRA_NATIVE_CALLER' `
             -CompilerPath $resolvedCompiler -CompilerArguments $projectContextHarnessArguments -ReplacementSources $replacementSources `
             -SpecimenRoot $nativeSpecimenRoot -OutputKind 'ContextHarness' -Policy $profile.projectContext
@@ -2401,6 +2911,7 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
             $arguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services"
         }
         $arguments += $sourcePath
+        $arguments += $codecSourcePath
         $arguments += $coreSourcePath
         $arguments += $providerSourcePath
 
@@ -2454,6 +2965,8 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         functionalHarness = $harnessEvidence
         taskIntakeHarness = $taskIntakeHarnessEvidence
         projectContextHarness = $projectContextHarnessEvidence
+        projectKnowledgeHarness = $projectKnowledgeHarnessEvidence
+        projectKnowledgeCli = $projectKnowledgeEvidence
         localProviderHarness = $localProviderHarnessEvidence
         transportPolicyHarness = $transportPolicyHarnessEvidence
         taskIntakeCli = $taskIntakeEvidence
@@ -2471,7 +2984,11 @@ if ($allBuildEvidence[0].taskIntakeHarness.sha256 -ne $allBuildEvidence[1].taskI
     $allBuildEvidence[0].projectContextHarness.sha256 -ne $allBuildEvidence[1].projectContextHarness.sha256 -or
     $allBuildEvidence[0].localProviderHarness.sha256 -ne $allBuildEvidence[1].localProviderHarness.sha256 -or
     $allBuildEvidence[0].transportPolicyHarness.sha256 -ne $allBuildEvidence[1].transportPolicyHarness.sha256 -or
-    $allBuildEvidence[0].taskIntakeCli.sha256 -ne $allBuildEvidence[1].taskIntakeCli.sha256) {
+    $allBuildEvidence[0].taskIntakeCli.sha256 -ne $allBuildEvidence[1].taskIntakeCli.sha256 -or
+    $allBuildEvidence[0].projectKnowledgeHarness.bytes -ne $allBuildEvidence[1].projectKnowledgeHarness.bytes -or
+    $allBuildEvidence[0].projectKnowledgeHarness.sha256 -ne $allBuildEvidence[1].projectKnowledgeHarness.sha256 -or
+    $allBuildEvidence[0].projectKnowledgeCli.bytes -ne $allBuildEvidence[1].projectKnowledgeCli.bytes -or
+    $allBuildEvidence[0].projectKnowledgeCli.sha256 -ne $allBuildEvidence[1].projectKnowledgeCli.sha256) {
     $reproducible = $false
 }
 for ($index = 0; $index -lt @($profile.roles).Count; $index++) {
@@ -2484,6 +3001,18 @@ $seamNegativeSpecimensPass = $seamNegativeSpecimenEvidence.Count -eq 31 -and @($
 $outputIsolationNegativeSpecimens = @($seamNegativeSpecimenEvidence | Where-Object { $_.name -in @('DIRECTORY_ENUMERATION_OUTPUT','RAW_CONTENT_OUTPUT','PER_FILE_DIGEST_OUTPUT') })
 $outputIsolationNegativeSpecimensPass = $outputIsolationNegativeSpecimens.Count -eq 3 -and @($outputIsolationNegativeSpecimens | Where-Object { -not $_.verifierRejected -or $_.compileExitCode -ne 0 }).Count -eq 0
 $nativeNegativeSpecimensPass = $nativeNegativeSpecimenEvidence.Count -eq 17 -and @($nativeNegativeSpecimenEvidence | Where-Object { -not $_.verifierRejected -or $_.compileExitCode -ne 0 }).Count -eq 0
+$expectedKnowledgeSpecimenNames = @(
+    'EXTRA_PATH_LITERAL','ARBITRARY_PATH_METHOD','OUTPUT_SCHEMA_CHANGE','RAW_CONTENT_OUTPUT','RAW_PATH_OUTPUT',
+    'RAW_QUERY_OUTPUT','WRONG_DIGEST_FRAMING','ALTERNATE_FACTORY','ALTERNATE_CONSTRUCTOR','ALTERNATE_CALLER',
+    'REFLECTION_DISPATCH','DYNAMIC_DISPATCH','WRITE_REFERENCE','NETWORK_REFERENCE','DIRECTORY_ENUMERATION',
+    'DUPLICATE_PINVOKE','MOVED_PINVOKE_VISIBILITY'
+)
+$actualKnowledgeSpecimenNames = @($knowledgeNegativeSpecimenEvidence | ForEach-Object { [string]$_.name })
+$knowledgeNegativeSpecimensPass = $knowledgeNegativeSpecimenEvidence.Count -eq $expectedKnowledgeSpecimenNames.Count -and
+    (($actualKnowledgeSpecimenNames -join "`n") -ceq ($expectedKnowledgeSpecimenNames -join "`n")) -and
+    @($knowledgeNegativeSpecimenEvidence | Where-Object { -not $_.verifierRejected -or $_.compileExitCode -ne 0 }).Count -eq 0 -and
+    ($ProjectKnowledgeDiscovery -or ((@($profile.projectKnowledge.specimenNames | ForEach-Object { [string]$_ }) -join "`n") -ceq
+                                    ($expectedKnowledgeSpecimenNames -join "`n")))
 $roleTestsPass = (@($allBuildEvidence | ForEach-Object { $_.outputs } | Where-Object { -not $_.offlineTestsPass }).Count -eq 0)
 $functionalTestsPass = (@($allBuildEvidence | Where-Object { -not $_.functionalHarness.offlineTestsPass }).Count -eq 0)
 $projectContextHarnessCallerIlStable = (($allBuildEvidence[0].projectContextHarness.approvedNativeCallerIl | ConvertTo-Json -Depth 5 -Compress) -ceq
@@ -2510,7 +3039,42 @@ $taskIntakeTestsPass = (@($allBuildEvidence | Where-Object {
     -not $_.transportPolicyHarness.offlineTestsPass -or
     -not $_.taskIntakeCli.offlineTestsPass
 }).Count -eq 0)
-$offlineTestsPass = $roleTestsPass -and $functionalTestsPass -and $projectContextTestsPass -and $taskIntakeTestsPass
+$projectKnowledgeMetadataStable = (($allBuildEvidence[0].projectKnowledgeCli.metadataInventory | ConvertTo-Json -Depth 8 -Compress) -ceq
+                                   ($allBuildEvidence[1].projectKnowledgeCli.metadataInventory | ConvertTo-Json -Depth 8 -Compress)) -and
+                                  (($allBuildEvidence[0].projectKnowledgeHarness.metadataInventory | ConvertTo-Json -Depth 8 -Compress) -ceq
+                                   ($allBuildEvidence[1].projectKnowledgeHarness.metadataInventory | ConvertTo-Json -Depth 8 -Compress))
+$projectKnowledgeCodecRawCrossOutput = (($allBuildEvidence[0].projectKnowledgeCli.metadataInventory.codecClosure | ConvertTo-Json -Compress) -ceq
+                                       ($allBuildEvidence[0].projectKnowledgeHarness.metadataInventory.codecClosure | ConvertTo-Json -Compress))
+$projectKnowledgeCodecSemanticCrossOutput = (($allBuildEvidence[0].projectKnowledgeCli.metadataInventory.codecSemanticClosure | ConvertTo-Json -Compress) -ceq
+                                            ($allBuildEvidence[0].projectKnowledgeHarness.metadataInventory.codecSemanticClosure | ConvertTo-Json -Compress))
+$projectKnowledgeNativeCrossOutput = $true
+foreach ($build in $allBuildEvidence) {
+    if (($build.taskIntakeCli.normalizedNativeInventory | ConvertTo-Json -Depth 8 -Compress) -cne
+        ($build.projectKnowledgeCli.normalizedNativeInventory | ConvertTo-Json -Depth 8 -Compress)) {
+        $projectKnowledgeNativeCrossOutput = $false
+    }
+}
+if (($allBuildEvidence[0].projectKnowledgeCli.normalizedNativeInventory | ConvertTo-Json -Depth 8 -Compress) -cne
+    ($allBuildEvidence[1].projectKnowledgeCli.normalizedNativeInventory | ConvertTo-Json -Depth 8 -Compress)) {
+    $projectKnowledgeNativeCrossOutput = $false
+}
+$projectKnowledgeNormalizedProfileMatch = $ProjectKnowledgeDiscovery -or
+    (($allBuildEvidence[0].projectKnowledgeCli.normalizedNativeInventory | ConvertTo-Json -Depth 8 -Compress) -ceq
+     ($profile.projectKnowledge.normalizedNativeInventory | ConvertTo-Json -Depth 8 -Compress))
+$projectKnowledgeTestsPass = (@($allBuildEvidence | Where-Object {
+    -not $_.projectKnowledgeHarness.offlineTestsPass -or
+    -not $_.projectKnowledgeCli.invalidRequestPass -or
+    -not $_.projectKnowledgeCli.channelMatrixPass
+}).Count -eq 0) -and $projectKnowledgeMetadataStable -and $projectKnowledgeCodecSemanticCrossOutput -and
+    $projectKnowledgeNativeCrossOutput -and $projectKnowledgeNormalizedProfileMatch -and $knowledgeNegativeSpecimensPass
+$projectKnowledgeProfileBound = $ProjectKnowledgeDiscovery -or (
+    $slice4InputsBound -and
+    [int64]$profile.projectKnowledge.expectedCliBytes -eq [int64]$allBuildEvidence[0].projectKnowledgeCli.bytes -and
+    [string]$profile.projectKnowledge.expectedCliSha256 -ceq [string]$allBuildEvidence[0].projectKnowledgeCli.sha256 -and
+    [int64]$profile.projectKnowledge.expectedHarnessBytes -eq [int64]$allBuildEvidence[0].projectKnowledgeHarness.bytes -and
+    [string]$profile.projectKnowledge.expectedHarnessSha256 -ceq [string]$allBuildEvidence[0].projectKnowledgeHarness.sha256
+)
+$offlineTestsPass = $roleTestsPass -and $functionalTestsPass -and $projectContextTestsPass -and $taskIntakeTestsPass -and $projectKnowledgeTestsPass -and $projectKnowledgeProfileBound
 $m4TechnicalChecksPass = -not $DevelopmentProbe -and $compilerPolicyPass -and $supportsDeterministic -and $supportsPathMap -and $reproducible -and $offlineTestsPass
 $releaseOutputs = @()
 
@@ -2535,6 +3099,14 @@ if ($m4TechnicalChecksPass) {
         bytes = (Get-Item -LiteralPath $taskIntakeReleasePath).Length
         sha256 = Get-Sha256 -LiteralPath $taskIntakeReleasePath
         authenticode = (Get-AuthenticodeSignature -LiteralPath $taskIntakeReleasePath).Status.ToString()
+    }
+    $projectKnowledgeReleasePath = Join-Path $releaseRoot ([string]$profile.projectKnowledge.output)
+    Copy-Item -LiteralPath (Join-Path $buildRoots[0] ([string]$profile.projectKnowledge.output)) -Destination $projectKnowledgeReleasePath
+    $releaseOutputs += [ordered]@{
+        file = [string]$profile.projectKnowledge.output
+        bytes = (Get-Item -LiteralPath $projectKnowledgeReleasePath).Length
+        sha256 = Get-Sha256 -LiteralPath $projectKnowledgeReleasePath
+        authenticode = (Get-AuthenticodeSignature -LiteralPath $projectKnowledgeReleasePath).Status.ToString()
     }
 }
 
@@ -2562,8 +3134,9 @@ $compilerItem = Get-Item -LiteralPath $resolvedCompiler
 $manifest = [ordered]@{
     schemaVersion = 1
     generatedUtc = [DateTime]::UtcNow.ToString('o')
-    classification = if ($DevelopmentProbe) { 'DEVELOPMENT_PROBE_ONLY' } else { 'M4_FUNCTIONAL_AGENT_MVP_SLICE_3_UNSIGNED_CANDIDATE' }
-    status = if ($m4TechnicalChecksPass) { 'M4_SLICE_3_UNSIGNED_TECHNICAL_CHECKS_PASS' } elseif ($DevelopmentProbe -and -not $reproducible) { 'BLOCKED_NONDETERMINISTIC_COMPILER' } else { 'FAIL_CLOSED' }
+    classification = if ($DevelopmentProbe) { 'DEVELOPMENT_PROBE_ONLY' } elseif ($ProjectKnowledgeDiscovery) { 'M4_SLICE_4_PROJECT_KNOWLEDGE_DISCOVERY' } else { 'M4_FUNCTIONAL_AGENT_MVP_SLICE_4_UNSIGNED_CANDIDATE' }
+    status = if ($m4TechnicalChecksPass) { 'M4_SLICE_4_UNSIGNED_TECHNICAL_CHECKS_PASS' } elseif ($DevelopmentProbe -and -not $reproducible) { 'BLOCKED_NONDETERMINISTIC_COMPILER' } else { 'FAIL_CLOSED' }
+    finalEvidence = [bool](-not $DevelopmentProbe -and -not $ProjectKnowledgeDiscovery -and $m4TechnicalChecksPass)
     gate25Complete = $false
     externalSigningEligible = $false
     signatureOnlyBlocked = $false
@@ -2594,6 +3167,16 @@ $manifest = [ordered]@{
         loopbackTransportSha256 = $loopbackTransportSourceHash
         projectContextFile = 'src/ProjectContext.cs'
         projectContextSha256 = $projectContextSourceHash
+        codecFile = 'src/ContractCodec.cs'
+        codecSha256 = $codecSourceHash
+        projectReadOnlyPlatformFile = 'src/ProjectReadOnlyPlatform.cs'
+        projectReadOnlyPlatformSha256 = $projectReadOnlyPlatformSourceHash
+        projectKnowledgeFile = 'src/ProjectKnowledge.cs'
+        projectKnowledgeSha256 = $projectKnowledgeSourceHash
+        projectKnowledgeHostFile = 'src/ProjectKnowledgeHost.cs'
+        projectKnowledgeHostSha256 = $projectKnowledgeHostSourceHash
+        projectKnowledgeHarnessFile = 'tests/ProjectKnowledgeHarness.cs'
+        projectKnowledgeHarnessSha256 = $projectKnowledgeHarnessSourceHash
         harnessFile = 'tests/AgentCoreHarness.cs'
         harnessSha256 = $harnessSourceHash
         taskIntakeHarnessFile = 'tests/LocalTaskIntakeHarness.cs'
@@ -2605,6 +3188,7 @@ $manifest = [ordered]@{
         releaseProfileSha256 = Get-Sha256 -LiteralPath $profilePath
     }
     candidateRepositoryInputs = $candidateRepositoryEvidence
+    slice4RepositoryInputs = $slice4RepositoryEvidence
     compiler = [ordered]@{
         file = $compilerItem.Name
         bytes = $compilerItem.Length
@@ -2675,6 +3259,39 @@ $manifest = [ordered]@{
         nativeNegativeSpecimensPass = [bool]$nativeNegativeSpecimensPass
         nativeNegativeSpecimens = $nativeNegativeSpecimenEvidence
         testsPass = [bool]$projectContextTestsPass
+        writes = 'NONE'
+    }
+    projectKnowledge = [ordered]@{
+        contract = 'EAIRA_PROJECT_KNOWLEDGE_QUERY_V1'
+        discovery = [bool]$ProjectKnowledgeDiscovery
+        profileBound = [bool]$projectKnowledgeProfileBound
+        expectedReleaseProfileSha256 = if ($ProjectKnowledgeDiscovery -or $DevelopmentProbe) { $null } else { $ExpectedReleaseProfileSha256 }
+        actualReleaseProfileSha256 = $releaseProfileSha256
+        harnessTestsPassed = [int]$allBuildEvidence[0].projectKnowledgeHarness.testsPassed
+        harnessCaseNameSha256 = [string]$allBuildEvidence[0].projectKnowledgeHarness.caseNameSha256
+        boundRepositoryInputCount = [int]$profileSlice4Inputs.Count
+        boundRepositoryInputsMatch = [bool]$slice4InputsBound
+        cleanBuildHarnessReproducible = [bool]($allBuildEvidence[0].projectKnowledgeHarness.sha256 -eq $allBuildEvidence[1].projectKnowledgeHarness.sha256)
+        cleanBuildCliReproducible = [bool]($allBuildEvidence[0].projectKnowledgeCli.sha256 -eq $allBuildEvidence[1].projectKnowledgeCli.sha256)
+        cliBytes = [int64]$allBuildEvidence[0].projectKnowledgeCli.bytes
+        cliSha256 = [string]$allBuildEvidence[0].projectKnowledgeCli.sha256
+        harnessBytes = [int64]$allBuildEvidence[0].projectKnowledgeHarness.bytes
+        harnessSha256 = [string]$allBuildEvidence[0].projectKnowledgeHarness.sha256
+        metadataInventories = [ordered]@{
+            Cli = $allBuildEvidence[0].projectKnowledgeCli.metadataInventory
+            Harness = $allBuildEvidence[0].projectKnowledgeHarness.metadataInventory
+        }
+        metadataStableAcrossBuilds = [bool]$projectKnowledgeMetadataStable
+        codecRawClosureEqualAcrossOutputs = [bool]$projectKnowledgeCodecRawCrossOutput
+        codecSemanticClosureEqualAcrossOutputs = [bool]$projectKnowledgeCodecSemanticCrossOutput
+        codecRawClosureProtection = 'EXACT_PER_OUTPUT_PROFILE_BINDING_AND_CLEAN_A_B_STABILITY'
+        normalizedNativeInventory = $allBuildEvidence[0].projectKnowledgeCli.normalizedNativeInventory
+        normalizedNativeEqualToTaskCli = [bool]$projectKnowledgeNativeCrossOutput
+        normalizedNativeProfileMatch = [bool]$projectKnowledgeNormalizedProfileMatch
+        negativeSpecimensPass = [bool]$knowledgeNegativeSpecimensPass
+        negativeSpecimens = $knowledgeNegativeSpecimenEvidence
+        testsPass = [bool]$projectKnowledgeTestsPass
+        network = 'NONE'
         writes = 'NONE'
     }
     localModelProvider = [ordered]@{

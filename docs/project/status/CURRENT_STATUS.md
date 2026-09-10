@@ -6,11 +6,11 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.37.20
+0.37.38
 
 ## Updated At
 
-2026-09-09
+2026-09-10
 
 ## Current Milestone
 
@@ -24,9 +24,9 @@ M4 Functional Agent MVP: Active.
 
 ## Active Phase
 
-M4 Slice 3, decision `SLICE3_A_READ_ONLY_PROJECT_CONTEXT`, is published and independently post-push verified at commit `a0e172f34ebc09f76e1bd894d680614ed901113d`, parent `b3bd69683ae873be59bf5a78e5df4dd6a4e71eec`, tree `bfbdd21b7a633d8801d436e5b4271f860d8f3bd6`. Live `origin/master`, local `HEAD`, and cached `origin/master` all resolved to the publication commit during R14 verification. The exact publication contains 24 authorized paths and excludes the three unrelated Claude API paths.
+M4 Slice 3, decision `SLICE3_A_READ_ONLY_PROJECT_CONTEXT`, is complete and published. Product commit `a0e172f34ebc09f76e1bd894d680614ed901113d` and post-publication synchronization commit `7e1c1d04e6b92fcbf89f0b1268d189da9892071b` were independently live-remote verified. The exact product publication contains 24 authorized paths and excludes the three unrelated Claude API paths.
 
-Independent R10R6 review returned `CLOSEABLE`, `P0=0`, `P1=0`, and `P2=0`. R11/R11R1 then fixed only non-semantic staged whitespace and produced an exact 24-path index. R12 committed that snapshot as `a0e172f34ebc09f76e1bd894d680614ed901113d`; independent post-commit verification found `P0=0`, `P1=0`, and two non-blocking P2 findings. R13 normally pushed the commit, and R14 independently verified the live publication with `publication_verified=YES`, `P0=0`, `P1=0`, and `P2=2`. Release-profile-pinned evidence retains two byte-identical builds, 52 project-context tests, 31 seam specimens, 17 native specimens and all three output-isolation specimens with status `M4_SLICE_3_UNSIGNED_TECHNICAL_CHECKS_PASS`; manifest SHA-256 is `ACE552E00EAB9BEFD6DAA4C50C3FD315F2401C514298138E2005B2DFDEE8FB3A`. The remaining P2 is the known set of 18 long Codex checkpoint refs that can disrupt full maintenance under Windows legacy `MAX_PATH` but did not affect this commit or publication. No Windows mutation, service activation, signing, or production activation is established.
+M4 Slice 4 Gate 22 closed. Gate 24 initial review returned `CANNOT_CLOSE`, `P0=0`, `P1=5`, `P2=1`; Gate 24 R1 review returned `CANNOT_CLOSE`, `P0=0`, `P1=3`, `P2=1`; D08 profile-calibration review returned `CANNOT_CLOSE`, `P0=0`, `P1=1`, `P2=0`; and the later R2R1 sealed-final review returned `CANNOT_CLOSE`, `P0=0`, `P1=2`, `P2=0`. All prior sealed/profile candidates are superseded. Gate 23 R2R2 retains the external profile SHA pre-parse comparison, exact output-specific raw IL binding, clean A/B raw stability, token-relocation-aware semantic equality and 17 compiled-and-rejected knowledge specimens, while adding the missing mandatory stable-name Cloud Files cross-matrix, physical-eighth-file, Unicode and query non-emission coverage. The phase-stable Gate 24-28 candidate does not claim a new reviewed discovery, sealed final evidence, staging, commit, push or publication; each transition requires its own independent evidence.
 
 M4 Slice 2, `M4-FUNCTIONAL-AGENT-MVP-SLICE-2`, remains published and independently post-push verified at commit `d43a4bc170df38e29f6115e927ad2c07190da821`. It retains deterministic `mock`, retains fail-closed disabled `real`, and adds `ollama-local` for exact `qwen3:4b` through `127.0.0.1:11434` only. The local provider is request-scoped, uses a two-entry successful-result cache, validates exact name/full digest before and after generation, and returns sanitized `LOCAL_PROVIDER_ERROR/79` on failure. The digest control is trusted-local consistency, not cryptographic pinning.
 
@@ -62,7 +62,11 @@ Claude independent review determined `READY_FOR_EXACT_MAIN_ANNEX_MUTATION_AUTHOR
 
 ## Current Decision
 
+[Clause S4-STATE-CURRENT]
+
 The controlling authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. `AUTHORIZE_BOUNDED_ASSESSMENT` was not granted, and `AUTHORIZE_WITH_REQUIRED_REVISIONS` was not granted as conditional execution authority.
+
+The separate current product decision is `SLICE4_A_BOUNDED_READ_ONLY_PROJECT_KNOWLEDGE_QUERY`, recorded in `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_4_SCOPE_DECISION.md`. Gate 21 adds only the S4-R03 exact design and grants no implementation, repository-recording, Windows, service, signing or production authority.
 
 The authoritative Project Owner authorization-state decision for commit `f317294515d1dc27a261035260e9fcc45e1545f6` is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_F317294_AUTHORIZATION_STATE_DECISION.md`.
 
@@ -121,10 +125,10 @@ Under the Authorization Annex workstream, no assessment-authorization decision m
 
 ## Next Action
 
-Main Annex Version `0.33.0` mutation, commit, normal push, and independent post-push publication verification are complete. The Project Owner authorized sequential execution of the ten remaining lifecycle gates with fail-closed preconditions.
+Main Annex Version `0.33.0` mutation, commit, normal push, and independent post-push publication verification are complete. Separately and historically, the Project Owner authorized sequential execution of ten remaining Annex lifecycle gates with fail-closed preconditions; that statement does not count or authorize the current Slice 4 Gate 20-28 nine-gate lifecycle.
 
 The local identity, path, capability, backup, encryption, ACL, and WSL evidence gate completed read-only on `2026-08-26` with determination `FAIL_CLOSED_BLOCKED`. At that historical gate, the target evidence path and five proposed groups did not exist. A later authorized Windows change and administrator reconciliation established that the five approved groups now exist and are empty: `EAIRA_EVIDENCE_OPERATORS`, `EAIRA_EVIDENCE_OWNERS`, `EAIRA_EVIDENCE_READERS`, `EAIRA_EVIDENCE_STOP_METADATA`, and `EAIRA_EVIDENCE_VERIFIERS`. This does not establish service accounts, memberships, directories, ACLs, encryption, backup-copy absence, Field 9 implementation, or production readiness.
 
 Gate 19 through Gate 23 bounded preparation and independent review are complete. Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are available and their recorded local evidence matches the sanitized reconciliation report, while the legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred. Gates 25 through 29 remain ineligible until those Gate 24 prerequisites and all other documented blockers are closed.
 
-Slice 3 publication and independent R14 live-remote verification are complete. Review this exact six-file R15 post-publication state synchronization through `SEPARATE_INDEPENDENT_EAIRA_M4_SLICE3_S3_R15_POST_PUBLICATION_CONTROLLED_STATE_AND_HANDOFF_SYNCHRONIZATION_REVIEW`; any later repository recording requires separate Project Owner authorization. External-provider credentials, Windows-service routing, persistence, signing, and production activation remain outside scope. Gate 24 legal signing work remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.
+Slice 3 repository lifecycle is complete through R20. Execute the authorized phase-stable Slice 4 Gate 24-28 lifecycle: independent calibrated-profile review, new empty-root sealed A/B evidence, full independent implementation/abuse review, exact 21-path staging and staged review, one normal commit and post-commit verification, one normal push and independent live-publication verification. Any P0 or P1 stops fail-closed and requires bounded remediation plus a new clean A/B baseline and review. External-provider credentials, Windows-service routing, persistence, signing and production activation remain outside scope. Gate 24 legal signing work remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.
