@@ -61,7 +61,7 @@ Repository evidence supports the following current state:
 
 The latest completed milestone evidence remains M3, including the completed M3.4 Evidence-Driven AI Organization Slice.
 
-M4 Functional Agent MVP is established. Slice 1 through Slice 3 are published and the Slice 3 repository lifecycle is complete through R20. Slice 4 is an implemented local candidate for bounded read-only project-memory lookup and awaits independent implementation review before repository recording. Platform Foundation, a formal EAIRA Execution Layer, Windows-service task routing, external-model integration, persistence, deployment capability, signing eligibility and production multi-agent runtime are not established.
+M4 Functional Agent MVP is established. Slice 1 through Slice 4 are published. Slice 4 product commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f` and its post-publication controlled-state/HANDOFF synchronization endpoint `b4a871ffa9b18c86179a79d3b876fd314f853f7b` were independently live-remote verified. The Human Project Owner selected `SLICE5_A_BOUNDED_LOCAL_PROJECT_QA` and authorized preparation only of its scope decision, exact source allowlist, prompt-injection/data-leakage threat model and readiness package; these form an unstaged planning candidate pending separate independent review and authorize no implementation. Platform Foundation, a formal EAIRA Execution Layer, Windows-service task routing, external-provider integration, persistence, deployment capability, signing eligibility and production multi-agent runtime are not established.
 
 ## Current Planning Models
 

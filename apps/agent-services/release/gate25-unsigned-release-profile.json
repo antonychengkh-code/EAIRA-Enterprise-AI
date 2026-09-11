@@ -93,12 +93,21 @@
         "GetFileInformationByHandleEx": "0004021808101180FC09",
         "GetFinalPathNameByHandleW": "0004091812350909",
         "ReadFile": "000502181D0509100918"
+      },
+      "ProjectQaCli": {
+        "CloseHandle": "00010218",
+        "CreateFileW": "0007180E090918090918",
+        "GetFileInformationByHandle": "0002021810118128",
+        "GetFileInformationByHandleEx": "00040218081011812C09",
+        "GetFinalPathNameByHandleW": "0004091812350909",
+        "ReadFile": "000502181D0509100918"
       }
     },
     "nativeCallerIlInventory": {
-      "KnowledgeCli": { "count": 8, "sha256": "4B11B9713D98FA2FD23DFDEE33C77E571732F06548A8834199B46DB250B63614" },
-      "Cli": { "count": 8, "sha256": "27739C999654A474EA203DFFE369820CF6DAF09FA07AD79B1E15C052A7F49775" },
-      "ContextHarness": { "count": 8, "sha256": "4461DF03ECEA25ADD6315841076EAAFC200CF24F634B6DBEDF7552CACE3ECADC" }
+      "KnowledgeCli": { "count": 8, "sha256": "413519C268F457947DD7BD95012E35434DAD6A04DD473EDCF39CDEEAF35E6D11" },
+      "Cli": { "count": 8, "sha256": "5DA750847CC7744BF5AF80CEF09C77F9360F9943E8E14F7E816CEAEAD89E13E2" },
+      "ContextHarness": { "count": 8, "sha256": "EE63A885E279E4E59B4DD7DF9572E36354E4135A6BF2DE5A2D3A00F01314D852" },
+      "ProjectQaCli": { "count": 8, "sha256": "8B7F6EE827877542FC90661B5E503217C2413ED69DB59510D56B8DE26F36D871" }
     },
     "expectedHarnessTests": 52,
     "seamMethodInventory": {
@@ -160,35 +169,35 @@
       { "file": "apps/agent-services/src/ContractCodec.cs", "sha256": "B0AB23001BAF7A5FC3CCE095138C69CD0E588906B06A68593F350D1E6663241C" },
       { "file": "apps/agent-services/src/AgentCore.cs", "sha256": "26EA45FA683F210A5F1C264E3391195B7FB655D3EFBC1D7D1E0504EB89D03AC0" },
       { "file": "apps/agent-services/src/ProjectReadOnlyPlatform.cs", "sha256": "B84BDF996EA7C8BFAC4204537A7BB8A16D94EC289175BFD6BD0F0C12C19ACCA7" },
-      { "file": "apps/agent-services/src/ProjectContext.cs", "sha256": "1F9666438A81658F1702F3343E9E646F5ABC87B7B5B046C73916400C766A037E" },
-      { "file": "apps/agent-services/src/ProjectKnowledge.cs", "sha256": "3294FAFD0CCFE61049073AA1A80A252673DF8D67EDECEA13F5E67CDC211C5723" },
+      { "file": "apps/agent-services/src/ProjectContext.cs", "sha256": "BA548E6C35A9696ECEBE4E54BCAEEE8A8F441F8771220BBBA43FC54EECADB2EC" },
+      { "file": "apps/agent-services/src/ProjectKnowledge.cs", "sha256": "F3BBF654BE4597DF37A5B87AC493D0DB2520A89B47F22748B20BEAE26931ADBB" },
       { "file": "apps/agent-services/src/ProjectKnowledgeHost.cs", "sha256": "E82FEBED7AD5E032F42B35FD7A5D5AC1B5B1ED27DD4123E202C2F018135E0DB1" },
       { "file": "apps/agent-services/tests/ProjectKnowledgeHarness.cs", "sha256": "E0BEF91BE4A296DA21A37525BFAE91353D4D081AEE28B72AE2F0090106C7378E" },
-      { "file": "apps/agent-services/build/Invoke-Gate25UnsignedRelease.ps1", "sha256": "CCC62FA43DDA9EAD696F3A807CAB5B0079AB13E39A7FD47489E0F771E7CDADBD" },
-      { "file": "docs/project/status/CURRENT_STATUS.md", "sha256": "8DC994749D1F7FC764C1DFE842EA61701004BF11FFD470C2CB307B01D67AE9B7" },
-      { "file": "docs/project/status/TODAY_OBJECTIVE.md", "sha256": "FFFC7D755189613338D9536684C676043AEDE82D71177CCB9EADBF6952D27347" },
-      { "file": "docs/project/status/ACTIVE_TASK.yaml", "sha256": "56F53C684E60A67585F7170C7C4193C0285D1CFF6B4FC2EE88B81DB308F63B73" },
-      { "file": "docs/project/status/AGENT_CONTEXT_VERSION.yaml", "sha256": "EADB6F7050CEF9CCB03392C41C0EC886FAA773F2CE66CD981A42D8A770C10106" },
-      { "file": "docs/project/context/CURRENT_CONTEXT.md", "sha256": "973324650F59BF6C9954E6296C53F4B71C0BEE876C30B659A6A5BAEC34E99B78" },
-      { "file": "docs/project/memory/HANDOFF.md", "sha256": "5E8372A380ACFB63C1C006E949DA8CF67F4490638B068B7716F34A97324765BE" }
+      { "file": "apps/agent-services/build/Invoke-Gate25UnsignedRelease.ps1", "sha256": "F9C50B1F84EFB39C4C2EBFCBE70833C99E14E6B19729B6B2F4832E149F3859BB" },
+      { "file": "docs/project/status/CURRENT_STATUS.md", "sha256": "8425977AA935A9224FFBFB79E8E1A5DD8C529DF7F35A49F2A92FB8D7E7181F0C" },
+      { "file": "docs/project/status/TODAY_OBJECTIVE.md", "sha256": "D30FB96D037BB3059FFB60898125F0443770555CF71B0F3E4FD763790D498A5A" },
+      { "file": "docs/project/status/ACTIVE_TASK.yaml", "sha256": "A5A3F8DD52D15A568B6EAF0D733DCAC497F0D98E8D639F5ADAB15DC862FF98E4" },
+      { "file": "docs/project/status/AGENT_CONTEXT_VERSION.yaml", "sha256": "3CC128229EF71B8CDFA3CF32C804567377F4615C678A9B2E1469F4B15A1E8889" },
+      { "file": "docs/project/context/CURRENT_CONTEXT.md", "sha256": "6004419BFBE2AADD77B95F843CE80BF1D4FCE8B0414B199B4861DCA1E56B974D" },
+      { "file": "docs/project/memory/HANDOFF.md", "sha256": "B18634114B045AE5CC8F20764ED5FB784E0B2D7B64D88535712998A313E3C9FE" }
     ],
     "metadataInventories": {
       "Cli": {
-        "image": { "count": 22016, "sha256": "86B0397AA7D5F72AB8041C979A6B9071FE179335BE6343EEB07E7040A3CB84E6" },
+        "image": { "count": 22016, "sha256": "08ABD5E90A0AAAB219639A7724A6B9C8EDE532199B23E84D459BE9DD40FD0F9A" },
         "typeDefs": { "count": 26, "sha256": "8D0FD410DC19CA429E89F6D3DE06A4820100DB2DF29DD1BCB1614E051ACD9E14" },
-        "methodDefs": { "count": 104, "sha256": "A0F8233E7B999123AE45C58DE29BD7524647A645040470FCA57FC602A86D800C" },
-        "memberRefs": { "count": 77, "sha256": "B3806C066840801084C662931A8B81EB1F8B88F357C5A32978D588AEFE0DBAE9" },
-        "callGraph": { "count": 436, "sha256": "D51F42BF4E3B875A2C684CA49F1A0E39AA96438962337A0B05723355A582F12E" },
-        "codecClosure": { "count": 79, "sha256": "0E27D3864188393C7A5141B39592781A2CBF474F5F20102032B48B6EA93F7ED7" },
+        "methodDefs": { "count": 105, "sha256": "A4B6BCFCEE3BD39886A2B8B837224FF3B91598BCCE885591578A2DE787B24D4D" },
+        "memberRefs": { "count": 79, "sha256": "2547B2979B03658668CAAF8999C881C97A6496999E533FBD14DB3A7F1D67DE9C" },
+        "callGraph": { "count": 443, "sha256": "2276A75A5D32B844A65DD3A8D7E8E3A28F5834020149A23A34956C8203F3EE23" },
+        "codecClosure": { "count": 79, "sha256": "DAED048EB3EB94521E6F8FBF264837DD4E56CA2D0DF65699AB8C5A678F0390C9" },
         "codecSemanticClosure": { "count": 79, "sha256": "3A2B115DFE1C4BC7CD86A5F3126CDBB0D14B70CC8F0863833D3D2725DBDEB800" }
       },
       "Harness": {
-        "image": { "count": 48640, "sha256": "A9E60D7229D45C9FB71FF644C01D6F1A5300D86E6F946FC035E642B962DC61A6" },
+        "image": { "count": 48640, "sha256": "DEFD4EDFA679BBF9EE86043461AB2484F0A1FB4511B637E20F2CD1068130E274" },
         "typeDefs": { "count": 67, "sha256": "7360417F6ADD1EB242DB2947E8FD84D00E8C953822A0435364E309BE72C1FB1F" },
-        "methodDefs": { "count": 236, "sha256": "537D5F13A1EE3AA8910B7D38E6C1E95696F498B2AF3A5F80B001D28A10EB0325" },
-        "memberRefs": { "count": 96, "sha256": "C666705F0B6C5ADC3FC388EB24F4CAF874488D65DDE5161D09EA2A8039788089" },
-        "callGraph": { "count": 1363, "sha256": "02F931360E521FFA9C2C8FD52EF5AE7AA5F99DDAA19C62BAC04C503C4B46FAEE" },
-        "codecClosure": { "count": 79, "sha256": "7F3726B2C56C4DEECED677468ADBFAB3F93C8ED05850869922C2B44060AC6CC2" },
+        "methodDefs": { "count": 237, "sha256": "C7B445A1F6152D0FE5C30825965630D91DC680602BBE9B1118C4F1046FF5DCC3" },
+        "memberRefs": { "count": 98, "sha256": "29ABAAF3F9C8FCC72D20E714C31781E9501CC5278CC696CA08D2E02D3946FBA1" },
+        "callGraph": { "count": 1370, "sha256": "AF3B88ECF32148DBEBFBFD3BBDFD4B1030398A391D3E5C4CFFFA20EDDE029DFB" },
+        "codecClosure": { "count": 79, "sha256": "1293CDC95E460C0227AEAD39140CFA26513153D9ED53046C98E321C2B7970194" },
         "codecSemanticClosure": { "count": 79, "sha256": "3A2B115DFE1C4BC7CD86A5F3126CDBB0D14B70CC8F0863833D3D2725DBDEB800" }
       }
     },
@@ -225,10 +234,136 @@
       "MOVED_PINVOKE_VISIBILITY"
     ],
     "expectedCliBytes": 22016,
-    "expectedCliSha256": "86B0397AA7D5F72AB8041C979A6B9071FE179335BE6343EEB07E7040A3CB84E6",
+    "expectedCliSha256": "08ABD5E90A0AAAB219639A7724A6B9C8EDE532199B23E84D459BE9DD40FD0F9A",
     "expectedHarnessBytes": 48640,
-    "expectedHarnessSha256": "A9E60D7229D45C9FB71FF644C01D6F1A5300D86E6F946FC035E642B962DC61A6",
+    "expectedHarnessSha256": "DEFD4EDFA679BBF9EE86043461AB2484F0A1FB4511B637E20F2CD1068130E274",
     "network": "NONE",
+    "writes": "NONE"
+  },
+  "projectQa": {
+    "contract": "EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1",
+    "output": "EAIRA.ProjectQa.Cli.exe",
+    "outputHarness": "EAIRA.ProjectQa.Harness.exe",
+    "nativeSymbols": "EAIRA_PROJECT_READONLY_NATIVE,EAIRA_PROJECT_QA_NATIVE",
+    "testSeamSymbol": "EAIRA_PROJECT_QA_TEST_SEAM",
+    "maximumPromptBytes": 12000,
+    "maximumBodyBytes": 16384,
+    "maximumAnswerBytes": 2048,
+    "maximumCitations": 8,
+    "expectedHarnessTests": 484,
+    "expectedHarnessCaseNameSha256": "2EAF68F2261C939604AD1156EC9EB2DD3FC9A4B4DCF809D26B16EF926EB56F08",
+    "expectedCliBytes": 85504,
+    "expectedCliSha256": "25618B0BA929FE32EDD9A34A1D9DE033B9B4E76A410A82CD981B55D6ECDB3050",
+    "expectedHarnessBytes": 111616,
+    "expectedHarnessSha256": "BC351B7EF2AD605CD059D125683B35C73B68996490286A8924D17F1F4541EBF0",
+    "boundRepositoryInputs": [
+      { "file": "docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_5_SCOPE_DECISION.md", "sha256": "56FFE9495CC379BA0C230E30B6227DF94CCEAD5BA5ACE3189C16A17895E0B577" },
+      { "file": "docs/project/planning/EAIRA_M4_SLICE5_BOUNDED_LOCAL_PROJECT_QA_ALLOWLIST.md", "sha256": "9808B50A4C69DF2E42C6CBBF197C328FF56345B7F6D3AF724219754B7BF2CFEA" },
+      { "file": "docs/project/planning/EAIRA_M4_SLICE5_BOUNDED_LOCAL_PROJECT_QA_THREAT_MODEL.md", "sha256": "CBC6C0C7FE1045DF88056AFD2B388AB36CFA21742E4CDB6BFBDC56E754A93902" },
+      { "file": "docs/project/planning/EAIRA_M4_SLICE5_BOUNDED_LOCAL_PROJECT_QA_READINESS_PACKAGE.md", "sha256": "A1BA5559F670C22C44C00E29B861B192A0694764B7213BE3E97F39D4E440A6A8" },
+      { "file": "docs/project/planning/EAIRA_M4_SLICE5_EXACT_IMPLEMENTATION_DESIGN_AND_CHANGED_PATH_MANIFEST.md", "sha256": "1A7294F1BBCE03A0361D2C7152249E63BABBCE34A2B6059F38EA783AEDA0E752" },
+      { "file": "docs/project/context/CURRENT_CONTEXT.md", "sha256": "6004419BFBE2AADD77B95F843CE80BF1D4FCE8B0414B199B4861DCA1E56B974D" },
+      { "file": "apps/agent-services/README.md", "sha256": "A032C88585ACCDA10034B71319B613E865E60B48EBD016737996B7A396115BE5" },
+      { "file": "apps/agent-services/contracts/EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1.md", "sha256": "0B6CC992113201A3AE60F62B1D18EE6D28674F91FD32942EA47E06206E7279A4" },
+      { "file": "apps/agent-services/src/ProjectContext.cs", "sha256": "BA548E6C35A9696ECEBE4E54BCAEEE8A8F441F8771220BBBA43FC54EECADB2EC" },
+      { "file": "apps/agent-services/src/ProjectKnowledge.cs", "sha256": "F3BBF654BE4597DF37A5B87AC493D0DB2520A89B47F22748B20BEAE26931ADBB" },
+      { "file": "apps/agent-services/src/ProjectQa.cs", "sha256": "2906161DE921EAD8CE8C0268A852DF5C9CA62DBB64E27F26CA57566E6CB91691" },
+      { "file": "apps/agent-services/src/ProjectQaHost.cs", "sha256": "3189DE38DB61CAC6C9EA3C042DCDDDEF6C9148B4840A6EC585E644C3C92F3952" },
+      { "file": "apps/agent-services/tests/ProjectQaHarness.cs", "sha256": "B53F03141BB80219F6C939A0857384003676CFD06B477FB4B72A27303443ED15" },
+      { "file": "apps/agent-services/build/Invoke-Gate25UnsignedRelease.ps1", "sha256": "F9C50B1F84EFB39C4C2EBFCBE70833C99E14E6B19729B6B2F4832E149F3859BB" }
+    ],
+    "channelMatrix": {
+      "invalid": { "exitCode": 64, "stdoutBytes": 99, "stdoutSha256": "AE482F83460CE0C1E3DA4712DD99ECAFD0599E9E9B926239219C41247B04E15F", "stderrBytes": 0 },
+      "denied": { "exitCode": 77, "stdoutBytes": 90, "stdoutSha256": "032F763897DE14352C16364BE071E40B8557E3E5015D68EFE1570C655F1C6241", "stderrBytes": 0 }
+    },
+    "metadataInventories": {
+      "Cli": {
+        "image": { "count": 85504, "sha256": "25618B0BA929FE32EDD9A34A1D9DE033B9B4E76A410A82CD981B55D6ECDB3050" },
+        "typeDefs": { "count": 76, "sha256": "7A12DC03D93A58EC49829513BB7CCB563A0765D35CBD905D4C1E092AF3ACA763" },
+        "methodDefs": { "count": 415, "sha256": "A5D6534C11684852B3117E7A68DAA63E3A3CC55E5B5846B83AC0175DC787388F" },
+        "memberRefs": { "count": 223, "sha256": "2273AB0959A20E715A9E027F5F57A622C55635BCB982E8DE87602BCE1E3C8DE4" },
+        "methodSpecs": { "count": 0, "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855" },
+        "fields": { "count": 196, "sha256": "66D85BB0DDCBD6D3B1A6358C86A5EF59FA263961678F483C536527FF19EEAF1F" },
+        "interfaces": { "count": 17, "sha256": "A21966CC732B4E0C8BDD521AFF407F82BFFA58A7FF8A3112D4A00303651F4395" },
+        "constructors": { "count": 55, "sha256": "8B72D2E528985132F355B24B87CC581293F24FB5213F848B802BD449D72918E1" },
+        "callGraph": { "count": 2459, "sha256": "F4182EFBF680C8EC6DCC34AC26F52DF231F38063EF4F1DDD558C9654C6124BA8" }
+      },
+      "Harness": {
+        "image": { "count": 111616, "sha256": "BC351B7EF2AD605CD059D125683B35C73B68996490286A8924D17F1F4541EBF0" },
+        "typeDefs": { "count": 81, "sha256": "106A556A9D8D37E273764EA648E773374803576CE2B66E640F6980D9FF611F54" },
+        "methodDefs": { "count": 460, "sha256": "71F3318F52BFB93ACEBF8F4932CDF1147B934E4E23152AA1CA12C5F973195EFF" },
+        "memberRefs": { "count": 186, "sha256": "4547B9FCABCFE9236AD883CB751321846167B3BD3208F0B6370E2987AFF6F684" },
+        "methodSpecs": { "count": 14, "sha256": "AA70AAE723930349763D57FB3245017768E7F31C277758DA5055BC72033CC945" },
+        "fields": { "count": 218, "sha256": "550EDBC97F636C9BDCC5184B016EC8C59DA2F3F7A1769909790390F10D878C24" },
+        "interfaces": { "count": 18, "sha256": "DBA5BF72EE1FD8AF938C37AD0CC8AB9B27BC71F73E23E9917F1220C9C35DCC4A" },
+        "constructors": { "count": 65, "sha256": "681FD9F1D9BE88D1465151E756ECB631D7E99423028F628E929A95B4C25B188C" },
+        "callGraph": { "count": 3016, "sha256": "1D71CB61B414758E29BE33CA67F413ECCB09D8A24705E70F34A8D91F6DB09EC2" }
+      }
+    },
+    "requestCounters": { "tagsCalls": 2, "chatCalls": 1, "preflightDigestValidated": true, "postflightDigestValidated": true },
+    "goldenVectors": {
+      "questionDigest": { "bytes": 5, "sha256": "5F8EAF0FD8B4EE2B0A0FEF54A8594C50143D7B3567AC7C1CF4F90BD8C19970A5" },
+      "prompt": { "bytes": 1711, "sha256": "E5980A66E3C8568AE4C626E0A63BDA2A91DC75FD6711452A0A42AD76BF242EE3" },
+      "body": { "bytes": 2147, "sha256": "447702159C263EEF129ADB26F623DF4C8FA5683BBA7868C3CD01059802FAECE0" },
+      "insufficientAnswer": { "bytes": 53, "sha256": "CE2D672B78A25ACE7379CDF0A6E6265BEF0C5F77A84D0D9B446AB99B5186AEC5" },
+      "successOutput": { "bytes": 1087, "sha256": "94A65159F8F5FB30A83A194E7D589E32A057A704B484EDB06EE8277F7D4F34A4" },
+      "prompt11999": { "bytes": 11999, "sha256": "E4A651E1CEC7B1ADA3E0E137EFB1F53CCF14F321E361CED465AC3681D088AE8E" },
+      "prompt12000": { "bytes": 12000, "sha256": "A68006E3D578D8B32301F7687CB97C68E81A9EC33225D5531A0E5842C4DE62C9" },
+      "prompt12001": { "bytes": 12001, "sha256": "B0BA8D146F21E39031BDF4CF345187BE5B4CA33F255DC2469BDEE03C35769641" },
+      "body16383": { "bytes": 16383, "sha256": "E3173A730FDB0BCCD6F6EADC55A31C1246457735D54619C3191EDE0281585DB5" },
+      "body16384": { "bytes": 16384, "sha256": "2D8CC61CADC3F40F961FD24051A70E86B15225613536A90ABF103023BF9E2D9E" },
+      "body16385": { "bytes": 16385, "sha256": "080758CC5EA11370E9BF81E7306951353D50CD68E3BB2EC951F1000B4575B902" },
+      "output16383": { "bytes": 16383, "sha256": "40D7118B1F53F3164FB2AB5D42B0FD187B0999C02909BC427D93EFD586AAD0FB" },
+      "output16384": { "bytes": 16384, "sha256": "1BD4DB450ABC8914C2FAC721CACE2704FF4C16028E6D07293154DAD289835694" },
+      "output16385": { "bytes": 16385, "sha256": "E9B0015594030C029F167A30522C7DD2EC90379B6026EF7C7DD74B07D0BC63DD" },
+      "errorInvalidNone": { "bytes": 99, "sha256": "AE482F83460CE0C1E3DA4712DD99ECAFD0599E9E9B926239219C41247B04E15F" },
+      "errorDeniedNone": { "bytes": 90, "sha256": "032F763897DE14352C16364BE071E40B8557E3E5015D68EFE1570C655F1C6241" },
+      "errorLocalProviderLoopback": { "bytes": 113, "sha256": "71D23EF602941524D24941FA9604B87A2767775AFA9A61517A24D4BA25F10E8D" },
+      "errorContextNone": { "bytes": 97, "sha256": "AB9311BE3D0D534C439E7CF5242E04FBB92EED856A0F635A8E7AB8A5D0037001" },
+      "errorKnowledgeNone": { "bytes": 99, "sha256": "B0EA23AD8184A5B378C545811C076E2C91BFA4A39BB0F1A7856F72211D6B3A1E" },
+      "errorProjectQaNone": { "bytes": 100, "sha256": "8BA3C443326913A7640E34E79EB4F7329802A1D6B4D75F015360B2D59E4DCC78" },
+      "errorProjectQaLoopback": { "bytes": 109, "sha256": "D19C38637633110E57445DF9D8525A9DD2DC7A49977F9F100712A68C6DF5E185" }
+    },
+    "normalizedNativeInventory": {
+      "pInvokeTuple": { "count": 6, "sha256": "135E81286F7C46FB759911426A6737160D514A39FF01E20B0358B824C3024F0B" },
+      "callGraph": { "count": 8, "sha256": "95B7AC73505DE411A4FC60A501D5909CE8D06D99C19D6722D061871DCBEB8F2B" },
+      "normalizedCallerIl": { "count": 47, "sha256": "7A03E73B8AA72DE3B16F0B70175062B9208DF83EDF6F6BA9207EA4ACB790EB6B" }
+    },
+    "specimenNames": [
+      "QA_EXTRA_SOURCE_PATH", "QA_DIRECTORY_ENUMERATION", "QA_ARBITRARY_FILE_OPEN", "QA_SECOND_PLATFORM", "QA_SECOND_ROOT_SESSION",
+      "QA_EARLY_PROVIDER_CONSTRUCTION", "QA_SECOND_CHAT", "QA_RETRY_LOOP", "QA_FALLBACK_PROVIDER", "QA_EXTERNAL_ENDPOINT",
+      "QA_CALLER_MODEL", "QA_WIDENED_PROMPT_BUDGET", "QA_WIDENED_BODY_BUDGET", "QA_WIDENED_ANSWER_BUDGET", "QA_WIDENED_OUTPUT_BUDGET",
+      "QA_RAW_PROJECTION_OUTPUT", "QA_RAW_PROMPT_OUTPUT", "QA_PROVIDER_BODY_OUTPUT", "QA_ABSOLUTE_ROOT_OUTPUT", "QA_MODEL_CITATION_METADATA",
+      "QA_AUTHORITY_LABEL_MUTATION", "QA_REORDERED_VALIDATION", "QA_ALTERNATE_JSON_PARSER", "QA_UNBOUNDED_READ", "QA_LOGGING_SINK",
+      "QA_PERSISTENCE_REFERENCE", "QA_PROCESS_OR_SHELL_REFERENCE", "QA_REFLECTION_OR_DYNAMIC_CODE", "QA_EXTRA_PINVOKE", "QA_MOVED_PINVOKE_VISIBILITY",
+      "QA_EXTRA_CONSTRUCTOR_OR_FACTORY", "QA_EXTRA_APPROVED_CALLER", "QA_EXTRA_MESSAGE", "QA_WIDENED_CITATION_BUDGET", "QA_RAW_PROVIDER_RESPONSE_OUTPUT",
+      "QA_WEAKENED_STRUCTURED_OUTPUT_SCHEMA"
+    ],
+    "loopbackMetadataAllowlist": {
+      "typeReferences": [
+        "System.IO.Stream|scope=AssemblyReference|count=1", "System.IO.TextWriter|scope=AssemblyReference|count=1", "System.Net.DecompressionMethods|scope=AssemblyReference|count=1",
+        "System.Net.Http.ByteArrayContent|scope=AssemblyReference|count=1", "System.Net.Http.Headers.HttpContentHeaders|scope=AssemblyReference|count=1", "System.Net.Http.Headers.MediaTypeHeaderValue|scope=AssemblyReference|count=1",
+        "System.Net.Http.Headers.NameValueHeaderValue|scope=AssemblyReference|count=1", "System.Net.Http.HttpClient|scope=AssemblyReference|count=1", "System.Net.Http.HttpClientHandler|scope=AssemblyReference|count=1",
+        "System.Net.Http.HttpCompletionOption|scope=AssemblyReference|count=1", "System.Net.Http.HttpContent|scope=AssemblyReference|count=1", "System.Net.Http.HttpMessageHandler|scope=AssemblyReference|count=1",
+        "System.Net.Http.HttpMessageInvoker|scope=AssemblyReference|count=1", "System.Net.Http.HttpMethod|scope=AssemblyReference|count=1", "System.Net.Http.HttpRequestMessage|scope=AssemblyReference|count=1",
+        "System.Net.Http.HttpResponseMessage|scope=AssemblyReference|count=1", "System.Net.HttpStatusCode|scope=AssemblyReference|count=1", "System.Net.ICredentials|scope=AssemblyReference|count=1", "System.Net.IWebProxy|scope=AssemblyReference|count=1"
+      ],
+      "memberReferences": [
+        "System.IO.Stream::get_CanRead|200002|count=1", "System.IO.Stream::ReadAsync|20041512810901081D050808114D|count=1", "System.IO.TextWriter::Write|20010103|count=1", "System.IO.TextWriter::Write|2001010E|count=1",
+        "System.Net.Http.ByteArrayContent::.ctor|2001011D05|count=1", "System.Net.Http.Headers.HttpContentHeaders::get_ContentEncoding|2000151280C9010E|count=1", "System.Net.Http.Headers.HttpContentHeaders::get_ContentLength|20001511808D010A|count=1",
+        "System.Net.Http.Headers.HttpContentHeaders::get_ContentType|2000128105|count=1", "System.Net.Http.Headers.HttpContentHeaders::set_ContentType|200101128105|count=1", "System.Net.Http.Headers.MediaTypeHeaderValue::.ctor|2001010E|count=1",
+        "System.Net.Http.Headers.MediaTypeHeaderValue::get_MediaType|20000E|count=1", "System.Net.Http.Headers.MediaTypeHeaderValue::get_Parameters|2000151280C901128091|count=1", "System.Net.Http.Headers.NameValueHeaderValue::get_Name|20000E|count=1",
+        "System.Net.Http.Headers.NameValueHeaderValue::get_Value|20000E|count=1", "System.Net.Http.HttpClient::.ctor|2002011280F102|count=1", "System.Net.Http.HttpClient::SendAsync|200315128109011279127111810D114D|count=1",
+        "System.Net.Http.HttpClient::set_Timeout|2001011180D9|count=1", "System.Net.Http.HttpClientHandler::.ctor|200001|count=1", "System.Net.Http.HttpClientHandler::set_AllowAutoRedirect|20010102|count=1",
+        "System.Net.Http.HttpClientHandler::set_AutomaticDecompression|2001011180ED|count=1", "System.Net.Http.HttpClientHandler::set_Credentials|2001011280E9|count=1", "System.Net.Http.HttpClientHandler::set_PreAuthenticate|20010102|count=1",
+        "System.Net.Http.HttpClientHandler::set_Proxy|2001011280E5|count=1", "System.Net.Http.HttpClientHandler::set_UseCookies|20010102|count=1", "System.Net.Http.HttpClientHandler::set_UseDefaultCredentials|20010102|count=1",
+        "System.Net.Http.HttpClientHandler::set_UseProxy|20010102|count=1", "System.Net.Http.HttpContent::get_Headers|2000128089|count=1", "System.Net.Http.HttpContent::ReadAsStreamAsync|20001512810901128081|count=1",
+        "System.Net.Http.HttpMessageHandler::Dispose|200001|count=1", "System.Net.Http.HttpMessageInvoker::Dispose|200001|count=1", "System.Net.Http.HttpMethod::get_Get|0000126D|count=1",
+        "System.Net.Http.HttpMethod::get_Post|0000126D|count=1", "System.Net.Http.HttpMethod::op_Inequality|000202126D126D|count=1", "System.Net.Http.HttpRequestMessage::.ctor|200201126D1280FD|count=1",
+        "System.Net.Http.HttpRequestMessage::set_Content|200101128101|count=1", "System.Net.Http.HttpResponseMessage::get_Content|2000128101|count=1", "System.Net.Http.HttpResponseMessage::get_StatusCode|2000118085|count=1"
+      ]
+    },
+    "network": "LOOPBACK_ONLY",
     "writes": "NONE"
   },
   "localModelProvider": {

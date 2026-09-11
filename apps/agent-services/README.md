@@ -52,6 +52,10 @@ M4 Slice 3 optionally appends `--context-root <absolute-root>` to the mock or `o
 
 The authoritative boundary is `contracts/EAIRA_READ_ONLY_PROJECT_CONTEXT_V1.md`. The feature does not list directories, hydrate files, write the vault, use Git provenance, activate services or contact an external provider.
 
+## Bounded local project QA
+
+Slice 5 adds `EAIRA.ProjectQa.Cli.exe`, a non-production, read-only local QA surface over the exact controlled status and project-memory allowlist. It uses one pinned eleven-file snapshot and the fixed `qwen3:4b` Ollama loopback identity. Output is assistive and model-generated, with host-reconstructed citations; it performs no repository write, directory enumeration, external network call, retry or fallback. See `contracts/EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1.md`.
+
 ## Gate 25 build
 
 `build/Invoke-Gate25UnsignedRelease.ps1`:

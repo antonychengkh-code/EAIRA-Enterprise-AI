@@ -100,26 +100,14 @@ namespace EAIRA.AgentServices.Functional
                     pinned.Add(handle);
                     ValidateMetadata(platform.QueryPinnedAncestor(handle), ancestors[index], true);
                 }
-                int aggregate = 0;
-                List<ProjectKnowledgeMatch> matches = new List<ProjectKnowledgeMatch>();
-                bool truncated = false;
+                List<byte[]> physicalFiles = new List<byte[]>();
                 for (int index = 0; index < Paths.Length; index++)
                 {
                     string exact = root + "\\" + Paths[index].Replace('/', '\\');
                     byte[] physical = ReadOne(exact);
-                    int offset = physical.Length >= 3 && physical[0] == 0xEF && physical[1] == 0xBB && physical[2] == 0xBF ? 3 : 0;
-                    int contentCount = physical.Length - offset;
-                    if (contentCount > MaximumContentBytes || checked(aggregate + contentCount) > MaximumAggregateBytes) { throw new ProjectKnowledgeException(); }
-                    aggregate += contentCount;
-                    byte[] content = new byte[contentCount];
-                    Buffer.BlockCopy(physical, offset, content, 0, contentCount);
-                    Scan(Paths[index], content, normalizedQuery, matches, ref truncated);
+                    physicalFiles.Add(physical);
                 }
-                string queryHash = QueryDigest(normalizedQuery);
-                string resultHash = ResultDigest(matches, truncated);
-                ProjectKnowledgeResult result = new ProjectKnowledgeResult(queryHash, resultHash, truncated, matches);
-                CanonicalJsonOrThrow(result);
-                return result;
+                return BuildResultFromPhysicalFiles(physicalFiles, normalizedQuery);
             }
             catch (Exception error) { primary = error; throw error is ProjectKnowledgeException ? error : new ProjectKnowledgeException(); }
             finally
@@ -128,6 +116,29 @@ namespace EAIRA.AgentServices.Functional
                 for (int index = pinned.Count - 1; index >= 0; index--) { try { platform.ClosePinnedAncestor(pinned[index]); } catch (Exception) { closeFailed = true; } }
                 if (primary == null && closeFailed) { throw new ProjectKnowledgeException(); }
             }
+        }
+
+        internal static ProjectKnowledgeResult BuildResultFromPhysicalFiles(IList<byte[]> physicalFiles, string normalizedQuery)
+        {
+            if (physicalFiles == null || physicalFiles.Count != Paths.Length || normalizedQuery == null) { throw new ProjectKnowledgeException(); }
+            int aggregate = 0;
+            List<ProjectKnowledgeMatch> matches = new List<ProjectKnowledgeMatch>();
+            bool truncated = false;
+            for (int index = 0; index < Paths.Length; index++)
+            {
+                byte[] physical = physicalFiles[index];
+                if (physical == null || physical.Length > MaximumPhysicalBytes) { throw new ProjectKnowledgeException(); }
+                int offset = physical.Length >= 3 && physical[0] == 0xEF && physical[1] == 0xBB && physical[2] == 0xBF ? 3 : 0;
+                int contentCount = physical.Length - offset;
+                if (contentCount > MaximumContentBytes || checked(aggregate + contentCount) > MaximumAggregateBytes) { throw new ProjectKnowledgeException(); }
+                aggregate += contentCount;
+                byte[] content = new byte[contentCount];
+                Buffer.BlockCopy(physical, offset, content, 0, contentCount);
+                Scan(Paths[index], content, normalizedQuery, matches, ref truncated);
+            }
+            ProjectKnowledgeResult result = new ProjectKnowledgeResult(QueryDigest(normalizedQuery), ResultDigest(matches, truncated), truncated, matches);
+            CanonicalJsonOrThrow(result);
+            return result;
         }
 
         private byte[] ReadOne(string exact)

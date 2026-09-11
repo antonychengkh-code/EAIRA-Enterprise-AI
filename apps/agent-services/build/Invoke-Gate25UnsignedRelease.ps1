@@ -15,6 +15,8 @@ param(
 
     [switch]$ProjectKnowledgeDiscovery,
 
+    [switch]$ProjectQaDiscovery,
+
     [ValidatePattern('^[0-9A-F]{64}$')]
     [string]$ExpectedReleaseProfileSha256
 )
@@ -416,7 +418,7 @@ function Assert-ProjectContextPInvokeCallerPolicy {
     param(
         [Parameter(Mandatory = $true)][string]$LiteralPath,
         [Parameter(Mandatory = $true)]$Policy,
-        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness','KnowledgeCli')][string]$OutputKind,
+        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness','KnowledgeCli','ProjectQaCli')][string]$OutputKind,
         [switch]$Discovery
     )
 
@@ -482,9 +484,10 @@ function Assert-ProjectContextPInvokeCallerPolicy {
     [Array]::Sort($canonicalCallerIl, [StringComparer]::Ordinal)
     $callerIlSha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($canonicalCallerIl -join "`n")))
     $inventoryProperty = $Policy.nativeCallerIlInventory.PSObject.Properties[$OutputKind]
-    if ($null -eq $inventoryProperty -and -not ($Discovery -and $OutputKind -ceq 'KnowledgeCli')) { throw "Missing profile-bound native caller IL inventory '$OutputKind': $LiteralPath" }
-    $expectedInventory = $inventoryProperty.Value
-    if (-not ($Discovery -and $OutputKind -ceq 'KnowledgeCli') -and
+    $newOutputDiscovery = $Discovery -and ($OutputKind -ceq 'KnowledgeCli' -or $OutputKind -ceq 'ProjectQaCli')
+    if ($null -eq $inventoryProperty -and -not $newOutputDiscovery) { throw "Missing profile-bound native caller IL inventory '$OutputKind': $LiteralPath" }
+    $expectedInventory = if ($null -eq $inventoryProperty) { $null } else { $inventoryProperty.Value }
+    if (-not $newOutputDiscovery -and
         ([int]$expectedInventory.count -ne $canonicalCallerIl.Count -or
         [string]$expectedInventory.sha256 -cne $callerIlSha256)) {
         throw "Profile-bound native caller IL inventory mismatch '$OutputKind': expected count=$([int]$expectedInventory.count) sha256=$([string]$expectedInventory.sha256); actual count=$($canonicalCallerIl.Count) sha256=$callerIlSha256; output=$LiteralPath"
@@ -496,7 +499,7 @@ function Assert-ProjectContextPInvokeCallerPolicy {
         approvedCallerIl = @($callerIl | Sort-Object declaringType, managedName)
         approvedCallerIlCount = [int]$canonicalCallerIl.Count
         approvedCallerIlSha256 = $callerIlSha256
-        approvedCallerIlProfileMatch = [bool](-not ($Discovery -and $OutputKind -ceq 'KnowledgeCli'))
+        approvedCallerIlProfileMatch = [bool](-not $newOutputDiscovery)
         graph = $graph
     }
 }
@@ -575,6 +578,50 @@ function Assert-ProjectKnowledgeMetadataPolicy {
                 [string]$expected.$name.sha256 -cne [string]$actual.$name.sha256) {
                 throw "Project-knowledge metadata inventory mismatch '$OutputKind/$name': $LiteralPath"
             }
+        }
+    }
+    return $actual
+}
+
+function Get-ProjectQaMetadataClosure {
+    param([Parameter(Mandatory = $true)][string]$LiteralPath)
+    $graph = Get-ProjectContextIlGraph -LiteralPath $LiteralPath
+    [string[]]$types = @($graph.types | Sort-Object fullName | ForEach-Object { [string]$_.fullName + '|' + [int]$_.attributes + '|' + [string]$_.baseType + '|' + (@($_.interfaces | Sort-Object) -join ',') + '|' + [int]$_.genericParameterCount })
+    [string[]]$methods = @($graph.methods | Sort-Object declaringType,name,signature | ForEach-Object { [string]$_.declaringType + '|' + [string]$_.name + '|' + [string]$_.signature + '|' + [int]$_.attributes + '|' + [int]$_.implAttributes + '|' + [int]$_.genericParameterCount + '|' + [string]$_.ilSha256 })
+    [string[]]$members = @($graph.memberReferences | Sort-Object declaringType,name,signature,parentKind | ForEach-Object { [string]$_.declaringType + '|' + [string]$_.name + '|' + [string]$_.signature + '|' + [string]$_.parentKind })
+    [string[]]$methodSpecs = @($graph.methodOperands | Where-Object { $_.targetOperandKind -ceq 'MethodSpecification' } | Sort-Object callerType,callerName,callerSignature,targetType,targetName,targetSignature,methodSpecificationSignature | ForEach-Object { [string]$_.callerType + '::' + [string]$_.callerName + '|' + [string]$_.callerSignature + '|' + [string]$_.opcode + '|' + [string]$_.targetType + '::' + [string]$_.targetName + '|' + [string]$_.targetSignature + '|' + [string]$_.methodSpecificationSignature })
+    [string[]]$fields = @($graph.fields | Sort-Object declaringType,name,signature | ForEach-Object { [string]$_.declaringType + '|' + [string]$_.name + '|' + [string]$_.signature + '|' + [int]$_.attributes })
+    [string[]]$interfaces = @($graph.types | Sort-Object fullName | ForEach-Object { $type=[string]$_.fullName; @($_.interfaces | Sort-Object) | ForEach-Object { $type + '|' + [string]$_ } })
+    [string[]]$constructors = @($graph.methods | Where-Object { $_.name -ceq '.ctor' -or $_.name -ceq '.cctor' } | Sort-Object declaringType,name,signature | ForEach-Object { [string]$_.declaringType + '|' + [string]$_.name + '|' + [string]$_.signature + '|' + [int]$_.attributes + '|' + [int]$_.implAttributes + '|' + [string]$_.ilSha256 })
+    [string[]]$calls = @($graph.methodOperands | Sort-Object callerType,callerName,callerSignature,offset | ForEach-Object { [string]$_.callerType + '::' + [string]$_.callerName + '|' + [string]$_.callerSignature + '|' + [string]$_.opcode + '|' + [string]$_.targetOperandKind + '|' + [string]$_.targetType + '::' + [string]$_.targetName + '|' + [string]$_.targetSignature + '|' + [string]$_.methodSpecificationSignature })
+    $summary = { param([string[]]$Rows) [ordered]@{ count=$Rows.Count; sha256=Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($Rows -join "`n"))) } }
+    return [ordered]@{
+        image = [ordered]@{ count=(Get-Item -LiteralPath $LiteralPath).Length; sha256=Get-Sha256 -LiteralPath $LiteralPath }
+        typeDefs = & $summary $types
+        methodDefs = & $summary $methods
+        memberRefs = & $summary $members
+        methodSpecs = & $summary $methodSpecs
+        fields = & $summary $fields
+        interfaces = & $summary $interfaces
+        constructors = & $summary $constructors
+        callGraph = & $summary $calls
+    }
+}
+
+function Assert-ProjectQaMetadataPolicy {
+    param(
+        [Parameter(Mandatory = $true)][string]$LiteralPath,
+        [Parameter(Mandatory = $true)]$Policy,
+        [Parameter(Mandatory = $true)][ValidateSet('Cli','Harness')][string]$OutputKind,
+        [switch]$Discovery
+    )
+    $actual = Get-ProjectQaMetadataClosure -LiteralPath $LiteralPath
+    if (-not $Discovery) {
+        $property = $Policy.metadataInventories.PSObject.Properties[$OutputKind]
+        if ($null -eq $property) { throw "Missing project-QA metadata inventory '$OutputKind': $LiteralPath" }
+        $expected = $property.Value
+        foreach ($name in @('image','typeDefs','methodDefs','memberRefs','methodSpecs','fields','interfaces','constructors','callGraph')) {
+            if ($null -eq $expected.$name -or [int64]$expected.$name.count -ne [int64]$actual.$name.count -or [string]$expected.$name.sha256 -cne [string]$actual.$name.sha256) { throw "Project-QA metadata inventory mismatch '$OutputKind/$name': $LiteralPath" }
         }
     }
     return $actual
@@ -1139,7 +1186,7 @@ function Assert-ProjectContextPInvokePolicy {
     param(
         [Parameter(Mandatory = $true)][string]$LiteralPath,
         [Parameter(Mandatory = $true)]$Policy,
-        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness','KnowledgeCli')][string]$OutputKind,
+        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness','KnowledgeCli','ProjectQaCli')][string]$OutputKind,
         [switch]$Discovery
     )
     $actual = Get-ProjectContextPInvokeMetadata -LiteralPath $LiteralPath
@@ -1147,16 +1194,17 @@ function Assert-ProjectContextPInvokePolicy {
     $expectedNames = @($Policy.entryPoints | ForEach-Object { [string]$_ } | Sort-Object)
     if ($actual.rows.Count -ne 6 -or ($actual.rows.managedName -join "`n") -cne ($expectedNames -join "`n")) { throw "Project-context P/Invoke set mismatch: $LiteralPath" }
     $signatureProperty = $Policy.nativeImportSignatures.PSObject.Properties[$OutputKind]
-    if ($null -eq $signatureProperty -and -not ($Discovery -and $OutputKind -ceq 'KnowledgeCli')) { throw "Missing profile-bound P/Invoke signatures '$OutputKind': $LiteralPath" }
-    $expectedSignatures = $signatureProperty.Value
+    $newOutputDiscovery = $Discovery -and ($OutputKind -ceq 'KnowledgeCli' -or $OutputKind -ceq 'ProjectQaCli')
+    if ($null -eq $signatureProperty -and -not $newOutputDiscovery) { throw "Missing profile-bound P/Invoke signatures '$OutputKind': $LiteralPath" }
+    $expectedSignatures = if ($null -eq $signatureProperty) { $null } else { $signatureProperty.Value }
     foreach ($row in $actual.rows) {
-        $expectedSignatureProperty = $expectedSignatures.PSObject.Properties[[string]$row.managedName]
+        $expectedSignatureProperty = if ($null -eq $expectedSignatures) { $null } else { $expectedSignatures.PSObject.Properties[[string]$row.managedName] }
         if ($row.declaringType -cne [string]$Policy.declaringType -or $row.managedName -cne $row.importName -or
             $row.module -cne [string]$Policy.module -or
             $row.methodImportAttributes -ne [int]$Policy.methodImportAttributes -or
             $row.methodAttributes -ne [int]$Policy.methodAttributes -or
             $row.methodImplAttributes -ne [int]$Policy.methodImplAttributes -or
-            (-not ($Discovery -and $OutputKind -ceq 'KnowledgeCli') -and
+            (-not $newOutputDiscovery -and
              ($null -eq $expectedSignatureProperty -or $row.signature -cne [string]$expectedSignatureProperty.Value))) {
             throw "Project-context P/Invoke row/signature mismatch: actualRows=$($actual.rows | ConvertTo-Json -Compress) expectedKind=${OutputKind}: $LiteralPath"
         }
@@ -1508,6 +1556,55 @@ function Invoke-ProjectKnowledgeNegativeSpecimen {
     if ([String]::IsNullOrEmpty($rejection)) { throw "Knowledge negative specimen was not rejected '$Name'." }
     return [ordered]@{ name=$Name; compileExitCode=0; verifierRejected=$true; outputKind='KnowledgeCli' }
 }
+
+function Invoke-ProjectQaNegativeSpecimen {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$CompilerPath,
+        [Parameter(Mandatory = $true)][object[]]$CompilerArguments,
+        [Parameter(Mandatory = $true)][System.Collections.IDictionary]$ReplacementSources,
+        [Parameter(Mandatory = $true)][string]$SpecimenRoot,
+        [Parameter(Mandatory = $true)]$ProjectQaPolicy,
+        [Parameter(Mandatory = $true)]$ProjectContextPolicy,
+        [Parameter(Mandatory = $true)]$LoopbackPolicy,
+        [Parameter(Mandatory = $true)]$BaselineMetadata,
+        [string]$AdditionalSourceText
+    )
+    $safeName = $Name.ToLowerInvariant().Replace('_','-')
+    $root = Join-Path $SpecimenRoot $safeName
+    New-Item -ItemType Directory -Path $root | Out-Null
+    $arguments = @($CompilerArguments)
+    foreach ($originalPath in @($ReplacementSources.Keys)) {
+        $specimenPath = Join-Path $root ([IO.Path]::GetFileName([string]$originalPath))
+        [IO.File]::WriteAllText($specimenPath,[string]$ReplacementSources[$originalPath],[Text.UTF8Encoding]::new($false))
+        $index = [Array]::IndexOf($arguments,[string]$originalPath)
+        if ($index -lt 0) { throw "Project-QA specimen source argument missing '$Name'." }
+        $arguments[$index] = $specimenPath
+    }
+    if (-not [String]::IsNullOrEmpty($AdditionalSourceText)) {
+        $additionalPath = Join-Path $root 'AdditionalQaSource.cs'
+        [IO.File]::WriteAllText($additionalPath,$AdditionalSourceText,[Text.UTF8Encoding]::new($false))
+        $arguments += $additionalPath
+    }
+    $output = Join-Path $root ($safeName + '.exe')
+    $outputIndexes = @(for($i=0;$i-lt$arguments.Count;$i++){if([string]$arguments[$i] -clike '/out:*'){$i}})
+    if ($outputIndexes.Count -ne 1) { throw "Project-QA specimen output argument mismatch '$Name'." }
+    $arguments[$outputIndexes[0]] = "/out:$output"
+    $compilerOutput = @(& $CompilerPath @arguments 2>&1)
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $output -PathType Leaf)) { throw "Project-QA specimen did not compile '$Name': $($compilerOutput -join [Environment]::NewLine)" }
+    $rejection = $null
+    try {
+        Assert-NoForbiddenBinaryMetadata -LiteralPath $output -AllowLoopbackHttp -AllowProjectContextPInvoke
+        [void](Assert-ProjectContextPInvokePolicy -LiteralPath $output -Policy $ProjectContextPolicy -OutputKind 'ProjectQaCli' -Discovery)
+        [void](Assert-ProjectContextPInvokeCallerPolicy -LiteralPath $output -Policy $ProjectContextPolicy -OutputKind 'ProjectQaCli' -Discovery)
+        Assert-LoopbackMetadataPolicy -LiteralPath $output -Policy $LoopbackPolicy
+        $actual = Get-ProjectQaMetadataClosure -LiteralPath $output
+        if (($actual | ConvertTo-Json -Depth 8 -Compress) -cne ($BaselineMetadata | ConvertTo-Json -Depth 8 -Compress)) { throw "Project-QA baseline metadata closure mismatch: $output" }
+    }
+    catch { $rejection = $_.Exception.Message }
+    if ([String]::IsNullOrEmpty($rejection)) { throw "Project-QA negative specimen was not rejected '$Name'." }
+    return [ordered]@{ name=$Name; compileExitCode=0; verifierRejected=$true; outputKind='ProjectQaCli' }
+}
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $componentRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot '..'))
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $componentRoot '..\..'))
@@ -1524,16 +1621,20 @@ $projectContextSourcePath = Join-Path $componentRoot 'src\ProjectContext.cs'
 $projectReadOnlyPlatformSourcePath = Join-Path $componentRoot 'src\ProjectReadOnlyPlatform.cs'
 $projectKnowledgeSourcePath = Join-Path $componentRoot 'src\ProjectKnowledge.cs'
 $projectKnowledgeHostSourcePath = Join-Path $componentRoot 'src\ProjectKnowledgeHost.cs'
+$projectQaSourcePath = Join-Path $componentRoot 'src\ProjectQa.cs'
+$projectQaHostSourcePath = Join-Path $componentRoot 'src\ProjectQaHost.cs'
 $harnessSourcePath = Join-Path $componentRoot 'tests\AgentCoreHarness.cs'
 $taskIntakeHarnessSourcePath = Join-Path $componentRoot 'tests\LocalTaskIntakeHarness.cs'
 $localProviderHarnessSourcePath = Join-Path $componentRoot 'tests\LocalModelProviderHarness.cs'
 $projectContextHarnessSourcePath = Join-Path $componentRoot 'tests\ProjectContextHarness.cs'
 $projectKnowledgeHarnessSourcePath = Join-Path $componentRoot 'tests\ProjectKnowledgeHarness.cs'
+$projectQaHarnessSourcePath = Join-Path $componentRoot 'tests\ProjectQaHarness.cs'
 $functionalContractPath = Join-Path $componentRoot 'contracts\EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1.md'
 $taskIntakeContractPath = Join-Path $componentRoot 'contracts\EAIRA_LOCAL_TASK_INTAKE_V1.md'
 $localProviderContractPath = Join-Path $componentRoot 'contracts\EAIRA_LOCAL_MODEL_PROVIDER_V1.md'
 $projectContextContractPath = Join-Path $componentRoot 'contracts\EAIRA_READ_ONLY_PROJECT_CONTEXT_V1.md'
 $projectKnowledgeContractPath = Join-Path $componentRoot 'contracts\EAIRA_PROJECT_KNOWLEDGE_QUERY_V1.md'
+$projectQaContractPath = Join-Path $componentRoot 'contracts\EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1.md'
 $profilePath = Join-Path $componentRoot 'release\gate25-unsigned-release-profile.json'
 
 if (-not (Test-Path -LiteralPath $buildScriptPath -PathType Leaf)) { throw "Build script missing: $buildScriptPath" }
@@ -1549,16 +1650,20 @@ if (-not (Test-Path -LiteralPath $projectContextSourcePath -PathType Leaf)) { th
 if (-not (Test-Path -LiteralPath $projectReadOnlyPlatformSourcePath -PathType Leaf)) { throw "Read-only platform source file missing: $projectReadOnlyPlatformSourcePath" }
 if (-not (Test-Path -LiteralPath $projectKnowledgeSourcePath -PathType Leaf)) { throw "Project-knowledge source file missing: $projectKnowledgeSourcePath" }
 if (-not (Test-Path -LiteralPath $projectKnowledgeHostSourcePath -PathType Leaf)) { throw "Project-knowledge host source file missing: $projectKnowledgeHostSourcePath" }
+if (-not (Test-Path -LiteralPath $projectQaSourcePath -PathType Leaf)) { throw "Project-QA source file missing: $projectQaSourcePath" }
+if (-not (Test-Path -LiteralPath $projectQaHostSourcePath -PathType Leaf)) { throw "Project-QA host source file missing: $projectQaHostSourcePath" }
 if (-not (Test-Path -LiteralPath $harnessSourcePath -PathType Leaf)) { throw "Harness source file missing: $harnessSourcePath" }
 if (-not (Test-Path -LiteralPath $taskIntakeHarnessSourcePath -PathType Leaf)) { throw "Task-intake harness source file missing: $taskIntakeHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $localProviderHarnessSourcePath -PathType Leaf)) { throw "Local-provider harness source file missing: $localProviderHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $projectContextHarnessSourcePath -PathType Leaf)) { throw "Project-context harness source file missing: $projectContextHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $projectKnowledgeHarnessSourcePath -PathType Leaf)) { throw "Project-knowledge harness source file missing: $projectKnowledgeHarnessSourcePath" }
+if (-not (Test-Path -LiteralPath $projectQaHarnessSourcePath -PathType Leaf)) { throw "Project-QA harness source file missing: $projectQaHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $functionalContractPath -PathType Leaf)) { throw "Functional contract missing: $functionalContractPath" }
 if (-not (Test-Path -LiteralPath $taskIntakeContractPath -PathType Leaf)) { throw "Task-intake contract missing: $taskIntakeContractPath" }
 if (-not (Test-Path -LiteralPath $localProviderContractPath -PathType Leaf)) { throw "Local-provider contract missing: $localProviderContractPath" }
 if (-not (Test-Path -LiteralPath $projectContextContractPath -PathType Leaf)) { throw "Project-context contract missing: $projectContextContractPath" }
 if (-not (Test-Path -LiteralPath $projectKnowledgeContractPath -PathType Leaf)) { throw "Project-knowledge contract missing: $projectKnowledgeContractPath" }
+if (-not (Test-Path -LiteralPath $projectQaContractPath -PathType Leaf)) { throw "Project-QA contract missing: $projectQaContractPath" }
 if (-not (Test-Path -LiteralPath $profilePath -PathType Leaf)) { throw "Release profile missing: $profilePath" }
 if (-not (Test-Path -LiteralPath $RoslynCscPath -PathType Leaf)) { throw "Compiler missing: $RoslynCscPath" }
 
@@ -1572,7 +1677,7 @@ if ([String]::Equals($resolvedOutput.TrimEnd('\'), $outputRootOnly.TrimEnd('\'),
 if (Test-Path -LiteralPath $resolvedOutput) { throw "OutputRoot already exists; refusing overwrite: $resolvedOutput" }
 
 $releaseProfileSha256 = Get-Sha256 -LiteralPath $profilePath
-if (-not $ProjectKnowledgeDiscovery -and -not $DevelopmentProbe) {
+if (-not $ProjectKnowledgeDiscovery -and -not $ProjectQaDiscovery -and -not $DevelopmentProbe) {
     if ([String]::IsNullOrEmpty($ExpectedReleaseProfileSha256)) { throw 'ExpectedReleaseProfileSha256 is mandatory outside discovery.' }
     if (-not [String]::Equals($releaseProfileSha256, $ExpectedReleaseProfileSha256, [StringComparison]::Ordinal)) { throw 'Release profile SHA-256 does not match the separately reviewed value.' }
 }
@@ -1641,6 +1746,43 @@ if (@($profile.projectKnowledge.frameworkReferences).Count -ne 2 -or
     [string]$profile.projectKnowledge.frameworkReferences[1].file -cne 'System.dll' -or
     [string]$profile.projectKnowledge.frameworkReferences[1].sha256 -cne [string]$profile.referenceAssemblies[1].sha256) {
     throw 'Project-knowledge framework-reference binding mismatch.'
+}
+
+if ($profile.projectQa.contract -ne 'EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1' -or $profile.projectQa.output -ne 'EAIRA.ProjectQa.Cli.exe' -or $profile.projectQa.outputHarness -ne 'EAIRA.ProjectQa.Harness.exe' -or $profile.projectQa.nativeSymbols -ne 'EAIRA_PROJECT_READONLY_NATIVE,EAIRA_PROJECT_QA_NATIVE' -or $profile.projectQa.testSeamSymbol -ne 'EAIRA_PROJECT_QA_TEST_SEAM' -or $profile.projectQa.maximumPromptBytes -ne 12000 -or $profile.projectQa.maximumBodyBytes -ne 16384 -or $profile.projectQa.maximumAnswerBytes -ne 2048 -or $profile.projectQa.maximumCitations -ne 8 -or $profile.projectQa.network -ne 'LOOPBACK_ONLY' -or $profile.projectQa.writes -ne 'NONE') { throw 'Project-QA policy mismatch.' }
+
+$slice5ManifestPaths = @(
+    'docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_5_SCOPE_DECISION.md',
+    'docs/project/planning/EAIRA_M4_SLICE5_BOUNDED_LOCAL_PROJECT_QA_ALLOWLIST.md',
+    'docs/project/planning/EAIRA_M4_SLICE5_BOUNDED_LOCAL_PROJECT_QA_THREAT_MODEL.md',
+    'docs/project/planning/EAIRA_M4_SLICE5_BOUNDED_LOCAL_PROJECT_QA_READINESS_PACKAGE.md',
+    'docs/project/planning/EAIRA_M4_SLICE5_EXACT_IMPLEMENTATION_DESIGN_AND_CHANGED_PATH_MANIFEST.md',
+    'docs/project/context/CURRENT_CONTEXT.md',
+    'apps/agent-services/README.md',
+    'apps/agent-services/contracts/EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1.md',
+    'apps/agent-services/src/ProjectContext.cs',
+    'apps/agent-services/src/ProjectKnowledge.cs',
+    'apps/agent-services/src/ProjectQa.cs',
+    'apps/agent-services/src/ProjectQaHost.cs',
+    'apps/agent-services/tests/ProjectQaHarness.cs',
+    'apps/agent-services/build/Invoke-Gate25UnsignedRelease.ps1',
+    'apps/agent-services/release/gate25-unsigned-release-profile.json'
+)
+$slice5BoundPaths = @($slice5ManifestPaths | Where-Object { $_ -cne 'apps/agent-services/release/gate25-unsigned-release-profile.json' })
+$profileSlice5Inputs = @($profile.projectQa.boundRepositoryInputs)
+if ($profileSlice5Inputs.Count -ne 14 -or ((@($profileSlice5Inputs | ForEach-Object { [string]$_.file })) -join [Environment]::NewLine) -cne ($slice5BoundPaths -join [Environment]::NewLine)) { throw 'Project-QA profile must bind the exact ordered 14 non-profile Slice 5 inputs.' }
+$slice5InputsBound = $true
+$slice5RepositoryEvidence = @()
+foreach ($relativePath in $slice5ManifestPaths) {
+    $candidatePath = [System.IO.Path]::GetFullPath((Join-Path $repositoryRoot $relativePath))
+    if (-not (Test-Path -LiteralPath $candidatePath -PathType Leaf)) { throw "Slice 5 input missing: $relativePath" }
+    $actualHash = Get-Sha256 -LiteralPath $candidatePath
+    $item = Get-Item -LiteralPath $candidatePath
+    if ($relativePath -cne 'apps/agent-services/release/gate25-unsigned-release-profile.json') {
+        $expected = $profileSlice5Inputs | Where-Object { [string]$_.file -ceq $relativePath } | Select-Object -First 1
+        if ($null -eq $expected -or [string]$expected.sha256 -cne $actualHash) { $slice5InputsBound = $false }
+        if (-not $ProjectQaDiscovery -and -not $DevelopmentProbe -and [string]$expected.sha256 -cne $actualHash) { throw "Project-QA bound input hash mismatch: $relativePath" }
+    }
+    $slice5RepositoryEvidence += [ordered]@{ file=$relativePath; bytes=$item.Length; sha256=$actualHash }
 }
 
 $expectedCandidateRepositoryPaths = @(
@@ -1758,6 +1900,9 @@ $projectReadOnlyPlatformSourceText = Get-Content -Raw -LiteralPath $projectReadO
 $projectKnowledgeSourceText = Get-Content -Raw -LiteralPath $projectKnowledgeSourcePath
 $projectKnowledgeHostSourceText = Get-Content -Raw -LiteralPath $projectKnowledgeHostSourcePath
 $projectKnowledgeHarnessSourceText = Get-Content -Raw -LiteralPath $projectKnowledgeHarnessSourcePath
+$projectQaSourceText = Get-Content -Raw -LiteralPath $projectQaSourcePath
+$projectQaHostSourceText = Get-Content -Raw -LiteralPath $projectQaHostSourcePath
+$projectQaHarnessSourceText = Get-Content -Raw -LiteralPath $projectQaHarnessSourcePath
 $projectContextHarnessSourceText = Get-Content -Raw -LiteralPath $projectContextHarnessSourcePath
 $taskIntakeHarnessSourceText = Get-Content -Raw -LiteralPath $taskIntakeHarnessSourcePath
 $expectedKnowledgeSources = @('src/ContractCodec.cs','src/ProjectReadOnlyPlatform.cs','src/ProjectKnowledge.cs','src/ProjectKnowledgeHost.cs')
@@ -1953,6 +2098,9 @@ $projectReadOnlyPlatformSourceHash = Get-Sha256 -LiteralPath $projectReadOnlyPla
 $projectKnowledgeSourceHash = Get-Sha256 -LiteralPath $projectKnowledgeSourcePath
 $projectKnowledgeHostSourceHash = Get-Sha256 -LiteralPath $projectKnowledgeHostSourcePath
 $projectKnowledgeHarnessSourceHash = Get-Sha256 -LiteralPath $projectKnowledgeHarnessSourcePath
+$projectQaSourceHash = Get-Sha256 -LiteralPath $projectQaSourcePath
+$projectQaHostSourceHash = Get-Sha256 -LiteralPath $projectQaHostSourcePath
+$projectQaHarnessSourceHash = Get-Sha256 -LiteralPath $projectQaHarnessSourcePath
 $harnessSourceHash = Get-Sha256 -LiteralPath $harnessSourcePath
 $taskIntakeHarnessSourceHash = Get-Sha256 -LiteralPath $taskIntakeHarnessSourcePath
 $localProviderHarnessSourceHash = Get-Sha256 -LiteralPath $localProviderHarnessSourcePath
@@ -1961,6 +2109,7 @@ $allBuildEvidence = @()
 $seamNegativeSpecimenEvidence = @()
 $nativeNegativeSpecimenEvidence = @()
 $knowledgeNegativeSpecimenEvidence = @()
+$qaNegativeSpecimenEvidence = @()
 
 for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
     $buildRoot = $buildRoots[$buildIndex]
@@ -2960,6 +3109,125 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         }
     }
 
+    $projectQaHarnessOutputPath = Join-Path $buildRoot ([string]$profile.projectQa.outputHarness)
+    $projectQaHarnessArguments = @('/nologo','/noconfig','/target:exe','/platform:x64','/optimize+','/debug-','/checked+','/highentropyva+','/warn:4','/warnaserror+','/nostdlib+','/define:EAIRA_PROJECT_QA_TEST_SEAM',"/reference:$resolvedReferences\mscorlib.dll","/reference:$resolvedReferences\System.dll",'/main:EAIRA.AgentServices.Functional.ProjectQaHarness',"/out:$projectQaHarnessOutputPath")
+    if (-not $DevelopmentProbe) { $projectQaHarnessArguments += '/deterministic+'; $projectQaHarnessArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services" }
+    $projectQaHarnessArguments += @($codecSourcePath,$coreSourcePath,$providerSourcePath,$localProviderSourcePath,$projectReadOnlyPlatformSourcePath,$projectContextSourcePath,$projectKnowledgeSourcePath,$projectQaSourcePath,$projectQaHarnessSourcePath)
+    $projectQaHarnessCompilerOutput = @(& $resolvedCompiler @projectQaHarnessArguments 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw "Project-QA harness compiler failed: $($projectQaHarnessCompilerOutput -join [Environment]::NewLine)" }
+    Assert-NoForbiddenBinaryMetadata -LiteralPath $projectQaHarnessOutputPath
+    $projectQaHarnessMetadata = Assert-ProjectQaMetadataPolicy -LiteralPath $projectQaHarnessOutputPath -Policy $profile.projectQa -OutputKind 'Harness' -Discovery:$ProjectQaDiscovery
+    $projectQaHarnessTest = Invoke-ExitCodeTest -Executable $projectQaHarnessOutputPath -Arguments @()
+    try { $projectQaHarnessJson = $projectQaHarnessTest.output | ConvertFrom-Json } catch { throw 'Project-QA harness output is not valid JSON.' }
+    $projectQaHarnessPass = $projectQaHarnessTest.exitCode -eq 0 -and $projectQaHarnessJson.status -eq 'PASS' -and $projectQaHarnessJson.schema -eq 'EAIRA_PROJECT_QA_HARNESS_V1' -and (($ProjectQaDiscovery -and [int]$projectQaHarnessJson.testsPassed -ge 61) -or (-not $ProjectQaDiscovery -and [int]$projectQaHarnessJson.testsPassed -eq [int]$profile.projectQa.expectedHarnessTests)) -and [string]$projectQaHarnessJson.caseNameSha256 -match '^[0-9A-F]{64}$' -and ($ProjectQaDiscovery -or [string]$projectQaHarnessJson.caseNameSha256 -ceq [string]$profile.projectQa.expectedHarnessCaseNameSha256) -and [bool]$projectQaHarnessJson.goldenVectorsPass -and [int]$projectQaHarnessJson.successTagsCalls -eq 2 -and [int]$projectQaHarnessJson.successChatCalls -eq 1 -and [bool]$projectQaHarnessJson.preflightDigestValidated -and [bool]$projectQaHarnessJson.postflightDigestValidated -and $projectQaHarnessJson.network -eq 'NONE' -and $projectQaHarnessJson.writes -eq 'NONE'
+    $projectQaHarnessEvidence = [ordered]@{ file=(Get-Item -LiteralPath $projectQaHarnessOutputPath).Name; bytes=(Get-Item -LiteralPath $projectQaHarnessOutputPath).Length; sha256=Get-Sha256 -LiteralPath $projectQaHarnessOutputPath; testsPassed=[int]$projectQaHarnessJson.testsPassed; caseNameSha256=[string]$projectQaHarnessJson.caseNameSha256; goldenVectorsPass=[bool]$projectQaHarnessJson.goldenVectorsPass; requestCounters=[ordered]@{ tagsCalls=[int]$projectQaHarnessJson.successTagsCalls; chatCalls=[int]$projectQaHarnessJson.successChatCalls; preflightDigestValidated=[bool]$projectQaHarnessJson.preflightDigestValidated; postflightDigestValidated=[bool]$projectQaHarnessJson.postflightDigestValidated }; metadataInventory=$projectQaHarnessMetadata; offlineTestsPass=[bool]$projectQaHarnessPass }
+
+    $projectQaOutputPath = Join-Path $buildRoot ([string]$profile.projectQa.output)
+    $projectQaArguments = @('/nologo','/noconfig','/target:exe','/platform:x64','/optimize+','/debug-','/checked+','/highentropyva+','/warn:4','/warnaserror+','/nostdlib+','/define:EAIRA_PROJECT_READONLY_NATIVE,EAIRA_PROJECT_QA_NATIVE',"/reference:$resolvedReferences\mscorlib.dll","/reference:$resolvedReferences\System.dll","/reference:$resolvedReferences\System.Net.Http.dll",'/main:EAIRA.AgentServices.Functional.ProjectQaHost',"/out:$projectQaOutputPath")
+    if (-not $DevelopmentProbe) { $projectQaArguments += '/deterministic+'; $projectQaArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services" }
+    $projectQaArguments += @($codecSourcePath,$coreSourcePath,$providerSourcePath,$localProviderSourcePath,$loopbackTransportSourcePath,$projectReadOnlyPlatformSourcePath,$projectContextSourcePath,$projectKnowledgeSourcePath,$projectQaSourcePath,$projectQaHostSourcePath)
+    $projectQaCompilerOutput = @(& $resolvedCompiler @projectQaArguments 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw "Project-QA CLI compiler failed: $($projectQaCompilerOutput -join [Environment]::NewLine)" }
+    Assert-NoForbiddenBinaryMetadata -LiteralPath $projectQaOutputPath -AllowLoopbackHttp -AllowProjectContextPInvoke
+    $projectQaPInvokeMetadata = Assert-ProjectContextPInvokePolicy -LiteralPath $projectQaOutputPath -Policy $profile.projectContext -OutputKind 'ProjectQaCli' -Discovery:$ProjectQaDiscovery
+    $projectQaCallerEvidence = Assert-ProjectContextPInvokeCallerPolicy -LiteralPath $projectQaOutputPath -Policy $profile.projectContext -OutputKind 'ProjectQaCli' -Discovery:$ProjectQaDiscovery
+    $projectQaNativeSemantic = Get-NormalizedNativeSemanticInventory -PInvokeMetadata $projectQaPInvokeMetadata -CallerEvidence $projectQaCallerEvidence
+    $projectQaLoopbackMetadata = Get-LoopbackMetadataReferences -LiteralPath $projectQaOutputPath
+    if (-not $ProjectQaDiscovery) { Assert-LoopbackMetadataPolicy -LiteralPath $projectQaOutputPath -Policy $profile.projectQa.loopbackMetadataAllowlist -DevelopmentProbe:$DevelopmentProbe }
+    $projectQaMetadata = Assert-ProjectQaMetadataPolicy -LiteralPath $projectQaOutputPath -Policy $profile.projectQa -OutputKind 'Cli' -Discovery:$ProjectQaDiscovery
+    $projectQaInvalid = Invoke-ExactChannelTest -Executable $projectQaOutputPath -Arguments @()
+    $projectQaDenied = Invoke-ExactChannelTest -Executable $projectQaOutputPath -Arguments @('--root','C:\EAIRA','--trace','00000000000000000000000000000001','--question','write EAIRA','--provider','ollama-local','--model','qwen3:4b')
+    $qaInvalidBytes = [Text.Encoding]::UTF8.GetBytes("{`"schema`":`"EAIRA_PROJECT_QA_ERROR_V1`",`"status`":`"INVALID_REQUEST`",`"network`":`"NONE`",`"writes`":`"NONE`"}`n")
+    $qaDeniedBytes = [Text.Encoding]::UTF8.GetBytes("{`"schema`":`"EAIRA_PROJECT_QA_ERROR_V1`",`"status`":`"DENIED`",`"network`":`"NONE`",`"writes`":`"NONE`"}`n")
+    $projectQaInvalidPass = $projectQaInvalid.exitCode -eq 64 -and ([Convert]::ToBase64String($projectQaInvalid.stdoutBytes) -ceq [Convert]::ToBase64String($qaInvalidBytes)) -and $projectQaInvalid.stderrBytes.Length -eq 0
+    $projectQaDeniedPass = $projectQaDenied.exitCode -eq 77 -and ([Convert]::ToBase64String($projectQaDenied.stdoutBytes) -ceq [Convert]::ToBase64String($qaDeniedBytes)) -and $projectQaDenied.stderrBytes.Length -eq 0
+    $projectQaActualChannels = [ordered]@{
+        invalid = [ordered]@{ exitCode=$projectQaInvalid.exitCode; stdoutBytes=$projectQaInvalid.stdoutBytes.Length; stdoutSha256=$projectQaInvalid.stdoutSha256; stderrBytes=$projectQaInvalid.stderrBytes.Length }
+        denied = [ordered]@{ exitCode=$projectQaDenied.exitCode; stdoutBytes=$projectQaDenied.stdoutBytes.Length; stdoutSha256=$projectQaDenied.stdoutSha256; stderrBytes=$projectQaDenied.stderrBytes.Length }
+    }
+    $projectQaChannelActualProfileMatch = (($projectQaActualChannels | ConvertTo-Json -Depth 4 -Compress) -ceq ($profile.projectQa.channelMatrix | ConvertTo-Json -Depth 4 -Compress))
+    $projectQaChannelProfilePass = $ProjectQaDiscovery -or $projectQaChannelActualProfileMatch
+    $projectQaChannelPass = $projectQaInvalidPass -and $projectQaDeniedPass -and $projectQaChannelProfilePass
+    $projectQaEvidence = [ordered]@{ file=(Get-Item -LiteralPath $projectQaOutputPath).Name; bytes=(Get-Item -LiteralPath $projectQaOutputPath).Length; sha256=Get-Sha256 -LiteralPath $projectQaOutputPath; invalidExitCode=$projectQaInvalid.exitCode; invalidStdoutBytes=$projectQaInvalid.stdoutBytes.Length; invalidStdoutSha256=$projectQaInvalid.stdoutSha256; invalidRequestPass=[bool]$projectQaInvalidPass; deniedExitCode=$projectQaDenied.exitCode; deniedStdoutBytes=$projectQaDenied.stdoutBytes.Length; deniedStdoutSha256=$projectQaDenied.stdoutSha256; deniedPass=[bool]$projectQaDeniedPass; channelMatrixPass=[bool]$projectQaChannelPass; channelMatrixProfileMatch=if($ProjectQaDiscovery){$null}else{[bool]$projectQaChannelActualProfileMatch}; channelMatrixDiscoveryBypass=[bool]$ProjectQaDiscovery; channels=$projectQaActualChannels; metadataInventory=$projectQaMetadata; loopbackMetadataAllowlist=$projectQaLoopbackMetadata; moduleRefs=@($projectQaPInvokeMetadata.modules); pInvokeRows=@($projectQaPInvokeMetadata.rows); approvedNativeCallerIl=@($projectQaCallerEvidence.approvedCallerIl); normalizedNativeInventory=$projectQaNativeSemantic }
+
+    if ($buildIndex -eq 0) {
+        $qaSpecimenRoot = Join-Path $buildRoot 'qa-negative-specimens'
+        New-Item -ItemType Directory -Path $qaSpecimenRoot | Out-Null
+        $qaAnchor = '    internal sealed class ProjectQaException : Exception'
+        $qaInjectedBodies = [ordered]@{
+            QA_DIRECTORY_ENUMERATION = 'internal static string[] Bad() { return System.IO.Directory.GetFiles("."); }'
+            QA_ARBITRARY_FILE_OPEN = 'internal static System.IO.Stream Bad() { return System.IO.File.OpenRead("x"); }'
+            QA_SECOND_PLATFORM = 'internal static IProjectContextReadOnlyPlatform Bad() { return new ProjectContextWin32Platform(); }'
+            QA_SECOND_ROOT_SESSION = 'internal static ProjectQaSnapshot Bad(string root) { return ProjectQaSnapshotReader.CreateNative().Read(root,"x"); }'
+            QA_EARLY_PROVIDER_CONSTRUCTION = 'internal static IProjectQaProvider Bad() { return new ProjectQaNativeProviderFactory().Create(); }'
+            QA_SECOND_CHAT = 'internal static string Bad(IProjectQaProvider p, byte[] b) { p.Execute(b); return p.Execute(b); }'
+            QA_RETRY_LOOP = 'internal static string Bad(IProjectQaProvider p, byte[] b) { for (int i=0;i<2;i++) { try { return p.Execute(b); } catch (Exception) { } } throw new Exception(); }'
+            QA_FALLBACK_PROVIDER = 'internal static IProjectQaProvider Bad(IProjectQaProviderFactory a, IProjectQaProviderFactory b) { try { return a.Create(); } catch (Exception) { return b.Create(); } }'
+            QA_EXTERNAL_ENDPOINT = 'internal static Uri Bad() { return new Uri("https://example.com"); }'
+            QA_CALLER_MODEL = 'internal static string Bad(string callerModel) { return callerModel; }'
+            QA_RAW_PROJECTION_OUTPUT = 'internal static string Bad(ProjectQaSnapshot s) { return s.Context.Projection; }'
+            QA_RAW_PROMPT_OUTPUT = 'internal static string Bad(string prompt) { return prompt; }'
+            QA_PROVIDER_BODY_OUTPUT = 'internal static string Bad(byte[] body) { return Convert.ToBase64String(body); }'
+            QA_ABSOLUTE_ROOT_OUTPUT = 'internal static string Bad(ProjectQaRequest r) { return r.Root; }'
+            QA_MODEL_CITATION_METADATA = 'internal static string Bad(string modelCitation) { return modelCitation; }'
+            QA_REORDERED_VALIDATION = 'internal static AgentDecision Bad(string[] args) { return GuardAgent.ExpectedDecision(TaskEnvelope.Create(1,args[3],args[5])); }'
+            QA_ALTERNATE_JSON_PARSER = 'internal static StrictJsonNode Bad(byte[] value) { return StrictJsonParser.Parse(value); }'
+            QA_UNBOUNDED_READ = 'internal static byte[] Bad(IProjectContextReadOnlyPlatform p, IApprovedContentHandle h) { return p.ReadApprovedContent(h,Int32.MaxValue); }'
+            QA_LOGGING_SINK = 'internal static void Bad(string value) { Console.Error.WriteLine(value); }'
+            QA_PERSISTENCE_REFERENCE = 'internal static void Bad(string value) { System.IO.File.WriteAllText("x",value); }'
+            QA_PROCESS_OR_SHELL_REFERENCE = 'internal static void Bad() { System.Diagnostics.Process.Start("cmd.exe"); }'
+            QA_REFLECTION_OR_DYNAMIC_CODE = 'internal static object Bad(Delegate value) { Activator.CreateInstance(typeof(StringBuilder)); return value.DynamicInvoke(new object[0]); }'
+            QA_EXTRA_APPROVED_CALLER = 'internal static ProjectQaSnapshotReader Bad() { return ProjectQaSnapshotReader.CreateNative(); }'
+            QA_EXTRA_MESSAGE = 'internal static string Bad(string prompt) { return "{\"messages\":[{\"role\":\"user\",\"content\":" + ContractCodec.Json(prompt) + "},{\"role\":\"user\",\"content\":\"extra\"}]}"; }'
+            QA_RAW_PROVIDER_RESPONSE_OUTPUT = 'internal static string Bad(string rawProviderResponse) { return rawProviderResponse; }'
+        }
+        $qaCases = @()
+        $qaCases += [ordered]@{ Name='QA_EXTRA_SOURCE_PATH'; Additional='namespace EAIRA.AgentServices.Functional { internal static class AdditionalQaSource { internal static int Bad() { return 1; } } }' }
+        foreach ($entry in $qaInjectedBodies.GetEnumerator()) {
+            $injection = "    internal static class $($entry.Key) { $($entry.Value) }`r`n`r`n$qaAnchor"
+            $changed = Replace-ExactSpecimenText -Text $projectQaSourceText -Old $qaAnchor -New $injection -SpecimenName ([string]$entry.Key)
+            $qaCases += [ordered]@{ Name=[string]$entry.Key; Path=$projectQaSourcePath; Text=$changed }
+        }
+        $replacementCases = @(
+            [ordered]@{ Name='QA_WIDENED_PROMPT_BUDGET'; Path=$projectQaSourcePath; Text=(Replace-ExactSpecimenText -Text $projectQaSourceText -Old 'internal static void ValidateEncodedPrompt(byte[] bytes) { if (bytes == null || bytes.Length > 12000) { throw new ProjectQaException(); } }' -New 'internal static void ValidateEncodedPrompt(byte[] bytes) { if (bytes == null || bytes.Length > 12001) { throw new ProjectQaException(); } }' -SpecimenName 'QA_WIDENED_PROMPT_BUDGET') },
+            [ordered]@{ Name='QA_WIDENED_BODY_BUDGET'; Path=$projectQaSourcePath; Text=(Replace-ExactSpecimenText -Text $projectQaSourceText -Old 'internal static void ValidateEncodedBody(byte[] bytes) { if (bytes == null || bytes.Length > 16384) { throw new ProjectQaException(); } }' -New 'internal static void ValidateEncodedBody(byte[] bytes) { if (bytes == null || bytes.Length > 16385) { throw new ProjectQaException(); } }' -SpecimenName 'QA_WIDENED_BODY_BUDGET') },
+            [ordered]@{ Name='QA_WIDENED_ANSWER_BUDGET'; Path=$projectQaSourcePath; Text=(Replace-ExactSpecimenText -Text $projectQaSourceText -Old 'internal static void ValidateAnswerEncodedBytes(byte[] bytes) { if (bytes == null || bytes.Length > 2048) { throw new ProjectQaException(); } }' -New 'internal static void ValidateAnswerEncodedBytes(byte[] bytes) { if (bytes == null || bytes.Length > 2049) { throw new ProjectQaException(); } }' -SpecimenName 'QA_WIDENED_ANSWER_BUDGET') },
+            [ordered]@{ Name='QA_WIDENED_OUTPUT_BUDGET'; Path=$projectQaSourcePath; Text=(Replace-ExactSpecimenText -Text $projectQaSourceText -Old 'internal static void ValidateEncodedLine(byte[] completeLine) { if (completeLine == null || completeLine.Length > 16384) { throw new ProjectQaException(); } }' -New 'internal static void ValidateEncodedLine(byte[] completeLine) { if (completeLine == null || completeLine.Length > 16385) { throw new ProjectQaException(); } }' -SpecimenName 'QA_WIDENED_OUTPUT_BUDGET') },
+            [ordered]@{ Name='QA_AUTHORITY_LABEL_MUTATION'; Path=$projectQaSourcePath; Text=(Replace-ExactSpecimenText -Text $projectQaSourceText -Old '\"authority\":\"ASSISTIVE_NOT_AUTHORITY\"' -New '\"authority\":\"MODEL_AUTHORITY\"' -SpecimenName 'QA_AUTHORITY_LABEL_MUTATION') },
+            [ordered]@{ Name='QA_WIDENED_CITATION_BUDGET'; Path=$projectQaSourcePath; Text=(Replace-ExactSpecimenText -Text $projectQaSourceText -Old 'citationsNode.ArrayValue.Count > 8' -New 'citationsNode.ArrayValue.Count > 9' -SpecimenName 'QA_WIDENED_CITATION_BUDGET') },
+            [ordered]@{ Name='QA_WEAKENED_STRUCTURED_OUTPUT_SCHEMA'; Path=$projectQaSourcePath; Text=(Replace-ExactSpecimenText -Text $projectQaSourceText -Old '\"format\":{\"type\":\"object\",\"properties\":{\"answer\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":512},\"citationIds\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"maxItems\":8,\"uniqueItems\":true}},\"required\":[\"answer\",\"citationIds\"],\"additionalProperties\":false}' -New '\"format\":\"json\"' -SpecimenName 'QA_WEAKENED_STRUCTURED_OUTPUT_SCHEMA') }
+        )
+        $qaCases += $replacementCases
+        $extraCtorText = Replace-ExactSpecimenText -Text $projectQaSourceText -Old '        internal ProjectQaLocalProvider(ILocalByteTransport value) { if (value == null) { throw new LocalProviderException(); } transport = value; deadline = new CancellationTokenSource(TimeSpan.FromSeconds(60)); }' -New "        internal ProjectQaLocalProvider(ILocalByteTransport value) { if (value == null) { throw new LocalProviderException(); } transport = value; deadline = new CancellationTokenSource(TimeSpan.FromSeconds(60)); }`r`n        internal ProjectQaLocalProvider(ILocalByteTransport value, int ignored) : this(value) { if (ignored == Int32.MinValue) { throw new LocalProviderException(); } }" -SpecimenName 'QA_EXTRA_CONSTRUCTOR_OR_FACTORY'
+        $qaCases += [ordered]@{ Name='QA_EXTRA_CONSTRUCTOR_OR_FACTORY'; Path=$projectQaSourcePath; Text=$extraCtorText }
+        $extraImportOld = '        [return: MarshalAs(UnmanagedType.Bool)] private static extern bool CloseHandle(IntPtr handle);'
+        $extraImportNew = $extraImportOld + "`r`n" + '        [DllImport("kernel32.dll", EntryPoint = "CloseHandle", ExactSpelling = true, CallingConvention = CallingConvention.Winapi, CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true, PreserveSig = true)]' + "`r`n" + '        [return: MarshalAs(UnmanagedType.Bool)] private static extern bool CloseHandleQaDuplicate(IntPtr handle);'
+        $qaCases += [ordered]@{ Name='QA_EXTRA_PINVOKE'; Path=$projectReadOnlyPlatformSourcePath; Text=(Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText -Old $extraImportOld -New $extraImportNew -SpecimenName 'QA_EXTRA_PINVOKE') }
+        $qaCases += [ordered]@{ Name='QA_MOVED_PINVOKE_VISIBILITY'; Path=$projectReadOnlyPlatformSourcePath; Text=(Replace-ExactSpecimenText -Text $projectReadOnlyPlatformSourceText -Old $extraImportOld -New '        [return: MarshalAs(UnmanagedType.Bool)] internal static extern bool CloseHandle(IntPtr handle);' -SpecimenName 'QA_MOVED_PINVOKE_VISIBILITY') }
+        $qaSpecimenNames = @(
+            'QA_EXTRA_SOURCE_PATH','QA_DIRECTORY_ENUMERATION','QA_ARBITRARY_FILE_OPEN','QA_SECOND_PLATFORM','QA_SECOND_ROOT_SESSION',
+            'QA_EARLY_PROVIDER_CONSTRUCTION','QA_SECOND_CHAT','QA_RETRY_LOOP','QA_FALLBACK_PROVIDER','QA_EXTERNAL_ENDPOINT',
+            'QA_CALLER_MODEL','QA_WIDENED_PROMPT_BUDGET','QA_WIDENED_BODY_BUDGET','QA_WIDENED_ANSWER_BUDGET','QA_WIDENED_OUTPUT_BUDGET',
+            'QA_RAW_PROJECTION_OUTPUT','QA_RAW_PROMPT_OUTPUT','QA_PROVIDER_BODY_OUTPUT','QA_ABSOLUTE_ROOT_OUTPUT','QA_MODEL_CITATION_METADATA',
+            'QA_AUTHORITY_LABEL_MUTATION','QA_REORDERED_VALIDATION','QA_ALTERNATE_JSON_PARSER','QA_UNBOUNDED_READ','QA_LOGGING_SINK',
+            'QA_PERSISTENCE_REFERENCE','QA_PROCESS_OR_SHELL_REFERENCE','QA_REFLECTION_OR_DYNAMIC_CODE','QA_EXTRA_PINVOKE','QA_MOVED_PINVOKE_VISIBILITY',
+            'QA_EXTRA_CONSTRUCTOR_OR_FACTORY','QA_EXTRA_APPROVED_CALLER','QA_EXTRA_MESSAGE','QA_WIDENED_CITATION_BUDGET','QA_RAW_PROVIDER_RESPONSE_OUTPUT','QA_WEAKENED_STRUCTURED_OUTPUT_SCHEMA'
+        )
+        $orderedQaCases = @()
+        foreach ($qaName in $qaSpecimenNames) {
+            $match = @($qaCases | Where-Object { [string]$_.Name -ceq $qaName })
+            if ($match.Count -ne 1) { throw "Project-QA specimen definition mismatch '$qaName'." }
+            $orderedQaCases += $match[0]
+        }
+        $qaCases = $orderedQaCases
+        foreach ($case in $qaCases) {
+            $replacements = @{}
+            if ($case.Contains('Path')) { $replacements[[string]$case.Path] = [string]$case.Text }
+            $additionalSourceText = if ($case.Contains('Additional')) { [string]$case.Additional } else { $null }
+            $qaNegativeSpecimenEvidence += Invoke-ProjectQaNegativeSpecimen -Name ([string]$case.Name) -CompilerPath $resolvedCompiler -CompilerArguments $projectQaArguments -ReplacementSources $replacements -SpecimenRoot $qaSpecimenRoot -ProjectQaPolicy $profile.projectQa -ProjectContextPolicy $profile.projectContext -LoopbackPolicy $projectQaLoopbackMetadata -BaselineMetadata $projectQaMetadata -AdditionalSourceText $additionalSourceText
+        }
+    }
+
     $allBuildEvidence += [ordered]@{
         build = if ($buildIndex -eq 0) { 'A' } else { 'B' }
         functionalHarness = $harnessEvidence
@@ -2967,6 +3235,8 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         projectContextHarness = $projectContextHarnessEvidence
         projectKnowledgeHarness = $projectKnowledgeHarnessEvidence
         projectKnowledgeCli = $projectKnowledgeEvidence
+        projectQaHarness = $projectQaHarnessEvidence
+        projectQaCli = $projectQaEvidence
         localProviderHarness = $localProviderHarnessEvidence
         transportPolicyHarness = $transportPolicyHarnessEvidence
         taskIntakeCli = $taskIntakeEvidence
@@ -2991,6 +3261,12 @@ if ($allBuildEvidence[0].taskIntakeHarness.sha256 -ne $allBuildEvidence[1].taskI
     $allBuildEvidence[0].projectKnowledgeCli.sha256 -ne $allBuildEvidence[1].projectKnowledgeCli.sha256) {
     $reproducible = $false
 }
+if ($allBuildEvidence[0].projectQaHarness.bytes -ne $allBuildEvidence[1].projectQaHarness.bytes -or
+    $allBuildEvidence[0].projectQaHarness.sha256 -ne $allBuildEvidence[1].projectQaHarness.sha256 -or
+    $allBuildEvidence[0].projectQaCli.bytes -ne $allBuildEvidence[1].projectQaCli.bytes -or
+    $allBuildEvidence[0].projectQaCli.sha256 -ne $allBuildEvidence[1].projectQaCli.sha256) {
+    $reproducible = $false
+}
 for ($index = 0; $index -lt @($profile.roles).Count; $index++) {
     $a = $allBuildEvidence[0].outputs[$index]
     $b = $allBuildEvidence[1].outputs[$index]
@@ -3013,6 +3289,49 @@ $knowledgeNegativeSpecimensPass = $knowledgeNegativeSpecimenEvidence.Count -eq $
     @($knowledgeNegativeSpecimenEvidence | Where-Object { -not $_.verifierRejected -or $_.compileExitCode -ne 0 }).Count -eq 0 -and
     ($ProjectKnowledgeDiscovery -or ((@($profile.projectKnowledge.specimenNames | ForEach-Object { [string]$_ }) -join "`n") -ceq
                                     ($expectedKnowledgeSpecimenNames -join "`n")))
+$expectedQaSpecimenNames = @(
+    'QA_EXTRA_SOURCE_PATH','QA_DIRECTORY_ENUMERATION','QA_ARBITRARY_FILE_OPEN','QA_SECOND_PLATFORM','QA_SECOND_ROOT_SESSION',
+    'QA_EARLY_PROVIDER_CONSTRUCTION','QA_SECOND_CHAT','QA_RETRY_LOOP','QA_FALLBACK_PROVIDER','QA_EXTERNAL_ENDPOINT',
+    'QA_CALLER_MODEL','QA_WIDENED_PROMPT_BUDGET','QA_WIDENED_BODY_BUDGET','QA_WIDENED_ANSWER_BUDGET','QA_WIDENED_OUTPUT_BUDGET',
+    'QA_RAW_PROJECTION_OUTPUT','QA_RAW_PROMPT_OUTPUT','QA_PROVIDER_BODY_OUTPUT','QA_ABSOLUTE_ROOT_OUTPUT','QA_MODEL_CITATION_METADATA',
+    'QA_AUTHORITY_LABEL_MUTATION','QA_REORDERED_VALIDATION','QA_ALTERNATE_JSON_PARSER','QA_UNBOUNDED_READ','QA_LOGGING_SINK',
+    'QA_PERSISTENCE_REFERENCE','QA_PROCESS_OR_SHELL_REFERENCE','QA_REFLECTION_OR_DYNAMIC_CODE','QA_EXTRA_PINVOKE','QA_MOVED_PINVOKE_VISIBILITY',
+    'QA_EXTRA_CONSTRUCTOR_OR_FACTORY','QA_EXTRA_APPROVED_CALLER','QA_EXTRA_MESSAGE','QA_WIDENED_CITATION_BUDGET','QA_RAW_PROVIDER_RESPONSE_OUTPUT','QA_WEAKENED_STRUCTURED_OUTPUT_SCHEMA'
+)
+$actualQaSpecimenNames = @($qaNegativeSpecimenEvidence | ForEach-Object { [string]$_.name })
+$qaNegativeSpecimensPass = $qaNegativeSpecimenEvidence.Count -eq $expectedQaSpecimenNames.Count -and
+    (($actualQaSpecimenNames -join "`n") -ceq ($expectedQaSpecimenNames -join "`n")) -and
+    @($qaNegativeSpecimenEvidence | Where-Object { -not $_.verifierRejected -or $_.compileExitCode -ne 0 }).Count -eq 0 -and
+    ($ProjectQaDiscovery -or ((@($profile.projectQa.specimenNames | ForEach-Object { [string]$_ }) -join "`n") -ceq ($expectedQaSpecimenNames -join "`n")))
+$expectedQaRequestCounters = [ordered]@{ tagsCalls=2; chatCalls=1; preflightDigestValidated=$true; postflightDigestValidated=$true }
+$expectedQaGoldenVectors = [ordered]@{
+    questionDigest = [ordered]@{ bytes=5; sha256='5F8EAF0FD8B4EE2B0A0FEF54A8594C50143D7B3567AC7C1CF4F90BD8C19970A5' }
+    prompt = [ordered]@{ bytes=1711; sha256='E5980A66E3C8568AE4C626E0A63BDA2A91DC75FD6711452A0A42AD76BF242EE3' }
+    body = [ordered]@{ bytes=2147; sha256='447702159C263EEF129ADB26F623DF4C8FA5683BBA7868C3CD01059802FAECE0' }
+    insufficientAnswer = [ordered]@{ bytes=53; sha256='CE2D672B78A25ACE7379CDF0A6E6265BEF0C5F77A84D0D9B446AB99B5186AEC5' }
+    successOutput = [ordered]@{ bytes=1087; sha256='94A65159F8F5FB30A83A194E7D589E32A057A704B484EDB06EE8277F7D4F34A4' }
+    prompt11999 = [ordered]@{ bytes=11999; sha256='E4A651E1CEC7B1ADA3E0E137EFB1F53CCF14F321E361CED465AC3681D088AE8E' }
+    prompt12000 = [ordered]@{ bytes=12000; sha256='A68006E3D578D8B32301F7687CB97C68E81A9EC33225D5531A0E5842C4DE62C9' }
+    prompt12001 = [ordered]@{ bytes=12001; sha256='B0BA8D146F21E39031BDF4CF345187BE5B4CA33F255DC2469BDEE03C35769641' }
+    body16383 = [ordered]@{ bytes=16383; sha256='E3173A730FDB0BCCD6F6EADC55A31C1246457735D54619C3191EDE0281585DB5' }
+    body16384 = [ordered]@{ bytes=16384; sha256='2D8CC61CADC3F40F961FD24051A70E86B15225613536A90ABF103023BF9E2D9E' }
+    body16385 = [ordered]@{ bytes=16385; sha256='080758CC5EA11370E9BF81E7306951353D50CD68E3BB2EC951F1000B4575B902' }
+    output16383 = [ordered]@{ bytes=16383; sha256='40D7118B1F53F3164FB2AB5D42B0FD187B0999C02909BC427D93EFD586AAD0FB' }
+    output16384 = [ordered]@{ bytes=16384; sha256='1BD4DB450ABC8914C2FAC721CACE2704FF4C16028E6D07293154DAD289835694' }
+    output16385 = [ordered]@{ bytes=16385; sha256='E9B0015594030C029F167A30522C7DD2EC90379B6026EF7C7DD74B07D0BC63DD' }
+    errorInvalidNone = [ordered]@{ bytes=99; sha256='AE482F83460CE0C1E3DA4712DD99ECAFD0599E9E9B926239219C41247B04E15F' }
+    errorDeniedNone = [ordered]@{ bytes=90; sha256='032F763897DE14352C16364BE071E40B8557E3E5015D68EFE1570C655F1C6241' }
+    errorLocalProviderLoopback = [ordered]@{ bytes=113; sha256='71D23EF602941524D24941FA9604B87A2767775AFA9A61517A24D4BA25F10E8D' }
+    errorContextNone = [ordered]@{ bytes=97; sha256='AB9311BE3D0D534C439E7CF5242E04FBB92EED856A0F635A8E7AB8A5D0037001' }
+    errorKnowledgeNone = [ordered]@{ bytes=99; sha256='B0EA23AD8184A5B378C545811C076E2C91BFA4A39BB0F1A7856F72211D6B3A1E' }
+    errorProjectQaNone = [ordered]@{ bytes=100; sha256='8BA3C443326913A7640E34E79EB4F7329802A1D6B4D75F015360B2D59E4DCC78' }
+    errorProjectQaLoopback = [ordered]@{ bytes=109; sha256='D19C38637633110E57445DF9D8525A9DD2DC7A49977F9F100712A68C6DF5E185' }
+}
+$projectQaGoldenActualProfileMatch = (($profile.projectQa.goldenVectors | ConvertTo-Json -Depth 5 -Compress) -ceq ($expectedQaGoldenVectors | ConvertTo-Json -Depth 5 -Compress))
+$projectQaCounterActualProfileMatch = (($profile.projectQa.requestCounters | ConvertTo-Json -Depth 3 -Compress) -ceq ($expectedQaRequestCounters | ConvertTo-Json -Depth 3 -Compress))
+$projectQaGoldenProfilePass = $ProjectQaDiscovery -or $projectQaGoldenActualProfileMatch
+$projectQaCounterProfilePass = $ProjectQaDiscovery -or $projectQaCounterActualProfileMatch
+$projectQaCounterEvidencePass = @($allBuildEvidence | Where-Object { ($_.projectQaHarness.requestCounters | ConvertTo-Json -Depth 3 -Compress) -cne ($expectedQaRequestCounters | ConvertTo-Json -Depth 3 -Compress) }).Count -eq 0
 $roleTestsPass = (@($allBuildEvidence | ForEach-Object { $_.outputs } | Where-Object { -not $_.offlineTestsPass }).Count -eq 0)
 $functionalTestsPass = (@($allBuildEvidence | Where-Object { -not $_.functionalHarness.offlineTestsPass }).Count -eq 0)
 $projectContextHarnessCallerIlStable = (($allBuildEvidence[0].projectContextHarness.approvedNativeCallerIl | ConvertTo-Json -Depth 5 -Compress) -ceq
@@ -3074,7 +3393,30 @@ $projectKnowledgeProfileBound = $ProjectKnowledgeDiscovery -or (
     [int64]$profile.projectKnowledge.expectedHarnessBytes -eq [int64]$allBuildEvidence[0].projectKnowledgeHarness.bytes -and
     [string]$profile.projectKnowledge.expectedHarnessSha256 -ceq [string]$allBuildEvidence[0].projectKnowledgeHarness.sha256
 )
-$offlineTestsPass = $roleTestsPass -and $functionalTestsPass -and $projectContextTestsPass -and $taskIntakeTestsPass -and $projectKnowledgeTestsPass -and $projectKnowledgeProfileBound
+$projectQaMetadataStable = (($allBuildEvidence[0].projectQaCli.metadataInventory | ConvertTo-Json -Depth 8 -Compress) -ceq
+                            ($allBuildEvidence[1].projectQaCli.metadataInventory | ConvertTo-Json -Depth 8 -Compress)) -and
+                           (($allBuildEvidence[0].projectQaHarness.metadataInventory | ConvertTo-Json -Depth 8 -Compress) -ceq
+                            ($allBuildEvidence[1].projectQaHarness.metadataInventory | ConvertTo-Json -Depth 8 -Compress))
+$projectQaNativeStable = (($allBuildEvidence[0].projectQaCli.normalizedNativeInventory | ConvertTo-Json -Depth 8 -Compress) -ceq
+                          ($allBuildEvidence[1].projectQaCli.normalizedNativeInventory | ConvertTo-Json -Depth 8 -Compress))
+$projectQaNativeActualProfileMatch = (($allBuildEvidence[0].projectQaCli.normalizedNativeInventory | ConvertTo-Json -Depth 8 -Compress) -ceq
+                                      ($profile.projectQa.normalizedNativeInventory | ConvertTo-Json -Depth 8 -Compress))
+$projectQaNativeProfileMatch = $ProjectQaDiscovery -or $projectQaNativeActualProfileMatch
+$projectQaTestsPass = (@($allBuildEvidence | Where-Object {
+    -not $_.projectQaHarness.offlineTestsPass -or
+    -not $_.projectQaCli.invalidRequestPass -or
+    -not $_.projectQaCli.deniedPass -or
+    -not $_.projectQaCli.channelMatrixPass
+}).Count -eq 0) -and $projectQaMetadataStable -and $projectQaNativeStable -and $projectQaNativeProfileMatch -and $qaNegativeSpecimensPass -and $projectQaGoldenProfilePass -and $projectQaCounterProfilePass -and $projectQaCounterEvidencePass
+$projectQaProfileBound = (-not $ProjectQaDiscovery) -and (
+    $slice5InputsBound -and
+    [int64]$profile.projectQa.expectedCliBytes -eq [int64]$allBuildEvidence[0].projectQaCli.bytes -and
+    [string]$profile.projectQa.expectedCliSha256 -ceq [string]$allBuildEvidence[0].projectQaCli.sha256 -and
+    [int64]$profile.projectQa.expectedHarnessBytes -eq [int64]$allBuildEvidence[0].projectQaHarness.bytes -and
+    [string]$profile.projectQa.expectedHarnessSha256 -ceq [string]$allBuildEvidence[0].projectQaHarness.sha256
+)
+$projectQaProfileGatePass = $ProjectQaDiscovery -or $projectQaProfileBound
+$offlineTestsPass = $roleTestsPass -and $functionalTestsPass -and $projectContextTestsPass -and $taskIntakeTestsPass -and $projectKnowledgeTestsPass -and $projectKnowledgeProfileBound -and $projectQaTestsPass -and $projectQaProfileGatePass
 $m4TechnicalChecksPass = -not $DevelopmentProbe -and $compilerPolicyPass -and $supportsDeterministic -and $supportsPathMap -and $reproducible -and $offlineTestsPass
 $releaseOutputs = @()
 
@@ -3108,6 +3450,14 @@ if ($m4TechnicalChecksPass) {
         sha256 = Get-Sha256 -LiteralPath $projectKnowledgeReleasePath
         authenticode = (Get-AuthenticodeSignature -LiteralPath $projectKnowledgeReleasePath).Status.ToString()
     }
+    $projectQaReleasePath = Join-Path $releaseRoot ([string]$profile.projectQa.output)
+    Copy-Item -LiteralPath (Join-Path $buildRoots[0] ([string]$profile.projectQa.output)) -Destination $projectQaReleasePath
+    $releaseOutputs += [ordered]@{
+        file = [string]$profile.projectQa.output
+        bytes = (Get-Item -LiteralPath $projectQaReleasePath).Length
+        sha256 = Get-Sha256 -LiteralPath $projectQaReleasePath
+        authenticode = (Get-AuthenticodeSignature -LiteralPath $projectQaReleasePath).Status.ToString()
+    }
 }
 
 $candidateRepositoryEvidence = @()
@@ -3134,9 +3484,9 @@ $compilerItem = Get-Item -LiteralPath $resolvedCompiler
 $manifest = [ordered]@{
     schemaVersion = 1
     generatedUtc = [DateTime]::UtcNow.ToString('o')
-    classification = if ($DevelopmentProbe) { 'DEVELOPMENT_PROBE_ONLY' } elseif ($ProjectKnowledgeDiscovery) { 'M4_SLICE_4_PROJECT_KNOWLEDGE_DISCOVERY' } else { 'M4_FUNCTIONAL_AGENT_MVP_SLICE_4_UNSIGNED_CANDIDATE' }
-    status = if ($m4TechnicalChecksPass) { 'M4_SLICE_4_UNSIGNED_TECHNICAL_CHECKS_PASS' } elseif ($DevelopmentProbe -and -not $reproducible) { 'BLOCKED_NONDETERMINISTIC_COMPILER' } else { 'FAIL_CLOSED' }
-    finalEvidence = [bool](-not $DevelopmentProbe -and -not $ProjectKnowledgeDiscovery -and $m4TechnicalChecksPass)
+    classification = if ($DevelopmentProbe) { 'DEVELOPMENT_PROBE_ONLY' } elseif ($ProjectQaDiscovery) { 'M4_SLICE_5_PROJECT_QA_DISCOVERY' } elseif ($ProjectKnowledgeDiscovery) { 'M4_SLICE_4_PROJECT_KNOWLEDGE_DISCOVERY' } else { 'M4_FUNCTIONAL_AGENT_MVP_SLICE_5_UNSIGNED_CANDIDATE' }
+    status = if ($m4TechnicalChecksPass) { 'M4_SLICE_5_UNSIGNED_TECHNICAL_CHECKS_PASS' } elseif ($DevelopmentProbe -and -not $reproducible) { 'BLOCKED_NONDETERMINISTIC_COMPILER' } else { 'FAIL_CLOSED' }
+    finalEvidence = [bool](-not $DevelopmentProbe -and -not $ProjectKnowledgeDiscovery -and -not $ProjectQaDiscovery -and $m4TechnicalChecksPass)
     gate25Complete = $false
     externalSigningEligible = $false
     signatureOnlyBlocked = $false
@@ -3177,6 +3527,14 @@ $manifest = [ordered]@{
         projectKnowledgeHostSha256 = $projectKnowledgeHostSourceHash
         projectKnowledgeHarnessFile = 'tests/ProjectKnowledgeHarness.cs'
         projectKnowledgeHarnessSha256 = $projectKnowledgeHarnessSourceHash
+        projectQaContractFile = 'contracts/EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1.md'
+        projectQaContractSha256 = Get-Sha256 -LiteralPath $projectQaContractPath
+        projectQaFile = 'src/ProjectQa.cs'
+        projectQaSha256 = $projectQaSourceHash
+        projectQaHostFile = 'src/ProjectQaHost.cs'
+        projectQaHostSha256 = $projectQaHostSourceHash
+        projectQaHarnessFile = 'tests/ProjectQaHarness.cs'
+        projectQaHarnessSha256 = $projectQaHarnessSourceHash
         harnessFile = 'tests/AgentCoreHarness.cs'
         harnessSha256 = $harnessSourceHash
         taskIntakeHarnessFile = 'tests/LocalTaskIntakeHarness.cs'
@@ -3189,6 +3547,7 @@ $manifest = [ordered]@{
     }
     candidateRepositoryInputs = $candidateRepositoryEvidence
     slice4RepositoryInputs = $slice4RepositoryEvidence
+    slice5RepositoryInputs = $slice5RepositoryEvidence
     compiler = [ordered]@{
         file = $compilerItem.Name
         bytes = $compilerItem.Length
@@ -3294,6 +3653,47 @@ $manifest = [ordered]@{
         network = 'NONE'
         writes = 'NONE'
     }
+    projectQa = [ordered]@{
+        contract = 'EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1'
+        discovery = [bool]$ProjectQaDiscovery
+        profileBound = [bool]$projectQaProfileBound
+        expectedReleaseProfileSha256 = if ($ProjectQaDiscovery -or $ProjectKnowledgeDiscovery -or $DevelopmentProbe) { $null } else { $ExpectedReleaseProfileSha256 }
+        actualReleaseProfileSha256 = $releaseProfileSha256
+        boundRepositoryInputCount = [int]$profileSlice5Inputs.Count
+        boundRepositoryInputsMatch = [bool]$slice5InputsBound
+        harnessTestsPassed = [int]$allBuildEvidence[0].projectQaHarness.testsPassed
+        harnessCaseNameSha256 = [string]$allBuildEvidence[0].projectQaHarness.caseNameSha256
+        cleanBuildHarnessReproducible = [bool]($allBuildEvidence[0].projectQaHarness.sha256 -eq $allBuildEvidence[1].projectQaHarness.sha256)
+        cleanBuildCliReproducible = [bool]($allBuildEvidence[0].projectQaCli.sha256 -eq $allBuildEvidence[1].projectQaCli.sha256)
+        cliBytes = [int64]$allBuildEvidence[0].projectQaCli.bytes
+        cliSha256 = [string]$allBuildEvidence[0].projectQaCli.sha256
+        harnessBytes = [int64]$allBuildEvidence[0].projectQaHarness.bytes
+        harnessSha256 = [string]$allBuildEvidence[0].projectQaHarness.sha256
+        invalidRequestPass = [bool]$allBuildEvidence[0].projectQaCli.invalidRequestPass
+        deniedPass = [bool]$allBuildEvidence[0].projectQaCli.deniedPass
+        channelMatrixPass = [bool]$allBuildEvidence[0].projectQaCli.channelMatrixPass
+        channels = $allBuildEvidence[0].projectQaCli.channels
+        cliMetadataInventory = $allBuildEvidence[0].projectQaCli.metadataInventory
+        harnessMetadataInventory = $allBuildEvidence[0].projectQaHarness.metadataInventory
+        loopbackMetadataAllowlist = $allBuildEvidence[0].projectQaCli.loopbackMetadataAllowlist
+        metadataStableAcrossBuilds = [bool]$projectQaMetadataStable
+        normalizedNativeInventory = $allBuildEvidence[0].projectQaCli.normalizedNativeInventory
+        normalizedNativeStableAcrossBuilds = [bool]$projectQaNativeStable
+        normalizedNativeProfileMatch = if ($ProjectQaDiscovery) { $null } else { [bool]$projectQaNativeActualProfileMatch }
+        normalizedNativeDiscoveryBypass = [bool]$ProjectQaDiscovery
+        negativeSpecimensPass = [bool]$qaNegativeSpecimensPass
+        negativeSpecimens = $qaNegativeSpecimenEvidence
+        goldenVectorsProfileMatch = if ($ProjectQaDiscovery) { $null } else { [bool]$projectQaGoldenActualProfileMatch }
+        goldenVectorsDiscoveryBypass = [bool]$ProjectQaDiscovery
+        goldenVectors = $expectedQaGoldenVectors
+        requestCountersProfileMatch = if ($ProjectQaDiscovery) { $null } else { [bool]$projectQaCounterActualProfileMatch }
+        requestCountersDiscoveryBypass = [bool]$ProjectQaDiscovery
+        requestCountersEvidenceMatch = [bool]$projectQaCounterEvidencePass
+        requestCounters = $allBuildEvidence[0].projectQaHarness.requestCounters
+        testsPass = [bool]$projectQaTestsPass
+        network = 'OFFLINE_NONE_LIVE_LOOPBACK_ONLY'
+        writes = 'NONE'
+    }
     localModelProvider = [ordered]@{
         contract = 'EAIRA_LOCAL_MODEL_PROVIDER_V1'
         providerId = [string]$profile.localModelProvider.providerId
@@ -3339,6 +3739,7 @@ Write-Output ("OFFLINE_TESTS_PASS=" + $offlineTestsPass.ToString().ToUpperInvari
 Write-Output ("FUNCTIONAL_SLICE_TESTS_PASS=" + $functionalTestsPass.ToString().ToUpperInvariant())
 Write-Output ("TASK_INTAKE_TESTS_PASS=" + $taskIntakeTestsPass.ToString().ToUpperInvariant())
 Write-Output ("LOCAL_PROVIDER_FAKE_TESTS_PASS=" + $taskIntakeTestsPass.ToString().ToUpperInvariant())
+Write-Output ("PROJECT_QA_OFFLINE_TESTS_PASS=" + $projectQaTestsPass.ToString().ToUpperInvariant())
 Write-Output 'EXTERNAL_SIGNING_ELIGIBLE=FALSE'
 Write-Output 'SIGNATURE_ONLY_BLOCKED=FALSE'
 Write-Output ("MANIFEST_SHA256=" + $manifestHash)

@@ -157,8 +157,8 @@ namespace EAIRA.AgentServices.Functional
         {
             string root = ValidateRoot(absoluteRoot);
             List<IPinnedAncestorHandle> pinned = new List<IPinnedAncestorHandle>();
-            List<ProjectContextFileSnapshot> snapshots = new List<ProjectContextFileSnapshot>();
-            List<string> texts = new List<string>();
+            List<byte[]> rawFiles = new List<byte[]>();
+            List<ProjectContextFileMetadata> metadata = new List<ProjectContextFileMetadata>();
             int aggregateBytes = 0;
             try
             {
@@ -194,10 +194,8 @@ namespace EAIRA.AgentServices.Functional
                         ProjectContextFileMetadata after = platform.QueryApprovedContent(content);
                         ValidateMetadata(after, exactPath, false, true);
                         if (!before.StableEquals(after)) { throw new ProjectContextException(); }
-                        byte[] digest = Sha256(raw);
-                        string decoded = DecodeStrict(raw);
-                        snapshots.Add(new ProjectContextFileSnapshot(PathIds[index], count, before, digest));
-                        texts.Add(NormalizeNewlines(decoded));
+                        rawFiles.Add(raw);
+                        metadata.Add(before);
                     }
                     finally
                     {
@@ -206,10 +204,7 @@ namespace EAIRA.AgentServices.Functional
                     }
                 }
 
-                string projection = BuildProjection(texts);
-                byte[] projectionBytes = StrictUtf8(projection);
-                if (projectionBytes.Length > MaximumProjectionBytes) { throw new ProjectContextException(); }
-                return new ProjectContextBundle(ToHex(ComputeAggregate(snapshots)), projectionBytes.Length, ToHex(Sha256(projectionBytes)), projection);
+                return BuildBundleFromAcquired(rawFiles, metadata);
             }
             catch (ProjectContextException) { throw; }
             catch (Exception) { throw new ProjectContextException(); }
@@ -220,6 +215,27 @@ namespace EAIRA.AgentServices.Functional
                     try { platform.ClosePinnedAncestor(pinned[index]); } catch (Exception) { }
                 }
             }
+        }
+
+        internal static ProjectContextBundle BuildBundleFromAcquired(IList<byte[]> rawFiles, IList<ProjectContextFileMetadata> metadata)
+        {
+            if (rawFiles == null || metadata == null || rawFiles.Count != PathIds.Length || metadata.Count != PathIds.Length) { throw new ProjectContextException(); }
+            List<ProjectContextFileSnapshot> snapshots = new List<ProjectContextFileSnapshot>();
+            List<string> texts = new List<string>();
+            int aggregateBytes = 0;
+            for (int index = 0; index < PathIds.Length; index++)
+            {
+                byte[] raw = rawFiles[index];
+                ProjectContextFileMetadata itemMetadata = metadata[index];
+                if (raw == null || itemMetadata == null) { throw new ProjectContextException(); }
+                aggregateBytes = AddValidatedBytes(aggregateBytes, raw.Length);
+                snapshots.Add(new ProjectContextFileSnapshot(PathIds[index], raw.Length, itemMetadata, Sha256(raw)));
+                texts.Add(NormalizeNewlines(DecodeStrict(raw)));
+            }
+            string projection = BuildProjection(texts);
+            byte[] projectionBytes = StrictUtf8(projection);
+            if (projectionBytes.Length > MaximumProjectionBytes) { throw new ProjectContextException(); }
+            return new ProjectContextBundle(ToHex(ComputeAggregate(snapshots)), projectionBytes.Length, ToHex(Sha256(projectionBytes)), projection);
         }
 
         private void PinAncestor(string exactPath, bool directory, List<IPinnedAncestorHandle> pinned)
