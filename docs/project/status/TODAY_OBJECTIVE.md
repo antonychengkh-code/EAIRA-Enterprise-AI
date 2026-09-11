@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-09-11
+2026-09-12
 
 ## Version
 
-0.36.44
+0.37.0
 
 ## Milestone
 
@@ -16,19 +16,35 @@ M3.3 Cold Start Validation: Completed.
 
 M3.4 Evidence-Driven AI Organization Slice: Completed.
 
-M4 Functional Agent MVP: Active.
+M4 Functional Agent MVP: Completed.
+
+M5 Integrated Local Runtime and Operator Workflow: Active.
 
 ## Current Scope
 
-Complete the independently gated repository lifecycle for the exact six-file Slice 5 post-publication controlled-state and HANDOFF synchronization without changing product code.
+Close M4 as a bounded functional MVP, establish the selected M5 integrated-local
+runtime charter, and leave the project ready to prepare the M5 Slice 1 unified
+user-mode orchestrator scope package without changing product code.
 
 ## Current Result
 
-Slice 5 product publication is independently verified at commit `3945baaa3a63f8dba51a474ee36a6ad827d94817`, parent `b4a871ffa9b18c86179a79d3b876fd314f853f7b`, tree `f520a9b7ac511282c65aa54327302b1ea88bc2fa`; live, cached and local master agree. The exact 15-path publication binds profile SHA-256 `E409F74AAEABA36F23795340B3F6F39362BB856063CBFC966215500BCC6A0EE8` and sealed manifest SHA-256 `905AACA4C72E4738A82907C932DC850DC5CEDA9F8D53DC62F5F0DA7E5BAAF9E8`. Clean A/B, 484 QA tests, 36 abuse specimens and the single successful R5R2 live-loopback report SHA-256 `9D1DB11C2C6384E4E4BB9B6763204ADA7AA90D6E7F072FBE916EB54E571A28EB` were independently reviewed. Post-push verification returned `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, `P2=0`. This phase-stable six-file snapshot does not assert its own staging, commit or push position.
+The Project Owner selected
+`M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD` and
+`M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. The M4 readiness package
+and the decision/charter package each passed independent review with
+`P0=0`, `P1=0`, and `P2=0`. Slice 1 through Slice 5 remain published; Slice 5
+product commit `3945baaa3a63f8dba51a474ee36a6ad827d94817` and the final Slice 5
+state endpoint `023592cd62b1cd2f1efa94ab66f43817b43e07d3` remain the verified M4
+evidence baseline.
 
 ## Out of Scope
 
-Product implementation, release profile or build-script changes, additional model/provider invocation, arbitrary vault search, external credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, checkpoint-ref repair and force push remain outside scope. Repository-recording authority is limited to the exact six files, normal commit and normal push, with each transition gated by separate independent evidence.
+M5 product implementation, release-profile or build-script changes, model calls,
+arbitrary vault access, runtime writes, IPC, external credentials, Windows
+service routing, persistence, signing, deployment, production activation,
+assessment evidence collection, checkpoint-ref repair and force push remain
+outside scope. Only the exact closeout documents and six synchronized state files
+may enter the gated repository-recording lifecycle.
 
 ## Historical Objective Retained for Traceability
 
@@ -120,7 +136,9 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 
 ## Expected Deliverables
 
-Exactly six phase-stable files—four controlled status artifacts, `CURRENT_CONTEXT.md`, and `HANDOFF.md`—that record the verified Slice 5 product publication and require external Git evidence for their own repository-recording transitions.
+One reviewed M4 closeout/M5 scope package, one explicit A/A decision record, one
+M5 charter, and six synchronized current-state/context/HANDOFF files. Their own
+staging, commit, push and publication position remains external Git evidence.
 
 ## 2026-09-01 Reconciliation Results
 
@@ -133,12 +151,17 @@ Exactly six phase-stable files—four controlled status artifacts, `CURRENT_CONT
 
 ## Success Criteria
 
-[Clause S5-STATE-TODAY-CRITERIA]
+[Clause M5-STATE-TODAY-CRITERIA]
 
-- Before synchronization recording, local `HEAD`, cached `origin/master` and live `refs/heads/master` all equal `3945baaa3a63f8dba51a474ee36a6ad827d94817`.
-- Commit parent, tree, exact 15-path publication, profile/sealed/live-report hashes and independent post-push verdict are recorded without inference.
-- All six current-state/context/handoff files use one phase-stable Slice 5 synchronization identity and matching version references without claiming their own staging, commit or push position.
-- Project-memory and diff validation pass, tracked files outside the six-file set remain unchanged, and the three excluded untracked paths remain untouched and untracked.
+- The exact A/A Project Owner selections and both independent pre-synchronization
+  reviews are recorded without inference.
+- M4 is consistently completed, M5 is consistently active, and present authority
+  is limited to M5 Slice 1 scope-package preparation.
+- The decision, charter and six current-state/context/HANDOFF files preserve all
+  product, Windows, service, ACL, signing, external-provider and Annex boundaries.
+- Project-memory and diff validation pass; only the exact nine closeout paths enter
+  the repository lifecycle, while the three excluded untracked path classes remain
+  untouched and untracked.
 
 ### 2026-09-01 Reconciliation Criteria Retained for Traceability
 
@@ -152,4 +175,8 @@ Exactly six phase-stable files—four controlled status artifacts, `CURRENT_CONT
 
 ## Next Action
 
-Use current external Git evidence and the latest independent verdict to advance only the next eligible transition in the exact-six Slice 5 repository-recording lifecycle; a P0 or P1 stops fail-closed. The controlled snapshot does not self-assert its materialization, so no later edit is required solely to mirror stage, commit or push. After this lifecycle closes, choose any next product Slice only through a separate scope decision. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, checkpoint-ref repair or operational activation.
+Prepare the M5 Slice 1 scope package for one unified user-mode orchestrator and
+submit it to independent review. Do not implement the orchestrator or begin
+external-provider, API, credential, Windows-service, IPC, account, membership,
+directory, ACL, encryption, persistence, signing, checkpoint-ref repair or
+production activity without later exact authorization.

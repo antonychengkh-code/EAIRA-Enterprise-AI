@@ -6,11 +6,11 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.37.43
+0.38.0
 
 ## Updated At
 
-2026-09-11
+2026-09-12
 
 ## Current Milestone
 
@@ -20,9 +20,24 @@ M3.3 Cold Start Validation: Completed.
 
 M3.4 Evidence-Driven AI Organization Slice: Completed.
 
-M4 Functional Agent MVP: Active.
+M4 Functional Agent MVP: Completed.
+
+M5 Integrated Local Runtime and Operator Workflow: Active.
 
 ## Active Phase
+
+M4 Functional Agent MVP is closed under
+`M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`. Independent readiness
+and charter-package reviews returned `CLOSEABLE` with `P0=0`, `P1=0`, and
+`P2=0`. M4 closeout establishes a bounded functional MVP only; it does not
+establish signing, Windows-service, customer-deployment, Annex, or production
+readiness.
+
+M5 is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`.
+Current authority is limited to M5 Slice 1 scope-package preparation for a
+unified user-mode orchestrator. No M5 product implementation, arbitrary vault
+read, runtime write, IPC, Windows/service/ACL change, credential, external
+provider, signing, or production change is authorized.
 
 M4 Slice 3, decision `SLICE3_A_READ_ONLY_PROJECT_CONTEXT`, is complete and published. Product commit `a0e172f34ebc09f76e1bd894d680614ed901113d` and post-publication synchronization commit `7e1c1d04e6b92fcbf89f0b1268d189da9892071b` were independently live-remote verified. The exact product publication contains 24 authorized paths and excludes the three unrelated Claude API paths.
 
@@ -64,11 +79,17 @@ Claude independent review determined `READY_FOR_EXACT_MAIN_ANNEX_MUTATION_AUTHOR
 
 ## Current Decision
 
-[Clause S5-STATE-CURRENT]
+[Clause M5-STATE-CURRENT]
+
+The current product-governance decision is recorded in
+`docs/project/strategy/EAIRA_M4_CLOSEOUT_AND_M5_SCOPE_DECISION.md`: M4 closes as
+a completed bounded functional MVP with non-blocking gaps carried forward, and
+M5 selects `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. The M5 charter
+is `docs/project/milestones/EAIRA_M5_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW_PROJECT_CHARTER.md`.
 
 The controlling authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. `AUTHORIZE_BOUNDED_ASSESSMENT` was not granted, and `AUTHORIZE_WITH_REQUIRED_REVISIONS` was not granted as conditional execution authority.
 
-The separate current product decision is `SLICE5_A_BOUNDED_LOCAL_PROJECT_QA`, recorded in `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_5_SCOPE_DECISION.md`. Its exact 15-path bounded implementation is published and independently live-remote verified at commit `3945baaa3a63f8dba51a474ee36a6ad827d94817`. This publication grants no arbitrary path, external-provider, credential, runtime-write, Windows, service, signing or production authority.
+The final M4 Slice decision was `SLICE5_A_BOUNDED_LOCAL_PROJECT_QA`, recorded in `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_5_SCOPE_DECISION.md`. Its exact 15-path bounded implementation is published and independently live-remote verified at commit `3945baaa3a63f8dba51a474ee36a6ad827d94817`. This historical final-slice publication grants no arbitrary path, external-provider, credential, runtime-write, Windows, service, signing or production authority.
 
 The authoritative Project Owner authorization-state decision for commit `f317294515d1dc27a261035260e9fcc45e1545f6` is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_F317294_AUTHORIZATION_STATE_DECISION.md`.
 
@@ -127,10 +148,16 @@ Under the Authorization Annex workstream, no assessment-authorization decision m
 
 ## Next Action
 
+Prepare the exact M5 Slice 1 scope package for
+`M5_SLICE1_UNIFIED_USER_MODE_ORCHESTRATOR`, then obtain independent scope review
+before any exact design or implementation. Preserve the user-mode, no-write,
+loopback-only, no-credential and no-privileged-mutation boundary. This snapshot
+does not establish its own staging, commit, push, or publication position.
+
 Main Annex Version `0.33.0` mutation, commit, normal push, and independent post-push publication verification are complete. Separately and historically, the Project Owner authorized sequential execution of ten remaining Annex lifecycle gates with fail-closed preconditions; that statement does not count or authorize the current Slice 4 Gate 20-28 nine-gate lifecycle.
 
 The local identity, path, capability, backup, encryption, ACL, and WSL evidence gate completed read-only on `2026-08-26` with determination `FAIL_CLOSED_BLOCKED`. At that historical gate, the target evidence path and five proposed groups did not exist. A later authorized Windows change and administrator reconciliation established that the five approved groups now exist and are empty: `EAIRA_EVIDENCE_OPERATORS`, `EAIRA_EVIDENCE_OWNERS`, `EAIRA_EVIDENCE_READERS`, `EAIRA_EVIDENCE_STOP_METADATA`, and `EAIRA_EVIDENCE_VERIFIERS`. This does not establish service accounts, memberships, directories, ACLs, encryption, backup-copy absence, Field 9 implementation, or production readiness.
 
 Gate 19 through Gate 23 bounded preparation and independent review are complete. Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are available and their recorded local evidence matches the sanitized reconciliation report, while the legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred. Gates 25 through 29 remain ineligible until those Gate 24 prerequisites and all other documented blockers are closed.
 
-Slice 3 through Slice 5 product repository lifecycles are complete. The exact six-file Slice 5 post-publication synchronization uses phase-stable controlled content and an externally evidenced repository-recording lifecycle: each stage, commit, push and verification transition must be proven from Git and an independent review, and no later content edit is required solely to make the snapshot claim its own materialization. After this exact-six lifecycle closes, any next product Slice requires a separate scope decision. External-provider credentials, Windows-service routing, persistence, signing and production activation remain outside scope. The separate production-signing Gate 24 remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.
+Slice 3 through Slice 5 product repository lifecycles and the exact six-file Slice 5 post-publication synchronization are complete; final Slice 5 controlled-state endpoint is `023592cd62b1cd2f1efa94ab66f43817b43e07d3`. M4 closeout and M5 scope now follow their separate decision and charter lifecycle. External-provider credentials, Windows-service routing, persistence, signing and production activation remain outside scope. The separate production-signing Gate 24 remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.

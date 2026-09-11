@@ -2,7 +2,7 @@
 type: project-memory-handoff
 status: active
 created: 2026-08-26
-updated: 2026-09-11
+updated: 2026-09-12
 source: codex
 project: EAIRA
 authority: provisional
@@ -12,7 +12,7 @@ authority: provisional
 
 ## State
 
-[Clause S5-STATE-HANDOFF] Obsidian project-memory structure remains a navigational layer valid for report-only scheduled audits. M4 Slice 1 through Slice 5 are published. Slice 5 commit `3945baaa3a63f8dba51a474ee36a6ad827d94817`, parent `b4a871ffa9b18c86179a79d3b876fd314f853f7b`, tree `f520a9b7ac511282c65aa54327302b1ea88bc2fa`, contains exactly 15 authorized text paths. Independent post-push verification established live publication with `P0=0`, `P1=0`, `P2=0` and `PUBLICATION_VERIFIED=YES`. Final profile SHA-256 is `E409F74AAEABA36F23795340B3F6F39362BB856063CBFC966215500BCC6A0EE8`; sealed manifest SHA-256 is `905AACA4C72E4738A82907C932DC850DC5CEDA9F8D53DC62F5F0DA7E5BAAF9E8`; sanitized successful live report SHA-256 is `9D1DB11C2C6384E4E4BB9B6763204ADA7AA90D6E7F072FBE916EB54E571A28EB`. This exact-six replacement snapshot is phase-stable and does not assert its own staging, commit or push position; those transitions require external Git evidence and independent review.
+[Clause M5-STATE-HANDOFF] Obsidian project memory remains navigational and report-only. M4 Functional Agent MVP is completed under `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`; all five product slices remain published. M5 Integrated Local Runtime and Operator Workflow is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. Current authority is limited to preparing the M5 Slice 1 unified user-mode orchestrator scope package. No product implementation, arbitrary vault read, runtime write, IPC, Windows/service/ACL mutation, credential, external-provider, signing, customer-deployment or production authority is established. This snapshot does not assert its own staging, commit, push or publication position.
 
 ## Canonical Context
 
@@ -91,12 +91,12 @@ authority: provisional
 ## Remaining
 
 - Keep certificate purchase/enrollment deferred until the release-timing decision; when resumed, complete Gate 24.12–24.14 and sign only the accepted Gate 25 hashes.
-- Preserve the exact-six Slice 5 post-publication synchronization boundary and advance only the repository-recording transition authorized by current external Git evidence and the latest independent verdict; stop fail-closed on any P0 or P1.
-- Begin no new Slice scope or product implementation until a later Project Owner decision.
+- Prepare the exact M5 Slice 1 unified user-mode orchestrator scope package and obtain independent review before exact design or implementation.
+- Preserve the no-write, Guard, source-allowlist, loopback-only and non-authority boundaries inherited from M4.
 - Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The task-intake, context, knowledge and QA CLIs remain separate local surfaces; they are not wired to those Windows services, IPC, credentials, storage, external providers or production systems.
 - Do not treat R3 publication or M4 Slice 1 local verification as signing eligibility. The binaries remain unsigned and Gate 25 remains incomplete.
 - Keep service-account, membership, directory, ACL, encryption, signing, cloud-resource, and operational mutations fail-closed until separately authorized.
-- After the exact-six synchronization lifecycle closes, keep API, MCP, automated writes, further commit, further push, and external synchronization disabled unless separately authorized.
+- Keep API, MCP, automated writes and external synchronization disabled unless separately authorized; only the current exact M4 closeout repository lifecycle is authorized for commit and normal push.
 - Keep the weekly audit report-only; passing the observation gate does not itself authorize automated writes.
 
 ## Scheduling

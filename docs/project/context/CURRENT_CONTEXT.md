@@ -10,11 +10,14 @@ This file is a working-context summary only. It is not an authoritative project 
 
 Repository evidence supports the following current state:
 
+- M4 Functional Agent MVP is completed under `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`; this is bounded functional-MVP closeout, not production readiness.
+- M5 Integrated Local Runtime and Operator Workflow is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`.
+- Current M5 authority is scope-package preparation only for `M5_SLICE1_UNIFIED_USER_MODE_ORCHESTRATOR`; no design or implementation authority is established.
 - M3.2 Context Infrastructure MVP: completed.
 - M3.3 Cold Start Validation: completed.
 - M3.4 Evidence-Driven AI Organization Slice: completed.
 - M3.4 Finance Revenue Input Task Record: `lifecycle_status = Executed`, `completion_decision = APPROVED WITH FINDINGS`.
-- M4 Functional Agent MVP is active under the Project Owner decision `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_AUTHORIZATION_DECISION.md` and charter `docs/project/milestones/EAIRA_M4_FUNCTIONAL_AGENT_MVP_PROJECT_CHARTER.md`.
+- The original M4 authorization decision and charter remain historical authority for the completed M4 work; current milestone state is controlled by `docs/project/strategy/EAIRA_M4_CLOSEOUT_AND_M5_SCOPE_DECISION.md`.
 - The controlling authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`.
 - `M4-FUNCTIONAL-AGENT-MVP-SLICE-2` is published and independently post-push verified at commit `d43a4bc170df38e29f6115e927ad2c07190da821`, parent `1ad52d9f11374520409ef3569199aff9a06935c8`, tree `443d35edc442d50af0cd175d3a296e0d504b5c75`. The exact normal fast-forward contains 22 authorized text paths and excludes all three unrelated Claude files. The earlier `LOCAL-READINESS-ASSESSMENT-AUTHORIZATION-ANNEX-PLANNING-001` remains a separate blocked governance workstream.
 - Slice 2 retains `mock-v1` and fail-closed `real-disabled-v1`, and adds request-scoped `ollama-loopback-v1` for exact `qwen3:4b` at `127.0.0.1:11434`. Final evidence records two byte-identical builds, `34/15/41/10` functional/intake/fake-provider/transport-policy tests, five service self-tests, non-CLI zero-network/stream checks, exact CLI `18` TypeRefs/`35` MemberRefs, exact boundary tests, observed lifecycle telemetry, and complete 22-path/reference binding. Manifest, CLI, and report SHA-256 are `7BF8A796AF3D4590FDDE961604CBBEF29EC5A427F31CE044164C63E8BDA71B0E`, `634084A93759E433540A61C68B734869BD46DBA5082EFFC228E1D8D45B48F541`, and `D2463222CC187DBB23B80E3D68B7E98CA42F3C25C994435F80BEB598C8A084DA`. Gate 17 returned `PASS_WITH_NON_BLOCKING_FINDING`, `P0=0`, `P1=0`, `P2=1`, and `PUBLICATION_VERIFIED=YES`; the P2 is limited to broken Codex auxiliary checkpoint refs.
@@ -62,7 +65,9 @@ Repository evidence supports the following current state:
 
 The latest completed milestone evidence remains M3, including the completed M3.4 Evidence-Driven AI Organization Slice.
 
-M4 Functional Agent MVP is established. Slice 1 through Slice 5 are published. Slice 5 product commit `3945baaa3a63f8dba51a474ee36a6ad827d94817` is independently live-remote verified and provides bounded local project QA over the exact published Slice 3/4 read surfaces with one fixed Ollama-loopback request and strict host-side reconstruction. Its answer remains model-generated, unverified and assistive rather than authoritative. The exact six-file post-publication synchronization follows a phase-stable, externally evidenced repository-recording lifecycle. Platform Foundation, a formal EAIRA Execution Layer, Windows-service task routing, external-provider integration, persistence, deployment capability, signing eligibility and production multi-agent runtime are not established.
+M4 Functional Agent MVP is completed. Slice 1 through Slice 5 are published. Slice 5 product commit `3945baaa3a63f8dba51a474ee36a6ad827d94817` is independently live-remote verified and provides bounded local project QA over the exact published Slice 3/4 read surfaces with one fixed Ollama-loopback request and strict host-side reconstruction. Its answer remains model-generated, unverified and assistive rather than authoritative.
+
+M5 Integrated Local Runtime and Operator Workflow is active. Its first authorized planning target is a unified user-mode orchestrator scope package. Platform Foundation, a formal EAIRA Execution Layer, Windows-service task routing, external-provider integration, persistence, deployment capability, signing eligibility and production multi-agent runtime are not established.
 
 ## Current Planning Models
 
@@ -128,6 +133,11 @@ Assessment execution, command execution, local inspection, connectivity testing,
 
 ## Current Planning Direction
 
+The current product direction is M5 Slice 1 scope-package preparation for one
+unified user-mode orchestrator. The scope must bind capability routing, the
+five-Agent ownership and Guard call graph, schemas, allowlists, threat model,
+acceptance matrix and changed-path manifest. It authorizes no implementation.
+
 Version `0.30.0` downstream synchronization completed at commit `0d0185738309f58d64f143f93cf9e7917d12aa1e`, parent `f7408802a0fba79bdaf81684683d213df217075b`, with exactly six modified paths, `59` additions, and `47` deletions. It updates only current-state and task artifacts to the independently verified Main Annex Version `0.30.0` publication and the independently verified B2-MAN-007 planning-evidence adoption record.
 
 Formatting correction completed at commit `cd512bd4eb4c8ab2b7897192baf453ef20c7be56`, parent `0d0185738309f58d64f143f93cf9e7917d12aa1e`. Only `CURRENT_CONTEXT.md` and `ACTIVE_TASK.yaml` changed; the correction was formatting-only and made no semantic project-state change.
@@ -165,8 +175,9 @@ The Slice 5 product lifecycle through independent post-push verification is comp
 | B2-MAN-006 local-identification package adoption | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_LOCAL_IDENTIFICATION_PACKAGE_ADOPTION_DECISION.md` |
 | B2-MAN-006 Stage 2 package adoption | `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_006_STAGE_2_LOCAL_IDENTIFICATION_PACKAGE_ADOPTION_DECISION.md` |
 | Current status | `docs/project/status/CURRENT_STATUS.md` |
-| M4 decision and charter | `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_AUTHORIZATION_DECISION.md` and `docs/project/milestones/EAIRA_M4_FUNCTIONAL_AGENT_MVP_PROJECT_CHARTER.md` |
-| Active task | `docs/project/status/ACTIVE_TASK.yaml`, `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_5_SCOPE_DECISION.md`, `docs/project/planning/EAIRA_M4_SLICE5_BOUNDED_LOCAL_PROJECT_QA_ALLOWLIST.md`, `docs/project/planning/EAIRA_M4_SLICE5_BOUNDED_LOCAL_PROJECT_QA_THREAT_MODEL.md`, `docs/project/planning/EAIRA_M4_SLICE5_BOUNDED_LOCAL_PROJECT_QA_READINESS_PACKAGE.md`, and `docs/project/planning/EAIRA_M4_SLICE5_EXACT_IMPLEMENTATION_DESIGN_AND_CHANGED_PATH_MANIFEST.md` |
+| M4 closeout and M5 scope decision | `docs/project/strategy/EAIRA_M4_CLOSEOUT_AND_M5_SCOPE_DECISION.md` |
+| M5 charter | `docs/project/milestones/EAIRA_M5_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW_PROJECT_CHARTER.md` |
+| Active task | `docs/project/status/ACTIVE_TASK.yaml`; M5 Slice 1 scope package is not yet prepared |
 | Retained blocked Annex task | `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` |
 | Historical validation constraints | `docs/tasks/M3_4_FINANCE_REVENUE_INPUT_TASK_RECORD.md` |
 
