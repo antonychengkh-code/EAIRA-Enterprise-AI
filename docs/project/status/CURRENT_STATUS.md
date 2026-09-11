@@ -6,11 +6,11 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.37.42
+0.37.43
 
 ## Updated At
 
-2026-09-10
+2026-09-11
 
 ## Current Milestone
 
@@ -27,6 +27,8 @@ M4 Functional Agent MVP: Active.
 M4 Slice 3, decision `SLICE3_A_READ_ONLY_PROJECT_CONTEXT`, is complete and published. Product commit `a0e172f34ebc09f76e1bd894d680614ed901113d` and post-publication synchronization commit `7e1c1d04e6b92fcbf89f0b1268d189da9892071b` were independently live-remote verified. The exact product publication contains 24 authorized paths and excludes the three unrelated Claude API paths.
 
 M4 Slice 4, decision `SLICE4_A_BOUNDED_READ_ONLY_PROJECT_KNOWLEDGE_QUERY`, is implemented, published and independently live-remote verified. Gate 23 R2R2R1 calibration closed with `P0=0`, `P1=0`, `P2=0`; the final profile SHA-256 is `C8BFBB36D344D547035E97A4CB13AE1B10A3A533BA644CC9BBE52F208D6D8464`. Gate 24 sealed evidence SHA-256 `D2EA61380DEA299BF856FFB4634B8A8B720EB6EE7481A7D89F17885DD262C086` passed clean A/B reproduction, 465 stable-name tests with case digest `4D938BBEB62914787E96DF381953D9BE0A8EB0D723F9483CF5638A4EDB372DA3`, four exact CLI channels, 17 knowledge specimens, 31 seam specimens, 17 native specimens and three isolation specimens. Gate 24 independent review, Gate 25 staged review and Gate 26 post-commit verification each closed at `P0=0`, `P1=0`, `P2=0`. Commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`, contains exactly 21 authorized text paths. Gate 27 normally fast-forward pushed it and Gate 28 independently verified live `origin/master` at that commit with `PUBLICATION_VERIFIED=YES`, `GATE_SEQUENCE_COMPLETE=YES`, and `P0=0`, `P1=0`, `P2=0`. The three unrelated Claude API paths were not published. The first six-file synchronization commit `904c52698a00051f9af27e917d61b057a944d79f` passed exact-content checks but its independent post-commit review returned `CANNOT_APPROVE`, `P0=0`, `P1=1`, `P2=1`, `PUSH_ELIGIBILITY=NO` because it self-described a superseded staged state. The next phase-stable commit `50b5ed2fc252dfea7dd6f0771c143c1e161e9072` passed structural checks, but at its first post-commit gate no push operation was performed and review returned `CANNOT_APPROVE`, `P0=0`, `P1=1`, `P2=0` because HANDOFF used an unqualified historical no-push statement. This replacement removes that final temporal ambiguity: its staging, commit and push facts are established only by separate Git evidence and independent reviews, never by the snapshot asserting its own repository position.
+
+M4 Slice 5, decision `SLICE5_A_BOUNDED_LOCAL_PROJECT_QA`, is implemented, published and independently live-remote verified. Product commit `3945baaa3a63f8dba51a474ee36a6ad827d94817`, parent `b4a871ffa9b18c86179a79d3b876fd314f853f7b`, tree `f520a9b7ac511282c65aa54327302b1ea88bc2fa`, contains exactly 15 authorized text paths. Profile SHA-256 `E409F74AAEABA36F23795340B3F6F39362BB856063CBFC966215500BCC6A0EE8` and sealed manifest SHA-256 `905AACA4C72E4738A82907C932DC850DC5CEDA9F8D53DC62F5F0DA7E5BAAF9E8` bind two byte-identical builds, 484 QA tests with case digest `2EAF68F2261C939604AD1156EC9EB2DD3FC9A4B4DCF809D26B16EF926EB56F08`, and 36 compile-then-reject abuse specimens. The single authorized R5R2 live loopback returned `PROJECT_QA_OK`, exact `2 tags / 1 chat`, both digest validations true, `LOOPBACK_ONLY`, `writes=NONE`, and fixed `MODEL_GENERATED_UNVERIFIED` / `ASSISTIVE_NOT_AUTHORITY`; sanitized report SHA-256 is `9D1DB11C2C6384E4E4BB9B6763204ADA7AA90D6E7F072FBE916EB54E571A28EB`. Independent post-push verification established live `origin/master` at the product commit with `PUBLICATION_VERIFIED=YES` and `P0=0`, `P1=0`, `P2=0`. The three unrelated untracked paths were not published. Slice 5 grants no arbitrary vault read, external-provider, credential, runtime-write, service/IPC, Windows, ACL, signing or production authority.
 
 M4 Slice 2, `M4-FUNCTIONAL-AGENT-MVP-SLICE-2`, remains published and independently post-push verified at commit `d43a4bc170df38e29f6115e927ad2c07190da821`. It retains deterministic `mock`, retains fail-closed disabled `real`, and adds `ollama-local` for exact `qwen3:4b` through `127.0.0.1:11434` only. The local provider is request-scoped, uses a two-entry successful-result cache, validates exact name/full digest before and after generation, and returns sanitized `LOCAL_PROVIDER_ERROR/79` on failure. The digest control is trusted-local consistency, not cryptographic pinning.
 
@@ -62,11 +64,11 @@ Claude independent review determined `READY_FOR_EXACT_MAIN_ANNEX_MUTATION_AUTHOR
 
 ## Current Decision
 
-[Clause S4-STATE-CURRENT]
+[Clause S5-STATE-CURRENT]
 
 The controlling authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. `AUTHORIZE_BOUNDED_ASSESSMENT` was not granted, and `AUTHORIZE_WITH_REQUIRED_REVISIONS` was not granted as conditional execution authority.
 
-The separate current product decision is `SLICE4_A_BOUNDED_READ_ONLY_PROJECT_KNOWLEDGE_QUERY`, recorded in `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_4_SCOPE_DECISION.md`. Its bounded implementation and exact 21-path repository lifecycle are published at commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`. This publication grants no Windows, service, signing, external-provider or production authority.
+The separate current product decision is `SLICE5_A_BOUNDED_LOCAL_PROJECT_QA`, recorded in `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_5_SCOPE_DECISION.md`. Its exact 15-path bounded implementation is published and independently live-remote verified at commit `3945baaa3a63f8dba51a474ee36a6ad827d94817`. This publication grants no arbitrary path, external-provider, credential, runtime-write, Windows, service, signing or production authority.
 
 The authoritative Project Owner authorization-state decision for commit `f317294515d1dc27a261035260e9fcc45e1545f6` is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_F317294_AUTHORIZATION_STATE_DECISION.md`.
 
@@ -131,4 +133,4 @@ The local identity, path, capability, backup, encryption, ACL, and WSL evidence 
 
 Gate 19 through Gate 23 bounded preparation and independent review are complete. Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are available and their recorded local evidence matches the sanitized reconciliation report, while the legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred. Gates 25 through 29 remain ineligible until those Gate 24 prerequisites and all other documented blockers are closed.
 
-Slice 3 and Slice 4 product repository lifecycles are complete. The exact six-file Slice 4 post-publication synchronization uses phase-stable controlled content and an externally evidenced repository-recording lifecycle: each stage, commit, push and verification transition must be proven from Git and an independent review, and no further controlled-content mutation is required solely to make the snapshot claim its own materialization. External-provider credentials, Windows-service routing, persistence, signing and production activation remain outside scope. The separate production-signing Gate 24 remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.
+Slice 3 through Slice 5 product repository lifecycles are complete. The exact six-file Slice 5 post-publication synchronization uses phase-stable controlled content and an externally evidenced repository-recording lifecycle: each stage, commit, push and verification transition must be proven from Git and an independent review, and no later content edit is required solely to make the snapshot claim its own materialization. After this exact-six lifecycle closes, any next product Slice requires a separate scope decision. External-provider credentials, Windows-service routing, persistence, signing and production activation remain outside scope. The separate production-signing Gate 24 remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.

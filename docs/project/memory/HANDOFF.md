@@ -2,7 +2,7 @@
 type: project-memory-handoff
 status: active
 created: 2026-08-26
-updated: 2026-09-10
+updated: 2026-09-11
 source: codex
 project: EAIRA
 authority: provisional
@@ -12,7 +12,7 @@ authority: provisional
 
 ## State
 
-[Clause S4-STATE-HANDOFF] Obsidian project-memory structure is valid for report-only scheduled audits. M4 Slice 1 through Slice 4 are published. Slice 4 commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`, contains exactly 21 authorized text paths. Gate 28 independently verified live publication with `P0=0`, `P1=0`, `P2=0`, `PUBLICATION_VERIFIED=YES` and `GATE_SEQUENCE_COMPLETE=YES`. Final profile SHA-256 is `C8BFBB36D344D547035E97A4CB13AE1B10A3A533BA644CC9BBE52F208D6D8464`; sealed manifest SHA-256 is `D2EA61380DEA299BF856FFB4634B8A8B720EB6EE7481A7D89F17885DD262C086`. At the first post-commit gate for `904c52698a00051f9af27e917d61b057a944d79f`, no push operation was performed and review returned one P1 plus one response-only P2. At the first post-commit gate for phase-stable commit `50b5ed2fc252dfea7dd6f0771c143c1e161e9072`, no push operation was performed and review returned one P1 for the prior unqualified historical no-push wording. Later repository position for both commits is established only by external Git evidence. This replacement snapshot is phase-stable and does not assert its own repository materialization.
+[Clause S5-STATE-HANDOFF] Obsidian project-memory structure remains a navigational layer valid for report-only scheduled audits. M4 Slice 1 through Slice 5 are published. Slice 5 commit `3945baaa3a63f8dba51a474ee36a6ad827d94817`, parent `b4a871ffa9b18c86179a79d3b876fd314f853f7b`, tree `f520a9b7ac511282c65aa54327302b1ea88bc2fa`, contains exactly 15 authorized text paths. Independent post-push verification established live publication with `P0=0`, `P1=0`, `P2=0` and `PUBLICATION_VERIFIED=YES`. Final profile SHA-256 is `E409F74AAEABA36F23795340B3F6F39362BB856063CBFC966215500BCC6A0EE8`; sealed manifest SHA-256 is `905AACA4C72E4738A82907C932DC850DC5CEDA9F8D53DC62F5F0DA7E5BAAF9E8`; sanitized successful live report SHA-256 is `9D1DB11C2C6384E4E4BB9B6763204ADA7AA90D6E7F072FBE916EB54E571A28EB`. This exact-six replacement snapshot is phase-stable and does not assert its own staging, commit or push position; those transitions require external Git evidence and independent review.
 
 ## Canonical Context
 
@@ -83,16 +83,20 @@ authority: provisional
 - Slice 4 S4-R04R1 design review returned `CANNOT_CLOSE`, `P0=0`, `P1=1`, and `P2=2`. Design revision 3/S4-R03R2 binds the release profile through a separately reviewed invocation SHA, binds the other 20 inputs inside the profile, fixes seven-BOM physical aggregate vectors and records all Gate 22 findings.
 - The 2026-09-07 read-only reconciliation found no OneDrive/Git conflict copy, no Git conflict marker, no duplicate candidate memory, and no `.obsidian` Git-visible change. The project-memory validator again passed 16 required files and 9 frontmatters.
 - Slice 4 Gate 23 R2R2R1 calibration, Gate 24 sealed implementation/abuse review, Gate 25 staged review and Gate 26 post-commit verification each closed with `P0=0`, `P1=0`, and `P2=0`. Gate 27 normally fast-forward pushed the exact 21-path commit, and Gate 28 independently verified local, cached and live master at `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`. The three unrelated Claude API paths were not published.
+- Slice 5 R5R2 fixed the provider request to a closed structured-output schema while retaining `think=false` and every host-side lexical, semantic, citation and byte-budget control. Independent design and discovery reviews closed at `P0=0`, `P1=0`, `P2=0`.
+- The final profile SHA-256 is `E409F74AAEABA36F23795340B3F6F39362BB856063CBFC966215500BCC6A0EE8`. Sealed manifest SHA-256 `905AACA4C72E4738A82907C932DC850DC5CEDA9F8D53DC62F5F0DA7E5BAAF9E8` records `finalEvidence=true`, `profileBound=true`, two byte-identical builds, 484 tests and 36/36 compile-then-reject abuse specimens.
+- The single new-baseline live validation returned `PROJECT_QA_OK`, exact `2 tags / 1 chat`, both digest validations true, `LOOPBACK_ONLY`, `writes=NONE`, and fixed `MODEL_GENERATED_UNVERIFIED` / `ASSISTIVE_NOT_AUTHORITY`. Only sanitized report SHA-256 `9D1DB11C2C6384E4E4BB9B6763204ADA7AA90D6E7F072FBE916EB54E571A28EB` was persisted; no retry, pull, daemon start or external destination occurred.
+- Product commit `3945baaa3a63f8dba51a474ee36a6ad827d94817` was normally fast-forward pushed. Independent post-push verification returned `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, `P2=0`; the exact 15-path tree matches sealed evidence and the three excluded untracked paths were not published.
 
 ## Remaining
 
 - Keep certificate purchase/enrollment deferred until the release-timing decision; when resumed, complete Gate 24.12–24.14 and sign only the accepted Gate 25 hashes.
-- Preserve the exact-six Slice 4 post-publication synchronization boundary and advance only the repository-recording transition authorized by current external Git evidence and the latest independent verdict; stop fail-closed on any P0 or P1.
+- Preserve the exact-six Slice 5 post-publication synchronization boundary and advance only the repository-recording transition authorized by current external Git evidence and the latest independent verdict; stop fail-closed on any P0 or P1.
 - Begin no new Slice scope or product implementation until a later Project Owner decision.
-- Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The new CLI is a separate local task-intake surface; it is not wired to those Windows services, IPC, network, credentials, storage, or external systems.
+- Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The task-intake, context, knowledge and QA CLIs remain separate local surfaces; they are not wired to those Windows services, IPC, credentials, storage, external providers or production systems.
 - Do not treat R3 publication or M4 Slice 1 local verification as signing eligibility. The binaries remain unsigned and Gate 25 remains incomplete.
 - Keep service-account, membership, directory, ACL, encryption, signing, cloud-resource, and operational mutations fail-closed until separately authorized.
-- Keep API, MCP, automated writes, further commit, further push, and external synchronization disabled unless separately authorized.
+- After the exact-six synchronization lifecycle closes, keep API, MCP, automated writes, further commit, further push, and external synchronization disabled unless separately authorized.
 - Keep the weekly audit report-only; passing the observation gate does not itself authorize automated writes.
 
 ## Scheduling

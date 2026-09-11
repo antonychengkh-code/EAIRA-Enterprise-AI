@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-09-10
+2026-09-11
 
 ## Version
 
-0.36.43
+0.36.44
 
 ## Milestone
 
@@ -20,15 +20,15 @@ M4 Functional Agent MVP: Active.
 
 ## Current Scope
 
-Complete the independently gated repository lifecycle for the exact six-file Slice 4 post-publication controlled-state and HANDOFF synchronization without changing product code.
+Complete the independently gated repository lifecycle for the exact six-file Slice 5 post-publication controlled-state and HANDOFF synchronization without changing product code.
 
 ## Current Result
 
-Slice 4 Gates 23-28 are complete. The independently verified publication is commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`; live, cached and local master agree. Gate 28 returned `PUBLICATION_VERIFIED=YES`, `GATE_SEQUENCE_COMPLETE=YES`, `P0=0`, `P1=0`, `P2=0`. The first six-file synchronization commit `904c52698a00051f9af27e917d61b057a944d79f` stopped at a post-commit review with `P1=1` and `P2=1`. The next phase-stable commit `50b5ed2fc252dfea7dd6f0771c143c1e161e9072` reached a separate post-commit gate where no push operation was performed and review found one P1 temporal ambiguity in HANDOFF. This replacement records both historical gate outcomes without asserting whether the replacement itself is staged, committed or pushed.
+Slice 5 product publication is independently verified at commit `3945baaa3a63f8dba51a474ee36a6ad827d94817`, parent `b4a871ffa9b18c86179a79d3b876fd314f853f7b`, tree `f520a9b7ac511282c65aa54327302b1ea88bc2fa`; live, cached and local master agree. The exact 15-path publication binds profile SHA-256 `E409F74AAEABA36F23795340B3F6F39362BB856063CBFC966215500BCC6A0EE8` and sealed manifest SHA-256 `905AACA4C72E4738A82907C932DC850DC5CEDA9F8D53DC62F5F0DA7E5BAAF9E8`. Clean A/B, 484 QA tests, 36 abuse specimens and the single successful R5R2 live-loopback report SHA-256 `9D1DB11C2C6384E4E4BB9B6763204ADA7AA90D6E7F072FBE916EB54E571A28EB` were independently reviewed. Post-push verification returned `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, `P2=0`. This phase-stable six-file snapshot does not assert its own staging, commit or push position.
 
 ## Out of Scope
 
-Product implementation, release profile or build-script changes, model/provider invocation, arbitrary vault search, external credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, checkpoint-ref repair and force push remain outside scope. Repository-recording authority is limited to the exact six files, normal commit and normal push, with each transition gated by separate independent evidence.
+Product implementation, release profile or build-script changes, additional model/provider invocation, arbitrary vault search, external credentials, Windows service routing, persistence, signing, deployment, production activation, assessment evidence collection, checkpoint-ref repair and force push remain outside scope. Repository-recording authority is limited to the exact six files, normal commit and normal push, with each transition gated by separate independent evidence.
 
 ## Historical Objective Retained for Traceability
 
@@ -133,12 +133,12 @@ Exactly six phase-stable files—four controlled status artifacts, `CURRENT_CONT
 
 ## Success Criteria
 
-[Clause S4-STATE-TODAY-CRITERIA]
+[Clause S5-STATE-TODAY-CRITERIA]
 
-- Local `HEAD`, cached `origin/master` and live `refs/heads/master` all equal `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`.
-- Commit parent, tree, exact 21-path publication, sealed manifest/profile hashes and Gate 28 verdict are recorded without inference.
-- All six current-state/context/handoff files use one phase-stable synchronization identity and matching version references without claiming their own staging, commit or push position.
-- Project-memory and diff validation pass, tracked files outside the six-file set remain unchanged, and the three unrelated Claude API paths remain untouched and untracked.
+- Before synchronization recording, local `HEAD`, cached `origin/master` and live `refs/heads/master` all equal `3945baaa3a63f8dba51a474ee36a6ad827d94817`.
+- Commit parent, tree, exact 15-path publication, profile/sealed/live-report hashes and independent post-push verdict are recorded without inference.
+- All six current-state/context/handoff files use one phase-stable Slice 5 synchronization identity and matching version references without claiming their own staging, commit or push position.
+- Project-memory and diff validation pass, tracked files outside the six-file set remain unchanged, and the three excluded untracked paths remain untouched and untracked.
 
 ### 2026-09-01 Reconciliation Criteria Retained for Traceability
 
@@ -152,4 +152,4 @@ Exactly six phase-stable files—four controlled status artifacts, `CURRENT_CONT
 
 ## Next Action
 
-Use current external Git evidence and the latest independent verdict to advance only the next eligible transition in the exact-six repository-recording lifecycle; a P0 or P1 stops fail-closed. The controlled snapshot does not self-assert its materialization, so no later edit is required solely to mirror stage, commit or push. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, checkpoint-ref repair or operational activation.
+Use current external Git evidence and the latest independent verdict to advance only the next eligible transition in the exact-six Slice 5 repository-recording lifecycle; a P0 or P1 stops fail-closed. The controlled snapshot does not self-assert its materialization, so no later edit is required solely to mirror stage, commit or push. After this lifecycle closes, choose any next product Slice only through a separate scope decision. Do not begin external-provider integration, API or credential use, service-account or membership creation, directory or ACL changes, encryption changes, persistence, assessment evidence activity, signing, checkpoint-ref repair or operational activation.
