@@ -120,7 +120,7 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 
 ## Expected Deliverables
 
-Exactly six phase-stable files—four controlled status artifacts, `CURRENT_CONTEXT.md`, and `HANDOFF.md`—that record the verified Slice 4 product publication and require external Git evidence for their own repository-recording transitions.
+Exactly six phase-stable files—four controlled status artifacts, `CURRENT_CONTEXT.md`, and `HANDOFF.md`—that record the verified Slice 5 product publication and require external Git evidence for their own repository-recording transitions.
 
 ## 2026-09-01 Reconciliation Results
 
