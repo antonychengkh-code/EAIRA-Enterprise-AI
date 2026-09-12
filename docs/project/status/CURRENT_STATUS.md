@@ -6,7 +6,7 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.39.0
+0.40.0
 
 ## Updated At
 
@@ -58,6 +58,34 @@ Gate 15 independently verified live `origin/master` at the product commit with
 `P0=0`, `P1=0`, `P2=1`, and `PUBLICATION_VERIFIED=YES`. The sole P2 is the
 retained Codex auxiliary checkpoint-ref maintenance issue; it does not affect
 the product commit, tree, blobs, or normal fast-forward publication.
+
+M5 Slice 2 `M5S2_A_BOUNDED_OPERATOR_HEALTH_AND_CAPABILITY_STATUS` is
+implemented, published, and independently live-remote verified. It adds the
+exact local `health --trace <TRACE>` capability as compiled-contract-only,
+observational status. The payload reports the bounded task, knowledge,
+project-QA and health capabilities without reading project content, constructing
+a provider, opening a network connection, writing state, or granting authority.
+
+M5 Slice 2 product commit `1e2b1dbac567c2f3346e79aac287d25b80af6514`,
+parent `b32e947892b6b0ffd97411910f704394b6b805f2`, tree
+`053a39d087ffa1af3fe821976e6818f5cb084463`, contains exactly nine authorized
+text paths. Final profile SHA-256
+`414A4A69089F7009C07F90D9B15E74DE1DEB1CF49FDEFD01908888F689A54A8B`
+and sealed manifest SHA-256
+`CE9B2398A8F1F9FBFE39CD81D78D6C4C754B151635391B0FBD367C684423ADB0`
+bind two byte-identical builds, 119 stable-name local-operator tests with the
+first 96 legacy cases unchanged, 13 compile-then-reject specimens, and all
+retained M4/M5 Slice 1, metadata, P/Invoke, native, loopback-policy, IL/CFG and
+connect-attempt controls. Native validation returned exit `0`, `927` stdout
+bytes with SHA-256
+`8E7B9415938850843E23E933A82B6FCB07244AD8814706BB998C4C11D9D4D91A`,
+zero stderr, and `network=NONE`, `reads=NONE`, `writes=NONE`,
+`providerConstruction=NONE`, `authority=OBSERVATIONAL_NOT_AUTHORITY`.
+Sanitized report SHA-256 is
+`CCDF588058CE2520138310F793365278F486D7AA8324E41FF0E443C9F1753AF5`.
+Gate 19 independently verified live `origin/master` at the product commit with
+`P0=0`, `P1=0`, `P2=1`, and `PUBLICATION_VERIFIED=YES`; the sole P2 remains
+the pre-existing Codex auxiliary checkpoint-ref maintenance issue.
 
 M4 Slice 3, decision `SLICE3_A_READ_ONLY_PROJECT_CONTEXT`, is complete and published. Product commit `a0e172f34ebc09f76e1bd894d680614ed901113d` and post-publication synchronization commit `7e1c1d04e6b92fcbf89f0b1268d189da9892071b` were independently live-remote verified. The exact product publication contains 24 authorized paths and excludes the three unrelated Claude API paths.
 
@@ -118,6 +146,14 @@ commit `f768c21699c9e0b741e7afdddcaae8cb5fbd2a45`. This establishes the bounded
 local operator workflow only and grants no broader runtime or operational
 authority.
 
+The M5 Slice 2 decision is recorded in
+`docs/project/strategy/EAIRA_M5_SLICE2_SCOPE_DECISION.md`. Its exact nine-path
+bounded implementation is published and independently live-remote verified at
+commit `1e2b1dbac567c2f3346e79aac287d25b80af6514`. This establishes only the
+compiled-contract health and capability-status surface and grants no live-health,
+provider, network, arbitrary-read, write, Windows, service, signing, deployment
+or production authority.
+
 The authoritative Project Owner authorization-state decision for commit `f317294515d1dc27a261035260e9fcc45e1545f6` is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_F317294_AUTHORIZATION_STATE_DECISION.md`.
 
 The preserved finding is `REPOSITORY_RECORDED_AUTHORIZATION_EVIDENCE_NOT_FOUND`. It does not establish that prior authorization definitively never existed; it means only that qualifying repository-recorded evidence was not found within the documented search scope.
@@ -175,12 +211,13 @@ Under the Authorization Annex workstream, no assessment-authorization decision m
 
 ## Next Action
 
-Prepare a separate Project Owner M5 Slice 2 scope decision. Preserve the
-user-mode, no-write, Guard-mediated, loopback-only, no-credential and
-no-privileged-mutation boundary. No Slice 2 scope, design, implementation, live
-provider activity, Windows mutation, signing, deployment, or production
-activation is authorized by this synchronization. This snapshot does not
-establish its own staging, commit, push, or publication position.
+After this controlled-state snapshot completes its separately evidenced review,
+staging, commit, push and final-verification lifecycle, prepare a separate Project
+Owner M5 Slice 3 scope decision. Preserve the user-mode, no-write,
+Guard-mediated, loopback-only, no-credential and no-privileged-mutation boundary.
+No Slice 3 scope, design, implementation, live provider activity, Windows
+mutation, signing, deployment or production activation is inferred. This
+snapshot does not establish its own staging, commit, push or publication position.
 
 Main Annex Version `0.33.0` mutation, commit, normal push, and independent post-push publication verification are complete. Separately and historically, the Project Owner authorized sequential execution of ten remaining Annex lifecycle gates with fail-closed preconditions; that statement does not count or authorize the current Slice 4 Gate 20-28 nine-gate lifecycle.
 

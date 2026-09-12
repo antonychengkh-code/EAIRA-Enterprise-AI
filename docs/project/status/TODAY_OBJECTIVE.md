@@ -6,7 +6,7 @@
 
 ## Version
 
-0.38.0
+0.39.0
 
 ## Milestone
 
@@ -22,24 +22,27 @@ M5 Integrated Local Runtime and Operator Workflow: Active.
 
 ## Current Scope
 
-Synchronize the verified M5 Slice 1 product publication into the six controlled
+Synchronize the verified M5 Slice 2 product publication into the six controlled
 status/context/HANDOFF files while preserving the bounded local-only, no-write,
 no-credential and non-production authority boundary.
 
 ## Current Result
 
-M5 Slice 1 is implemented and published at product commit
-`f768c21699c9e0b741e7afdddcaae8cb5fbd2a45`, parent
-`c50ccb8d22926220ac8712aaaa9eaacff1e9de93`, tree
-`22f27aa0e2829f436b1cbeb714b1a65a19f86e3c`, with exactly 20 authorized
+M5 Slice 2 is implemented and published at product commit
+`1e2b1dbac567c2f3346e79aac287d25b80af6514`, parent
+`b32e947892b6b0ffd97411910f704394b6b805f2`, tree
+`053a39d087ffa1af3fe821976e6818f5cb084463`, with exactly nine authorized
 text paths. Final profile SHA-256 is
-`93CB569791E96C80D5C4F0325A43AB7604F945B383EDCA97389299638404B7CA`;
+`414A4A69089F7009C07F90D9B15E74DE1DEB1CF49FDEFD01908888F689A54A8B`;
 sealed manifest SHA-256 is
-`19E71363B177F254F3A8F340193FF230F35C017A9F97386B3C41FAB5C305A92C`;
-live-loopback report SHA-256 is
-`D4B5C721846AE0E8C8FFA095AF1272B0D622812F3FD5A665EFF140D877937BC6`.
+`CE9B2398A8F1F9FBFE39CD81D78D6C4C754B151635391B0FBD367C684423ADB0`;
+native-health report SHA-256 is
+`CCDF588058CE2520138310F793365278F486D7AA8324E41FF0E443C9F1753AF5`.
+The exact Health output is 927 bytes with SHA-256
+`8E7B9415938850843E23E933A82B6FCB07244AD8814706BB998C4C11D9D4D91A`.
 Independent post-push verification returned `PUBLICATION_VERIFIED=YES`,
-`P0=0`, `P1=0`, and `P2=1`; the P2 is limited to existing Codex auxiliary refs.
+`P0=0`, `P1=0`, and `P2=1`; the P2 is limited to the existing Codex auxiliary
+checkpoint-ref maintenance issue.
 
 ## Out of Scope
 
@@ -141,7 +144,7 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 ## Expected Deliverables
 
 Six synchronized current-state/context/HANDOFF files that accurately record the
-M5 Slice 1 publication and preserve all authority boundaries. Their own staging,
+M5 Slice 2 publication and preserve all authority boundaries. Their own staging,
 commit, push and publication position remains external Git evidence.
 
 ## 2026-09-01 Reconciliation Results
@@ -157,9 +160,9 @@ commit, push and publication position remains external Git evidence.
 
 [Clause M5-STATE-TODAY-CRITERIA]
 
-- Product commit, parent, tree, exact path count, final evidence hashes and Gate 15
+- Product commit, parent, tree, exact path count, final evidence hashes and Gate 19
   result are recorded without inference.
-- M4 remains completed, M5 remains active, and M5 Slice 1 is consistently recorded
+- M4 remains completed, M5 remains active, and M5 Slice 2 is consistently recorded
   as published and independently verified.
 - The six files preserve all Windows, service, ACL, signing, external-provider,
   production and Annex boundaries.
@@ -178,7 +181,8 @@ commit, push and publication position remains external Git evidence.
 
 ## Next Action
 
-Prepare a separate Project Owner M5 Slice 2 scope decision. Do not infer Slice 2
+After separate synchronization review/publication verification, prepare a
+Project Owner M5 Slice 3 scope decision. Do not infer Slice 3
 scope or begin implementation, external-provider/API/credential activity,
 Windows-service, IPC, account, membership, directory, ACL, encryption,
 persistence, signing, checkpoint-ref repair or production activity without later
