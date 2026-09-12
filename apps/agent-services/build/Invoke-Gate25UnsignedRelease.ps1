@@ -17,6 +17,8 @@ param(
 
     [switch]$ProjectQaDiscovery,
 
+    [switch]$LocalOperatorDiscovery,
+
     [ValidatePattern('^[0-9A-F]{64}$')]
     [string]$ExpectedReleaseProfileSha256
 )
@@ -418,7 +420,7 @@ function Assert-ProjectContextPInvokeCallerPolicy {
     param(
         [Parameter(Mandatory = $true)][string]$LiteralPath,
         [Parameter(Mandatory = $true)]$Policy,
-        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness','KnowledgeCli','ProjectQaCli')][string]$OutputKind,
+        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness','KnowledgeCli','ProjectQaCli','LocalOperatorCli')][string]$OutputKind,
         [switch]$Discovery
     )
 
@@ -484,7 +486,7 @@ function Assert-ProjectContextPInvokeCallerPolicy {
     [Array]::Sort($canonicalCallerIl, [StringComparer]::Ordinal)
     $callerIlSha256 = Get-ByteArraySha256 -Bytes ([Text.Encoding]::UTF8.GetBytes(($canonicalCallerIl -join "`n")))
     $inventoryProperty = $Policy.nativeCallerIlInventory.PSObject.Properties[$OutputKind]
-    $newOutputDiscovery = $Discovery -and ($OutputKind -ceq 'KnowledgeCli' -or $OutputKind -ceq 'ProjectQaCli')
+    $newOutputDiscovery = $Discovery -and ($OutputKind -ceq 'KnowledgeCli' -or $OutputKind -ceq 'ProjectQaCli' -or $OutputKind -ceq 'LocalOperatorCli')
     if ($null -eq $inventoryProperty -and -not $newOutputDiscovery) { throw "Missing profile-bound native caller IL inventory '$OutputKind': $LiteralPath" }
     $expectedInventory = if ($null -eq $inventoryProperty) { $null } else { $inventoryProperty.Value }
     if (-not $newOutputDiscovery -and
@@ -622,6 +624,26 @@ function Assert-ProjectQaMetadataPolicy {
         $expected = $property.Value
         foreach ($name in @('image','typeDefs','methodDefs','memberRefs','methodSpecs','fields','interfaces','constructors','callGraph')) {
             if ($null -eq $expected.$name -or [int64]$expected.$name.count -ne [int64]$actual.$name.count -or [string]$expected.$name.sha256 -cne [string]$actual.$name.sha256) { throw "Project-QA metadata inventory mismatch '$OutputKind/$name': $LiteralPath" }
+        }
+    }
+    return $actual
+}
+
+function Assert-LocalOperatorMetadataPolicy {
+    param(
+        [Parameter(Mandatory = $true)][string]$LiteralPath,
+        [Parameter(Mandatory = $true)]$Policy,
+        [Parameter(Mandatory = $true)][ValidateSet('Cli','Harness')][string]$OutputKind,
+        [switch]$Discovery
+    )
+    $actual = Get-ProjectQaMetadataClosure -LiteralPath $LiteralPath
+    if (-not $Discovery) {
+        $expected = if ($OutputKind -ceq 'Cli') { $Policy.cliMetadataInventory } else { $Policy.harnessMetadataInventory }
+        if ($null -eq $expected) { throw "Missing Local Operator metadata inventory '$OutputKind': $LiteralPath" }
+        foreach ($name in @('image','typeDefs','methodDefs','memberRefs','methodSpecs','fields','interfaces','constructors','callGraph')) {
+            if ($null -eq $expected.$name -or [int64]$expected.$name.count -ne [int64]$actual.$name.count -or [string]$expected.$name.sha256 -cne [string]$actual.$name.sha256) {
+                throw "Local Operator metadata inventory mismatch '$OutputKind/$name': $LiteralPath"
+            }
         }
     }
     return $actual
@@ -1186,7 +1208,7 @@ function Assert-ProjectContextPInvokePolicy {
     param(
         [Parameter(Mandatory = $true)][string]$LiteralPath,
         [Parameter(Mandatory = $true)]$Policy,
-        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness','KnowledgeCli','ProjectQaCli')][string]$OutputKind,
+        [Parameter(Mandatory = $true)][ValidateSet('Cli','ContextHarness','KnowledgeCli','ProjectQaCli','LocalOperatorCli')][string]$OutputKind,
         [switch]$Discovery
     )
     $actual = Get-ProjectContextPInvokeMetadata -LiteralPath $LiteralPath
@@ -1194,7 +1216,7 @@ function Assert-ProjectContextPInvokePolicy {
     $expectedNames = @($Policy.entryPoints | ForEach-Object { [string]$_ } | Sort-Object)
     if ($actual.rows.Count -ne 6 -or ($actual.rows.managedName -join "`n") -cne ($expectedNames -join "`n")) { throw "Project-context P/Invoke set mismatch: $LiteralPath" }
     $signatureProperty = $Policy.nativeImportSignatures.PSObject.Properties[$OutputKind]
-    $newOutputDiscovery = $Discovery -and ($OutputKind -ceq 'KnowledgeCli' -or $OutputKind -ceq 'ProjectQaCli')
+    $newOutputDiscovery = $Discovery -and ($OutputKind -ceq 'KnowledgeCli' -or $OutputKind -ceq 'ProjectQaCli' -or $OutputKind -ceq 'LocalOperatorCli')
     if ($null -eq $signatureProperty -and -not $newOutputDiscovery) { throw "Missing profile-bound P/Invoke signatures '$OutputKind': $LiteralPath" }
     $expectedSignatures = if ($null -eq $signatureProperty) { $null } else { $signatureProperty.Value }
     foreach ($row in $actual.rows) {
@@ -1605,6 +1627,37 @@ function Invoke-ProjectQaNegativeSpecimen {
     if ([String]::IsNullOrEmpty($rejection)) { throw "Project-QA negative specimen was not rejected '$Name'." }
     return [ordered]@{ name=$Name; compileExitCode=0; verifierRejected=$true; outputKind='ProjectQaCli' }
 }
+
+function Invoke-LocalOperatorNegativeSpecimen {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$CompilerPath,
+        [Parameter(Mandatory = $true)][string[]]$CompilerArguments,
+        [Parameter(Mandatory = $true)][string]$SourceText,
+        [Parameter(Mandatory = $true)][string]$SpecimenRoot,
+        [Parameter(Mandatory = $true)]$BaselineMetadata
+    )
+    $source = Join-Path $SpecimenRoot ($Name + '.cs')
+    $output = Join-Path $SpecimenRoot ($Name + '.exe')
+    Set-Content -LiteralPath $source -Value $SourceText -Encoding UTF8
+    $arguments = @($CompilerArguments | Where-Object { -not $_.StartsWith('/out:', [StringComparison]::OrdinalIgnoreCase) })
+    $arguments += "/out:$output"
+    $arguments += $source
+    $compilerOutput = @(& $CompilerPath @arguments 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw "Local Operator negative specimen did not compile '$Name': $($compilerOutput -join [Environment]::NewLine)" }
+    $rejected = $false
+    try {
+        Assert-NoForbiddenBinaryMetadata -LiteralPath $output -AllowLoopbackHttp -AllowProjectContextPInvoke
+        Assert-SystemIoMemberReferencePolicy -LiteralPath $output -AllowProjectKnowledgeStdout
+        $actual = Get-ProjectQaMetadataClosure -LiteralPath $output
+        if (($actual | ConvertTo-Json -Depth 8 -Compress) -cne ($BaselineMetadata | ConvertTo-Json -Depth 8 -Compress)) {
+            throw 'Compiled metadata differs from the sealed Local Operator baseline.'
+        }
+    }
+    catch { $rejected = $true }
+    if (-not $rejected) { throw "Local Operator negative specimen was not rejected '$Name'." }
+    return [ordered]@{ name=$Name; compileExitCode=0; verifierRejected=$true; outputKind='LocalOperatorCli' }
+}
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $componentRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot '..'))
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $componentRoot '..\..'))
@@ -1623,18 +1676,22 @@ $projectKnowledgeSourcePath = Join-Path $componentRoot 'src\ProjectKnowledge.cs'
 $projectKnowledgeHostSourcePath = Join-Path $componentRoot 'src\ProjectKnowledgeHost.cs'
 $projectQaSourcePath = Join-Path $componentRoot 'src\ProjectQa.cs'
 $projectQaHostSourcePath = Join-Path $componentRoot 'src\ProjectQaHost.cs'
+$localOperatorSourcePath = Join-Path $componentRoot 'src\LocalOperator.cs'
+$localOperatorHostSourcePath = Join-Path $componentRoot 'src\LocalOperatorHost.cs'
 $harnessSourcePath = Join-Path $componentRoot 'tests\AgentCoreHarness.cs'
 $taskIntakeHarnessSourcePath = Join-Path $componentRoot 'tests\LocalTaskIntakeHarness.cs'
 $localProviderHarnessSourcePath = Join-Path $componentRoot 'tests\LocalModelProviderHarness.cs'
 $projectContextHarnessSourcePath = Join-Path $componentRoot 'tests\ProjectContextHarness.cs'
 $projectKnowledgeHarnessSourcePath = Join-Path $componentRoot 'tests\ProjectKnowledgeHarness.cs'
 $projectQaHarnessSourcePath = Join-Path $componentRoot 'tests\ProjectQaHarness.cs'
+$localOperatorHarnessSourcePath = Join-Path $componentRoot 'tests\LocalOperatorHarness.cs'
 $functionalContractPath = Join-Path $componentRoot 'contracts\EAIRA_MINIMUM_FUNCTIONAL_AGENT_SLICE_V1.md'
 $taskIntakeContractPath = Join-Path $componentRoot 'contracts\EAIRA_LOCAL_TASK_INTAKE_V1.md'
 $localProviderContractPath = Join-Path $componentRoot 'contracts\EAIRA_LOCAL_MODEL_PROVIDER_V1.md'
 $projectContextContractPath = Join-Path $componentRoot 'contracts\EAIRA_READ_ONLY_PROJECT_CONTEXT_V1.md'
 $projectKnowledgeContractPath = Join-Path $componentRoot 'contracts\EAIRA_PROJECT_KNOWLEDGE_QUERY_V1.md'
 $projectQaContractPath = Join-Path $componentRoot 'contracts\EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1.md'
+$localOperatorContractPath = Join-Path $componentRoot 'contracts\EAIRA_LOCAL_OPERATOR_V1.md'
 $profilePath = Join-Path $componentRoot 'release\gate25-unsigned-release-profile.json'
 
 if (-not (Test-Path -LiteralPath $buildScriptPath -PathType Leaf)) { throw "Build script missing: $buildScriptPath" }
@@ -1652,18 +1709,22 @@ if (-not (Test-Path -LiteralPath $projectKnowledgeSourcePath -PathType Leaf)) { 
 if (-not (Test-Path -LiteralPath $projectKnowledgeHostSourcePath -PathType Leaf)) { throw "Project-knowledge host source file missing: $projectKnowledgeHostSourcePath" }
 if (-not (Test-Path -LiteralPath $projectQaSourcePath -PathType Leaf)) { throw "Project-QA source file missing: $projectQaSourcePath" }
 if (-not (Test-Path -LiteralPath $projectQaHostSourcePath -PathType Leaf)) { throw "Project-QA host source file missing: $projectQaHostSourcePath" }
+if (-not (Test-Path -LiteralPath $localOperatorSourcePath -PathType Leaf)) { throw "Local Operator source file missing: $localOperatorSourcePath" }
+if (-not (Test-Path -LiteralPath $localOperatorHostSourcePath -PathType Leaf)) { throw "Local Operator host source file missing: $localOperatorHostSourcePath" }
 if (-not (Test-Path -LiteralPath $harnessSourcePath -PathType Leaf)) { throw "Harness source file missing: $harnessSourcePath" }
 if (-not (Test-Path -LiteralPath $taskIntakeHarnessSourcePath -PathType Leaf)) { throw "Task-intake harness source file missing: $taskIntakeHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $localProviderHarnessSourcePath -PathType Leaf)) { throw "Local-provider harness source file missing: $localProviderHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $projectContextHarnessSourcePath -PathType Leaf)) { throw "Project-context harness source file missing: $projectContextHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $projectKnowledgeHarnessSourcePath -PathType Leaf)) { throw "Project-knowledge harness source file missing: $projectKnowledgeHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $projectQaHarnessSourcePath -PathType Leaf)) { throw "Project-QA harness source file missing: $projectQaHarnessSourcePath" }
+if (-not (Test-Path -LiteralPath $localOperatorHarnessSourcePath -PathType Leaf)) { throw "Local Operator harness source file missing: $localOperatorHarnessSourcePath" }
 if (-not (Test-Path -LiteralPath $functionalContractPath -PathType Leaf)) { throw "Functional contract missing: $functionalContractPath" }
 if (-not (Test-Path -LiteralPath $taskIntakeContractPath -PathType Leaf)) { throw "Task-intake contract missing: $taskIntakeContractPath" }
 if (-not (Test-Path -LiteralPath $localProviderContractPath -PathType Leaf)) { throw "Local-provider contract missing: $localProviderContractPath" }
 if (-not (Test-Path -LiteralPath $projectContextContractPath -PathType Leaf)) { throw "Project-context contract missing: $projectContextContractPath" }
 if (-not (Test-Path -LiteralPath $projectKnowledgeContractPath -PathType Leaf)) { throw "Project-knowledge contract missing: $projectKnowledgeContractPath" }
 if (-not (Test-Path -LiteralPath $projectQaContractPath -PathType Leaf)) { throw "Project-QA contract missing: $projectQaContractPath" }
+if (-not (Test-Path -LiteralPath $localOperatorContractPath -PathType Leaf)) { throw "Local Operator contract missing: $localOperatorContractPath" }
 if (-not (Test-Path -LiteralPath $profilePath -PathType Leaf)) { throw "Release profile missing: $profilePath" }
 if (-not (Test-Path -LiteralPath $RoslynCscPath -PathType Leaf)) { throw "Compiler missing: $RoslynCscPath" }
 
@@ -1676,8 +1737,12 @@ if ([String]::Equals($resolvedOutput.TrimEnd('\'), $outputRootOnly.TrimEnd('\'),
 }
 if (Test-Path -LiteralPath $resolvedOutput) { throw "OutputRoot already exists; refusing overwrite: $resolvedOutput" }
 
+$modeCount = @($DevelopmentProbe,$ProjectKnowledgeDiscovery,$ProjectQaDiscovery,$LocalOperatorDiscovery | Where-Object { [bool]$_ }).Count
+$jointQaOperatorDiscovery = $ProjectQaDiscovery -and $LocalOperatorDiscovery -and -not $DevelopmentProbe -and -not $ProjectKnowledgeDiscovery
+if ($modeCount -gt 1 -and -not ($jointQaOperatorDiscovery -and $modeCount -eq 2)) { throw 'Development/discovery switches are mutually exclusive except for the bounded Project-QA plus Local-Operator remediation discovery.' }
+
 $releaseProfileSha256 = Get-Sha256 -LiteralPath $profilePath
-if (-not $ProjectKnowledgeDiscovery -and -not $ProjectQaDiscovery -and -not $DevelopmentProbe) {
+if (-not $ProjectKnowledgeDiscovery -and -not $ProjectQaDiscovery -and -not $LocalOperatorDiscovery -and -not $DevelopmentProbe) {
     if ([String]::IsNullOrEmpty($ExpectedReleaseProfileSha256)) { throw 'ExpectedReleaseProfileSha256 is mandatory outside discovery.' }
     if (-not [String]::Equals($releaseProfileSha256, $ExpectedReleaseProfileSha256, [StringComparison]::Ordinal)) { throw 'Release profile SHA-256 does not match the separately reviewed value.' }
 }
@@ -1750,6 +1815,30 @@ if (@($profile.projectKnowledge.frameworkReferences).Count -ne 2 -or
 
 if ($profile.projectQa.contract -ne 'EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1' -or $profile.projectQa.output -ne 'EAIRA.ProjectQa.Cli.exe' -or $profile.projectQa.outputHarness -ne 'EAIRA.ProjectQa.Harness.exe' -or $profile.projectQa.nativeSymbols -ne 'EAIRA_PROJECT_READONLY_NATIVE,EAIRA_PROJECT_QA_NATIVE' -or $profile.projectQa.testSeamSymbol -ne 'EAIRA_PROJECT_QA_TEST_SEAM' -or $profile.projectQa.maximumPromptBytes -ne 12000 -or $profile.projectQa.maximumBodyBytes -ne 16384 -or $profile.projectQa.maximumAnswerBytes -ne 2048 -or $profile.projectQa.maximumCitations -ne 8 -or $profile.projectQa.network -ne 'LOOPBACK_ONLY' -or $profile.projectQa.writes -ne 'NONE') { throw 'Project-QA policy mismatch.' }
 
+$expectedOperatorCapabilities = @('TASK','KNOWLEDGE','PROJECT_QA')
+$expectedOperatorStatuses = @('PASS:0','INVALID_REQUEST:64','DENIED:77','PROVIDER_ERROR:79','CONTEXT_ERROR:80','KNOWLEDGE_ERROR:81','QA_VALIDATION_ERROR:82','ORCHESTRATION_ERROR:83','OUTPUT_ERROR:84')
+$actualOperatorStatuses = @($profile.localOperator.statusExitMap | ForEach-Object { [string]$_.status + ':' + [int]$_.exitCode })
+$expectedOperatorCliSources = @('src/ContractCodec.cs','src/AgentCore.cs','src/ModelProviders.cs','src/LocalTaskIntake.cs','src/LocalModelProvider.cs','src/OllamaLoopbackTransport.cs','src/ProjectReadOnlyPlatform.cs','src/ProjectContext.cs','src/ProjectKnowledge.cs','src/ProjectQa.cs','src/LocalOperator.cs','src/LocalOperatorHost.cs')
+$expectedOperatorHarnessSources = @('src/ContractCodec.cs','src/AgentCore.cs','src/ModelProviders.cs','src/LocalTaskIntake.cs','src/LocalModelProvider.cs','src/ProjectReadOnlyPlatform.cs','src/ProjectContext.cs','src/ProjectKnowledge.cs','src/ProjectQa.cs','src/LocalOperator.cs','tests/LocalOperatorHarness.cs')
+if ($profile.localOperator.contract -ne 'EAIRA_LOCAL_OPERATOR_V1' -or $profile.localOperator.revision -ne 1 -or
+    $profile.localOperator.output -ne 'EAIRA.LocalOperator.Cli.exe' -or $profile.localOperator.outputHarness -ne 'EAIRA.LocalOperator.Harness.exe' -or
+    $profile.localOperator.nativeSymbols -ne 'EAIRA_PROJECT_READONLY_NATIVE,EAIRA_PROJECT_CONTEXT_NATIVE,EAIRA_PROJECT_KNOWLEDGE_NATIVE,EAIRA_PROJECT_QA_NATIVE,EAIRA_LOCAL_OPERATOR_NATIVE' -or
+    $profile.localOperator.testSeamSymbols -ne 'EAIRA_PROJECT_CONTEXT_TEST_SEAM,EAIRA_PROJECT_KNOWLEDGE_TEST_SEAM,EAIRA_PROJECT_QA_TEST_SEAM,EAIRA_LOCAL_OPERATOR_TEST_SEAM' -or
+    $profile.localOperator.maximumPayloadBytes -ne 16383 -or $profile.localOperator.maximumWrapperBytes -ne 587 -or $profile.localOperator.maximumStdoutBytes -ne 16970 -or
+    ((@($profile.localOperator.capabilities | ForEach-Object { [string]$_ }) -join "`n") -cne ($expectedOperatorCapabilities -join "`n")) -or
+    (($actualOperatorStatuses -join "`n") -cne ($expectedOperatorStatuses -join "`n")) -or
+    ((@($profile.localOperator.sourceOrderCli | ForEach-Object { [string]$_ }) -join "`n") -cne ($expectedOperatorCliSources -join "`n")) -or
+    ((@($profile.localOperator.sourceOrderHarness | ForEach-Object { [string]$_ }) -join "`n") -cne ($expectedOperatorHarnessSources -join "`n")) -or
+    $profile.localOperator.expectedHarnessTests -ne 96 -or $profile.localOperator.expectedHarnessCanonicalNameBytes -ne 2409 -or
+    [string]$profile.localOperator.expectedHarnessCaseNameSha256 -cne '0AAF52EE6A087B487B6497676F48BA7AD0D36CB987C149CC1BADAD9CA5D2FE68') {
+    throw 'Local Operator policy mismatch.'
+}
+if (@($profile.localOperator.frameworkReferences.Cli).Count -ne 3 -or @($profile.localOperator.frameworkReferences.Harness).Count -ne 2 -or
+    ((@($profile.localOperator.frameworkReferences.Cli | ForEach-Object { [string]$_ }) -join "`n") -cne "mscorlib.dll`nSystem.dll`nSystem.Net.Http.dll") -or
+    ((@($profile.localOperator.frameworkReferences.Harness | ForEach-Object { [string]$_ }) -join "`n") -cne "mscorlib.dll`nSystem.dll")) {
+    throw 'Local Operator framework-reference policy mismatch.'
+}
+
 $slice5ManifestPaths = @(
     'docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_5_SCOPE_DECISION.md',
     'docs/project/planning/EAIRA_M4_SLICE5_BOUNDED_LOCAL_PROJECT_QA_ALLOWLIST.md',
@@ -1783,6 +1872,55 @@ foreach ($relativePath in $slice5ManifestPaths) {
         if (-not $ProjectQaDiscovery -and -not $DevelopmentProbe -and [string]$expected.sha256 -cne $actualHash) { throw "Project-QA bound input hash mismatch: $relativePath" }
     }
     $slice5RepositoryEvidence += [ordered]@{ file=$relativePath; bytes=$item.Length; sha256=$actualHash }
+}
+
+$localOperatorBoundPaths = @(
+    'docs/project/milestones/EAIRA_M5_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW_PROJECT_CHARTER.md',
+    'docs/project/planning/EAIRA_M5_SLICE1_UNIFIED_USER_MODE_ORCHESTRATOR_SCOPE_PACKAGE.md',
+    'docs/project/planning/EAIRA_M5_SLICE1_UNIFIED_USER_MODE_ORCHESTRATOR_SCOPE_PACKAGE_R1.md',
+    'docs/project/planning/EAIRA_M5_SLICE1_UNIFIED_USER_MODE_ORCHESTRATOR_SCOPE_PACKAGE_R2.md',
+    'docs/project/planning/EAIRA_M5_SLICE1_UNIFIED_USER_MODE_ORCHESTRATOR_SCOPE_PACKAGE_R3.md',
+    'docs/project/strategy/EAIRA_M5_SLICE1_SCOPE_DECISION.md',
+    'docs/project/planning/EAIRA_M5_SLICE1_EXACT_IMPLEMENTATION_DESIGN.md',
+    'docs/project/planning/EAIRA_M5_SLICE1_EXACT_IMPLEMENTATION_DESIGN_R2.md',
+    'docs/project/planning/EAIRA_M5_SLICE1_EXACT_IMPLEMENTATION_DESIGN_R3.md',
+    'docs/project/planning/EAIRA_M5_SLICE1_EXACT_IMPLEMENTATION_DESIGN_R3R1.md',
+    'docs/project/planning/EAIRA_M5_SLICE1_EXACT_IMPLEMENTATION_DESIGN_R3R2.md',
+    'apps/agent-services/README.md',
+    'apps/agent-services/contracts/EAIRA_LOCAL_OPERATOR_V1.md',
+    'apps/agent-services/src/ContractCodec.cs',
+    'apps/agent-services/src/AgentCore.cs',
+    'apps/agent-services/src/ModelProviders.cs',
+    'apps/agent-services/src/LocalTaskIntake.cs',
+    'apps/agent-services/src/LocalModelProvider.cs',
+    'apps/agent-services/src/OllamaLoopbackTransport.cs',
+    'apps/agent-services/src/ProjectReadOnlyPlatform.cs',
+    'apps/agent-services/src/ProjectContext.cs',
+    'apps/agent-services/src/ProjectKnowledge.cs',
+    'apps/agent-services/src/ProjectQa.cs',
+    'apps/agent-services/src/ProjectQaHost.cs',
+    'apps/agent-services/src/LocalOperator.cs',
+    'apps/agent-services/src/LocalOperatorHost.cs',
+    'apps/agent-services/tests/LocalOperatorHarness.cs',
+    'apps/agent-services/build/Invoke-Gate25UnsignedRelease.ps1'
+)
+$profileOperatorInputs = @($profile.localOperator.boundRepositoryInputs)
+if ($profileOperatorInputs.Count -ne 28 -or ((@($profileOperatorInputs | ForEach-Object { [string]$_.file })) -join "`n") -cne ($localOperatorBoundPaths -join "`n")) {
+    throw 'Local Operator profile must bind the exact ordered 28 inputs.'
+}
+$localOperatorInputsBound = $true
+$localOperatorRepositoryEvidence = @()
+foreach ($relativePath in $localOperatorBoundPaths) {
+    $candidatePath = [System.IO.Path]::GetFullPath((Join-Path $repositoryRoot $relativePath))
+    if (-not (Test-Path -LiteralPath $candidatePath -PathType Leaf)) { throw "Local Operator bound input missing: $relativePath" }
+    $actualHash = Get-Sha256 -LiteralPath $candidatePath
+    $expected = $profileOperatorInputs | Where-Object { [string]$_.file -ceq $relativePath } | Select-Object -First 1
+    if ($null -eq $expected -or [string]$expected.sha256 -cne $actualHash) { $localOperatorInputsBound = $false }
+    if (-not $LocalOperatorDiscovery -and -not $DevelopmentProbe -and ($null -eq $expected -or [string]$expected.sha256 -cne $actualHash)) {
+        throw "Local Operator bound input hash mismatch: $relativePath"
+    }
+    $item = Get-Item -LiteralPath $candidatePath
+    $localOperatorRepositoryEvidence += [ordered]@{ file=$relativePath; bytes=$item.Length; sha256=$actualHash }
 }
 
 $expectedCandidateRepositoryPaths = @(
@@ -1903,6 +2041,17 @@ $projectKnowledgeHarnessSourceText = Get-Content -Raw -LiteralPath $projectKnowl
 $projectQaSourceText = Get-Content -Raw -LiteralPath $projectQaSourcePath
 $projectQaHostSourceText = Get-Content -Raw -LiteralPath $projectQaHostSourcePath
 $projectQaHarnessSourceText = Get-Content -Raw -LiteralPath $projectQaHarnessSourcePath
+$localOperatorSourceText = Get-Content -Raw -LiteralPath $localOperatorSourcePath
+$localOperatorHostSourceText = Get-Content -Raw -LiteralPath $localOperatorHostSourcePath
+$localOperatorHarnessSourceText = Get-Content -Raw -LiteralPath $localOperatorHarnessSourcePath
+if ($localOperatorSourceText.IndexOf('using System.IO;', [StringComparison]::Ordinal) -ge 0 -or
+    ([regex]::Matches($localOperatorHostSourceText, '(?m)^using System\.IO;$')).Count -ne 1 -or
+    ([regex]::Matches($localOperatorHostSourceText, 'Console\.OpenStandardOutput\(\)')).Count -ne 1 -or
+    ([regex]::Matches($localOperatorHostSourceText, '\.Write\(bytes, 0, bytes\.Length\)')).Count -ne 1 -or
+    $localOperatorHostSourceText.IndexOf('.Flush(', [StringComparison]::Ordinal) -ge 0 -or
+    $localOperatorHostSourceText.IndexOf('.Dispose(', [StringComparison]::Ordinal) -ge 0) {
+    throw 'Local Operator stdout-only source policy mismatch.'
+}
 $projectContextHarnessSourceText = Get-Content -Raw -LiteralPath $projectContextHarnessSourcePath
 $taskIntakeHarnessSourceText = Get-Content -Raw -LiteralPath $taskIntakeHarnessSourcePath
 $expectedKnowledgeSources = @('src/ContractCodec.cs','src/ProjectReadOnlyPlatform.cs','src/ProjectKnowledge.cs','src/ProjectKnowledgeHost.cs')
@@ -2105,11 +2254,15 @@ $harnessSourceHash = Get-Sha256 -LiteralPath $harnessSourcePath
 $taskIntakeHarnessSourceHash = Get-Sha256 -LiteralPath $taskIntakeHarnessSourcePath
 $localProviderHarnessSourceHash = Get-Sha256 -LiteralPath $localProviderHarnessSourcePath
 $projectContextHarnessSourceHash = Get-Sha256 -LiteralPath $projectContextHarnessSourcePath
+$localOperatorSourceHash = Get-Sha256 -LiteralPath $localOperatorSourcePath
+$localOperatorHostSourceHash = Get-Sha256 -LiteralPath $localOperatorHostSourcePath
+$localOperatorHarnessSourceHash = Get-Sha256 -LiteralPath $localOperatorHarnessSourcePath
 $allBuildEvidence = @()
 $seamNegativeSpecimenEvidence = @()
 $nativeNegativeSpecimenEvidence = @()
 $knowledgeNegativeSpecimenEvidence = @()
 $qaNegativeSpecimenEvidence = @()
+$localOperatorNegativeSpecimenEvidence = @()
 
 for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
     $buildRoot = $buildRoots[$buildIndex]
@@ -3228,6 +3381,91 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         }
     }
 
+    $localOperatorHarnessOutputPath = Join-Path $buildRoot ([string]$profile.localOperator.outputHarness)
+    $localOperatorHarnessArguments = @('/nologo','/noconfig','/target:exe','/platform:x64','/optimize+','/debug-','/checked+','/highentropyva+','/warn:4','/warnaserror+','/nostdlib+',('/define:' + [string]$profile.localOperator.testSeamSymbols),"/reference:$resolvedReferences\mscorlib.dll","/reference:$resolvedReferences\System.dll",'/main:EAIRA.AgentServices.Functional.LocalOperatorHarness',"/out:$localOperatorHarnessOutputPath")
+    if (-not $DevelopmentProbe) { $localOperatorHarnessArguments += '/deterministic+'; $localOperatorHarnessArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services" }
+    $localOperatorHarnessArguments += @($codecSourcePath,$coreSourcePath,$providerSourcePath,$taskIntakeSourcePath,$localProviderSourcePath,$projectReadOnlyPlatformSourcePath,$projectContextSourcePath,$projectKnowledgeSourcePath,$projectQaSourcePath,$localOperatorSourcePath,$localOperatorHarnessSourcePath)
+    $localOperatorHarnessCompilerOutput = @(& $resolvedCompiler @localOperatorHarnessArguments 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw "Local Operator harness compiler failed: $($localOperatorHarnessCompilerOutput -join [Environment]::NewLine)" }
+    Assert-NoForbiddenBinaryMetadata -LiteralPath $localOperatorHarnessOutputPath
+    Assert-SystemIoMemberReferencePolicy -LiteralPath $localOperatorHarnessOutputPath
+    $localOperatorHarnessMetadata = Assert-LocalOperatorMetadataPolicy -LiteralPath $localOperatorHarnessOutputPath -Policy $profile.localOperator -OutputKind 'Harness' -Discovery:$LocalOperatorDiscovery
+    $localOperatorHarnessTest = Invoke-ExactChannelTest -Executable $localOperatorHarnessOutputPath -Arguments @('--self-test')
+    try { $localOperatorHarnessJson = [Text.Encoding]::UTF8.GetString($localOperatorHarnessTest.stdoutBytes) | ConvertFrom-Json } catch { throw 'Local Operator harness output is not valid JSON.' }
+    $expectedLocalOperatorCases = @(
+        'CANON_TASK_MOCK','CANON_TASK_MOCK_CONTEXT','CANON_TASK_OLLAMA','CANON_TASK_OLLAMA_CONTEXT','CANON_KNOWLEDGE','CANON_PROJECT_QA',
+        'INVALID_NULL_ARGV','INVALID_EMPTY_ARGV','INVALID_UNKNOWN_CAPABILITY','INVALID_CAPABILITY_CASE','INVALID_MISSING_FLAG','INVALID_EXTRA_FLAG','INVALID_DUPLICATE_FLAG','INVALID_REORDERED_FLAG','INVALID_CROSS_ROUTE_FLAG','INVALID_RESPONSE_FILE','INVALID_PROVIDER_REAL','INVALID_PROVIDER_URI','INVALID_MODEL_CASE','INVALID_TRACE_LENGTH','INVALID_TRACE_LOWER','INVALID_GOAL_EMPTY','INVALID_QUERY_EMPTY','INVALID_QUESTION_EMPTY','INVALID_ROOT_LEXICAL',
+        'DENY_TASK_ZERO_FACTORIES','DENY_KNOWLEDGE_ZERO_FACTORIES','DENY_PROJECT_QA_ZERO_FACTORIES','ALLOW_TASK_FACTORY_ONCE','ALLOW_KNOWLEDGE_FACTORY_ONCE','ALLOW_PROJECT_QA_FACTORY_ONCE',
+        'CHAIN_ALLOW_FIVE_ROLES','CHAIN_DENY_THREE_ROLES','CHAIN_DENY_NO_OPERATIONS','CHAIN_DENY_NO_VERIFICATION','TAMPER_REQUEST_DIGEST','TAMPER_ROUTE_DIGEST','TAMPER_PREVIOUS_DIGEST','TAMPER_EVIDENCE_DIGEST','TAMPER_PAYLOAD_DIGEST','TAMPER_AUDIT_DIGEST','KNOWLEDGE_ZERO_PROVIDER','QA_TAGS_CHAT_TAGS_EXACT','QA_FAILURE_PRE_TAGS','QA_FAILURE_CHAT','QA_FAILURE_POST_TAGS','TASK_MOCK_CALL_BUDGET','TASK_OLLAMA_CALL_BUDGET',
+        'SENTINEL_RAW_ROOT','SENTINEL_RAW_INPUT','SENTINEL_RAW_CONTENT','SENTINEL_RAW_PROMPT','SENTINEL_REQUEST_BODY','SENTINEL_PROVIDER_RESPONSE','SENTINEL_PER_FILE_DIGEST','PROVIDER_TOOL_CALL','PROVIDER_IMAGE','PROVIDER_THINKING','PROVIDER_UNKNOWN_MEMBER','SEQUENCE_TASK_KNOWLEDGE_QA','SEQUENCE_QA_KNOWLEDGE_TASK',
+        'PAYLOAD_16382','PAYLOAD_16383','PAYLOAD_16384_REJECT','LINE_16969','LINE_16970','LINE_16971_REJECT','CHANNEL_SINGLE_WRITE_LF','CHANNEL_EMPTY_STDERR','CHANNEL_NO_PARTIAL_FAILURE','REPLAY_TRACE_CORRELATION_ONLY','LEGACY_QA_COMPATIBILITY',
+        'CROSSWALK_TASK_INVALID','CROSSWALK_TASK_PROVIDER_ERROR','CROSSWALK_TASK_CONTEXT_ERROR','CROSSWALK_KNOWLEDGE_DENIED','CROSSWALK_KNOWLEDGE_INVALID','CROSSWALK_KNOWLEDGE_ERROR','CROSSWALK_QA_DENIED','CROSSWALK_QA_INVALID','CROSSWALK_QA_PROVIDER_ERROR','CROSSWALK_QA_CONTEXT_ERROR','CROSSWALK_QA_KNOWLEDGE_ERROR','CROSSWALK_QA_VALIDATION_ERROR','CROSSWALK_ORCHESTRATION_ERROR','CROSSWALK_OUTPUT_ERROR','INVALID_STDIN_TOKEN','INVALID_ENV_TOKEN','INVALID_CONFIG_TOKEN','QA_FAILURE_SNAPSHOT_FACTORY','QA_FAILURE_SNAPSHOT_READ_CONTEXT','QA_FAILURE_SNAPSHOT_READ_KNOWLEDGE','QA_FAILURE_PROMPT_BUILD','QA_FAILURE_BODY_BUILD','QA_FAILURE_PROVIDER_FACTORY','QA_FAILURE_DECODE'
+    )
+    $actualLocalOperatorCases = @($localOperatorHarnessJson.caseNames | ForEach-Object { [string]$_ })
+    $operatorFrameText = 'EAIRA_M5_SLICE1_CASE_NAMES_V1' + [char]0
+    foreach ($name in $actualLocalOperatorCases) { $operatorFrameText += $name.Length.ToString([Globalization.CultureInfo]::InvariantCulture) + ':' + $name }
+    $operatorFrameBytes = [Text.Encoding]::UTF8.GetBytes($operatorFrameText)
+    $operatorFrameSha256 = Get-ByteArraySha256 -Bytes $operatorFrameBytes
+    $localOperatorHarnessPass = $localOperatorHarnessTest.exitCode -eq 0 -and $localOperatorHarnessTest.stderrBytes.Length -eq 0 -and
+        [string]$localOperatorHarnessJson.schema -ceq 'EAIRA_LOCAL_OPERATOR_HARNESS_V1' -and [string]$localOperatorHarnessJson.status -ceq 'PASS' -and
+        [int]$localOperatorHarnessJson.testsPassed -eq 96 -and (($actualLocalOperatorCases -join "`n") -ceq ($expectedLocalOperatorCases -join "`n")) -and
+        $operatorFrameBytes.Length -eq 2409 -and $operatorFrameSha256 -ceq '0AAF52EE6A087B487B6497676F48BA7AD0D36CB987C149CC1BADAD9CA5D2FE68' -and
+        [int]$localOperatorHarnessJson.caseNameFramedBytes -eq $operatorFrameBytes.Length -and [string]$localOperatorHarnessJson.caseNameSha256 -ceq $operatorFrameSha256 -and
+        [int]$localOperatorHarnessJson.wrapperMaximumBytes -eq 587 -and [string]$localOperatorHarnessJson.network -ceq 'NONE' -and [string]$localOperatorHarnessJson.writes -ceq 'NONE'
+    if (-not $localOperatorHarnessPass) { throw 'Local Operator harness policy failed.' }
+    $localOperatorHarnessEvidence = [ordered]@{ file=(Get-Item -LiteralPath $localOperatorHarnessOutputPath).Name; bytes=(Get-Item -LiteralPath $localOperatorHarnessOutputPath).Length; sha256=Get-Sha256 -LiteralPath $localOperatorHarnessOutputPath; testsPassed=96; caseNames=$actualLocalOperatorCases; caseNameFramedBytes=$operatorFrameBytes.Length; caseNameSha256=$operatorFrameSha256; wrapperMaximumBytes=587; metadataInventory=$localOperatorHarnessMetadata; offlineTestsPass=$true }
+
+    $localOperatorOutputPath = Join-Path $buildRoot ([string]$profile.localOperator.output)
+    $localOperatorArguments = @('/nologo','/noconfig','/target:exe','/platform:x64','/optimize+','/debug-','/checked+','/highentropyva+','/warn:4','/warnaserror+','/nostdlib+',('/define:' + [string]$profile.localOperator.nativeSymbols),"/reference:$resolvedReferences\mscorlib.dll","/reference:$resolvedReferences\System.dll","/reference:$resolvedReferences\System.Net.Http.dll",'/main:EAIRA.AgentServices.Functional.LocalOperatorHost',"/out:$localOperatorOutputPath")
+    if (-not $DevelopmentProbe) { $localOperatorArguments += '/deterministic+'; $localOperatorArguments += "/pathmap:$componentRoot=/_/EAIRA/apps/agent-services" }
+    $localOperatorArguments += @($codecSourcePath,$coreSourcePath,$providerSourcePath,$taskIntakeSourcePath,$localProviderSourcePath,$loopbackTransportSourcePath,$projectReadOnlyPlatformSourcePath,$projectContextSourcePath,$projectKnowledgeSourcePath,$projectQaSourcePath,$localOperatorSourcePath,$localOperatorHostSourcePath)
+    $localOperatorCompilerOutput = @(& $resolvedCompiler @localOperatorArguments 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw "Local Operator CLI compiler failed: $($localOperatorCompilerOutput -join [Environment]::NewLine)" }
+    Assert-NoForbiddenBinaryMetadata -LiteralPath $localOperatorOutputPath -AllowLoopbackHttp -AllowProjectContextPInvoke
+    $operatorIoReferences = @(Get-SystemIoMemberReferences -LiteralPath $localOperatorOutputPath)
+    $expectedOperatorIoReferences = @('System.IO.Stream::get_CanRead','System.IO.Stream::ReadAsync','System.IO.Stream::Write')
+    if (($operatorIoReferences -join "`n") -cne ($expectedOperatorIoReferences -join "`n")) { throw "Local Operator System.IO union policy mismatch: $($operatorIoReferences -join ', ')" }
+    $localOperatorPInvokeMetadata = Assert-ProjectContextPInvokePolicy -LiteralPath $localOperatorOutputPath -Policy $profile.projectContext -OutputKind 'LocalOperatorCli' -Discovery:$LocalOperatorDiscovery
+    $localOperatorCallerEvidence = Assert-ProjectContextPInvokeCallerPolicy -LiteralPath $localOperatorOutputPath -Policy $profile.projectContext -OutputKind 'LocalOperatorCli' -Discovery:$LocalOperatorDiscovery
+    $localOperatorNativeSemantic = Get-NormalizedNativeSemanticInventory -PInvokeMetadata $localOperatorPInvokeMetadata -CallerEvidence $localOperatorCallerEvidence
+    $localOperatorLoopbackMetadata = Get-LoopbackMetadataReferences -LiteralPath $localOperatorOutputPath
+    if (-not $LocalOperatorDiscovery) { Assert-LoopbackMetadataPolicy -LiteralPath $localOperatorOutputPath -Policy $profile.localOperator.loopbackMetadataAllowlist -DevelopmentProbe:$DevelopmentProbe }
+    $localOperatorMetadata = Assert-LocalOperatorMetadataPolicy -LiteralPath $localOperatorOutputPath -Policy $profile.localOperator -OutputKind 'Cli' -Discovery:$LocalOperatorDiscovery
+
+    $operatorInvalid = Invoke-ExactChannelTest -Executable $localOperatorOutputPath -Arguments @()
+    $operatorDenied = Invoke-ExactChannelTest -Executable $localOperatorOutputPath -Arguments @('task','--provider','mock','--trace','00112233445566778899AABBCCDDEEFF','--goal','write file')
+    $operatorMock = Invoke-ExactChannelTest -Executable $localOperatorOutputPath -Arguments @('task','--provider','mock','--trace','00112233445566778899AABBCCDDEEFF','--goal','plan')
+    try { $operatorInvalidJson=[Text.Encoding]::UTF8.GetString($operatorInvalid.stdoutBytes)|ConvertFrom-Json; $operatorDeniedJson=[Text.Encoding]::UTF8.GetString($operatorDenied.stdoutBytes)|ConvertFrom-Json; $operatorMockJson=[Text.Encoding]::UTF8.GetString($operatorMock.stdoutBytes)|ConvertFrom-Json } catch { throw 'Local Operator CLI output is not valid JSON.' }
+    $operatorChannels = [ordered]@{
+        invalid=[ordered]@{exitCode=$operatorInvalid.exitCode;stdoutBytes=$operatorInvalid.stdoutBytes.Length;stdoutSha256=$operatorInvalid.stdoutSha256;stderrBytes=$operatorInvalid.stderrBytes.Length}
+        denied=[ordered]@{exitCode=$operatorDenied.exitCode;stdoutBytes=$operatorDenied.stdoutBytes.Length;stdoutSha256=$operatorDenied.stdoutSha256;stderrBytes=$operatorDenied.stderrBytes.Length}
+        mock=[ordered]@{exitCode=$operatorMock.exitCode;stdoutBytes=$operatorMock.stdoutBytes.Length;stdoutSha256=$operatorMock.stdoutSha256;stderrBytes=$operatorMock.stderrBytes.Length}
+    }
+    $channelShapePass = $true
+    foreach ($channel in @($operatorInvalid,$operatorDenied,$operatorMock)) {
+        $lfCount=@($channel.stdoutBytes|Where-Object{$_ -eq 10}).Count; $crCount=@($channel.stdoutBytes|Where-Object{$_ -eq 13}).Count
+        if ($channel.stderrBytes.Length -ne 0 -or $channel.stdoutBytes.Length -eq 0 -or $channel.stdoutBytes[$channel.stdoutBytes.Length-1] -ne 10 -or $lfCount -ne 1 -or $crCount -ne 0 -or $channel.stdoutBytes.Length -gt 16970) { $channelShapePass=$false }
+    }
+    $operatorChannelSemanticPass = $channelShapePass -and $operatorInvalid.exitCode -eq 64 -and [string]$operatorInvalidJson.status -ceq 'INVALID_REQUEST' -and $null -eq $operatorInvalidJson.audit -and
+        $operatorDenied.exitCode -eq 77 -and [string]$operatorDeniedJson.status -ceq 'DENIED' -and $null -eq $operatorDeniedJson.payload -and [string]$operatorDeniedJson.network -ceq 'NONE' -and $null -ne $operatorDeniedJson.audit -and
+        $operatorMock.exitCode -eq 0 -and [string]$operatorMockJson.status -ceq 'PASS' -and [string]$operatorMockJson.capability -ceq 'TASK' -and [string]$operatorMockJson.network -ceq 'NONE' -and $null -ne $operatorMockJson.payload -and ((@($operatorMockJson.payload.PSObject.Properties.Name)) -join ',') -ceq 'schemaVersion,status,provider,traceId,outcome,network,writes,result' -and [int]$operatorMockJson.payload.schemaVersion -eq 1 -and [string]$operatorMockJson.payload.status -ceq 'PASS' -and [string]$operatorMockJson.payload.provider -ceq 'mock-v1' -and [string]$operatorMockJson.payload.traceId -ceq '00112233445566778899AABBCCDDEEFF' -and [string]$operatorMockJson.payload.outcome -ceq 'PASS' -and [string]$operatorMockJson.payload.network -ceq 'NONE' -and [string]$operatorMockJson.payload.writes -ceq 'NONE' -and $null -ne $operatorMockJson.payload.result
+    $operatorChannelProfileMatch = $LocalOperatorDiscovery -or (($operatorChannels|ConvertTo-Json -Depth 5 -Compress) -ceq ($profile.localOperator.channelMatrix|ConvertTo-Json -Depth 5 -Compress))
+    if (-not $operatorChannelSemanticPass -or -not $operatorChannelProfileMatch) { throw 'Local Operator CLI channel matrix failed.' }
+    $localOperatorEvidence = [ordered]@{ file=(Get-Item -LiteralPath $localOperatorOutputPath).Name; bytes=(Get-Item -LiteralPath $localOperatorOutputPath).Length; sha256=Get-Sha256 -LiteralPath $localOperatorOutputPath; channels=$operatorChannels; channelMatrixPass=$true; channelMatrixProfileMatch=if($LocalOperatorDiscovery){$null}else{$true}; channelMatrixDiscoveryBypass=[bool]$LocalOperatorDiscovery; metadataInventory=$localOperatorMetadata; loopbackMetadataAllowlist=$localOperatorLoopbackMetadata; moduleRefs=@($localOperatorPInvokeMetadata.modules); pInvokeRows=@($localOperatorPInvokeMetadata.rows); approvedNativeCallerIl=@($localOperatorCallerEvidence.approvedCallerIl); normalizedNativeInventory=$localOperatorNativeSemantic; offlineTestsPass=$true }
+
+    if ($buildIndex -eq 0) {
+        $operatorSpecimenRoot = Join-Path $buildRoot 'local-operator-negative-specimens'; New-Item -ItemType Directory -Path $operatorSpecimenRoot | Out-Null
+        $operatorNegativeCases = [ordered]@{
+            CHILD_PROCESS = 'namespace EAIRA.AgentServices.Functional { internal static class BadChild { internal static object Run() { return new System.Diagnostics.ProcessStartInfo("cmd.exe"); } } }'
+            WRITE_REFERENCE = 'namespace EAIRA.AgentServices.Functional { internal static class BadWrite { internal static void Run() { System.IO.File.WriteAllText("x","y"); } } }'
+            IPC_REFERENCE = 'namespace EAIRA.AgentServices.Functional { internal static class BadIpc { internal static object Run() { return new System.Net.Sockets.TcpClient(); } } }'
+            DYNAMIC_LOAD = 'namespace EAIRA.AgentServices.Functional { internal static class BadDynamic { internal static object Run() { return System.Activator.CreateInstance(typeof(System.Text.StringBuilder)); } } }'
+            RAW_OUTPUT = 'namespace EAIRA.AgentServices.Functional { internal static class BadRaw { internal static string Run(string rawProviderResponse) { return rawProviderResponse; } } }'
+            UNAPPROVED_PROVIDER_METADATA = 'namespace EAIRA.AgentServices.Functional { internal static class BadProvider { internal static object Run() { return new System.Uri("https://example.com"); } } }'
+        }
+        foreach ($entry in $operatorNegativeCases.GetEnumerator()) { $localOperatorNegativeSpecimenEvidence += Invoke-LocalOperatorNegativeSpecimen -Name ([string]$entry.Key) -CompilerPath $resolvedCompiler -CompilerArguments $localOperatorArguments -SourceText ([string]$entry.Value) -SpecimenRoot $operatorSpecimenRoot -BaselineMetadata $localOperatorMetadata }
+    }
+
     $allBuildEvidence += [ordered]@{
         build = if ($buildIndex -eq 0) { 'A' } else { 'B' }
         functionalHarness = $harnessEvidence
@@ -3237,6 +3475,8 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         projectKnowledgeCli = $projectKnowledgeEvidence
         projectQaHarness = $projectQaHarnessEvidence
         projectQaCli = $projectQaEvidence
+        localOperatorHarness = $localOperatorHarnessEvidence
+        localOperatorCli = $localOperatorEvidence
         localProviderHarness = $localProviderHarnessEvidence
         transportPolicyHarness = $transportPolicyHarnessEvidence
         taskIntakeCli = $taskIntakeEvidence
@@ -3265,6 +3505,12 @@ if ($allBuildEvidence[0].projectQaHarness.bytes -ne $allBuildEvidence[1].project
     $allBuildEvidence[0].projectQaHarness.sha256 -ne $allBuildEvidence[1].projectQaHarness.sha256 -or
     $allBuildEvidence[0].projectQaCli.bytes -ne $allBuildEvidence[1].projectQaCli.bytes -or
     $allBuildEvidence[0].projectQaCli.sha256 -ne $allBuildEvidence[1].projectQaCli.sha256) {
+    $reproducible = $false
+}
+if ($allBuildEvidence[0].localOperatorHarness.bytes -ne $allBuildEvidence[1].localOperatorHarness.bytes -or
+    $allBuildEvidence[0].localOperatorHarness.sha256 -ne $allBuildEvidence[1].localOperatorHarness.sha256 -or
+    $allBuildEvidence[0].localOperatorCli.bytes -ne $allBuildEvidence[1].localOperatorCli.bytes -or
+    $allBuildEvidence[0].localOperatorCli.sha256 -ne $allBuildEvidence[1].localOperatorCli.sha256) {
     $reproducible = $false
 }
 for ($index = 0; $index -lt @($profile.roles).Count; $index++) {
@@ -3303,6 +3549,11 @@ $qaNegativeSpecimensPass = $qaNegativeSpecimenEvidence.Count -eq $expectedQaSpec
     (($actualQaSpecimenNames -join "`n") -ceq ($expectedQaSpecimenNames -join "`n")) -and
     @($qaNegativeSpecimenEvidence | Where-Object { -not $_.verifierRejected -or $_.compileExitCode -ne 0 }).Count -eq 0 -and
     ($ProjectQaDiscovery -or ((@($profile.projectQa.specimenNames | ForEach-Object { [string]$_ }) -join "`n") -ceq ($expectedQaSpecimenNames -join "`n")))
+$expectedOperatorNegativeNames = @('CHILD_PROCESS','WRITE_REFERENCE','IPC_REFERENCE','DYNAMIC_LOAD','RAW_OUTPUT','UNAPPROVED_PROVIDER_METADATA')
+$actualOperatorNegativeNames = @($localOperatorNegativeSpecimenEvidence | ForEach-Object { [string]$_.name } | Sort-Object)
+$localOperatorNegativeSpecimensPass = $localOperatorNegativeSpecimenEvidence.Count -eq 6 -and
+    (($actualOperatorNegativeNames -join "`n") -ceq ((@($expectedOperatorNegativeNames | Sort-Object)) -join "`n")) -and
+    @($localOperatorNegativeSpecimenEvidence | Where-Object { -not $_.verifierRejected -or $_.compileExitCode -ne 0 }).Count -eq 0
 $expectedQaRequestCounters = [ordered]@{ tagsCalls=2; chatCalls=1; preflightDigestValidated=$true; postflightDigestValidated=$true }
 $expectedQaGoldenVectors = [ordered]@{
     questionDigest = [ordered]@{ bytes=5; sha256='5F8EAF0FD8B4EE2B0A0FEF54A8594C50143D7B3567AC7C1CF4F90BD8C19970A5' }
@@ -3416,11 +3667,21 @@ $projectQaProfileBound = (-not $ProjectQaDiscovery) -and (
     [string]$profile.projectQa.expectedHarnessSha256 -ceq [string]$allBuildEvidence[0].projectQaHarness.sha256
 )
 $projectQaProfileGatePass = $ProjectQaDiscovery -or $projectQaProfileBound
-$offlineTestsPass = $roleTestsPass -and $functionalTestsPass -and $projectContextTestsPass -and $taskIntakeTestsPass -and $projectKnowledgeTestsPass -and $projectKnowledgeProfileBound -and $projectQaTestsPass -and $projectQaProfileGatePass
+$localOperatorMetadataStable = (($allBuildEvidence[0].localOperatorCli.metadataInventory|ConvertTo-Json -Depth 8 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.metadataInventory|ConvertTo-Json -Depth 8 -Compress)) -and (($allBuildEvidence[0].localOperatorHarness.metadataInventory|ConvertTo-Json -Depth 8 -Compress) -ceq ($allBuildEvidence[1].localOperatorHarness.metadataInventory|ConvertTo-Json -Depth 8 -Compress))
+$localOperatorNativeStable = (($allBuildEvidence[0].localOperatorCli.normalizedNativeInventory|ConvertTo-Json -Depth 8 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.normalizedNativeInventory|ConvertTo-Json -Depth 8 -Compress))
+$localOperatorLoopbackStable = (($allBuildEvidence[0].localOperatorCli.loopbackMetadataAllowlist|ConvertTo-Json -Depth 8 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.loopbackMetadataAllowlist|ConvertTo-Json -Depth 8 -Compress))
+$localOperatorNativeProfileMatch = $LocalOperatorDiscovery -or (($allBuildEvidence[0].localOperatorCli.normalizedNativeInventory|ConvertTo-Json -Depth 8 -Compress) -ceq ($profile.localOperator.nativeCallerInventory|ConvertTo-Json -Depth 8 -Compress))
+$localOperatorTestsPass = @($allBuildEvidence|Where-Object{-not $_.localOperatorHarness.offlineTestsPass -or -not $_.localOperatorCli.offlineTestsPass}).Count -eq 0 -and $localOperatorMetadataStable -and $localOperatorNativeStable -and $localOperatorLoopbackStable -and $localOperatorNegativeSpecimensPass -and $localOperatorNativeProfileMatch
+$localOperatorProfileBound = (-not $LocalOperatorDiscovery) -and $localOperatorInputsBound -and
+    [int64]$profile.localOperator.cliMetadataInventory.image.count -eq [int64]$allBuildEvidence[0].localOperatorCli.bytes -and [string]$profile.localOperator.cliMetadataInventory.image.sha256 -ceq [string]$allBuildEvidence[0].localOperatorCli.sha256 -and
+    [int64]$profile.localOperator.harnessMetadataInventory.image.count -eq [int64]$allBuildEvidence[0].localOperatorHarness.bytes -and [string]$profile.localOperator.harnessMetadataInventory.image.sha256 -ceq [string]$allBuildEvidence[0].localOperatorHarness.sha256
+$localOperatorProfileGatePass = $LocalOperatorDiscovery -or $localOperatorProfileBound
+$offlineTestsPass = $roleTestsPass -and $functionalTestsPass -and $projectContextTestsPass -and $taskIntakeTestsPass -and $projectKnowledgeTestsPass -and $projectKnowledgeProfileBound -and $projectQaTestsPass -and $projectQaProfileGatePass -and $localOperatorTestsPass -and $localOperatorProfileGatePass
 $m4TechnicalChecksPass = -not $DevelopmentProbe -and $compilerPolicyPass -and $supportsDeterministic -and $supportsPathMap -and $reproducible -and $offlineTestsPass
+$finalEvidence = -not $DevelopmentProbe -and -not $ProjectKnowledgeDiscovery -and -not $ProjectQaDiscovery -and -not $LocalOperatorDiscovery -and -not [String]::IsNullOrEmpty($ExpectedReleaseProfileSha256) -and $m4TechnicalChecksPass
 $releaseOutputs = @()
 
-if ($m4TechnicalChecksPass) {
+if ($finalEvidence) {
     $releaseRoot = Join-Path $resolvedOutput 'unsigned-release'
     New-Item -ItemType Directory -Path $releaseRoot | Out-Null
     foreach ($role in @($profile.roles)) {
@@ -3458,6 +3719,9 @@ if ($m4TechnicalChecksPass) {
         sha256 = Get-Sha256 -LiteralPath $projectQaReleasePath
         authenticode = (Get-AuthenticodeSignature -LiteralPath $projectQaReleasePath).Status.ToString()
     }
+    $localOperatorReleasePath = Join-Path $releaseRoot ([string]$profile.localOperator.output)
+    Copy-Item -LiteralPath (Join-Path $buildRoots[0] ([string]$profile.localOperator.output)) -Destination $localOperatorReleasePath
+    $releaseOutputs += [ordered]@{ file=[string]$profile.localOperator.output; bytes=(Get-Item -LiteralPath $localOperatorReleasePath).Length; sha256=Get-Sha256 -LiteralPath $localOperatorReleasePath; authenticode=(Get-AuthenticodeSignature -LiteralPath $localOperatorReleasePath).Status.ToString() }
 }
 
 $candidateRepositoryEvidence = @()
@@ -3484,9 +3748,9 @@ $compilerItem = Get-Item -LiteralPath $resolvedCompiler
 $manifest = [ordered]@{
     schemaVersion = 1
     generatedUtc = [DateTime]::UtcNow.ToString('o')
-    classification = if ($DevelopmentProbe) { 'DEVELOPMENT_PROBE_ONLY' } elseif ($ProjectQaDiscovery) { 'M4_SLICE_5_PROJECT_QA_DISCOVERY' } elseif ($ProjectKnowledgeDiscovery) { 'M4_SLICE_4_PROJECT_KNOWLEDGE_DISCOVERY' } else { 'M4_FUNCTIONAL_AGENT_MVP_SLICE_5_UNSIGNED_CANDIDATE' }
-    status = if ($m4TechnicalChecksPass) { 'M4_SLICE_5_UNSIGNED_TECHNICAL_CHECKS_PASS' } elseif ($DevelopmentProbe -and -not $reproducible) { 'BLOCKED_NONDETERMINISTIC_COMPILER' } else { 'FAIL_CLOSED' }
-    finalEvidence = [bool](-not $DevelopmentProbe -and -not $ProjectKnowledgeDiscovery -and -not $ProjectQaDiscovery -and $m4TechnicalChecksPass)
+    classification = if ($DevelopmentProbe) { 'DEVELOPMENT_PROBE_ONLY' } elseif ($LocalOperatorDiscovery) { 'M5_SLICE1_LOCAL_OPERATOR_DISCOVERY' } elseif ($ProjectQaDiscovery) { 'M4_SLICE_5_PROJECT_QA_DISCOVERY' } elseif ($ProjectKnowledgeDiscovery) { 'M4_SLICE_4_PROJECT_KNOWLEDGE_DISCOVERY' } else { 'M5_SLICE1_LOCAL_OPERATOR_UNSIGNED_CANDIDATE' }
+    status = if ($m4TechnicalChecksPass) { 'M5_SLICE1_UNSIGNED_TECHNICAL_CHECKS_PASS' } elseif ($DevelopmentProbe -and -not $reproducible) { 'BLOCKED_NONDETERMINISTIC_COMPILER' } else { 'FAIL_CLOSED' }
+    finalEvidence = [bool]$finalEvidence
     gate25Complete = $false
     externalSigningEligible = $false
     signatureOnlyBlocked = $false
@@ -3535,6 +3799,14 @@ $manifest = [ordered]@{
         projectQaHostSha256 = $projectQaHostSourceHash
         projectQaHarnessFile = 'tests/ProjectQaHarness.cs'
         projectQaHarnessSha256 = $projectQaHarnessSourceHash
+        localOperatorContractFile = 'contracts/EAIRA_LOCAL_OPERATOR_V1.md'
+        localOperatorContractSha256 = Get-Sha256 -LiteralPath $localOperatorContractPath
+        localOperatorFile = 'src/LocalOperator.cs'
+        localOperatorSha256 = $localOperatorSourceHash
+        localOperatorHostFile = 'src/LocalOperatorHost.cs'
+        localOperatorHostSha256 = $localOperatorHostSourceHash
+        localOperatorHarnessFile = 'tests/LocalOperatorHarness.cs'
+        localOperatorHarnessSha256 = $localOperatorHarnessSourceHash
         harnessFile = 'tests/AgentCoreHarness.cs'
         harnessSha256 = $harnessSourceHash
         taskIntakeHarnessFile = 'tests/LocalTaskIntakeHarness.cs'
@@ -3548,6 +3820,7 @@ $manifest = [ordered]@{
     candidateRepositoryInputs = $candidateRepositoryEvidence
     slice4RepositoryInputs = $slice4RepositoryEvidence
     slice5RepositoryInputs = $slice5RepositoryEvidence
+    localOperatorRepositoryInputs = $localOperatorRepositoryEvidence
     compiler = [ordered]@{
         file = $compilerItem.Name
         bytes = $compilerItem.Length
@@ -3694,6 +3967,41 @@ $manifest = [ordered]@{
         network = 'OFFLINE_NONE_LIVE_LOOPBACK_ONLY'
         writes = 'NONE'
     }
+    localOperator = [ordered]@{
+        contract = 'EAIRA_LOCAL_OPERATOR_V1'
+        discovery = [bool]$LocalOperatorDiscovery
+        profileBound = [bool]$localOperatorProfileBound
+        expectedReleaseProfileSha256 = if ($DevelopmentProbe -or $ProjectKnowledgeDiscovery -or $ProjectQaDiscovery -or $LocalOperatorDiscovery) { $null } else { $ExpectedReleaseProfileSha256 }
+        actualReleaseProfileSha256 = $releaseProfileSha256
+        boundRepositoryInputCount = [int]$profileOperatorInputs.Count
+        boundRepositoryInputsMatch = [bool]$localOperatorInputsBound
+        harnessTestsPassed = [int]$allBuildEvidence[0].localOperatorHarness.testsPassed
+        harnessCaseNames = $allBuildEvidence[0].localOperatorHarness.caseNames
+        harnessCaseNameFramedBytes = [int]$allBuildEvidence[0].localOperatorHarness.caseNameFramedBytes
+        harnessCaseNameSha256 = [string]$allBuildEvidence[0].localOperatorHarness.caseNameSha256
+        wrapperMaximumBytes = [int]$allBuildEvidence[0].localOperatorHarness.wrapperMaximumBytes
+        cleanBuildHarnessReproducible = [bool]($allBuildEvidence[0].localOperatorHarness.sha256 -ceq $allBuildEvidence[1].localOperatorHarness.sha256)
+        cleanBuildCliReproducible = [bool]($allBuildEvidence[0].localOperatorCli.sha256 -ceq $allBuildEvidence[1].localOperatorCli.sha256)
+        cliBytes = [int64]$allBuildEvidence[0].localOperatorCli.bytes
+        cliSha256 = [string]$allBuildEvidence[0].localOperatorCli.sha256
+        harnessBytes = [int64]$allBuildEvidence[0].localOperatorHarness.bytes
+        harnessSha256 = [string]$allBuildEvidence[0].localOperatorHarness.sha256
+        cliMetadataInventory = $allBuildEvidence[0].localOperatorCli.metadataInventory
+        harnessMetadataInventory = $allBuildEvidence[0].localOperatorHarness.metadataInventory
+        metadataStableAcrossBuilds = [bool]$localOperatorMetadataStable
+        normalizedNativeInventory = $allBuildEvidence[0].localOperatorCli.normalizedNativeInventory
+        normalizedNativeStableAcrossBuilds = [bool]$localOperatorNativeStable
+        normalizedNativeProfileMatch = if($LocalOperatorDiscovery){$null}else{[bool]$localOperatorNativeProfileMatch}
+        loopbackMetadataAllowlist = $allBuildEvidence[0].localOperatorCli.loopbackMetadataAllowlist
+        loopbackMetadataStableAcrossBuilds = [bool]$localOperatorLoopbackStable
+        channels = $allBuildEvidence[0].localOperatorCli.channels
+        channelMatrixPass = [bool]$allBuildEvidence[0].localOperatorCli.channelMatrixPass
+        negativeSpecimensPass = [bool]$localOperatorNegativeSpecimensPass
+        negativeSpecimens = $localOperatorNegativeSpecimenEvidence
+        testsPass = [bool]$localOperatorTestsPass
+        network = 'OFFLINE_NONE_LIVE_LOOPBACK_ONLY'
+        writes = 'NONE'
+    }
     localModelProvider = [ordered]@{
         contract = 'EAIRA_LOCAL_MODEL_PROVIDER_V1'
         providerId = [string]$profile.localModelProvider.providerId
@@ -3740,6 +4048,7 @@ Write-Output ("FUNCTIONAL_SLICE_TESTS_PASS=" + $functionalTestsPass.ToString().T
 Write-Output ("TASK_INTAKE_TESTS_PASS=" + $taskIntakeTestsPass.ToString().ToUpperInvariant())
 Write-Output ("LOCAL_PROVIDER_FAKE_TESTS_PASS=" + $taskIntakeTestsPass.ToString().ToUpperInvariant())
 Write-Output ("PROJECT_QA_OFFLINE_TESTS_PASS=" + $projectQaTestsPass.ToString().ToUpperInvariant())
+Write-Output ("LOCAL_OPERATOR_OFFLINE_TESTS_PASS=" + $localOperatorTestsPass.ToString().ToUpperInvariant())
 Write-Output 'EXTERNAL_SIGNING_ELIGIBLE=FALSE'
 Write-Output 'SIGNATURE_ONLY_BLOCKED=FALSE'
 Write-Output ("MANIFEST_SHA256=" + $manifestHash)

@@ -60,16 +60,27 @@ namespace EAIRA.AgentServices.Functional
         private static readonly string[] ContextPaths = new string[] { "docs/project/status/CURRENT_STATUS.md", "docs/project/status/TODAY_OBJECTIVE.md", "docs/project/status/ACTIVE_TASK.yaml", "docs/project/status/AGENT_CONTEXT_VERSION.yaml" };
         private static readonly string[] KnowledgePaths = new string[] { "docs/project/memory/README.md", "docs/project/memory/DECISION_INDEX.md", "docs/project/memory/DISCOVERY_INDEX.md", "docs/project/memory/PROCEDURE_INDEX.md", "docs/project/memory/OPEN_QUESTIONS.md", "docs/project/memory/STABILITY_CHECKLIST.md", "docs/project/memory/MEMORY_SCHEMA.md" };
         private readonly IProjectContextReadOnlyPlatform platform;
+#if EAIRA_PROJECT_QA_TEST_SEAM
+        private readonly ProjectQaSnapshot fixture;
+        private readonly Exception fixtureError;
+#endif
         private ProjectQaSnapshotReader(IProjectContextReadOnlyPlatform value) { if (value == null) { throw new ProjectQaException(); } platform = value; }
 #if EAIRA_PROJECT_QA_NATIVE
         internal static ProjectQaSnapshotReader CreateNative() { return new ProjectQaSnapshotReader(new ProjectContextWin32Platform()); }
 #endif
 #if EAIRA_PROJECT_QA_TEST_SEAM
         internal static ProjectQaSnapshotReader CreateForTests(IProjectContextReadOnlyPlatform value) { return new ProjectQaSnapshotReader(value); }
+        private ProjectQaSnapshotReader(ProjectQaSnapshot value, Exception error) { fixture = value; fixtureError = error; }
+        internal static ProjectQaSnapshotReader CreateFixture(ProjectQaSnapshot value) { if (value == null) { throw new ProjectQaException(); } return new ProjectQaSnapshotReader(value, null); }
+        internal static ProjectQaSnapshotReader CreateFault(Exception error) { if (error == null) { throw new ProjectQaException(); } return new ProjectQaSnapshotReader(null, error); }
 #endif
 
         internal ProjectQaSnapshot Read(string root, string query)
         {
+#if EAIRA_PROJECT_QA_TEST_SEAM
+            if (fixtureError != null) { throw fixtureError; }
+            if (fixture != null) { return fixture; }
+#endif
             List<IPinnedAncestorHandle> ancestors = new List<IPinnedAncestorHandle>();
             List<IApprovedContentHandle> handles = new List<IApprovedContentHandle>();
             List<ProjectContextFileMetadata> metadata = new List<ProjectContextFileMetadata>();
@@ -275,6 +286,285 @@ namespace EAIRA.AgentServices.Functional
         }
         internal static void ValidateAnswerEncodedBytes(byte[] bytes) { if (bytes == null || bytes.Length > 2048) { throw new ProjectQaException(); } }
         private static int Rank(string id, int knowledgeCount) { if (id != null && id.Length == 3 && (id[0] == 'C' || id[0] == 'K') && id[1] >= '0' && id[1] <= '9' && id[2] >= '0' && id[2] <= '9') { int n = (id[1] - '0') * 10 + id[2] - '0'; if (id[0] == 'C' && n >= 1 && n <= 27) { return n - 1; } if (id[0] == 'K' && n >= 1 && n <= knowledgeCount) { return 27 + n - 1; } } throw new ProjectQaException(); }
+    }
+
+    internal enum ProjectQaExecutionStage
+    {
+        None = 0, Parsed = 1, GuardAllowed = 2, SnapshotFactoryCalled = 3, SnapshotReadCalled = 4,
+        SnapshotReady = 5, PromptReady = 6, BodyReady = 7, ProviderFactoryCalled = 8,
+        ProviderReady = 9, ProviderReturned = 10, AnswerDecoded = 11, OutputReady = 12
+    }
+
+    internal interface IProjectQaSnapshotReaderFactory { ProjectQaSnapshotReader Create(); }
+    internal interface IProjectQaExecutionObserver
+    {
+        ProjectQaExecutionStage LastStage { get; }
+        int TagsCalls { get; }
+        int ChatCalls { get; }
+        bool PreflightDigestValidated { get; }
+        bool PostflightDigestValidated { get; }
+        void Observe(ProjectQaExecutionStage stage, IProjectQaProvider provider);
+    }
+
+    internal sealed class ProjectQaExecutionObserver : IProjectQaExecutionObserver
+    {
+        public ProjectQaExecutionStage LastStage { get; private set; }
+        public int TagsCalls { get; private set; }
+        public int ChatCalls { get; private set; }
+        public bool PreflightDigestValidated { get; private set; }
+        public bool PostflightDigestValidated { get; private set; }
+        public void Observe(ProjectQaExecutionStage stage, IProjectQaProvider provider)
+        {
+            if ((int)stage < (int)LastStage || stage == ProjectQaExecutionStage.None) { throw new ProjectQaException(); }
+            LastStage = stage;
+            if (provider != null)
+            {
+                TagsCalls = provider.TagsCalls; ChatCalls = provider.ChatCalls;
+                PreflightDigestValidated = provider.PreflightDigestValidated; PostflightDigestValidated = provider.PostflightDigestValidated;
+            }
+        }
+    }
+
+    internal sealed class ProjectQaRunResult
+    {
+        private readonly byte[] completeLegacyLine;
+        internal int ExitCode { get; private set; }
+        internal string Status { get; private set; }
+        internal string Network { get; private set; }
+        internal string CanonicalSuccessObject { get; private set; }
+        internal byte[] CompleteLegacyLine { get { return (byte[])completeLegacyLine.Clone(); } }
+        internal int SnapshotFactoryCalls { get; private set; }
+        internal int SnapshotReadCalls { get; private set; }
+        internal int ProviderFactoryCalls { get; private set; }
+        internal int TagsCalls { get; private set; }
+        internal int ChatCalls { get; private set; }
+        internal bool PreflightDigestValidated { get; private set; }
+        internal bool PostflightDigestValidated { get; private set; }
+        internal string ContextAggregateSha256 { get; private set; }
+        internal string ContextProjectionSha256 { get; private set; }
+        internal string KnowledgeResultSetSha256 { get; private set; }
+        internal string PromptSha256 { get; private set; }
+        internal string AnswerSha256 { get; private set; }
+        internal int CitationCount { get; private set; }
+        internal ProjectQaExecutionStage LastStage { get; private set; }
+
+        internal ProjectQaRunResult(int exit, string status, string network, string success, string line,
+            int snapshotFactory, int snapshotRead, int providerFactory, IProjectQaProvider provider, ProjectQaExecutionStage lastStage,
+            string contextAggregate, string contextProjection, string knowledgeResultSet, string prompt, string answer, int citationCount)
+        {
+            if (line == null) { throw new ProjectQaException(); }
+            ExitCode = exit; Status = status; Network = network; CanonicalSuccessObject = success;
+            completeLegacyLine = new UTF8Encoding(false, true).GetBytes(line);
+            SnapshotFactoryCalls = snapshotFactory; SnapshotReadCalls = snapshotRead; ProviderFactoryCalls = providerFactory;
+            if (provider != null) { TagsCalls = provider.TagsCalls; ChatCalls = provider.ChatCalls; PreflightDigestValidated = provider.PreflightDigestValidated; PostflightDigestValidated = provider.PostflightDigestValidated; }
+            ContextAggregateSha256 = contextAggregate; ContextProjectionSha256 = contextProjection; KnowledgeResultSetSha256 = knowledgeResultSet;
+            PromptSha256 = prompt; AnswerSha256 = answer; CitationCount = citationCount; LastStage = lastStage;
+            ValidateTuple();
+        }
+
+        private void ValidateTuple()
+        {
+            if (SnapshotFactoryCalls < 0 || SnapshotFactoryCalls > 1 || SnapshotReadCalls < 0 || SnapshotReadCalls > 1 || ProviderFactoryCalls < 0 || ProviderFactoryCalls > 1 ||
+                SnapshotReadCalls > SnapshotFactoryCalls || ProviderFactoryCalls > SnapshotReadCalls || TagsCalls < 0 || TagsCalls > 2 || ChatCalls < 0 || ChatCalls > 1) { throw new ProjectQaException(); }
+            int stage = (int)LastStage;
+            if ((stage >= 3) != (SnapshotFactoryCalls == 1) || (stage >= 4) != (SnapshotReadCalls == 1) || (stage >= 8) != (ProviderFactoryCalls == 1)) { throw new ProjectQaException(); }
+            if (ProviderFactoryCalls == 0 && (TagsCalls != 0 || ChatCalls != 0 || PreflightDigestValidated || PostflightDigestValidated)) { throw new ProjectQaException(); }
+            if (CanonicalSuccessObject != null)
+            {
+                if (ExitCode != 0 || Status != "PROJECT_QA_OK" || Network != "LOOPBACK_ONLY" || LastStage != ProjectQaExecutionStage.OutputReady ||
+                    TagsCalls != 2 || ChatCalls != 1 || !PreflightDigestValidated || !PostflightDigestValidated || CitationCount < 0 || CitationCount > 8 ||
+                    !String.Equals(new UTF8Encoding(false, true).GetString(completeLegacyLine), CanonicalSuccessObject + "\n", StringComparison.Ordinal)) { throw new ProjectQaException(); }
+                ContractCodec.RequireHash(ContextAggregateSha256, "QA context aggregate"); ContractCodec.RequireHash(ContextProjectionSha256, "QA context projection");
+                ContractCodec.RequireHash(KnowledgeResultSetSha256, "QA knowledge result set"); ContractCodec.RequireHash(PromptSha256, "QA prompt"); ContractCodec.RequireHash(AnswerSha256, "QA answer");
+                ValidateSuccessObject();
+            }
+            else
+            {
+                if (ContextAggregateSha256 != null || ContextProjectionSha256 != null || KnowledgeResultSetSha256 != null || PromptSha256 != null || AnswerSha256 != null || CitationCount != 0) { throw new ProjectQaException(); }
+                int expected = Status == "INVALID_REQUEST" ? 64 : Status == "DENIED" ? 77 : Status == "LOCAL_PROVIDER_ERROR" ? 79 : Status == "CONTEXT_ERROR" ? 80 : Status == "KNOWLEDGE_ERROR" ? 81 : Status == "PROJECT_QA_ERROR" ? 82 : -1;
+                if (ExitCode != expected || expected < 0 || (Network != "NONE" && Network != "LOOPBACK_ONLY") ||
+                    !String.Equals(new UTF8Encoding(false, true).GetString(completeLegacyLine), "{\"schema\":\"EAIRA_PROJECT_QA_ERROR_V1\",\"status\":" + ContractCodec.Json(Status) + ",\"network\":" + ContractCodec.Json(Network) + ",\"writes\":\"NONE\"}\n", StringComparison.Ordinal)) { throw new ProjectQaException(); }
+                if (Status == "INVALID_REQUEST" && !ExactTerminal(ProjectQaExecutionStage.None, "NONE", 0, 0, 0, 0, 0, false, false)) { throw new ProjectQaException(); }
+                if (Status == "DENIED" && (Network != "NONE" || LastStage != ProjectQaExecutionStage.Parsed || SnapshotFactoryCalls != 0 || SnapshotReadCalls != 0 || ProviderFactoryCalls != 0)) { throw new ProjectQaException(); }
+                if ((Status == "CONTEXT_ERROR" || Status == "KNOWLEDGE_ERROR") && !ExactTerminal(ProjectQaExecutionStage.SnapshotReadCalled, "NONE", 1, 1, 0, 0, 0, false, false)) { throw new ProjectQaException(); }
+                if (Status == "PROJECT_QA_ERROR")
+                {
+                    bool beforeProvider = ExactTerminal(ProjectQaExecutionStage.SnapshotReady, "NONE", 1, 1, 0, 0, 0, false, false) ||
+                        ExactTerminal(ProjectQaExecutionStage.PromptReady, "NONE", 1, 1, 0, 0, 0, false, false);
+                    bool afterProvider = ExactTerminal(ProjectQaExecutionStage.ProviderFactoryCalled, "LOOPBACK_ONLY", 1, 1, 1, 0, 0, false, false) ||
+                        ExactTerminal(ProjectQaExecutionStage.ProviderReady, "LOOPBACK_ONLY", 1, 1, 1, 0, 0, false, false) ||
+                        ExactTerminal(ProjectQaExecutionStage.ProviderReturned, "LOOPBACK_ONLY", 1, 1, 1, 2, 1, true, true) ||
+                        ExactTerminal(ProjectQaExecutionStage.AnswerDecoded, "LOOPBACK_ONLY", 1, 1, 1, 2, 1, true, true);
+                    if (!beforeProvider && !afterProvider) { throw new ProjectQaException(); }
+                }
+                if (Status == "LOCAL_PROVIDER_ERROR")
+                {
+                    bool factoryFailure = ExactTerminal(ProjectQaExecutionStage.ProviderFactoryCalled, "LOOPBACK_ONLY", 1, 1, 1, 0, 0, false, false);
+                    bool preflightFailure = ExactTerminal(ProjectQaExecutionStage.ProviderReady, "LOOPBACK_ONLY", 1, 1, 1, 1, 0, false, false);
+                    bool chatFailure = ExactTerminal(ProjectQaExecutionStage.ProviderReady, "LOOPBACK_ONLY", 1, 1, 1, 1, 1, true, false);
+                    bool postflightFailure = ExactTerminal(ProjectQaExecutionStage.ProviderReady, "LOOPBACK_ONLY", 1, 1, 1, 2, 1, true, false);
+                    if (!factoryFailure && !preflightFailure && !chatFailure && !postflightFailure) { throw new ProjectQaException(); }
+                }
+            }
+        }
+        private bool ExactTerminal(ProjectQaExecutionStage stage, string network, int snapshotFactory, int snapshotRead, int providerFactory, int tags, int chat, bool preflight, bool postflight)
+        {
+            return LastStage == stage && Network == network && SnapshotFactoryCalls == snapshotFactory && SnapshotReadCalls == snapshotRead &&
+                ProviderFactoryCalls == providerFactory && TagsCalls == tags && ChatCalls == chat && PreflightDigestValidated == preflight && PostflightDigestValidated == postflight;
+        }
+        private void ValidateSuccessObject()
+        {
+            StrictJsonNode root;
+            try { root = StrictJsonParser.Parse(new UTF8Encoding(false, true).GetBytes(CanonicalSuccessObject)); }
+            catch (Exception) { throw new ProjectQaException(); }
+            if (root.Kind != "object" || root.ObjectValue.Count != 17) { throw new ProjectQaException(); }
+            RequireString(root, "schema", "EAIRA_PROJECT_QA_V1"); RequireString(root, "status", "PROJECT_QA_OK");
+            StrictJsonNode trace = RequireKind(root, "traceId", "string"); RequireUpperHex(trace.StringValue, 32); RequireHashMember(root, "questionSha256", true);
+            RequireString(root, "contextAggregateSha256", ContextAggregateSha256); RequireString(root, "contextProjectionSha256", ContextProjectionSha256);
+            RequireString(root, "knowledgeResultSetSha256", KnowledgeResultSetSha256); RequireString(root, "promptSha256", PromptSha256); RequireString(root, "answerSha256", AnswerSha256);
+            StrictJsonNode answer = RequireKind(root, "answer", "string"); RequireKind(root, "citationCount", "number"); StrictJsonNode citations = RequireKind(root, "citations", "array");
+            if (!String.Equals(ProjectQaPrompt.DomainDigest("EAIRA_M4_SLICE5_ANSWER_V1", answer.StringValue), AnswerSha256, StringComparison.Ordinal) || citations.ArrayValue.Count != CitationCount) { throw new ProjectQaException(); }
+            RequireString(root, "answerClassification", "MODEL_GENERATED_UNVERIFIED"); RequireString(root, "authority", "ASSISTIVE_NOT_AUTHORITY"); RequireString(root, "network", "LOOPBACK_ONLY"); RequireString(root, "writes", "NONE");
+            StrictJsonNode provider = RequireKind(root, "provider", "object"); if (provider.ObjectValue.Count != 7) { throw new ProjectQaException(); }
+            RequireString(provider, "id", "ollama-loopback-v1"); RequireString(provider, "model", "qwen3:4b"); RequireString(provider, "digest", LocalModelProvider.ExactModelDigest);
+            RequireKind(provider, "tagsCalls", "number"); RequireKind(provider, "chatCalls", "number"); StrictJsonNode pre=RequireKind(provider,"preflightDigestValidated","boolean"), post=RequireKind(provider,"postflightDigestValidated","boolean");
+            if (!pre.BooleanValue || !post.BooleanValue) { throw new ProjectQaException(); }
+
+            StringBuilder expected = new StringBuilder();
+            expected.Append("{\"schema\":\"EAIRA_PROJECT_QA_V1\",\"status\":\"PROJECT_QA_OK\",\"traceId\":").Append(ContractCodec.Json(trace.StringValue))
+                .Append(",\"questionSha256\":").Append(ContractCodec.Json(root.ObjectValue["questionSha256"].StringValue))
+                .Append(",\"contextAggregateSha256\":").Append(ContractCodec.Json(ContextAggregateSha256)).Append(",\"contextProjectionSha256\":").Append(ContractCodec.Json(ContextProjectionSha256))
+                .Append(",\"knowledgeResultSetSha256\":").Append(ContractCodec.Json(KnowledgeResultSetSha256)).Append(",\"promptSha256\":").Append(ContractCodec.Json(PromptSha256))
+                .Append(",\"answerSha256\":").Append(ContractCodec.Json(AnswerSha256)).Append(",\"answer\":").Append(ContractCodec.Json(answer.StringValue))
+                .Append(",\"citationCount\":").Append(CitationCount.ToString(CultureInfo.InvariantCulture)).Append(",\"citations\":[");
+            int previousRank = 0;
+            for (int index = 0; index < citations.ArrayValue.Count; index++)
+            {
+                if (index != 0) { expected.Append(','); }
+                StrictJsonNode citation = citations.ArrayValue[index];
+                if (citation.Kind != "object") { throw new ProjectQaException(); }
+                string id = RequireKind(citation, "id", "string").StringValue, kind = RequireKind(citation, "kind", "string").StringValue;
+                int rank = CitationRank(id); if (rank <= previousRank) { throw new ProjectQaException(); } previousRank = rank;
+                if (kind == "CONTEXT_FIELD")
+                {
+                    if (id[0] != 'C' || citation.ObjectValue.Count != 5) { throw new ProjectQaException(); }
+                    string path = RequireKind(citation, "path", "string").StringValue, field = RequireKind(citation, "field", "string").StringValue;
+                    RequireString(citation, "authority", "CONTROLLED_SOURCE_REFERENCE_NOT_MODEL_AUTHORITY");
+                    expected.Append("{\"id\":").Append(ContractCodec.Json(id)).Append(",\"kind\":\"CONTEXT_FIELD\",\"path\":").Append(ContractCodec.Json(path))
+                        .Append(",\"field\":").Append(ContractCodec.Json(field)).Append(",\"authority\":\"CONTROLLED_SOURCE_REFERENCE_NOT_MODEL_AUTHORITY\"}");
+                }
+                else if (kind == "KNOWLEDGE_MATCH")
+                {
+                    if (id[0] != 'K' || citation.ObjectValue.Count != 7) { throw new ProjectQaException(); }
+                    string path = RequireKind(citation, "path", "string").StringValue, heading = RequireKind(citation, "heading", "string").StringValue, excerpt = RequireKind(citation, "excerpt", "string").StringValue;
+                    RequireKind(citation, "line", "number"); RequireString(citation, "authority", "NAVIGATIONAL_NOT_AUTHORITY");
+                    expected.Append("{\"id\":").Append(ContractCodec.Json(id)).Append(",\"kind\":\"KNOWLEDGE_MATCH\",\"path\":").Append(ContractCodec.Json(path)).Append(",\"line\":");
+                    int numberStart = expected.Length; if (!CanonicalSuccessObject.StartsWith(expected.ToString(), StringComparison.Ordinal)) { throw new ProjectQaException(); }
+                    int cursor = numberStart; while (cursor < CanonicalSuccessObject.Length && CanonicalSuccessObject[cursor] >= '0' && CanonicalSuccessObject[cursor] <= '9') { cursor++; }
+                    string line = CanonicalSuccessObject.Substring(numberStart, cursor - numberStart); int lineNumber;
+                    if (line.Length == 0 || (line.Length > 1 && line[0] == '0') || !Int32.TryParse(line, NumberStyles.None, CultureInfo.InvariantCulture, out lineNumber) || lineNumber < 1) { throw new ProjectQaException(); }
+                    expected.Append(line).Append(",\"heading\":").Append(ContractCodec.Json(heading)).Append(",\"excerpt\":").Append(ContractCodec.Json(excerpt)).Append(",\"authority\":\"NAVIGATIONAL_NOT_AUTHORITY\"}");
+                }
+                else { throw new ProjectQaException(); }
+            }
+            expected.Append("],\"answerClassification\":\"MODEL_GENERATED_UNVERIFIED\",\"authority\":").Append(ContractCodec.Json("ASSISTIVE_" + "NOT_AUTHORITY")).Append(",\"network\":\"LOOPBACK_ONLY\",\"writes\":\"NONE\",\"provider\":{\"id\":\"ollama-loopback-v1\",\"model\":\"qwen3:4b\",\"digest\":")
+                .Append(ContractCodec.Json(LocalModelProvider.ExactModelDigest)).Append(",\"tagsCalls\":2,\"chatCalls\":1,\"preflightDigestValidated\":true,\"postflightDigestValidated\":true}}");
+            if (!String.Equals(expected.ToString(), CanonicalSuccessObject, StringComparison.Ordinal)) { throw new ProjectQaException(); }
+        }
+        private static StrictJsonNode RequireKind(StrictJsonNode root, string name, string kind) { StrictJsonNode value; if (root == null || root.Kind != "object" || !root.ObjectValue.TryGetValue(name, out value) || value.Kind != kind) { throw new ProjectQaException(); } return value; }
+        private static void RequireString(StrictJsonNode root, string name, string expected) { StrictJsonNode value=RequireKind(root,name,"string"); if (!String.Equals(value.StringValue,expected,StringComparison.Ordinal)) { throw new ProjectQaException(); } }
+        private static void RequireHashMember(StrictJsonNode root, string name, bool exactHash) { StrictJsonNode value=RequireKind(root,name,"string"); if (exactHash) { ContractCodec.RequireHash(value.StringValue,"QA payload hash"); } else { RequireUpperHex(value.StringValue, 32); } }
+        private static void RequireUpperHex(string value, int length) { if (value == null || value.Length != length) { throw new ProjectQaException(); } for (int i=0;i<value.Length;i++) { char c=value[i]; if (!((c>='0'&&c<='9')||(c>='A'&&c<='F'))) { throw new ProjectQaException(); } } }
+        private static int CitationRank(string id) { if (id == null || id.Length != 3 || (id[0] != 'C' && id[0] != 'K') || id[1] < '0' || id[1] > '9' || id[2] < '0' || id[2] > '9') { throw new ProjectQaException(); } int n=(id[1]-'0')*10+(id[2]-'0'); if (n==0 || (id[0]=='C'&&n>27)) { throw new ProjectQaException(); } return id[0]=='C'?n:27+n; }
+    }
+
+#if EAIRA_PROJECT_QA_NATIVE
+    internal sealed class ProjectQaNativeProviderFactory : IProjectQaProviderFactory
+    {
+        public IProjectQaProvider Create() { return new ProjectQaLocalProvider(new OllamaLoopbackTransport()); }
+    }
+    internal sealed class ProjectQaNativeSnapshotReaderFactory : IProjectQaSnapshotReaderFactory
+    {
+        public ProjectQaSnapshotReader Create() { return ProjectQaSnapshotReader.CreateNative(); }
+    }
+#endif
+
+    internal sealed class ProjectQaDelegateSnapshotReaderFactory : IProjectQaSnapshotReaderFactory
+    {
+        private readonly Func<ProjectQaSnapshotReader> value;
+        internal ProjectQaDelegateSnapshotReaderFactory(Func<ProjectQaSnapshotReader> factory) { if (factory == null) { throw new ProjectQaException(); } value = factory; }
+        public ProjectQaSnapshotReader Create() { return value(); }
+    }
+
+    internal static class ProjectQaRunner
+    {
+        private static string ErrorLine(string status, string network) { return "{\"schema\":\"EAIRA_PROJECT_QA_ERROR_V1\",\"status\":" + ContractCodec.Json(status) + ",\"network\":" + ContractCodec.Json(network) + ",\"writes\":\"NONE\"}\n"; }
+        private static ProjectQaRunResult Error(int exit, string status, string network, int sf, int sr, int pf, IProjectQaProvider provider, ProjectQaExecutionStage stage)
+        { return new ProjectQaRunResult(exit, status, network, null, ErrorLine(status, network), sf, sr, pf, provider, stage, null, null, null, null, null, 0); }
+        private static void Observe(IProjectQaExecutionObserver observer, ProjectQaExecutionStage stage, IProjectQaProvider provider)
+        { if (observer != null) { try { observer.Observe(stage, provider); } catch (Exception) { } } }
+
+#if EAIRA_PROJECT_QA_NATIVE
+        internal static ProjectQaRunResult ExecuteNative(string[] args)
+        { return Execute(args, new ProjectQaNativeSnapshotReaderFactory(), new ProjectQaNativeProviderFactory(), null); }
+        internal static ProjectQaRunResult ExecuteNative(string[] args, IProjectQaExecutionObserver observer)
+        { return Execute(args, new ProjectQaNativeSnapshotReaderFactory(), new ProjectQaNativeProviderFactory(), observer); }
+        internal static ProjectQaRunResult ExecuteNative(string[] args, IProjectQaProviderFactory providerFactory, IProjectQaExecutionObserver observer)
+        { return Execute(args, new ProjectQaNativeSnapshotReaderFactory(), providerFactory, observer); }
+#endif
+
+        internal static ProjectQaRunResult Execute(string[] args, Func<ProjectQaSnapshotReader> snapshotFactory, IProjectQaProviderFactory providerFactory)
+        { return Execute(args, new ProjectQaDelegateSnapshotReaderFactory(snapshotFactory), providerFactory, null); }
+
+        internal static ProjectQaRunResult Execute(string[] args, IProjectQaSnapshotReaderFactory snapshotFactory, IProjectQaProviderFactory providerFactory, IProjectQaExecutionObserver observer)
+        {
+            if (snapshotFactory == null || providerFactory == null) { throw new ProjectQaException(); }
+            int sf = 0, sr = 0, pf = 0; ProjectQaExecutionStage stage = ProjectQaExecutionStage.None;
+            try
+            {
+                ProjectQaRequest request = ProjectQaRequest.Parse(args);
+                stage = ProjectQaExecutionStage.Parsed; Observe(observer, stage, null);
+                TaskEnvelope task;
+                try { task = TaskEnvelope.Create(TaskEnvelope.CurrentSchemaVersion, request.TraceId, request.Question); }
+                catch (Exception) { throw new ProjectQaException(); }
+                if (GuardAgent.ExpectedDecision(task) != AgentDecision.Allow) { return Error(77, "DENIED", "NONE", sf, sr, pf, null, stage); }
+                stage = ProjectQaExecutionStage.GuardAllowed; Observe(observer, stage, null);
+                sf++; stage = ProjectQaExecutionStage.SnapshotFactoryCalled; Observe(observer, stage, null); ProjectQaSnapshotReader reader = snapshotFactory.Create();
+                if (reader == null) { throw new InvalidOperationException(); }
+                sr++; stage = ProjectQaExecutionStage.SnapshotReadCalled; Observe(observer, stage, null); ProjectQaSnapshot snapshot = reader.Read(request.Root, request.Question);
+                stage = ProjectQaExecutionStage.SnapshotReady; Observe(observer, stage, null);
+                string prompt; byte[] body;
+                try { prompt = ProjectQaPrompt.Build(request, snapshot); }
+                catch (ProjectQaException) { return Error(82, "PROJECT_QA_ERROR", "NONE", sf, sr, pf, null, stage); }
+                stage = ProjectQaExecutionStage.PromptReady; Observe(observer, stage, null);
+                try { body = ProjectQaPrompt.BuildBody(prompt); }
+                catch (ProjectQaException) { return Error(82, "PROJECT_QA_ERROR", "NONE", sf, sr, pf, null, stage); }
+                stage = ProjectQaExecutionStage.BodyReady; Observe(observer, stage, null);
+                IProjectQaProvider provider = null;
+                try
+                {
+                    pf++; stage = ProjectQaExecutionStage.ProviderFactoryCalled; Observe(observer, stage, null); provider = providerFactory.Create();
+                    if (provider == null) { throw new ProjectQaException(); }
+                    stage = ProjectQaExecutionStage.ProviderReady; Observe(observer, stage, provider);
+                    string assistant = provider.Execute(body);
+                    stage = ProjectQaExecutionStage.ProviderReturned; Observe(observer, stage, provider);
+                    ProjectQaAnswer answer = ProjectQaAnswerDecoder.Decode(new UTF8Encoding(false, true).GetBytes(assistant), request, snapshot, prompt, body);
+                    stage = ProjectQaExecutionStage.AnswerDecoded; Observe(observer, stage, provider);
+                    string output = ProjectQaOutput.Success(request, snapshot, prompt, answer, provider);
+                    stage = ProjectQaExecutionStage.OutputReady; Observe(observer, stage, provider);
+                    return new ProjectQaRunResult(0, "PROJECT_QA_OK", "LOOPBACK_ONLY", output, output + "\n", sf, sr, pf, provider, stage,
+                        snapshot.Context.AggregateSha256, snapshot.Context.ProjectionSha256, snapshot.Knowledge.ResultSetSha256,
+                        ProjectQaPrompt.DomainDigest("EAIRA_M4_SLICE5_PROMPT_V1", prompt), ProjectQaPrompt.DomainDigest("EAIRA_M4_SLICE5_ANSWER_V1", answer.Text), answer.CitationIds.Count);
+                }
+                catch (ProjectQaException) { return Error(82, "PROJECT_QA_ERROR", "LOOPBACK_ONLY", sf, sr, pf, provider, stage); }
+                catch (Exception) { return Error(79, "LOCAL_PROVIDER_ERROR", "LOOPBACK_ONLY", sf, sr, pf, provider, stage); }
+                finally { if (provider != null) { try { provider.Dispose(); } catch (Exception) { } } }
+            }
+            catch (ProjectQaContextException) { return Error(80, "CONTEXT_ERROR", "NONE", sf, sr, pf, null, stage); }
+            catch (ProjectQaKnowledgeException) { return Error(81, "KNOWLEDGE_ERROR", "NONE", sf, sr, pf, null, stage); }
+            catch (ProjectQaException) { return Error(64, "INVALID_REQUEST", "NONE", sf, sr, pf, null, stage); }
+            catch (ProjectKnowledgeRequestException) { return Error(64, "INVALID_REQUEST", "NONE", sf, sr, pf, null, stage); }
+        }
     }
 
     internal static class ProjectQaOutput

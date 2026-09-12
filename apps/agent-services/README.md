@@ -1,6 +1,6 @@
 # EAIRA Agent Services — Gate 25 unsigned-release preparation
 
-This directory contains the repository-owned R3 `NOWRITE_A` service-host, the five-Agent functional baseline, the M4 Slice 2 local-model path and the M4 Slice 3 read-only project-context implementation candidate. Publication state is defined by controlled project status, not inferred from directory contents. The component remains a bounded release-engineering and contract-verification input, not a production-readiness claim.
+This directory contains the repository-owned R3 `NOWRITE_A` service-host, the five-Agent functional baseline, the published M4 task/context/knowledge/project-QA capabilities, and the M5 Slice 1 bounded local operator. Publication state is defined by controlled project status, not inferred from directory contents. The component remains a bounded release-engineering and contract-verification input, not a production-readiness claim.
 
 ## Bound service profiles
 
@@ -56,6 +56,20 @@ The authoritative boundary is `contracts/EAIRA_READ_ONLY_PROJECT_CONTEXT_V1.md`.
 
 Slice 5 adds `EAIRA.ProjectQa.Cli.exe`, a non-production, read-only local QA surface over the exact controlled status and project-memory allowlist. It uses one pinned eleven-file snapshot and the fixed `qwen3:4b` Ollama loopback identity. Output is assistive and model-generated, with host-reconstructed citations; it performs no repository write, directory enumeration, external network call, retry or fallback. See `contracts/EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1.md`.
 
+## Integrated local operator
+
+M5 Slice 1 adds `EAIRA.LocalOperator.Cli.exe`, one unprivileged, single-request console entry point that routes exactly three existing capabilities in-process: task, project knowledge, and project QA. It does not duplicate the M4 policies; each adapter calls the published typed implementation after static Guard authorization. Invalid and denied requests construct no reader or provider factory.
+
+Examples:
+
+```powershell
+& .\EAIRA.LocalOperator.Cli.exe task --provider mock --trace 0123456789ABCDEF0123456789ABCDEF --goal 'prepare bounded release plan'
+& .\EAIRA.LocalOperator.Cli.exe knowledge --root 'C:\EAIRA' --trace 0123456789ABCDEF0123456789ABCDEF --query 'current milestone'
+& .\EAIRA.LocalOperator.Cli.exe project-qa --root 'C:\EAIRA' --trace 0123456789ABCDEF0123456789ABCDEF --question 'what is the current objective?' --provider ollama-local --model qwen3:4b
+```
+
+Only the exact positional forms in `contracts/EAIRA_LOCAL_OPERATOR_V1.md` are accepted. Output is one validated canonical UTF-8 JSON line, written once after complete in-memory construction. Payloads are capped at 16,383 bytes, the maximum wrapper is 587 bytes, and complete stdout is capped at 16,970 bytes. The operator adds no persistence, listener, IPC, shell, child process, credential, external provider, arbitrary vault read, or project-authority surface. Knowledge remains navigational; QA remains assistive and model-generated; trace identifiers are correlation only.
+
 ## Gate 25 build
 
 `build/Invoke-Gate25UnsignedRelease.ps1`:
@@ -69,8 +83,9 @@ Slice 5 adds `EAIRA.ProjectQa.Cli.exe`, a non-production, read-only local QA sur
 7. builds the local task-intake CLI, the context-aware intake harness, the 52-test project-context harness, the 41-test fake-provider harness, and the 10-test no-socket transport-policy harness, then verifies mock, Guard denial, disabled-real, malformed request, bounded local-provider behavior, complete read-only context abuse matrices, and fail-closed context handling;
 8. runs every role-bound service's offline self-test and negative argument test;
 9. verifies x64 PE machine type and `NotSigned` Authenticode state;
-10. requires byte-identical SHA-256 values across both builds; and
-11. binds the exact 32-path repository candidate and exact reference-assembly hashes/versions, verifies the six-method project-context P/Invoke boundary, 31 seam specimens, 17 native specimens and three output-isolation specimens, then emits a sanitized manifest and unsigned release directory only after every non-signing check passes.
+10. compiles the M5 local-operator harness and CLI in exact source order, independently reconstructs all 96 case names as 2,409 framed bytes, checks invalid/deny/mock stdout channels, and compile-then-rejects child-process, write, IPC, dynamic-load, raw-output and unapproved-provider specimens;
+11. requires byte-identical SHA-256 values across both builds; and
+12. binds the exact 32-path historical candidate scopes plus the operator's ordered 28 inputs and exact reference-assembly hashes/versions, verifies the six-method project-context P/Invoke boundary, native caller IL, loopback and output-isolation policies, then emits a sanitized manifest. Discovery modes never create an unsigned-release directory; final mode copies the unsigned operator CLI only after every non-signing check and the separately reviewed profile SHA-256 pass.
 
 Example after an approved Roslyn build toolchain is available:
 
@@ -88,4 +103,4 @@ The legacy .NET Framework compiler may be assessed only with `-DevelopmentProbe`
 - The produced functional and service runtimes do not create child processes. The build pipeline necessarily starts the approved compiler and the newly built offline test executables; that bounded build-time activity is recorded separately from the runtime policy.
 - No Windows service, account, group, membership, directory, ACL, TPM object or firewall rule is created or changed.
 - No output is written into the repository unless the caller explicitly chooses such a path; generated release evidence should remain outside the repository.
-- A successful accepted unsigned build means only `M4_SLICE_3_UNSIGNED_TECHNICAL_CHECKS_PASS`. It explicitly records `externalSigningEligible=false` and `signatureOnlyBlocked=false`. Gate 25 remains incomplete, and signing eligibility depends on separately completed Gate 24 governance and release prerequisites.
+- A successful M5 Slice 1 final build means only `M5_SLICE1_UNSIGNED_TECHNICAL_CHECKS_PASS`. It explicitly records `externalSigningEligible=false` and `signatureOnlyBlocked=false`; it is not signing, Windows-service, customer-deployment or production-readiness evidence.

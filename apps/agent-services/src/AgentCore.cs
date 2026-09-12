@@ -730,6 +730,183 @@ namespace EAIRA.AgentServices.Functional
         }
     }
 
+#if EAIRA_LOCAL_OPERATOR_NATIVE || EAIRA_LOCAL_OPERATOR_TEST_SEAM
+    internal enum OrchestrationRole { Planning = 1, Guard = 2, Operations = 3, Verification = 4, Audit = 5 }
+    internal enum OrchestrationDecision { Candidate = 1, Allow = 2, Deny = 3, Completed = 4, Verified = 5, Failed = 6, Recorded = 7 }
+
+    internal sealed class OrchestrationRoleResult
+    {
+        internal OrchestrationRole Role { get; private set; }
+        internal OrchestrationDecision Decision { get; private set; }
+        internal string RequestDigest { get; private set; }
+        internal string RouteDigest { get; private set; }
+        internal string PreviousResultDigest { get; private set; }
+        internal int Depth { get; private set; }
+        internal string EvidenceDigest { get; private set; }
+        internal string ResultDigest { get; private set; }
+
+        internal OrchestrationRoleResult(OrchestrationRole role, OrchestrationDecision decision, string requestDigest, string routeDigest, string previous, int depth, string evidence)
+        {
+            Role = role; Decision = decision; RequestDigest = requestDigest; RouteDigest = routeDigest;
+            PreviousResultDigest = previous; Depth = depth; EvidenceDigest = evidence;
+            ValidateFields(); ResultDigest = ComputeDigest();
+        }
+        private void ValidateFields()
+        {
+            ContractCodec.RequireHash(RequestDigest, "Orchestration request digest");
+            ContractCodec.RequireHash(RouteDigest, "Orchestration route digest");
+            ContractCodec.RequireHash(PreviousResultDigest, "Orchestration previous digest");
+            ContractCodec.RequireHash(EvidenceDigest, "Orchestration evidence digest");
+            if (Depth < 0 || Depth > 4) { throw new ContractException("Orchestration depth is invalid."); }
+            if (Depth == 0 && PreviousResultDigest != ContractCodec.ZeroHash) { throw new ContractException("Planning must start at zero."); }
+            if (Depth != 0 && PreviousResultDigest == ContractCodec.ZeroHash) { throw new ContractException("Non-planning result requires a predecessor."); }
+        }
+        private string ComputeDigest()
+        {
+            return ContractCodec.Sha256Hex("EAIRA_M5_SLICE1_ROLE_RESULT_V1\0" +
+                ContractCodec.Field(((int)Role).ToString(CultureInfo.InvariantCulture)) + ContractCodec.Field(((int)Decision).ToString(CultureInfo.InvariantCulture)) +
+                ContractCodec.Field(RequestDigest) + ContractCodec.Field(RouteDigest) + ContractCodec.Field(PreviousResultDigest) +
+                ContractCodec.Field(Depth.ToString(CultureInfo.InvariantCulture)) + ContractCodec.Field(EvidenceDigest));
+        }
+        internal void ValidateIntegrity()
+        {
+            ValidateFields(); ContractCodec.RequireHash(ResultDigest, "Orchestration result digest");
+            if (!String.Equals(ResultDigest, ComputeDigest(), StringComparison.Ordinal)) { throw new ContractException("Orchestration result digest mismatch."); }
+        }
+    }
+
+    internal sealed class OrchestrationChain
+    {
+        private readonly List<OrchestrationRoleResult> results;
+        internal IList<OrchestrationRoleResult> Results { get { return results.AsReadOnly(); } }
+        internal string ChainDigest { get { return results[results.Count - 1].ResultDigest; } }
+        private OrchestrationChain(List<OrchestrationRoleResult> value) { results = value; Validate(); }
+
+        private static string Evidence(string domain, string request, string route, string previous, string status, string subject)
+        {
+            return ContractCodec.Sha256Hex(domain + "\0" + ContractCodec.Field(request) + ContractCodec.Field(route) +
+                ContractCodec.Field(previous) + ContractCodec.Field(status) + ContractCodec.Field(subject));
+        }
+        private static void Add(List<OrchestrationRoleResult> list, OrchestrationRole role, OrchestrationDecision decision,
+            string request, string route, string domain, string status, string subject)
+        {
+            string previous = list.Count == 0 ? ContractCodec.ZeroHash : list[list.Count - 1].ResultDigest;
+            string evidence = Evidence(domain, request, route, previous, status, subject);
+            list.Add(new OrchestrationRoleResult(role, decision, request, route, previous, list.Count, evidence));
+        }
+        private static List<OrchestrationRoleResult> Prefix(string request, string route, bool allow)
+        {
+            ContractCodec.RequireHash(request, "Orchestration request digest"); ContractCodec.RequireHash(route, "Orchestration route digest");
+            List<OrchestrationRoleResult> list = new List<OrchestrationRoleResult>();
+            Add(list, OrchestrationRole.Planning, OrchestrationDecision.Candidate, request, route,
+                "EAIRA_M5_SLICE1_PLANNING_EVIDENCE_V1", "CANDIDATE", route);
+            Add(list, OrchestrationRole.Guard, allow ? OrchestrationDecision.Allow : OrchestrationDecision.Deny, request, route,
+                "EAIRA_M5_SLICE1_GUARD_EVIDENCE_V1", allow ? "ALLOW" : "DENY", request);
+            return list;
+        }
+        private static void Audit(List<OrchestrationRoleResult> list, string request, string route, string status)
+        {
+            string prior = list[list.Count - 1].ResultDigest;
+            Add(list, OrchestrationRole.Audit, OrchestrationDecision.Recorded, request, route,
+                "EAIRA_M5_SLICE1_AUDIT_EVIDENCE_V1", status, prior);
+        }
+        internal static OrchestrationChain Denied(string request, string route)
+        {
+            List<OrchestrationRoleResult> list = Prefix(request, route, false); Audit(list, request, route, "DENIED"); return new OrchestrationChain(list);
+        }
+        internal static OrchestrationChain Success(string request, string route, string payload)
+        {
+            ContractCodec.RequireHash(payload, "Payload digest"); List<OrchestrationRoleResult> list = Prefix(request, route, true);
+            Add(list, OrchestrationRole.Operations, OrchestrationDecision.Completed, request, route,
+                "EAIRA_M5_SLICE1_OPERATIONS_EVIDENCE_V1", "COMPLETED", payload);
+            Add(list, OrchestrationRole.Verification, OrchestrationDecision.Verified, request, route,
+                "EAIRA_M5_SLICE1_VERIFICATION_EVIDENCE_V1", "VERIFIED", payload);
+            Audit(list, request, route, "PASS"); return new OrchestrationChain(list);
+        }
+
+        internal static OrchestrationChain OperationFailure(string request, string route, string status)
+        {
+            RequireFailureStatus(status); List<OrchestrationRoleResult> list = Prefix(request, route, true);
+            Add(list, OrchestrationRole.Operations, OrchestrationDecision.Failed, request, route,
+                "EAIRA_M5_SLICE1_OPERATIONS_EVIDENCE_V1", status, "NONE");
+            Audit(list, request, route, status); return new OrchestrationChain(list);
+        }
+        internal static OrchestrationChain VerificationFailure(string request, string route, string status, string payload)
+        {
+            if (status != "QA_VALIDATION_ERROR" && status != "OUTPUT_ERROR") { throw new ContractException("Verification failure status is invalid."); }
+            string subject = payload == null ? "NONE" : payload; if (payload != null) { ContractCodec.RequireHash(payload, "Payload digest"); }
+            List<OrchestrationRoleResult> list = Prefix(request, route, true);
+            Add(list, OrchestrationRole.Operations, OrchestrationDecision.Completed, request, route,
+                "EAIRA_M5_SLICE1_OPERATIONS_EVIDENCE_V1", "COMPLETED", subject);
+            Add(list, OrchestrationRole.Verification, OrchestrationDecision.Failed, request, route,
+                "EAIRA_M5_SLICE1_VERIFICATION_EVIDENCE_V1", status, subject);
+            Audit(list, request, route, status); return new OrchestrationChain(list);
+        }
+        internal static OrchestrationChain Emergency(string request, string route)
+        {
+            List<OrchestrationRoleResult> list = Prefix(request, route, true); Audit(list, request, route, "ORCHESTRATION_ERROR"); return new OrchestrationChain(list);
+        }
+        private static void RequireFailureStatus(string status)
+        {
+            if (status != "PROVIDER_ERROR" && status != "CONTEXT_ERROR" && status != "KNOWLEDGE_ERROR" && status != "QA_VALIDATION_ERROR")
+            { throw new ContractException("Operation failure status is invalid."); }
+        }
+        internal void Validate()
+        {
+            if (results == null || (results.Count != 3 && results.Count != 4 && results.Count != 5)) { throw new ContractException("Orchestration chain length is invalid."); }
+            string previous = ContractCodec.ZeroHash;
+            for (int i = 0; i < results.Count; i++)
+            {
+                OrchestrationRoleResult r = results[i]; r.ValidateIntegrity();
+                if (r.Depth != i || r.PreviousResultDigest != previous) { throw new ContractException("Orchestration chain link mismatch."); }
+                previous = r.ResultDigest;
+            }
+            if (results[0].Role != OrchestrationRole.Planning || results[0].Decision != OrchestrationDecision.Candidate ||
+                results[1].Role != OrchestrationRole.Guard) { throw new ContractException("Orchestration prefix is invalid."); }
+            if (results[1].Decision == OrchestrationDecision.Deny)
+            {
+                if (results.Count != 3 || results[2].Role != OrchestrationRole.Audit) { throw new ContractException("Denied chain is invalid."); }
+                return;
+            }
+            if (results[1].Decision != OrchestrationDecision.Allow || results[results.Count - 1].Role != OrchestrationRole.Audit) { throw new ContractException("Allowed chain is invalid."); }
+            if (results.Count == 3) { return; }
+            if (results[2].Role != OrchestrationRole.Operations) { throw new ContractException("Operations role is absent."); }
+            if (results.Count == 4 && results[2].Decision != OrchestrationDecision.Failed) { throw new ContractException("Operation failure chain is invalid."); }
+            if (results.Count == 5 && (results[3].Role != OrchestrationRole.Verification ||
+                (results[3].Decision != OrchestrationDecision.Verified && results[3].Decision != OrchestrationDecision.Failed)))
+            { throw new ContractException("Verification chain is invalid."); }
+        }
+
+        internal void ValidateFor(string request, string route, string status, string payload)
+        {
+            Validate();
+            ContractCodec.RequireHash(request, "Orchestration request digest");
+            ContractCodec.RequireHash(route, "Orchestration route digest");
+            for (int i = 0; i < results.Count; i++)
+            {
+                if (!String.Equals(results[i].RequestDigest, request, StringComparison.Ordinal) ||
+                    !String.Equals(results[i].RouteDigest, route, StringComparison.Ordinal))
+                { throw new ContractException("Orchestration request or route binding mismatch."); }
+            }
+
+            OrchestrationChain expected;
+            if (status == "PASS") { expected = Success(request, route, payload); }
+            else if (status == "DENIED") { expected = Denied(request, route); }
+            else if (status == "ORCHESTRATION_ERROR") { expected = Emergency(request, route); }
+            else if (status == "OUTPUT_ERROR") { expected = VerificationFailure(request, route, status, payload); }
+            else if (status == "QA_VALIDATION_ERROR" && results.Count == 5) { expected = VerificationFailure(request, route, status, payload); }
+            else { expected = OperationFailure(request, route, status); }
+
+            if (results.Count != expected.results.Count) { throw new ContractException("Orchestration terminal binding mismatch."); }
+            for (int i = 0; i < results.Count; i++)
+            {
+                if (!String.Equals(results[i].ResultDigest, expected.results[i].ResultDigest, StringComparison.Ordinal))
+                { throw new ContractException("Orchestration terminal digest mismatch."); }
+            }
+        }
+    }
+#endif
+
     internal static class FunctionalSliceSelfTest
     {
         internal static bool ForRole(string roleName)
