@@ -27,6 +27,102 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 Add-Type -AssemblyName System.Reflection.Metadata
+$script:EairaHealthIlInspectorSource = @'
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
+using System.Reflection.PortableExecutable;
+using System.Security.Cryptography;
+using System.Text;
+
+public static class EairaHealthIlInspector
+{
+    sealed class GenericContext { }
+    sealed class TypeProvider : ISignatureTypeProvider<string, GenericContext>
+    {
+        readonly MetadataReader r;
+        internal TypeProvider(MetadataReader reader) { r = reader; }
+        string TypeDef(TypeDefinitionHandle h) { var d=r.GetTypeDefinition(h); var n=r.GetString(d.Name); var p=d.GetDeclaringType(); if(!p.IsNil)return TypeDef(p)+"+"+n; var s=r.GetString(d.Namespace); return String.IsNullOrEmpty(s)?n:s+"."+n; }
+        string TypeRef(TypeReferenceHandle h) { var d=r.GetTypeReference(h); var n=r.GetString(d.Name); if(d.ResolutionScope.Kind==HandleKind.TypeReference)return TypeRef((TypeReferenceHandle)d.ResolutionScope)+"+"+n; var s=r.GetString(d.Namespace); return String.IsNullOrEmpty(s)?n:s+"."+n; }
+        public string GetArrayType(string e, ArrayShape s) { return e+"["+new string(',',Math.Max(0,s.Rank-1))+"]"; }
+        public string GetByReferenceType(string e) { return e+"&"; }
+        public string GetFunctionPointerType(MethodSignature<string> s) { return "FNPTR:"+CallSite(s); }
+        public string GetGenericInstantiation(string g, ImmutableArray<string> a) { return g+"<"+String.Join(",",a)+">"; }
+        public string GetGenericMethodParameter(GenericContext c, int i) { return "!!"+i.ToString(CultureInfo.InvariantCulture); }
+        public string GetGenericTypeParameter(GenericContext c, int i) { return "!"+i.ToString(CultureInfo.InvariantCulture); }
+        public string GetModifiedType(string m, string u, bool req) { return u; }
+        public string GetPinnedType(string e) { return "PINNED:"+e; }
+        public string GetPointerType(string e) { return e+"*"; }
+        public string GetPrimitiveType(PrimitiveTypeCode c) { switch(c){case PrimitiveTypeCode.Void:return "System.Void";case PrimitiveTypeCode.Boolean:return "System.Boolean";case PrimitiveTypeCode.Char:return "System.Char";case PrimitiveTypeCode.SByte:return "System.SByte";case PrimitiveTypeCode.Byte:return "System.Byte";case PrimitiveTypeCode.Int16:return "System.Int16";case PrimitiveTypeCode.UInt16:return "System.UInt16";case PrimitiveTypeCode.Int32:return "System.Int32";case PrimitiveTypeCode.UInt32:return "System.UInt32";case PrimitiveTypeCode.Int64:return "System.Int64";case PrimitiveTypeCode.UInt64:return "System.UInt64";case PrimitiveTypeCode.Single:return "System.Single";case PrimitiveTypeCode.Double:return "System.Double";case PrimitiveTypeCode.String:return "System.String";case PrimitiveTypeCode.TypedReference:return "System.TypedReference";case PrimitiveTypeCode.IntPtr:return "System.IntPtr";case PrimitiveTypeCode.UIntPtr:return "System.UIntPtr";case PrimitiveTypeCode.Object:return "System.Object";default:throw new InvalidDataException("Unsupported primitive type.");} }
+        public string GetSZArrayType(string e) { return e+"[]"; }
+        public string GetTypeFromDefinition(MetadataReader x, TypeDefinitionHandle h, byte k) { return TypeDef(h); }
+        public string GetTypeFromReference(MetadataReader x, TypeReferenceHandle h, byte k) { return TypeRef(h); }
+        public string GetTypeFromSpecification(MetadataReader x, GenericContext c, TypeSpecificationHandle h, byte k) { return r.GetTypeSpecification(h).DecodeSignature(this,c); }
+        internal string Entity(EntityHandle h) { if(h.IsNil)return null; switch(h.Kind){case HandleKind.TypeDefinition:return TypeDef((TypeDefinitionHandle)h);case HandleKind.TypeReference:return TypeRef((TypeReferenceHandle)h);case HandleKind.TypeSpecification:return r.GetTypeSpecification((TypeSpecificationHandle)h).DecodeSignature(this,new GenericContext());default:throw new InvalidDataException("Unsupported type handle "+h.Kind); } }
+        internal static string CallSite(MethodSignature<string> s) { var b=BaseConvention(s.Header.CallingConvention); if(s.Header.IsInstance)b+="+INSTANCE"; if((s.Header.RawValue&0x40)!=0)b+="+EXPLICITTHIS"; return "callsite|"+b+"|"+s.GenericParameterCount.ToString(CultureInfo.InvariantCulture)+"|"+s.ReturnType+"|"+String.Join(",",s.ParameterTypes); }
+        static string BaseConvention(SignatureCallingConvention c) { switch(c){case SignatureCallingConvention.Default:return "DEFAULT";case SignatureCallingConvention.VarArgs:return "VARARG";case SignatureCallingConvention.CDecl:return "C";case SignatureCallingConvention.StdCall:return "STDCALL";case SignatureCallingConvention.ThisCall:return "THISCALL";case SignatureCallingConvention.FastCall:return "FASTCALL";default:throw new InvalidDataException("Unsupported calling convention.");} }
+    }
+    sealed class MethodInfoRow { internal int Token; internal string Type,Name,Full; internal MethodDefinitionHandle Handle; internal MethodDefinition Def; internal List<Instruction> Instructions; internal string[] Details; internal ExceptionRegion[] Regions; }
+    sealed class FieldInfoRow { internal int Token; internal string Type,Name,FieldType,Full; internal FieldDefinitionHandle Handle; }
+    sealed class Instruction { internal int Offset,End; internal OpCode Op; internal string Kind,Value,Target; internal int[] BranchTargets=new int[0]; internal EntityHandle Entity; }
+    sealed class Block { internal int Start,End; internal List<Instruction> I=new List<Instruction>(); internal List<int> Succ=new List<int>(); }
+    static readonly Dictionary<ushort,OpCode> Ops=BuildOps();
+    static Dictionary<ushort,OpCode> BuildOps(){var d=new Dictionary<ushort,OpCode>();foreach(var f in typeof(OpCodes).GetFields(BindingFlags.Public|BindingFlags.Static)){var o=(OpCode)f.GetValue(null);d[unchecked((ushort)o.Value)]=o;}return d;}
+    static string Sha(byte[] b){using(var h=SHA256.Create())return BitConverter.ToString(h.ComputeHash(b)).Replace("-","");}
+    static string SummarySha(IEnumerable<string> rows){return Sha(Encoding.UTF8.GetBytes(String.Join("\n",rows)));}
+    static string Hex8(int n){return unchecked((uint)n).ToString("X8",CultureInfo.InvariantCulture);}
+    static string MethodName(TypeProvider p, MetadataReader r, string type, MethodDefinition d){var s=d.DecodeSignature(p,new GenericContext());return type+"::"+r.GetString(d.Name)+"("+String.Join(",",s.ParameterTypes)+")";}
+    static string MemberName(TypeProvider p, MetadataReader r, MemberReferenceHandle h){var m=r.GetMemberReference(h);string t=null;if(m.Parent.Kind==HandleKind.TypeDefinition||m.Parent.Kind==HandleKind.TypeReference||m.Parent.Kind==HandleKind.TypeSpecification)t=p.Entity((EntityHandle)m.Parent);else if(m.Parent.Kind==HandleKind.MethodDefinition)t="METHOD_PARENT";if(m.GetKind()==MemberReferenceKind.Method){var s=m.DecodeMethodSignature(p,new GenericContext());return t+"::"+r.GetString(m.Name)+"("+String.Join(",",s.ParameterTypes)+")";}return t+"::"+r.GetString(m.Name)+":"+m.DecodeFieldSignature(p,new GenericContext());}
+    static string MethodSpecName(TypeProvider p, MetadataReader r, MethodSpecificationHandle h, Dictionary<int,MethodInfoRow> methods){var s=r.GetMethodSpecification(h);string b=ResolveMethod(p,r,(EntityHandle)s.Method,methods);var a=s.DecodeSignature(p,new GenericContext());int x=b.IndexOf('(');return (x<0?b:b.Substring(0,x))+"<"+String.Join(",",a)+">"+(x<0?"":b.Substring(x));}
+    static string ResolveMethod(TypeProvider p,MetadataReader r,EntityHandle h,Dictionary<int,MethodInfoRow> methods){int t=MetadataTokens.GetToken(h);if(h.Kind==HandleKind.MethodDefinition)return methods[t].Full;if(h.Kind==HandleKind.MemberReference)return MemberName(p,r,(MemberReferenceHandle)h);if(h.Kind==HandleKind.MethodSpecification)return MethodSpecName(p,r,(MethodSpecificationHandle)h,methods);throw new InvalidDataException("Unresolved method token.");}
+    static string ResolveField(TypeProvider p,MetadataReader r,EntityHandle h,Dictionary<int,FieldInfoRow> fields){int t=MetadataTokens.GetToken(h);if(h.Kind==HandleKind.FieldDefinition)return fields[t].Full;if(h.Kind==HandleKind.MemberReference)return MemberName(p,r,(MemberReferenceHandle)h);throw new InvalidDataException("Unresolved field token.");}
+    static string ResolveToken(TypeProvider p,MetadataReader r,EntityHandle h,Dictionary<int,MethodInfoRow> methods,Dictionary<int,FieldInfoRow> fields){if(h.Kind==HandleKind.MethodDefinition||h.Kind==HandleKind.MethodSpecification)return ResolveMethod(p,r,h,methods);if(h.Kind==HandleKind.MemberReference){var m=r.GetMemberReference((MemberReferenceHandle)h);return m.GetKind()==MemberReferenceKind.Method?ResolveMethod(p,r,h,methods):ResolveField(p,r,h,fields);}if(h.Kind==HandleKind.FieldDefinition)return ResolveField(p,r,h,fields);if(h.Kind==HandleKind.TypeDefinition||h.Kind==HandleKind.TypeReference||h.Kind==HandleKind.TypeSpecification)return p.Entity(h);throw new InvalidDataException("Unresolved token kind.");}
+    static ushort U16(byte[] b,int o){return BitConverter.ToUInt16(b,o);} static int I32(byte[] b,int o){return BitConverter.ToInt32(b,o);} static long I64(byte[] b,int o){return BitConverter.ToInt64(b,o);}
+    static List<Instruction> Decode(byte[] il,TypeProvider p,MetadataReader r,Dictionary<int,MethodInfoRow> methods,Dictionary<int,FieldInfoRow> fields){var a=new List<Instruction>();int o=0;while(o<il.Length){int start=o;ushort code=il[o++];if(code==0xFE){if(o>=il.Length)throw new InvalidDataException("Truncated opcode.");code=(ushort)(0xFE00|il[o++]);}OpCode op;if(!Ops.TryGetValue(code,out op))throw new InvalidDataException("Unknown opcode.");var q=new Instruction{Offset=start,Op=op};int token;switch(op.OperandType){case OperandType.InlineNone:q.Kind="none";q.Value="-";break;case OperandType.ShortInlineI:q.Kind="i1";q.Value=unchecked((sbyte)il[o]).ToString(CultureInfo.InvariantCulture);o++;break;case OperandType.InlineI:q.Kind="i4";q.Value=I32(il,o).ToString(CultureInfo.InvariantCulture);o+=4;break;case OperandType.InlineI8:q.Kind="i8";q.Value=I64(il,o).ToString(CultureInfo.InvariantCulture);o+=8;break;case OperandType.ShortInlineR:q.Kind="r4";q.Value=BitConverter.ToString(il,o,4).Replace("-","");o+=4;break;case OperandType.InlineR:q.Kind="r8";q.Value=BitConverter.ToString(il,o,8).Replace("-","");o+=8;break;case OperandType.ShortInlineVar:q.Kind="var";q.Value=il[o++].ToString(CultureInfo.InvariantCulture);break;case OperandType.InlineVar:q.Kind="var";q.Value=U16(il,o).ToString(CultureInfo.InvariantCulture);o+=2;break;case OperandType.ShortInlineBrTarget:{int d=unchecked((sbyte)il[o]);o++;int x=o+d;q.Kind="branch";q.Value=Hex8(x);q.BranchTargets=new[]{x};break;}case OperandType.InlineBrTarget:{int d=I32(il,o);o+=4;int x=o+d;q.Kind="branch";q.Value=Hex8(x);q.BranchTargets=new[]{x};break;}case OperandType.InlineSwitch:{int n=I32(il,o);o+=4;if(n<0||o+4*n>il.Length)throw new InvalidDataException("Bad switch.");var ds=new int[n];for(int i=0;i<n;i++){ds[i]=I32(il,o);o+=4;}int b=o;var xs=ds.Select(x=>b+x).ToArray();q.Kind="switch";q.Value=String.Join(",",xs.Select(Hex8));q.BranchTargets=xs;break;}case OperandType.InlineString:token=I32(il,o);o+=4;var us=r.GetUserString(MetadataTokens.UserStringHandle(token&0x00FFFFFF));var ub=Encoding.UTF8.GetBytes(us);q.Kind="string";q.Value=ub.Length.ToString(CultureInfo.InvariantCulture)+":"+Sha(ub);break;case OperandType.InlineMethod:token=I32(il,o);o+=4;q.Entity=(EntityHandle)MetadataTokens.Handle(token);q.Kind="method";q.Value=ResolveMethod(p,r,q.Entity,methods);q.Target=q.Value;break;case OperandType.InlineField:token=I32(il,o);o+=4;q.Entity=(EntityHandle)MetadataTokens.Handle(token);q.Kind="field";q.Value=ResolveField(p,r,q.Entity,fields);break;case OperandType.InlineType:token=I32(il,o);o+=4;q.Entity=(EntityHandle)MetadataTokens.Handle(token);q.Kind="type";q.Value=p.Entity(q.Entity);break;case OperandType.InlineSig:token=I32(il,o);o+=4;var ss=r.GetStandaloneSignature(MetadataTokens.StandaloneSignatureHandle(token&0x00FFFFFF)).DecodeMethodSignature(p,new GenericContext());q.Kind="signature";q.Value=TypeProvider.CallSite(ss);break;case OperandType.InlineTok:token=I32(il,o);o+=4;q.Entity=(EntityHandle)MetadataTokens.Handle(token);q.Kind="token";q.Value=ResolveToken(p,r,q.Entity,methods,fields);if(q.Entity.Kind==HandleKind.MethodDefinition||q.Entity.Kind==HandleKind.MethodSpecification||(q.Entity.Kind==HandleKind.MemberReference&&r.GetMemberReference((MemberReferenceHandle)q.Entity).GetKind()==MemberReferenceKind.Method))q.Target=q.Value;break;default:throw new InvalidDataException("Unsupported operand kind "+op.OperandType);}q.End=o;a.Add(q);}return a;}
+    static string[] Details(PEReader pe,MetadataReader r,TypeProvider p,MethodInfoRow m){var body=pe.GetMethodBody(m.Def.RelativeVirtualAddress);var il=body.GetILBytes();m.Instructions=Decode(il,p,r,_methods,_fields);string header=(pe.GetSectionData(m.Def.RelativeVirtualAddress).GetContent()[0]&3)==2?"tiny":"fat";var rows=new List<string>();rows.Add("BODY|"+m.Full+"|"+header+"|"+body.MaxStack.ToString(CultureInfo.InvariantCulture)+"|"+(body.LocalVariablesInitialized?"TRUE":"FALSE"));if(body.LocalSignature.IsNil)rows.Add("LOCALS|"+m.Full+"|0|-");else{var ls=r.GetStandaloneSignature(body.LocalSignature).DecodeLocalSignature(p,new GenericContext());var vals=ls.Select(x=>x.StartsWith("PINNED:",StringComparison.Ordinal)?x:"VALUE:"+x).ToArray();rows.Add("LOCALS|"+m.Full+"|"+vals.Length.ToString(CultureInfo.InvariantCulture)+"|"+String.Join(",",vals));}foreach(var i in m.Instructions)rows.Add("IL|"+m.Full+"|"+Hex8(i.Offset)+"|"+i.Op.Name.ToLowerInvariant()+"|"+i.Kind+"|"+i.Value);var er=body.ExceptionRegions.ToArray();m.Regions=er;var eh=new List<string>();foreach(var e in er){string k=e.Kind==ExceptionRegionKind.Catch?"catch":e.Kind==ExceptionRegionKind.Finally?"finally":e.Kind==ExceptionRegionKind.Fault?"fault":"filter";string tail=e.Kind==ExceptionRegionKind.Catch?p.Entity(e.CatchType):e.Kind==ExceptionRegionKind.Filter?Hex8(e.FilterOffset):"-";eh.Add(k+"|"+Hex8(e.TryOffset)+"|"+Hex8(e.TryOffset+e.TryLength)+"|"+Hex8(e.HandlerOffset)+"|"+Hex8(e.HandlerOffset+e.HandlerLength)+"|"+tail);}eh.Sort(StringComparer.Ordinal);for(int i=0;i<eh.Count;i++)rows.Add("EH|"+m.Full+"|"+i.ToString(CultureInfo.InvariantCulture)+"|"+eh[i]);m.Details=rows.ToArray();return m.Details;}
+    static Dictionary<int,MethodInfoRow> _methods; static Dictionary<int,FieldInfoRow> _fields;
+    static List<Block> Blocks(MethodInfoRow m){var starts=new SortedSet<int>();starts.Add(0);foreach(var i in m.Instructions){foreach(var t in i.BranchTargets)starts.Add(t);if(i.Op.FlowControl==FlowControl.Branch||i.Op.FlowControl==FlowControl.Cond_Branch||i.Op.FlowControl==FlowControl.Return||i.Op.FlowControl==FlowControl.Throw)if(i.End<m.Instructions.Last().End)starts.Add(i.End);}foreach(var e in m.Regions){starts.Add(e.TryOffset);starts.Add(e.TryOffset+e.TryLength);starts.Add(e.HandlerOffset);starts.Add(e.HandlerOffset+e.HandlerLength);if(e.Kind==ExceptionRegionKind.Filter)starts.Add(e.FilterOffset);}var ss=starts.Where(x=>x>=0&&x<=m.Instructions.Last().End).ToArray();var bs=new List<Block>();for(int z=0;z<ss.Length;z++){int end=z+1<ss.Length?ss[z+1]:m.Instructions.Last().End;var b=new Block{Start=ss[z],End=end,I=m.Instructions.Where(x=>x.Offset>=ss[z]&&x.Offset<end).ToList()};if(b.I.Count>0)bs.Add(b);}var map=bs.ToDictionary(x=>x.Start);foreach(var b in bs){var last=b.I.Last();foreach(var t in last.BranchTargets)if(map.ContainsKey(t))b.Succ.Add(t);if(last.Op.FlowControl!=FlowControl.Branch&&last.Op.FlowControl!=FlowControl.Return&&last.Op.FlowControl!=FlowControl.Throw&&map.ContainsKey(last.End))b.Succ.Add(last.End);}return bs;}
+    static HashSet<int> Reach(List<Block> bs,int root){var map=bs.ToDictionary(x=>x.Start);var s=new HashSet<int>();var q=new Queue<int>();q.Enqueue(root);while(q.Count>0){int x=q.Dequeue();if(!s.Add(x))continue;foreach(var y in map[x].Succ)if(map.ContainsKey(y))q.Enqueue(y);}return s;}
+    static Dictionary<int,HashSet<int>> Dominators(List<Block> bs,int root,HashSet<int> reach){var all=new HashSet<int>(reach);var d=new Dictionary<int,HashSet<int>>();foreach(int x in reach)d[x]=x==root?new HashSet<int>{root}:new HashSet<int>(all);bool changed=true;while(changed){changed=false;foreach(int x in reach.Where(x=>x!=root)){var preds=bs.Where(b=>reach.Contains(b.Start)&&b.Succ.Contains(x)).Select(b=>b.Start).ToArray();if(preds.Length==0)throw new InvalidDataException("Unreachable CFG block.");var n=new HashSet<int>(d[preds[0]]);foreach(int p in preds.Skip(1))n.IntersectWith(d[p]);n.Add(x);if(!n.SetEquals(d[x])){d[x]=n;changed=true;}}}return d;}
+    static void ValidateDispatch(MethodInfoRow m,string healthRoot){if(m.Regions.Any(e=>e.Kind==ExceptionRegionKind.Finally||e.Kind==ExceptionRegionKind.Fault))throw new InvalidDataException("Execute contains finally/fault.");var bs=Blocks(m);var reach=Reach(bs,0);var dom=Dominators(bs,0,reach);Func<string,Block[]> calls=t=>bs.Where(b=>b.I.Any(i=>i.Target==t)).ToArray();string guard="EAIRA.AgentServices.Functional.GuardAgent::ExpectedDecision(EAIRA.AgentServices.Functional.TaskEnvelope)";var gb=calls(guard);var hb=calls(healthRoot);if(gb.Length!=1||hb.Length!=1)throw new InvalidDataException("Guard/Health dispatch call count mismatch.");var selectors=bs.Where(b=>b.I.Any(i=>i.Target=="EAIRA.AgentServices.Functional.LocalOperatorRequest::get_Capability()")&&b.I.Any(i=>i.Op.Name=="ldc.i4.4")&&b.I.Any(i=>i.Op.FlowControl==FlowControl.Cond_Branch)).ToArray();if(selectors.Length!=1||!dom[selectors[0].Start].Contains(gb[0].Start)||!dom[hb[0].Start].Contains(gb[0].Start)||!dom[hb[0].Start].Contains(selectors[0].Start))throw new InvalidDataException("Health Guard dominance mismatch: guard="+gb.Length+" health="+hb.Length+" selectors="+selectors.Length+" guardBlocks="+String.Join(",",gb.Select(x=>Hex8(x.Start)))+" healthBlocks="+String.Join(",",hb.Select(x=>Hex8(x.Start)))+" selectorBlocks="+String.Join(",",selectors.Select(x=>Hex8(x.Start)))+".");int[] protectedOffsets={gb[0].Start,selectors[0].Start,hb[0].Start};foreach(var e in m.Regions)foreach(int x in protectedOffsets)if((x>=e.TryOffset&&x<e.TryOffset+e.TryLength)||(x>=e.HandlerOffset&&x<e.HandlerOffset+e.HandlerLength)||(e.Kind==ExceptionRegionKind.Filter&&x>=e.FilterOffset&&x<e.HandlerOffset))throw new InvalidDataException("Health dispatch lies in EH region.");var hreach=Reach(bs,hb[0].Start);if(hreach.SelectMany(x=>bs.First(b=>b.Start==x).I).Any(i=>i.Target!=null&&(i.Target.Contains("::CreateTask(")||i.Target.Contains("::CreateKnowledge(")||i.Target.Contains("::CreateProjectQa("))))throw new InvalidDataException("Factory reachable from Health dispatch.");}
+    static string DeclaringType(EntityHandle h,MetadataReader r,TypeProvider p,Dictionary<int,MethodInfoRow> methods,Dictionary<int,FieldInfoRow> fields){if(h.IsNil)return null;if(h.Kind==HandleKind.MethodDefinition)return methods[MetadataTokens.GetToken(h)].Type;if(h.Kind==HandleKind.FieldDefinition)return fields[MetadataTokens.GetToken(h)].Type;if(h.Kind==HandleKind.TypeDefinition)return p.Entity(h);if(h.Kind==HandleKind.MethodSpecification)return DeclaringType((EntityHandle)r.GetMethodSpecification((MethodSpecificationHandle)h).Method,r,p,methods,fields);if(h.Kind==HandleKind.MemberReference){var m=r.GetMemberReference((MemberReferenceHandle)h);if(m.Parent.Kind==HandleKind.TypeDefinition)return p.Entity((EntityHandle)m.Parent);}return null;}
+    static bool Forbidden(string s){if(String.IsNullOrEmpty(s))return false;if(s=="EAIRA.AgentServices.Functional.LocalOperatorConnectAttemptMonitor::Snapshot()")return false;int z=s.LastIndexOf("::",StringComparison.Ordinal);string t=z<0?s:s.Substring(0,z);if(t=="EAIRA.AgentServices.Functional.ILocalOperatorAdapterFactory"||t=="EAIRA.AgentServices.Functional.ILocalOperatorAdapter")return true;if(t.StartsWith("EAIRA.",StringComparison.Ordinal)&&(t.Contains("Adapter")||t.Contains("Factory")||t.Contains("Provider")||t.Contains("Transport")||t.Contains("Ollama")))return true;string[] prefixes={"System.Net","System.IO","System.Environment","System.Diagnostics","Microsoft.Win32","System.ServiceProcess","System.IO.Pipes","System.Reflection","System.Security.Cryptography.RandomNumberGenerator","System.Security.Cryptography.RNGCryptoServiceProvider"};if(prefixes.Any(x=>t.StartsWith(x,StringComparison.Ordinal)))return true;string[] exact={"System.DateTime","System.DateTimeOffset","System.Random","System.Environment","System.Diagnostics.Process","System.Diagnostics.ProcessStartInfo","Microsoft.Win32.Registry","Microsoft.Win32.RegistryKey","System.Guid","System.Threading.Timer","System.Timers.Timer","System.Diagnostics.Stopwatch"};if(exact.Contains(t,StringComparer.Ordinal))return true;if(z>=0){string n=s.Substring(z+2);int q=n.IndexOfAny(new[]{'(',':'});if(q>=0)n=n.Substring(0,q);string[] parts={"Clock","Random","Socket","Connect","Send","Receive","Open","Read","Write","Start","CreateProcess"};if(parts.Any(x=>n.Contains(x))||new[]{"NewGuid","get_UtcNow","get_Now","get_TickCount","GetTimestamp","Delay","Sleep"}.Contains(n,StringComparer.Ordinal))return true;}return false;}
+    static Dictionary<string,object> Summary(IList<string> x){return new Dictionary<string,object>{{"count",x.Count},{"sha256",SummarySha(x)}};}
+    public static Dictionary<string,object> Inspect(string path)
+    {
+        using(var fs=File.OpenRead(path))using(var pe=new PEReader(fs)){
+            var r=pe.GetMetadataReader();var p=new TypeProvider(r);_methods=new Dictionary<int,MethodInfoRow>();_fields=new Dictionary<int,FieldInfoRow>();var byType=new Dictionary<string,List<MethodInfoRow>>(StringComparer.Ordinal);
+            foreach(var th in r.TypeDefinitions){var td=r.GetTypeDefinition(th);string tn=p.Entity((EntityHandle)th);var list=new List<MethodInfoRow>();byType[tn]=list;foreach(var fh in td.GetFields()){var fd=r.GetFieldDefinition(fh);var row=new FieldInfoRow{Token=MetadataTokens.GetToken(fh),Type=tn,Name=r.GetString(fd.Name),FieldType=fd.DecodeSignature(p,new GenericContext()),Handle=fh};row.Full=tn+"::"+row.Name+":"+row.FieldType;_fields[row.Token]=row;}foreach(var mh in td.GetMethods()){var md=r.GetMethodDefinition(mh);var row=new MethodInfoRow{Token=MetadataTokens.GetToken(mh),Type=tn,Name=r.GetString(md.Name),Handle=mh,Def=md};row.Full=MethodName(p,r,tn,md);_methods[row.Token]=row;list.Add(row);}}
+            foreach(var m in _methods.Values.Where(x=>x.Def.RelativeVirtualAddress!=0))Details(pe,r,p,m);
+            string dispatch="EAIRA.AgentServices.Functional.LocalOperatorRunner::Execute(System.String[])";string root="EAIRA.AgentServices.Functional.LocalOperatorRunner::ExecuteHealthAllowed(EAIRA.AgentServices.Functional.LocalOperatorRequest,EAIRA.AgentServices.Functional.LocalOperatorRoute)";
+            var dm=_methods.Values.SingleOrDefault(x=>x.Full==dispatch);var rm=_methods.Values.SingleOrDefault(x=>x.Full==root);if(dm==null||rm==null)throw new InvalidDataException("Exact Health method identity missing.");ValidateDispatch(dm,root);
+            var closure=new Dictionary<int,MethodInfoRow>();var q=new Queue<MethodInfoRow>();Action<MethodInfoRow> add=m=>{if(m!=null&&!closure.ContainsKey(m.Token)){closure[m.Token]=m;q.Enqueue(m);}};add(rm);var moduleCctor=_methods.Values.SingleOrDefault(x=>x.Type=="<Module>"&&x.Name==".cctor");add(moduleCctor);
+            while(q.Count>0){var m=q.Dequeue();if(m.Instructions==null)throw new InvalidDataException("Reachable same-module Health closure method has no body.");foreach(var i in m.Instructions){if((i.Kind=="method"||i.Kind=="field"||i.Kind=="type"||i.Kind=="token")&&Forbidden(i.Value))throw new InvalidDataException("Forbidden Health closure reference: "+i.Value+".");string dt=DeclaringType(i.Entity,r,p,_methods,_fields);while(!String.IsNullOrEmpty(dt)){List<MethodInfoRow> ml;if(byType.TryGetValue(dt,out ml))add(ml.SingleOrDefault(x=>x.Name==".cctor"));int plus=dt.LastIndexOf('+');if(plus<0)break;dt=dt.Substring(0,plus);}if(i.Target!=null&&(i.Op.Name=="call"||i.Op.Name=="callvirt"||i.Op.Name=="newobj"||i.Op.Name=="ldftn"||i.Op.Name=="ldvirtftn")){int tok=MetadataTokens.GetToken(i.Entity);if(i.Entity.Kind==HandleKind.MethodSpecification)tok=MetadataTokens.GetToken(r.GetMethodSpecification((MethodSpecificationHandle)i.Entity).Method);if(_methods.ContainsKey(tok))add(_methods[tok]);else if(i.Entity.Kind==HandleKind.MemberReference){var mr=r.GetMemberReference((MemberReferenceHandle)i.Entity);if(mr.Parent.Kind==HandleKind.TypeDefinition){var candidates=byType[p.Entity((EntityHandle)mr.Parent)].Where(x=>x.Full==i.Target).ToArray();if(candidates.Length==1)add(candidates[0]);}}}}}
+            var details=closure.Values.OrderBy(x=>x.Full,StringComparer.Ordinal).Select(m=>(object)new Dictionary<string,object>{{"method",m.Full},{"detailRows",m.Details}}).ToArray();var mrows=closure.Values.OrderBy(x=>x.Full,StringComparer.Ordinal).Select(m=>"METHOD|"+m.Full+"|"+SummarySha(m.Details)).ToArray();var crows=closure.Values.SelectMany(m=>m.Instructions.Where(i=>i.Target!=null&&(i.Op.Name=="call"||i.Op.Name=="callvirt"||i.Op.Name=="newobj"||i.Op.Name=="ldftn"||i.Op.Name=="ldvirtftn")).Select(i=>"CALL|"+m.Full+"|"+Hex8(i.Offset)+"|"+i.Op.Name.ToLowerInvariant()+"|"+i.Target)).OrderBy(x=>x,StringComparer.Ordinal).ToArray();
+            var operands=closure.Values.SelectMany(m=>m.Instructions.Where(i=>i.Kind=="method"||i.Kind=="field"||i.Kind=="type"||i.Kind=="token").Select(i=>i.Value)).ToArray();var forbiddenRows=operands.Where(Forbidden).Distinct(StringComparer.Ordinal).OrderBy(x=>x,StringComparer.Ordinal).ToArray();Func<string,string> typeOf=s=>{int x=s.LastIndexOf("::",StringComparison.Ordinal);return x<0?s:s.Substring(0,x);};int forbidden=forbiddenRows.Length;int factories=operands.Count(x=>typeOf(x).Contains("Factory"));int providers=operands.Count(x=>typeOf(x).Contains("Provider"));int networks=operands.Count(x=>typeOf(x).StartsWith("System.Net",StringComparison.Ordinal)||typeOf(x).Contains("Transport")||typeOf(x).Contains("Ollama")||typeOf(x).Contains("Socket"));if(forbidden!=0||factories!=0||providers!=0||networks!=0||closure.Values.Any(x=>(x.Def.Attributes&MethodAttributes.PinvokeImpl)!=0))throw new InvalidDataException("Forbidden Health closure reference: "+String.Join(";",forbiddenRows)+" counts="+forbidden+","+factories+","+providers+","+networks+".");
+            string[] eps={"EAIRA.AgentServices.Functional.LocalOperatorCompatibleLoopbackTransport::GetTags(System.Threading.CancellationToken)","EAIRA.AgentServices.Functional.LocalOperatorCompatibleLoopbackTransport::SendChat(System.Byte[],System.Threading.CancellationToken)"};string[] inner={"EAIRA.AgentServices.Functional.OllamaLoopbackTransport::GetTags(System.Threading.CancellationToken)","EAIRA.AgentServices.Functional.OllamaLoopbackTransport::SendChat(System.Byte[],System.Threading.CancellationToken)"};string record="EAIRA.AgentServices.Functional.LocalOperatorConnectAttemptMonitor::Record(System.String)";var ir=new List<string>();for(int z=0;z<2;z++){var m=_methods.Values.Single(x=>x.Full==eps[z]);if(m.Regions.Length!=0)throw new InvalidDataException("Instrumented entrypoint has EH.");var rc=m.Instructions.Where(i=>i.Target==record).ToArray();var ic=m.Instructions.Where(i=>i.Target==inner[z]).ToArray();if(rc.Length!=1||ic.Length!=1)throw new InvalidDataException("Instrumentation call count mismatch.");var bs=Blocks(m);var rootReach=Reach(bs,0);var dom=Dominators(bs,0,rootReach);var rb=bs.Single(b=>b.I.Contains(rc[0]));var ib=bs.Single(b=>b.I.Contains(ic[0]));if(!dom[ib.Start].Contains(rb.Start)||(rb.Start==ib.Start&&rc[0].Offset>=ic[0].Offset))throw new InvalidDataException("Record does not dominate inner call.");ir.Add("INSTRUMENT|"+eps[z]+"|"+Hex8(rc[0].Offset)+"|"+Hex8(ic[0].Offset)+"|"+record+"|"+inner[z]+"|DOMINATES");}
+            return new Dictionary<string,object>{{"dispatchMethod",dispatch},{"allowedRoot",root},{"dispatchRows",dm.Details},{"methodDetails",details},{"methodRows",mrows},{"callRows",crows},{"dispatchIl",Summary(dm.Details)},{"allowedClosureMethods",Summary(mrows)},{"allowedClosureCalls",Summary(crows)},{"forbiddenMatchCount",forbidden},{"factoryReferenceCount",factories},{"providerReferenceCount",providers},{"networkReferenceCount",networks},{"instrumentedEntryPoints",eps},{"instrumentationRows",ir.ToArray()},{"instrumentation",Summary(ir)}};
+        }
+    }
+}
+
+'@
+
+function Get-LocalOperatorHealthIlEvidence {
+    param([Parameter(Mandatory = $true)][string]$LiteralPath)
+    if ($null -eq ('EairaHealthIlInspector' -as [type])) {
+        Add-Type -TypeDefinition $script:EairaHealthIlInspectorSource -Language CSharp
+    }
+    return [EairaHealthIlInspector]::Inspect($LiteralPath)
+}
+
 
 function Get-Sha256 {
     param([Parameter(Mandatory = $true)][string]$LiteralPath)
@@ -1656,7 +1752,82 @@ function Invoke-LocalOperatorNegativeSpecimen {
     }
     catch { $rejected = $true }
     if (-not $rejected) { throw "Local Operator negative specimen was not rejected '$Name'." }
-    return [ordered]@{ name=$Name; compileExitCode=0; verifierRejected=$true; outputKind='LocalOperatorCli' }
+    return [ordered]@{ id=$Name; mutationKind='LEGACY_ADDITIONAL_SOURCE'; compileExitCode=0; rejected=$true; rejectionRule='LEGACY_POLICY_REJECTION' }
+}
+
+function Invoke-LocalOperatorHealthNegativeSpecimen {
+    param(
+        [Parameter(Mandatory = $true)][string]$Id,
+        [Parameter(Mandatory = $true)][string]$MutationKind,
+        [Parameter(Mandatory = $true)][string]$ExpectedRule,
+        [Parameter(Mandatory = $true)][string]$CompilerPath,
+        [Parameter(Mandatory = $true)][string[]]$CompilerArguments,
+        [Parameter(Mandatory = $true)][string]$CandidateSourcePath,
+        [Parameter(Mandatory = $true)][string]$CandidateSourceText,
+        [Parameter(Mandatory = $true)][string]$SpecimenRoot,
+        [Parameter(Mandatory = $true)]$ProjectContextPolicy,
+        [Parameter(Mandatory = $true)]$LoopbackPolicy
+    )
+    $sourceText = $CandidateSourceText
+    $payloadAnchor = 'string payload = LocalOperatorHealth.CanonicalPayload;'
+    switch ($Id) {
+        'HEALTH_FILESYSTEM_ENVIRONMENT_PROBE' { $sourceText = Replace-ExactSpecimenText -Text $sourceText -Old $payloadAnchor -New ('if (Environment.GetEnvironmentVariable("EAIRA_HEALTH_PROBE") != null || System.IO.File.Exists("EAIRA_HEALTH_PROBE")) throw new LocalOperatorException();' + "`n            " + $payloadAnchor) -SpecimenName $Id }
+        'HEALTH_DIRECT_SOCKET_CONSTRUCTION' { $sourceText = Replace-ExactSpecimenText -Text $sourceText -Old $payloadAnchor -New ('using (System.Net.Sockets.TcpClient forbidden = new System.Net.Sockets.TcpClient()) { if (forbidden.Connected) throw new LocalOperatorException(); }' + "`n            " + $payloadAnchor) -SpecimenName $Id }
+        'HEALTH_ADAPTER_FACTORY_INVOCATION' { $sourceText = Replace-ExactSpecimenText -Text $sourceText -Old $payloadAnchor -New ('if (factory.CreateTask() != null) throw new LocalOperatorException();' + "`n            " + $payloadAnchor) -SpecimenName $Id }
+        'HEALTH_RUNTIME_OBSERVATION' { $sourceText = Replace-ExactSpecimenText -Text $sourceText -Old $payloadAnchor -New ('long forbiddenTicks = DateTime.UtcNow.Ticks; int forbiddenRandom = new Random(1).Next(); object forbiddenProcess = new System.Diagnostics.ProcessStartInfo("cmd.exe"); object forbiddenRegistry = Microsoft.Win32.Registry.CurrentUser; if (forbiddenTicks == forbiddenRandom && forbiddenProcess == forbiddenRegistry) throw new LocalOperatorException();' + "`n            " + $payloadAnchor) -SpecimenName $Id }
+        'HEALTH_ADDITIONAL_PAYLOAD_MEMBER' { $sourceText = Replace-ExactSpecimenText -Text $sourceText -Old '\"providerConstruction\":\"NONE\",\"authority\":\"OBSERVATIONAL_NOT_AUTHORITY\"}' -New '\"providerConstruction\":\"NONE\",\"extra\":\"FORBIDDEN\",\"authority\":\"OBSERVATIONAL_NOT_AUTHORITY\"}' -SpecimenName $Id }
+        'HEALTH_OBSERVATION_AUTHORITY_MUTATION' {
+            $sourceText = Replace-ExactSpecimenText -Text $sourceText -Old '\"observationScope\":\"COMPILED_CONTRACT_ONLY\",\"operatorSchema\"' -New '\"observationScope\":\"RUNTIME_OBSERVED\",\"operatorSchema\"' -SpecimenName ($Id + '_STEP_1')
+            $sourceText = Replace-ExactSpecimenText -Text $sourceText -Old '\"writes\":\"NONE\",\"providerConstruction\":\"NONE\",\"authority\":\"OBSERVATIONAL_NOT_AUTHORITY\"}' -New '\"writes\":\"NONE\",\"providerConstruction\":\"NONE\",\"authority\":\"AUTHORITATIVE\"}' -SpecimenName ($Id + '_STEP_2')
+        }
+        'HEALTH_PROVIDER_MODEL_ROOT_ACCEPTANCE' {
+            $anchor = 'if (args[0] == "knowledge" && args.Length == 7 && args[1] == "--root" && args[3] == "--trace" && args[5] == "--query")'
+            $insert = 'if (args[0] == "health" && args.Length == 9 && args[1] == "--trace" && args[3] == "--provider" && args[4] == "ollama-local" && args[5] == "--model" && args[6] == "qwen3:4b" && args[7] == "--root")' + "`n" +
+                '                return new LocalOperatorRequest(LocalOperatorCapability.Health, args[2], "OLLAMA_LOOPBACK_V1", "qwen3:4b", args[8], "HEALTH", "COMPILED CONTRACT STATUS");' + "`n            " + $anchor
+            $sourceText = Replace-ExactSpecimenText -Text $sourceText -Old $anchor -New $insert -SpecimenName $Id
+        }
+        default { throw "Unknown Health specimen '$Id'." }
+    }
+    $root = Join-Path $SpecimenRoot $Id.ToLowerInvariant().Replace('_','-')
+    New-Item -ItemType Directory -Path $root | Out-Null
+    $sourcePath = Join-Path $root 'LocalOperator.cs'
+    [IO.File]::WriteAllText($sourcePath,$sourceText,[Text.UTF8Encoding]::new($false))
+    $outputPath = Join-Path $root ($Id.ToLowerInvariant().Replace('_','-') + '.exe')
+    $arguments = @($CompilerArguments)
+    $sourceIndexes = @(for($i=0;$i-lt$arguments.Count;$i++){if([string]$arguments[$i] -ceq $CandidateSourcePath){$i}})
+    $outputIndexes = @(for($i=0;$i-lt$arguments.Count;$i++){if([string]$arguments[$i] -clike '/out:*'){$i}})
+    if ($sourceIndexes.Count -ne 1 -or $outputIndexes.Count -ne 1) { throw "Health specimen argument manifest mismatch '$Id'." }
+    $arguments[$sourceIndexes[0]] = $sourcePath
+    $arguments[$outputIndexes[0]] = "/out:$outputPath"
+    $compilerOutput = @(& $CompilerPath @arguments 2>&1)
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $outputPath -PathType Leaf)) { throw "Health specimen did not compile '$Id': $($compilerOutput -join [Environment]::NewLine)" }
+    $actualRule = $null
+    try {
+        $healthIl = Get-LocalOperatorHealthIlEvidence -LiteralPath $outputPath
+    }
+    catch {
+        if ($_.Exception.Message.IndexOf('Forbidden Health closure reference', [StringComparison]::Ordinal) -ge 0) { $actualRule = 'FORBIDDEN_HEALTH_CLOSURE_MEMBER' }
+        else { throw "Health specimen '$Id' failed under an unexpected targeted IL rule: $($_.Exception.Message)" }
+    }
+    if ($null -eq $actualRule) {
+        Assert-NoForbiddenBinaryMetadata -LiteralPath $outputPath -AllowLoopbackHttp -AllowProjectContextPInvoke
+        $specimenIoReferences = @(Get-SystemIoMemberReferences -LiteralPath $outputPath)
+        $expectedSpecimenIoReferences = @('System.IO.Stream::get_CanRead','System.IO.Stream::ReadAsync','System.IO.Stream::Write')
+        if (($specimenIoReferences -join "`n") -cne ($expectedSpecimenIoReferences -join "`n")) { throw "Health specimen '$Id' System.IO union policy mismatch: $($specimenIoReferences -join ', ')" }
+        [void](Assert-ProjectContextPInvokePolicy -LiteralPath $outputPath -Policy $ProjectContextPolicy -OutputKind 'LocalOperatorCli' -Discovery)
+        [void](Assert-ProjectContextPInvokeCallerPolicy -LiteralPath $outputPath -Policy $ProjectContextPolicy -OutputKind 'LocalOperatorCli' -Discovery)
+        Assert-LoopbackMetadataPolicy -LiteralPath $outputPath -Policy $LoopbackPolicy
+        if ($Id -ceq 'HEALTH_PROVIDER_MODEL_ROOT_ACCEPTANCE') {
+            $alternate = Invoke-ExactChannelTest -Executable $outputPath -Arguments @('health','--trace','0123456789ABCDEF0123456789ABCDEF','--provider','ollama-local','--model','qwen3:4b','--root','C:\EAIRA')
+            if ($alternate.exitCode -ne 64) { $actualRule = 'HEALTH_ALTERNATE_GRAMMAR_ACCEPTED' }
+        }
+        else {
+            $health = Invoke-ExactChannelTest -Executable $outputPath -Arguments @('health','--trace','0123456789ABCDEF0123456789ABCDEF')
+            if ($health.exitCode -ne 0 -or $health.stderrBytes.Length -ne 0 -or $health.stdoutBytes.Length -ne 927 -or $health.stdoutSha256 -cne '8E7B9415938850843E23E933A82B6FCB07244AD8814706BB998C4C11D9D4D91A') { $actualRule = 'HEALTH_GOLDEN_MISMATCH' }
+        }
+    }
+    if ($actualRule -cne $ExpectedRule) { throw "Health specimen '$Id' rejection mismatch: expected=$ExpectedRule actual=$actualRule" }
+    return [ordered]@{ id=$Id; mutationKind=$MutationKind; compileExitCode=0; rejected=$true; rejectionRule=$actualRule }
 }
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $componentRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot '..'))
@@ -1815,12 +1986,12 @@ if (@($profile.projectKnowledge.frameworkReferences).Count -ne 2 -or
 
 if ($profile.projectQa.contract -ne 'EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1' -or $profile.projectQa.output -ne 'EAIRA.ProjectQa.Cli.exe' -or $profile.projectQa.outputHarness -ne 'EAIRA.ProjectQa.Harness.exe' -or $profile.projectQa.nativeSymbols -ne 'EAIRA_PROJECT_READONLY_NATIVE,EAIRA_PROJECT_QA_NATIVE' -or $profile.projectQa.testSeamSymbol -ne 'EAIRA_PROJECT_QA_TEST_SEAM' -or $profile.projectQa.maximumPromptBytes -ne 12000 -or $profile.projectQa.maximumBodyBytes -ne 16384 -or $profile.projectQa.maximumAnswerBytes -ne 2048 -or $profile.projectQa.maximumCitations -ne 8 -or $profile.projectQa.network -ne 'LOOPBACK_ONLY' -or $profile.projectQa.writes -ne 'NONE') { throw 'Project-QA policy mismatch.' }
 
-$expectedOperatorCapabilities = @('TASK','KNOWLEDGE','PROJECT_QA')
+$expectedOperatorCapabilities = @('TASK','KNOWLEDGE','PROJECT_QA','HEALTH')
 $expectedOperatorStatuses = @('PASS:0','INVALID_REQUEST:64','DENIED:77','PROVIDER_ERROR:79','CONTEXT_ERROR:80','KNOWLEDGE_ERROR:81','QA_VALIDATION_ERROR:82','ORCHESTRATION_ERROR:83','OUTPUT_ERROR:84')
 $actualOperatorStatuses = @($profile.localOperator.statusExitMap | ForEach-Object { [string]$_.status + ':' + [int]$_.exitCode })
 $expectedOperatorCliSources = @('src/ContractCodec.cs','src/AgentCore.cs','src/ModelProviders.cs','src/LocalTaskIntake.cs','src/LocalModelProvider.cs','src/OllamaLoopbackTransport.cs','src/ProjectReadOnlyPlatform.cs','src/ProjectContext.cs','src/ProjectKnowledge.cs','src/ProjectQa.cs','src/LocalOperator.cs','src/LocalOperatorHost.cs')
 $expectedOperatorHarnessSources = @('src/ContractCodec.cs','src/AgentCore.cs','src/ModelProviders.cs','src/LocalTaskIntake.cs','src/LocalModelProvider.cs','src/ProjectReadOnlyPlatform.cs','src/ProjectContext.cs','src/ProjectKnowledge.cs','src/ProjectQa.cs','src/LocalOperator.cs','tests/LocalOperatorHarness.cs')
-if ($profile.localOperator.contract -ne 'EAIRA_LOCAL_OPERATOR_V1' -or $profile.localOperator.revision -ne 1 -or
+if ($profile.localOperator.contract -ne 'EAIRA_LOCAL_OPERATOR_V1' -or $profile.localOperator.revision -ne 2 -or
     $profile.localOperator.output -ne 'EAIRA.LocalOperator.Cli.exe' -or $profile.localOperator.outputHarness -ne 'EAIRA.LocalOperator.Harness.exe' -or
     $profile.localOperator.nativeSymbols -ne 'EAIRA_PROJECT_READONLY_NATIVE,EAIRA_PROJECT_CONTEXT_NATIVE,EAIRA_PROJECT_KNOWLEDGE_NATIVE,EAIRA_PROJECT_QA_NATIVE,EAIRA_LOCAL_OPERATOR_NATIVE' -or
     $profile.localOperator.testSeamSymbols -ne 'EAIRA_PROJECT_CONTEXT_TEST_SEAM,EAIRA_PROJECT_KNOWLEDGE_TEST_SEAM,EAIRA_PROJECT_QA_TEST_SEAM,EAIRA_LOCAL_OPERATOR_TEST_SEAM' -or
@@ -1829,8 +2000,10 @@ if ($profile.localOperator.contract -ne 'EAIRA_LOCAL_OPERATOR_V1' -or $profile.l
     (($actualOperatorStatuses -join "`n") -cne ($expectedOperatorStatuses -join "`n")) -or
     ((@($profile.localOperator.sourceOrderCli | ForEach-Object { [string]$_ }) -join "`n") -cne ($expectedOperatorCliSources -join "`n")) -or
     ((@($profile.localOperator.sourceOrderHarness | ForEach-Object { [string]$_ }) -join "`n") -cne ($expectedOperatorHarnessSources -join "`n")) -or
-    $profile.localOperator.expectedHarnessTests -ne 96 -or $profile.localOperator.expectedHarnessCanonicalNameBytes -ne 2409 -or
-    [string]$profile.localOperator.expectedHarnessCaseNameSha256 -cne '0AAF52EE6A087B487B6497676F48BA7AD0D36CB987C149CC1BADAD9CA5D2FE68') {
+    $profile.localOperator.expectedHarnessTests -ne 119 -or $profile.localOperator.expectedHarnessCanonicalNameBytes -ne 3095 -or
+    [string]$profile.localOperator.expectedHarnessCaseNameSha256 -cne '198B2B892C9E6516B50B2C2CAF86AABA058B4D8B0D335AD445DC8685230F8A86' -or
+    $profile.localOperator.legacyHarnessTests -ne 96 -or $profile.localOperator.legacyHarnessCanonicalNameBytes -ne 2409 -or
+    [string]$profile.localOperator.legacyHarnessCaseNameSha256 -cne '0AAF52EE6A087B487B6497676F48BA7AD0D36CB987C149CC1BADAD9CA5D2FE68') {
     throw 'Local Operator policy mismatch.'
 }
 if (@($profile.localOperator.frameworkReferences.Cli).Count -ne 3 -or @($profile.localOperator.frameworkReferences.Harness).Count -ne 2 -or
@@ -1886,6 +2059,9 @@ $localOperatorBoundPaths = @(
     'docs/project/planning/EAIRA_M5_SLICE1_EXACT_IMPLEMENTATION_DESIGN_R3.md',
     'docs/project/planning/EAIRA_M5_SLICE1_EXACT_IMPLEMENTATION_DESIGN_R3R1.md',
     'docs/project/planning/EAIRA_M5_SLICE1_EXACT_IMPLEMENTATION_DESIGN_R3R2.md',
+    'docs/project/strategy/EAIRA_M5_SLICE2_SCOPE_DECISION.md',
+    'docs/project/planning/EAIRA_M5_SLICE2_BOUNDED_OPERATOR_HEALTH_AND_CAPABILITY_STATUS_SCOPE_PACKAGE.md',
+    'docs/project/planning/EAIRA_M5_SLICE2_EXACT_IMPLEMENTATION_DESIGN.md',
     'apps/agent-services/README.md',
     'apps/agent-services/contracts/EAIRA_LOCAL_OPERATOR_V1.md',
     'apps/agent-services/src/ContractCodec.cs',
@@ -1905,8 +2081,8 @@ $localOperatorBoundPaths = @(
     'apps/agent-services/build/Invoke-Gate25UnsignedRelease.ps1'
 )
 $profileOperatorInputs = @($profile.localOperator.boundRepositoryInputs)
-if ($profileOperatorInputs.Count -ne 28 -or ((@($profileOperatorInputs | ForEach-Object { [string]$_.file })) -join "`n") -cne ($localOperatorBoundPaths -join "`n")) {
-    throw 'Local Operator profile must bind the exact ordered 28 inputs.'
+if ($profileOperatorInputs.Count -ne 31 -or ((@($profileOperatorInputs | ForEach-Object { [string]$_.file })) -join "`n") -cne ($localOperatorBoundPaths -join "`n")) {
+    throw 'Local Operator profile must bind the exact ordered 31 inputs.'
 }
 $localOperatorInputsBound = $true
 $localOperatorRepositoryEvidence = @()
@@ -3400,20 +3576,29 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
         'SENTINEL_RAW_ROOT','SENTINEL_RAW_INPUT','SENTINEL_RAW_CONTENT','SENTINEL_RAW_PROMPT','SENTINEL_REQUEST_BODY','SENTINEL_PROVIDER_RESPONSE','SENTINEL_PER_FILE_DIGEST','PROVIDER_TOOL_CALL','PROVIDER_IMAGE','PROVIDER_THINKING','PROVIDER_UNKNOWN_MEMBER','SEQUENCE_TASK_KNOWLEDGE_QA','SEQUENCE_QA_KNOWLEDGE_TASK',
         'PAYLOAD_16382','PAYLOAD_16383','PAYLOAD_16384_REJECT','LINE_16969','LINE_16970','LINE_16971_REJECT','CHANNEL_SINGLE_WRITE_LF','CHANNEL_EMPTY_STDERR','CHANNEL_NO_PARTIAL_FAILURE','REPLAY_TRACE_CORRELATION_ONLY','LEGACY_QA_COMPATIBILITY',
         'CROSSWALK_TASK_INVALID','CROSSWALK_TASK_PROVIDER_ERROR','CROSSWALK_TASK_CONTEXT_ERROR','CROSSWALK_KNOWLEDGE_DENIED','CROSSWALK_KNOWLEDGE_INVALID','CROSSWALK_KNOWLEDGE_ERROR','CROSSWALK_QA_DENIED','CROSSWALK_QA_INVALID','CROSSWALK_QA_PROVIDER_ERROR','CROSSWALK_QA_CONTEXT_ERROR','CROSSWALK_QA_KNOWLEDGE_ERROR','CROSSWALK_QA_VALIDATION_ERROR','CROSSWALK_ORCHESTRATION_ERROR','CROSSWALK_OUTPUT_ERROR','INVALID_STDIN_TOKEN','INVALID_ENV_TOKEN','INVALID_CONFIG_TOKEN','QA_FAILURE_SNAPSHOT_FACTORY','QA_FAILURE_SNAPSHOT_READ_CONTEXT','QA_FAILURE_SNAPSHOT_READ_KNOWLEDGE','QA_FAILURE_PROMPT_BUILD','QA_FAILURE_BODY_BUILD','QA_FAILURE_PROVIDER_FACTORY','QA_FAILURE_DECODE'
+        'HEALTH_CANONICAL_REQUEST','HEALTH_ROUTE_EXACT','HEALTH_PAYLOAD_GOLDEN','HEALTH_WRAPPER_GOLDEN','HEALTH_ZERO_FACTORIES','HEALTH_DENY_THREE_ROLES_ZERO_FACTORIES','HEALTH_ALLOW_FIVE_ROLES','HEALTH_CROSS_TRACE_PAYLOAD_STABLE','HEALTH_CROSS_TRACE_WRAPPER_DISTINCT','HEALTH_INVALID_MISSING_TRACE','HEALTH_INVALID_TRACE_LOWER','HEALTH_INVALID_TRACE_SHORT','HEALTH_INVALID_TRACE_LONG','HEALTH_INVALID_TRACE_NONHEX','HEALTH_INVALID_EXTRA_ARG','HEALTH_INVALID_DUPLICATE_FLAG','HEALTH_INVALID_REORDERED_FLAG','HEALTH_INVALID_RESPONSE_FILE','HEALTH_INVALID_ROOT_FLAG','HEALTH_INVALID_PROVIDER_FLAG','HEALTH_OUTPUT_TAMPER_REJECT','HEALTH_ROUTE_TAMPER_REJECT','HEALTH_LEGACY_SEQUENCE_COMPATIBILITY'
     )
     $actualLocalOperatorCases = @($localOperatorHarnessJson.caseNames | ForEach-Object { [string]$_ })
-    $operatorFrameText = 'EAIRA_M5_SLICE1_CASE_NAMES_V1' + [char]0
+    $operatorFrameText = 'EAIRA_M5_SLICE2_CASE_NAMES_V1' + [char]0
     foreach ($name in $actualLocalOperatorCases) { $operatorFrameText += $name.Length.ToString([Globalization.CultureInfo]::InvariantCulture) + ':' + $name }
     $operatorFrameBytes = [Text.Encoding]::UTF8.GetBytes($operatorFrameText)
     $operatorFrameSha256 = Get-ByteArraySha256 -Bytes $operatorFrameBytes
+    $operatorLegacyFrameText = 'EAIRA_M5_SLICE1_CASE_NAMES_V1' + [char]0
+    foreach ($name in @($actualLocalOperatorCases | Select-Object -First 96)) { $operatorLegacyFrameText += $name.Length.ToString([Globalization.CultureInfo]::InvariantCulture) + ':' + $name }
+    $operatorLegacyFrameBytes = [Text.Encoding]::UTF8.GetBytes($operatorLegacyFrameText)
+    $operatorLegacyFrameSha256 = Get-ByteArraySha256 -Bytes $operatorLegacyFrameBytes
     $localOperatorHarnessPass = $localOperatorHarnessTest.exitCode -eq 0 -and $localOperatorHarnessTest.stderrBytes.Length -eq 0 -and
         [string]$localOperatorHarnessJson.schema -ceq 'EAIRA_LOCAL_OPERATOR_HARNESS_V1' -and [string]$localOperatorHarnessJson.status -ceq 'PASS' -and
-        [int]$localOperatorHarnessJson.testsPassed -eq 96 -and (($actualLocalOperatorCases -join "`n") -ceq ($expectedLocalOperatorCases -join "`n")) -and
-        $operatorFrameBytes.Length -eq 2409 -and $operatorFrameSha256 -ceq '0AAF52EE6A087B487B6497676F48BA7AD0D36CB987C149CC1BADAD9CA5D2FE68' -and
+        [int]$localOperatorHarnessJson.testsPassed -eq 119 -and (($actualLocalOperatorCases -join "`n") -ceq ($expectedLocalOperatorCases -join "`n")) -and
+        $operatorFrameBytes.Length -eq 3095 -and $operatorFrameSha256 -ceq '198B2B892C9E6516B50B2C2CAF86AABA058B4D8B0D335AD445DC8685230F8A86' -and
+        $operatorLegacyFrameBytes.Length -eq 2409 -and $operatorLegacyFrameSha256 -ceq '0AAF52EE6A087B487B6497676F48BA7AD0D36CB987C149CC1BADAD9CA5D2FE68' -and
+        [int]$localOperatorHarnessJson.legacyTestsPassed -eq 96 -and [int]$localOperatorHarnessJson.legacyCaseNameFramedBytes -eq 2409 -and [string]$localOperatorHarnessJson.legacyCaseNameSha256 -ceq $operatorLegacyFrameSha256 -and
         [int]$localOperatorHarnessJson.caseNameFramedBytes -eq $operatorFrameBytes.Length -and [string]$localOperatorHarnessJson.caseNameSha256 -ceq $operatorFrameSha256 -and
         [int]$localOperatorHarnessJson.wrapperMaximumBytes -eq 587 -and [string]$localOperatorHarnessJson.network -ceq 'NONE' -and [string]$localOperatorHarnessJson.writes -ceq 'NONE'
     if (-not $localOperatorHarnessPass) { throw 'Local Operator harness policy failed.' }
-    $localOperatorHarnessEvidence = [ordered]@{ file=(Get-Item -LiteralPath $localOperatorHarnessOutputPath).Name; bytes=(Get-Item -LiteralPath $localOperatorHarnessOutputPath).Length; sha256=Get-Sha256 -LiteralPath $localOperatorHarnessOutputPath; testsPassed=96; caseNames=$actualLocalOperatorCases; caseNameFramedBytes=$operatorFrameBytes.Length; caseNameSha256=$operatorFrameSha256; wrapperMaximumBytes=587; metadataInventory=$localOperatorHarnessMetadata; offlineTestsPass=$true }
+    $operatorHealthHarnessPass = [int]$localOperatorHarnessJson.healthGuardDenial.exitCode -eq 77 -and [int]$localOperatorHarnessJson.healthGuardDenial.roles -eq 3 -and [bool]$localOperatorHarnessJson.healthGuardDenial.payloadNull -and [int]$localOperatorHarnessJson.healthGuardDenial.factoryCalls -eq 0 -and [int]$localOperatorHarnessJson.healthGuardDenial.connectAttemptDelta -eq 0 -and [int]$localOperatorHarnessJson.healthConnectAttemptMonitor.positiveControlDelta -eq 1 -and [int]$localOperatorHarnessJson.healthConnectAttemptMonitor.healthDelta -eq 0 -and [int]$localOperatorHarnessJson.healthConnectAttemptMonitor.denialDelta -eq 0
+    if (-not $operatorHealthHarnessPass) { throw 'Local Operator Health Guard or connect-attempt monitor harness evidence failed.' }
+    $localOperatorHarnessEvidence = [ordered]@{ file=(Get-Item -LiteralPath $localOperatorHarnessOutputPath).Name; bytes=(Get-Item -LiteralPath $localOperatorHarnessOutputPath).Length; sha256=Get-Sha256 -LiteralPath $localOperatorHarnessOutputPath; testsPassed=119; caseNames=$actualLocalOperatorCases; caseNameFramedBytes=$operatorFrameBytes.Length; caseNameSha256=$operatorFrameSha256; legacyTestsPassed=96; legacyCaseNameFramedBytes=$operatorLegacyFrameBytes.Length; legacyCaseNameSha256=$operatorLegacyFrameSha256; healthGuardDenial=$localOperatorHarnessJson.healthGuardDenial; healthConnectAttemptMonitor=$localOperatorHarnessJson.healthConnectAttemptMonitor; wrapperMaximumBytes=587; metadataInventory=$localOperatorHarnessMetadata; offlineTestsPass=$true }
 
     $localOperatorOutputPath = Join-Path $buildRoot ([string]$profile.localOperator.output)
     $localOperatorArguments = @('/nologo','/noconfig','/target:exe','/platform:x64','/optimize+','/debug-','/checked+','/highentropyva+','/warn:4','/warnaserror+','/nostdlib+',('/define:' + [string]$profile.localOperator.nativeSymbols),"/reference:$resolvedReferences\mscorlib.dll","/reference:$resolvedReferences\System.dll","/reference:$resolvedReferences\System.Net.Http.dll",'/main:EAIRA.AgentServices.Functional.LocalOperatorHost',"/out:$localOperatorOutputPath")
@@ -3431,27 +3616,43 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
     $localOperatorLoopbackMetadata = Get-LoopbackMetadataReferences -LiteralPath $localOperatorOutputPath
     if (-not $LocalOperatorDiscovery) { Assert-LoopbackMetadataPolicy -LiteralPath $localOperatorOutputPath -Policy $profile.localOperator.loopbackMetadataAllowlist -DevelopmentProbe:$DevelopmentProbe }
     $localOperatorMetadata = Assert-LocalOperatorMetadataPolicy -LiteralPath $localOperatorOutputPath -Policy $profile.localOperator -OutputKind 'Cli' -Discovery:$LocalOperatorDiscovery
+    $localOperatorHealthIl = Get-LocalOperatorHealthIlEvidence -LiteralPath $localOperatorOutputPath
+    $healthControlFlowProfileMatch = $null
+    $healthInstrumentationProfileMatch = $null
+    if (-not $LocalOperatorDiscovery) {
+        $healthControlFlowProfileMatch =
+            (($localOperatorHealthIl.dispatchIl | ConvertTo-Json -Depth 3 -Compress) -ceq ($profile.localOperator.healthControlFlow.dispatchIl | ConvertTo-Json -Depth 3 -Compress)) -and
+            (($localOperatorHealthIl.allowedClosureMethods | ConvertTo-Json -Depth 3 -Compress) -ceq ($profile.localOperator.healthControlFlow.allowedClosureMethods | ConvertTo-Json -Depth 3 -Compress)) -and
+            (($localOperatorHealthIl.allowedClosureCalls | ConvertTo-Json -Depth 3 -Compress) -ceq ($profile.localOperator.healthControlFlow.allowedClosureCalls | ConvertTo-Json -Depth 3 -Compress))
+        $healthInstrumentationProfileMatch = (($localOperatorHealthIl.instrumentation | ConvertTo-Json -Depth 3 -Compress) -ceq ($profile.localOperator.healthConnectAttemptMonitor.instrumentation | ConvertTo-Json -Depth 3 -Compress))
+        if (-not $healthControlFlowProfileMatch -or -not $healthInstrumentationProfileMatch) { throw 'Local Operator Health targeted IL profile mismatch.' }
+    }
 
     $operatorInvalid = Invoke-ExactChannelTest -Executable $localOperatorOutputPath -Arguments @()
     $operatorDenied = Invoke-ExactChannelTest -Executable $localOperatorOutputPath -Arguments @('task','--provider','mock','--trace','00112233445566778899AABBCCDDEEFF','--goal','write file')
     $operatorMock = Invoke-ExactChannelTest -Executable $localOperatorOutputPath -Arguments @('task','--provider','mock','--trace','00112233445566778899AABBCCDDEEFF','--goal','plan')
-    try { $operatorInvalidJson=[Text.Encoding]::UTF8.GetString($operatorInvalid.stdoutBytes)|ConvertFrom-Json; $operatorDeniedJson=[Text.Encoding]::UTF8.GetString($operatorDenied.stdoutBytes)|ConvertFrom-Json; $operatorMockJson=[Text.Encoding]::UTF8.GetString($operatorMock.stdoutBytes)|ConvertFrom-Json } catch { throw 'Local Operator CLI output is not valid JSON.' }
+    $operatorHealth = Invoke-ExactChannelTest -Executable $localOperatorOutputPath -Arguments @('health','--trace','0123456789ABCDEF0123456789ABCDEF')
+    try { $operatorInvalidJson=[Text.Encoding]::UTF8.GetString($operatorInvalid.stdoutBytes)|ConvertFrom-Json; $operatorDeniedJson=[Text.Encoding]::UTF8.GetString($operatorDenied.stdoutBytes)|ConvertFrom-Json; $operatorMockJson=[Text.Encoding]::UTF8.GetString($operatorMock.stdoutBytes)|ConvertFrom-Json; $operatorHealthJson=[Text.Encoding]::UTF8.GetString($operatorHealth.stdoutBytes)|ConvertFrom-Json } catch { throw 'Local Operator CLI output is not valid JSON.' }
     $operatorChannels = [ordered]@{
         invalid=[ordered]@{exitCode=$operatorInvalid.exitCode;stdoutBytes=$operatorInvalid.stdoutBytes.Length;stdoutSha256=$operatorInvalid.stdoutSha256;stderrBytes=$operatorInvalid.stderrBytes.Length}
         denied=[ordered]@{exitCode=$operatorDenied.exitCode;stdoutBytes=$operatorDenied.stdoutBytes.Length;stdoutSha256=$operatorDenied.stdoutSha256;stderrBytes=$operatorDenied.stderrBytes.Length}
         mock=[ordered]@{exitCode=$operatorMock.exitCode;stdoutBytes=$operatorMock.stdoutBytes.Length;stdoutSha256=$operatorMock.stdoutSha256;stderrBytes=$operatorMock.stderrBytes.Length}
+        health=[ordered]@{exitCode=$operatorHealth.exitCode;stdoutBytes=$operatorHealth.stdoutBytes.Length;stdoutSha256=$operatorHealth.stdoutSha256;stderrBytes=$operatorHealth.stderrBytes.Length}
     }
     $channelShapePass = $true
-    foreach ($channel in @($operatorInvalid,$operatorDenied,$operatorMock)) {
+    foreach ($channel in @($operatorInvalid,$operatorDenied,$operatorMock,$operatorHealth)) {
         $lfCount=@($channel.stdoutBytes|Where-Object{$_ -eq 10}).Count; $crCount=@($channel.stdoutBytes|Where-Object{$_ -eq 13}).Count
         if ($channel.stderrBytes.Length -ne 0 -or $channel.stdoutBytes.Length -eq 0 -or $channel.stdoutBytes[$channel.stdoutBytes.Length-1] -ne 10 -or $lfCount -ne 1 -or $crCount -ne 0 -or $channel.stdoutBytes.Length -gt 16970) { $channelShapePass=$false }
     }
     $operatorChannelSemanticPass = $channelShapePass -and $operatorInvalid.exitCode -eq 64 -and [string]$operatorInvalidJson.status -ceq 'INVALID_REQUEST' -and $null -eq $operatorInvalidJson.audit -and
         $operatorDenied.exitCode -eq 77 -and [string]$operatorDeniedJson.status -ceq 'DENIED' -and $null -eq $operatorDeniedJson.payload -and [string]$operatorDeniedJson.network -ceq 'NONE' -and $null -ne $operatorDeniedJson.audit -and
-        $operatorMock.exitCode -eq 0 -and [string]$operatorMockJson.status -ceq 'PASS' -and [string]$operatorMockJson.capability -ceq 'TASK' -and [string]$operatorMockJson.network -ceq 'NONE' -and $null -ne $operatorMockJson.payload -and ((@($operatorMockJson.payload.PSObject.Properties.Name)) -join ',') -ceq 'schemaVersion,status,provider,traceId,outcome,network,writes,result' -and [int]$operatorMockJson.payload.schemaVersion -eq 1 -and [string]$operatorMockJson.payload.status -ceq 'PASS' -and [string]$operatorMockJson.payload.provider -ceq 'mock-v1' -and [string]$operatorMockJson.payload.traceId -ceq '00112233445566778899AABBCCDDEEFF' -and [string]$operatorMockJson.payload.outcome -ceq 'PASS' -and [string]$operatorMockJson.payload.network -ceq 'NONE' -and [string]$operatorMockJson.payload.writes -ceq 'NONE' -and $null -ne $operatorMockJson.payload.result
+        $operatorMock.exitCode -eq 0 -and [string]$operatorMockJson.status -ceq 'PASS' -and [string]$operatorMockJson.capability -ceq 'TASK' -and [string]$operatorMockJson.network -ceq 'NONE' -and $null -ne $operatorMockJson.payload -and ((@($operatorMockJson.payload.PSObject.Properties.Name)) -join ',') -ceq 'schemaVersion,status,provider,traceId,outcome,network,writes,result' -and [int]$operatorMockJson.payload.schemaVersion -eq 1 -and [string]$operatorMockJson.payload.status -ceq 'PASS' -and [string]$operatorMockJson.payload.provider -ceq 'mock-v1' -and [string]$operatorMockJson.payload.traceId -ceq '00112233445566778899AABBCCDDEEFF' -and [string]$operatorMockJson.payload.outcome -ceq 'PASS' -and [string]$operatorMockJson.payload.network -ceq 'NONE' -and [string]$operatorMockJson.payload.writes -ceq 'NONE' -and $null -ne $operatorMockJson.payload.result -and
+        $operatorHealth.exitCode -eq 0 -and $operatorHealth.stderrBytes.Length -eq 0 -and $operatorHealth.stdoutBytes.Length -eq 927 -and $operatorHealth.stdoutSha256 -ceq '8E7B9415938850843E23E933A82B6FCB07244AD8814706BB998C4C11D9D4D91A' -and [string]$operatorHealthJson.status -ceq 'PASS' -and [string]$operatorHealthJson.capability -ceq 'HEALTH' -and [string]$operatorHealthJson.network -ceq 'NONE' -and [string]$operatorHealthJson.writes -ceq 'NONE' -and [string]$operatorHealthJson.authority -ceq 'OBSERVATIONAL_NOT_AUTHORITY' -and [string]$operatorHealthJson.requestSha256 -ceq '0E10A550738D8618EFB0C845E4E1C6357F11C64258BE78993E64791DC0456990' -and [string]$operatorHealthJson.routeSha256 -ceq '613DCE7408D3B68CD51A2E1C01A51A0BA20E20A84B2BE20438319D102446B429' -and [string]$operatorHealthJson.payloadSha256 -ceq '9E3EFCDB24B49E2C27254772DFF72DEF88968ECF0A76C60D4E6724AE90E2E181' -and ((@($operatorHealthJson.payload.PSObject.Properties.Name)) -join ',') -ceq 'schema,status,observationScope,operatorSchema,capabilities,guardPosture,network,reads,writes,providerConstruction,authority' -and [string]$operatorHealthJson.payload.schema -ceq 'EAIRA_OPERATOR_HEALTH_V1' -and [string]$operatorHealthJson.payload.status -ceq 'POLICY_READY' -and [string]$operatorHealthJson.payload.observationScope -ceq 'COMPILED_CONTRACT_ONLY' -and ((@($operatorHealthJson.payload.capabilities) -join ',') -ceq 'TASK,KNOWLEDGE,PROJECT_QA,HEALTH')
     $operatorChannelProfileMatch = $LocalOperatorDiscovery -or (($operatorChannels|ConvertTo-Json -Depth 5 -Compress) -ceq ($profile.localOperator.channelMatrix|ConvertTo-Json -Depth 5 -Compress))
     if (-not $operatorChannelSemanticPass -or -not $operatorChannelProfileMatch) { throw 'Local Operator CLI channel matrix failed.' }
-    $localOperatorEvidence = [ordered]@{ file=(Get-Item -LiteralPath $localOperatorOutputPath).Name; bytes=(Get-Item -LiteralPath $localOperatorOutputPath).Length; sha256=Get-Sha256 -LiteralPath $localOperatorOutputPath; channels=$operatorChannels; channelMatrixPass=$true; channelMatrixProfileMatch=if($LocalOperatorDiscovery){$null}else{$true}; channelMatrixDiscoveryBypass=[bool]$LocalOperatorDiscovery; metadataInventory=$localOperatorMetadata; loopbackMetadataAllowlist=$localOperatorLoopbackMetadata; moduleRefs=@($localOperatorPInvokeMetadata.modules); pInvokeRows=@($localOperatorPInvokeMetadata.rows); approvedNativeCallerIl=@($localOperatorCallerEvidence.approvedCallerIl); normalizedNativeInventory=$localOperatorNativeSemantic; offlineTestsPass=$true }
+    $healthControlFlowEvidence = [ordered]@{ dispatchMethod=[string]$localOperatorHealthIl.dispatchMethod; allowedRoot=[string]$localOperatorHealthIl.allowedRoot; dispatchRows=@($localOperatorHealthIl.dispatchRows); methodDetails=@($localOperatorHealthIl.methodDetails); methodRows=@($localOperatorHealthIl.methodRows); callRows=@($localOperatorHealthIl.callRows); dispatchIl=$localOperatorHealthIl.dispatchIl; allowedClosureMethods=$localOperatorHealthIl.allowedClosureMethods; allowedClosureCalls=$localOperatorHealthIl.allowedClosureCalls; forbiddenMatchCount=[int]$localOperatorHealthIl.forbiddenMatchCount; factoryReferenceCount=[int]$localOperatorHealthIl.factoryReferenceCount; providerReferenceCount=[int]$localOperatorHealthIl.providerReferenceCount; networkReferenceCount=[int]$localOperatorHealthIl.networkReferenceCount; connectAttemptDelta=[int]$localOperatorHarnessJson.healthConnectAttemptMonitor.healthDelta; profileMatch=$healthControlFlowProfileMatch; discoveryBypass=[bool]$LocalOperatorDiscovery }
+    $healthMonitorEvidence = [ordered]@{ positiveControlBefore=[int]$localOperatorHarnessJson.healthConnectAttemptMonitor.positiveControlBefore; positiveControlAfter=[int]$localOperatorHarnessJson.healthConnectAttemptMonitor.positiveControlAfter; positiveControlDelta=[int]$localOperatorHarnessJson.healthConnectAttemptMonitor.positiveControlDelta; healthBefore=[int]$localOperatorHarnessJson.healthConnectAttemptMonitor.healthBefore; healthAfter=[int]$localOperatorHarnessJson.healthConnectAttemptMonitor.healthAfter; healthDelta=[int]$localOperatorHarnessJson.healthConnectAttemptMonitor.healthDelta; denialBefore=[int]$localOperatorHarnessJson.healthConnectAttemptMonitor.denialBefore; denialAfter=[int]$localOperatorHarnessJson.healthConnectAttemptMonitor.denialAfter; denialDelta=[int]$localOperatorHarnessJson.healthConnectAttemptMonitor.denialDelta; instrumentedEntryPoints=@($localOperatorHealthIl.instrumentedEntryPoints); instrumentationRows=@($localOperatorHealthIl.instrumentationRows); instrumentation=$localOperatorHealthIl.instrumentation; instrumentationIlProfileMatch=$healthInstrumentationProfileMatch }
+    $localOperatorEvidence = [ordered]@{ file=(Get-Item -LiteralPath $localOperatorOutputPath).Name; bytes=(Get-Item -LiteralPath $localOperatorOutputPath).Length; sha256=Get-Sha256 -LiteralPath $localOperatorOutputPath; channels=$operatorChannels; channelMatrixPass=$true; channelMatrixProfileMatch=if($LocalOperatorDiscovery){$null}else{$true}; channelMatrixDiscoveryBypass=[bool]$LocalOperatorDiscovery; metadataInventory=$localOperatorMetadata; loopbackMetadataAllowlist=$localOperatorLoopbackMetadata; moduleRefs=@($localOperatorPInvokeMetadata.modules); pInvokeRows=@($localOperatorPInvokeMetadata.rows); approvedNativeCallerIl=@($localOperatorCallerEvidence.approvedCallerIl); normalizedNativeInventory=$localOperatorNativeSemantic; healthControlFlow=$healthControlFlowEvidence; healthConnectAttemptMonitor=$healthMonitorEvidence; offlineTestsPass=$true }
 
     if ($buildIndex -eq 0) {
         $operatorSpecimenRoot = Join-Path $buildRoot 'local-operator-negative-specimens'; New-Item -ItemType Directory -Path $operatorSpecimenRoot | Out-Null
@@ -3464,6 +3665,18 @@ for ($buildIndex = 0; $buildIndex -lt $buildRoots.Count; $buildIndex++) {
             UNAPPROVED_PROVIDER_METADATA = 'namespace EAIRA.AgentServices.Functional { internal static class BadProvider { internal static object Run() { return new System.Uri("https://example.com"); } } }'
         }
         foreach ($entry in $operatorNegativeCases.GetEnumerator()) { $localOperatorNegativeSpecimenEvidence += Invoke-LocalOperatorNegativeSpecimen -Name ([string]$entry.Key) -CompilerPath $resolvedCompiler -CompilerArguments $localOperatorArguments -SourceText ([string]$entry.Value) -SpecimenRoot $operatorSpecimenRoot -BaselineMetadata $localOperatorMetadata }
+        $healthNegativeCases = @(
+            @('HEALTH_FILESYSTEM_ENVIRONMENT_PROBE','HEALTH_SOURCE_REPLACEMENT_1','FORBIDDEN_HEALTH_CLOSURE_MEMBER'),
+            @('HEALTH_DIRECT_SOCKET_CONSTRUCTION','HEALTH_SOURCE_REPLACEMENT_1','FORBIDDEN_HEALTH_CLOSURE_MEMBER'),
+            @('HEALTH_ADAPTER_FACTORY_INVOCATION','HEALTH_SOURCE_REPLACEMENT_1','FORBIDDEN_HEALTH_CLOSURE_MEMBER'),
+            @('HEALTH_RUNTIME_OBSERVATION','HEALTH_SOURCE_REPLACEMENT_1','FORBIDDEN_HEALTH_CLOSURE_MEMBER'),
+            @('HEALTH_ADDITIONAL_PAYLOAD_MEMBER','HEALTH_SOURCE_REPLACEMENT_1','HEALTH_GOLDEN_MISMATCH'),
+            @('HEALTH_OBSERVATION_AUTHORITY_MUTATION','HEALTH_SOURCE_REPLACEMENT_2_ORDERED','HEALTH_GOLDEN_MISMATCH'),
+            @('HEALTH_PROVIDER_MODEL_ROOT_ACCEPTANCE','HEALTH_SOURCE_REPLACEMENT_1','HEALTH_ALTERNATE_GRAMMAR_ACCEPTED')
+        )
+        foreach ($entry in $healthNegativeCases) {
+            $localOperatorNegativeSpecimenEvidence += Invoke-LocalOperatorHealthNegativeSpecimen -Id $entry[0] -MutationKind $entry[1] -ExpectedRule $entry[2] -CompilerPath $resolvedCompiler -CompilerArguments $localOperatorArguments -CandidateSourcePath $localOperatorSourcePath -CandidateSourceText $localOperatorSourceText -SpecimenRoot $operatorSpecimenRoot -ProjectContextPolicy $profile.projectContext -LoopbackPolicy $profile.localOperator.loopbackMetadataAllowlist
+        }
     }
 
     $allBuildEvidence += [ordered]@{
@@ -3549,11 +3762,11 @@ $qaNegativeSpecimensPass = $qaNegativeSpecimenEvidence.Count -eq $expectedQaSpec
     (($actualQaSpecimenNames -join "`n") -ceq ($expectedQaSpecimenNames -join "`n")) -and
     @($qaNegativeSpecimenEvidence | Where-Object { -not $_.verifierRejected -or $_.compileExitCode -ne 0 }).Count -eq 0 -and
     ($ProjectQaDiscovery -or ((@($profile.projectQa.specimenNames | ForEach-Object { [string]$_ }) -join "`n") -ceq ($expectedQaSpecimenNames -join "`n")))
-$expectedOperatorNegativeNames = @('CHILD_PROCESS','WRITE_REFERENCE','IPC_REFERENCE','DYNAMIC_LOAD','RAW_OUTPUT','UNAPPROVED_PROVIDER_METADATA')
-$actualOperatorNegativeNames = @($localOperatorNegativeSpecimenEvidence | ForEach-Object { [string]$_.name } | Sort-Object)
-$localOperatorNegativeSpecimensPass = $localOperatorNegativeSpecimenEvidence.Count -eq 6 -and
-    (($actualOperatorNegativeNames -join "`n") -ceq ((@($expectedOperatorNegativeNames | Sort-Object)) -join "`n")) -and
-    @($localOperatorNegativeSpecimenEvidence | Where-Object { -not $_.verifierRejected -or $_.compileExitCode -ne 0 }).Count -eq 0
+$expectedOperatorNegativeNames = @('CHILD_PROCESS','WRITE_REFERENCE','IPC_REFERENCE','DYNAMIC_LOAD','RAW_OUTPUT','UNAPPROVED_PROVIDER_METADATA','HEALTH_FILESYSTEM_ENVIRONMENT_PROBE','HEALTH_DIRECT_SOCKET_CONSTRUCTION','HEALTH_ADAPTER_FACTORY_INVOCATION','HEALTH_RUNTIME_OBSERVATION','HEALTH_ADDITIONAL_PAYLOAD_MEMBER','HEALTH_OBSERVATION_AUTHORITY_MUTATION','HEALTH_PROVIDER_MODEL_ROOT_ACCEPTANCE')
+$actualOperatorNegativeNames = @($localOperatorNegativeSpecimenEvidence | ForEach-Object { [string]$_.id })
+$localOperatorNegativeSpecimensPass = $localOperatorNegativeSpecimenEvidence.Count -eq 13 -and
+    (($actualOperatorNegativeNames -join "`n") -ceq ($expectedOperatorNegativeNames -join "`n")) -and
+    @($localOperatorNegativeSpecimenEvidence | Where-Object { -not $_.rejected -or $_.compileExitCode -ne 0 -or ((@($_.Keys | ForEach-Object { [string]$_ }) -join ',') -cne 'id,mutationKind,compileExitCode,rejected,rejectionRule') }).Count -eq 0
 $expectedQaRequestCounters = [ordered]@{ tagsCalls=2; chatCalls=1; preflightDigestValidated=$true; postflightDigestValidated=$true }
 $expectedQaGoldenVectors = [ordered]@{
     questionDigest = [ordered]@{ bytes=5; sha256='5F8EAF0FD8B4EE2B0A0FEF54A8594C50143D7B3567AC7C1CF4F90BD8C19970A5' }
@@ -3670,8 +3883,10 @@ $projectQaProfileGatePass = $ProjectQaDiscovery -or $projectQaProfileBound
 $localOperatorMetadataStable = (($allBuildEvidence[0].localOperatorCli.metadataInventory|ConvertTo-Json -Depth 8 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.metadataInventory|ConvertTo-Json -Depth 8 -Compress)) -and (($allBuildEvidence[0].localOperatorHarness.metadataInventory|ConvertTo-Json -Depth 8 -Compress) -ceq ($allBuildEvidence[1].localOperatorHarness.metadataInventory|ConvertTo-Json -Depth 8 -Compress))
 $localOperatorNativeStable = (($allBuildEvidence[0].localOperatorCli.normalizedNativeInventory|ConvertTo-Json -Depth 8 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.normalizedNativeInventory|ConvertTo-Json -Depth 8 -Compress))
 $localOperatorLoopbackStable = (($allBuildEvidence[0].localOperatorCli.loopbackMetadataAllowlist|ConvertTo-Json -Depth 8 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.loopbackMetadataAllowlist|ConvertTo-Json -Depth 8 -Compress))
+$localOperatorHealthIlStable = (($allBuildEvidence[0].localOperatorCli.healthControlFlow.dispatchRows|ConvertTo-Json -Depth 4 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.healthControlFlow.dispatchRows|ConvertTo-Json -Depth 4 -Compress)) -and (($allBuildEvidence[0].localOperatorCli.healthControlFlow.methodDetails|ConvertTo-Json -Depth 8 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.healthControlFlow.methodDetails|ConvertTo-Json -Depth 8 -Compress)) -and (($allBuildEvidence[0].localOperatorCli.healthControlFlow.methodRows|ConvertTo-Json -Depth 4 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.healthControlFlow.methodRows|ConvertTo-Json -Depth 4 -Compress)) -and (($allBuildEvidence[0].localOperatorCli.healthControlFlow.callRows|ConvertTo-Json -Depth 4 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.healthControlFlow.callRows|ConvertTo-Json -Depth 4 -Compress))
+$localOperatorHealthInstrumentationStable = (($allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.instrumentationRows|ConvertTo-Json -Depth 4 -Compress) -ceq ($allBuildEvidence[1].localOperatorCli.healthConnectAttemptMonitor.instrumentationRows|ConvertTo-Json -Depth 4 -Compress))
 $localOperatorNativeProfileMatch = $LocalOperatorDiscovery -or (($allBuildEvidence[0].localOperatorCli.normalizedNativeInventory|ConvertTo-Json -Depth 8 -Compress) -ceq ($profile.localOperator.nativeCallerInventory|ConvertTo-Json -Depth 8 -Compress))
-$localOperatorTestsPass = @($allBuildEvidence|Where-Object{-not $_.localOperatorHarness.offlineTestsPass -or -not $_.localOperatorCli.offlineTestsPass}).Count -eq 0 -and $localOperatorMetadataStable -and $localOperatorNativeStable -and $localOperatorLoopbackStable -and $localOperatorNegativeSpecimensPass -and $localOperatorNativeProfileMatch
+$localOperatorTestsPass = @($allBuildEvidence|Where-Object{-not $_.localOperatorHarness.offlineTestsPass -or -not $_.localOperatorCli.offlineTestsPass}).Count -eq 0 -and $localOperatorMetadataStable -and $localOperatorNativeStable -and $localOperatorLoopbackStable -and $localOperatorHealthIlStable -and $localOperatorHealthInstrumentationStable -and $localOperatorNegativeSpecimensPass -and $localOperatorNativeProfileMatch
 $localOperatorProfileBound = (-not $LocalOperatorDiscovery) -and $localOperatorInputsBound -and
     [int64]$profile.localOperator.cliMetadataInventory.image.count -eq [int64]$allBuildEvidence[0].localOperatorCli.bytes -and [string]$profile.localOperator.cliMetadataInventory.image.sha256 -ceq [string]$allBuildEvidence[0].localOperatorCli.sha256 -and
     [int64]$profile.localOperator.harnessMetadataInventory.image.count -eq [int64]$allBuildEvidence[0].localOperatorHarness.bytes -and [string]$profile.localOperator.harnessMetadataInventory.image.sha256 -ceq [string]$allBuildEvidence[0].localOperatorHarness.sha256
@@ -3748,8 +3963,8 @@ $compilerItem = Get-Item -LiteralPath $resolvedCompiler
 $manifest = [ordered]@{
     schemaVersion = 1
     generatedUtc = [DateTime]::UtcNow.ToString('o')
-    classification = if ($DevelopmentProbe) { 'DEVELOPMENT_PROBE_ONLY' } elseif ($LocalOperatorDiscovery) { 'M5_SLICE1_LOCAL_OPERATOR_DISCOVERY' } elseif ($ProjectQaDiscovery) { 'M4_SLICE_5_PROJECT_QA_DISCOVERY' } elseif ($ProjectKnowledgeDiscovery) { 'M4_SLICE_4_PROJECT_KNOWLEDGE_DISCOVERY' } else { 'M5_SLICE1_LOCAL_OPERATOR_UNSIGNED_CANDIDATE' }
-    status = if ($m4TechnicalChecksPass) { 'M5_SLICE1_UNSIGNED_TECHNICAL_CHECKS_PASS' } elseif ($DevelopmentProbe -and -not $reproducible) { 'BLOCKED_NONDETERMINISTIC_COMPILER' } else { 'FAIL_CLOSED' }
+    classification = if ($DevelopmentProbe) { 'DEVELOPMENT_PROBE_ONLY' } elseif ($LocalOperatorDiscovery) { 'M5_SLICE2_OPERATOR_HEALTH_DISCOVERY' } elseif ($ProjectQaDiscovery) { 'M4_SLICE_5_PROJECT_QA_DISCOVERY' } elseif ($ProjectKnowledgeDiscovery) { 'M4_SLICE_4_PROJECT_KNOWLEDGE_DISCOVERY' } else { 'M5_SLICE2_OPERATOR_HEALTH_UNSIGNED_CANDIDATE' }
+    status = if ($m4TechnicalChecksPass) { 'M5_SLICE2_UNSIGNED_TECHNICAL_CHECKS_PASS' } elseif ($DevelopmentProbe -and -not $reproducible) { 'BLOCKED_NONDETERMINISTIC_COMPILER' } else { 'FAIL_CLOSED' }
     finalEvidence = [bool]$finalEvidence
     gate25Complete = $false
     externalSigningEligible = $false
@@ -3969,6 +4184,7 @@ $manifest = [ordered]@{
     }
     localOperator = [ordered]@{
         contract = 'EAIRA_LOCAL_OPERATOR_V1'
+        revision = 2
         discovery = [bool]$LocalOperatorDiscovery
         profileBound = [bool]$localOperatorProfileBound
         expectedReleaseProfileSha256 = if ($DevelopmentProbe -or $ProjectKnowledgeDiscovery -or $ProjectQaDiscovery -or $LocalOperatorDiscovery) { $null } else { $ExpectedReleaseProfileSha256 }
@@ -3979,6 +4195,26 @@ $manifest = [ordered]@{
         harnessCaseNames = $allBuildEvidence[0].localOperatorHarness.caseNames
         harnessCaseNameFramedBytes = [int]$allBuildEvidence[0].localOperatorHarness.caseNameFramedBytes
         harnessCaseNameSha256 = [string]$allBuildEvidence[0].localOperatorHarness.caseNameSha256
+        legacyHarness = [ordered]@{ testsPassed=[int]$allBuildEvidence[0].localOperatorHarness.legacyTestsPassed; caseNameFramedBytes=[int]$allBuildEvidence[0].localOperatorHarness.legacyCaseNameFramedBytes; caseNameSha256=[string]$allBuildEvidence[0].localOperatorHarness.legacyCaseNameSha256 }
+        fullHarness = [ordered]@{ testsPassed=[int]$allBuildEvidence[0].localOperatorHarness.testsPassed; caseNameFramedBytes=[int]$allBuildEvidence[0].localOperatorHarness.caseNameFramedBytes; caseNameSha256=[string]$allBuildEvidence[0].localOperatorHarness.caseNameSha256 }
+        healthChannel = [ordered]@{
+            exitCode = [int]$allBuildEvidence[0].localOperatorCli.channels.health.exitCode
+            stderrBytes = [int]$allBuildEvidence[0].localOperatorCli.channels.health.stderrBytes
+            stdoutBytes = [int]$allBuildEvidence[0].localOperatorCli.channels.health.stdoutBytes
+            stdoutSha256 = [string]$allBuildEvidence[0].localOperatorCli.channels.health.stdoutSha256
+            payloadBytes = [int][Text.Encoding]::UTF8.GetByteCount(($operatorHealthJson.payload | ConvertTo-Json -Compress -Depth 10))
+            payloadSha256 = [string]$operatorHealthJson.payloadSha256
+            requestSha256 = [string]$operatorHealthJson.requestSha256
+            routeSha256 = [string]$operatorHealthJson.routeSha256
+            auditSha256 = [string]$operatorHealthJson.audit.chainSha256
+            capability = [string]$operatorHealthJson.capability
+            network = [string]$operatorHealthJson.network
+            writes = [string]$operatorHealthJson.writes
+            authority = [string]$operatorHealthJson.authority
+        }
+        healthGuardDenial = $allBuildEvidence[0].localOperatorHarness.healthGuardDenial
+        healthConnectAttemptMonitor = [ordered]@{ positiveControlBefore=[int]$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.positiveControlBefore; positiveControlAfter=[int]$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.positiveControlAfter; positiveControlDelta=[int]$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.positiveControlDelta; healthBefore=[int]$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.healthBefore; healthAfter=[int]$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.healthAfter; healthDelta=[int]$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.healthDelta; denialBefore=[int]$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.denialBefore; denialAfter=[int]$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.denialAfter; denialDelta=[int]$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.denialDelta; instrumentedEntryPoints=@($allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.instrumentedEntryPoints); instrumentationRows=@($allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.instrumentationRows); instrumentation=$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.instrumentation; instrumentationIlProfileMatch=$allBuildEvidence[0].localOperatorCli.healthConnectAttemptMonitor.instrumentationIlProfileMatch }
+        healthControlFlow = [ordered]@{ dispatchMethod=[string]$allBuildEvidence[0].localOperatorCli.healthControlFlow.dispatchMethod; allowedRoot=[string]$allBuildEvidence[0].localOperatorCli.healthControlFlow.allowedRoot; dispatchRows=@($allBuildEvidence[0].localOperatorCli.healthControlFlow.dispatchRows); methodDetails=@($allBuildEvidence[0].localOperatorCli.healthControlFlow.methodDetails); methodRows=@($allBuildEvidence[0].localOperatorCli.healthControlFlow.methodRows); callRows=@($allBuildEvidence[0].localOperatorCli.healthControlFlow.callRows); dispatchIl=$allBuildEvidence[0].localOperatorCli.healthControlFlow.dispatchIl; allowedClosureMethods=$allBuildEvidence[0].localOperatorCli.healthControlFlow.allowedClosureMethods; allowedClosureCalls=$allBuildEvidence[0].localOperatorCli.healthControlFlow.allowedClosureCalls; forbiddenMatchCount=[int]$allBuildEvidence[0].localOperatorCli.healthControlFlow.forbiddenMatchCount; factoryReferenceCount=[int]$allBuildEvidence[0].localOperatorCli.healthControlFlow.factoryReferenceCount; providerReferenceCount=[int]$allBuildEvidence[0].localOperatorCli.healthControlFlow.providerReferenceCount; networkReferenceCount=[int]$allBuildEvidence[0].localOperatorCli.healthControlFlow.networkReferenceCount; connectAttemptDelta=[int]$allBuildEvidence[0].localOperatorCli.healthControlFlow.connectAttemptDelta; stableAcrossBuilds=[bool]$localOperatorHealthIlStable; profileMatch=$allBuildEvidence[0].localOperatorCli.healthControlFlow.profileMatch; discoveryBypass=[bool]$LocalOperatorDiscovery }
         wrapperMaximumBytes = [int]$allBuildEvidence[0].localOperatorHarness.wrapperMaximumBytes
         cleanBuildHarnessReproducible = [bool]($allBuildEvidence[0].localOperatorHarness.sha256 -ceq $allBuildEvidence[1].localOperatorHarness.sha256)
         cleanBuildCliReproducible = [bool]($allBuildEvidence[0].localOperatorCli.sha256 -ceq $allBuildEvidence[1].localOperatorCli.sha256)

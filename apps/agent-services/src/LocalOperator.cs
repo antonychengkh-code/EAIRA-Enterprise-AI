@@ -6,7 +6,7 @@ using System.Text;
 namespace EAIRA.AgentServices.Functional
 {
     internal sealed class LocalOperatorException : Exception { internal LocalOperatorException() : base(String.Empty) { } }
-    internal enum LocalOperatorCapability { Task = 1, Knowledge = 2, ProjectQa = 3 }
+    internal enum LocalOperatorCapability { Task = 1, Knowledge = 2, ProjectQa = 3, Health = 4 }
 
     internal sealed class LocalOperatorRequest
     {
@@ -36,7 +36,7 @@ namespace EAIRA.AgentServices.Functional
                 ContractCodec.Field(InputKind) + ContractCodec.Field(InputDigest));
         }
 
-        internal string CapabilityName { get { return Capability == LocalOperatorCapability.Task ? "TASK" : Capability == LocalOperatorCapability.Knowledge ? "KNOWLEDGE" : "PROJECT_QA"; } }
+        internal string CapabilityName { get { return Capability == LocalOperatorCapability.Task ? "TASK" : Capability == LocalOperatorCapability.Knowledge ? "KNOWLEDGE" : Capability == LocalOperatorCapability.ProjectQa ? "PROJECT_QA" : "HEALTH"; } }
         private static string DomainDigest(string domain, string value) { return ContractCodec.Sha256Hex(domain + "\0" + ContractCodec.Field(value)); }
 
         internal static LocalOperatorRequest Parse(string[] args)
@@ -60,6 +60,8 @@ namespace EAIRA.AgentServices.Functional
                     return new LocalOperatorRequest(LocalOperatorCapability.Knowledge, args[4], "NONE", "NONE", args[2], "QUERY", args[6]);
                 if (args[0] == "project-qa" && args.Length == 11 && args[1] == "--root" && args[3] == "--trace" && args[5] == "--question" && args[7] == "--provider" && args[8] == "ollama-local" && args[9] == "--model" && args[10] == "qwen3:4b")
                     return new LocalOperatorRequest(LocalOperatorCapability.ProjectQa, args[4], "OLLAMA_LOOPBACK_V1", "qwen3:4b", args[2], "QUESTION", args[6]);
+                if (args[0] == "health" && args.Length == 3 && args[1] == "--trace")
+                    return new LocalOperatorRequest(LocalOperatorCapability.Health, args[2], "NONE", "NONE", null, "HEALTH", "COMPILED CONTRACT STATUS");
                 throw new LocalOperatorException();
             }
             catch (LocalOperatorException) { throw; }
@@ -86,6 +88,7 @@ namespace EAIRA.AgentServices.Functional
         }
         internal static LocalOperatorRoute Create(LocalOperatorRequest r)
         {
+            if (r.Capability == LocalOperatorCapability.Health) return new LocalOperatorRoute(r, "NONE", "NONE", "EAIRA_STATIC_OPERATOR_HEALTH_V1", "NONE", "OBSERVATIONAL_NOT_AUTHORITY", "EAIRA_OPERATOR_HEALTH_V1", "MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0");
             if (r.Capability == LocalOperatorCapability.Knowledge) return new LocalOperatorRoute(r, "NONE", "EAIRA_M4_SLICE4_KNOWLEDGE_SEVEN_FILE_ALLOWLIST_V1", "NONE", "NONE", "NAVIGATIONAL_NOT_AUTHORITY", "EAIRA_PROJECT_KNOWLEDGE_QUERY_V1", "MODEL_COMPLETE=0;TAGS=0;CHAT=0");
             if (r.Capability == LocalOperatorCapability.ProjectQa) return new LocalOperatorRoute(r, "EAIRA_M4_SLICE3_CONTEXT_ALLOWLIST_V1", "EAIRA_M4_SLICE4_KNOWLEDGE_SEVEN_FILE_ALLOWLIST_V1", "EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1", "LOOPBACK_ONLY", "ASSISTIVE_NOT_AUTHORITY", "EAIRA_PROJECT_QA_V1", "MODEL_COMPLETE=0;TAGS=2;CHAT=1");
             bool local = r.Provider == "OLLAMA_LOOPBACK_V1", context = r.Root != null;
@@ -183,6 +186,28 @@ namespace EAIRA.AgentServices.Functional
         internal LocalOperatorExecutionResult(int exit, byte[] bytes) { ExitCode = exit; Bytes = (byte[])bytes.Clone(); }
     }
 
+    internal static class LocalOperatorConnectAttemptMonitor
+    {
+        private static int count;
+        internal static void Record(string channel) { if (channel != "TAGS" && channel != "CHAT") throw new LocalOperatorException(); System.Threading.Interlocked.Increment(ref count); }
+        internal static int Snapshot() { return System.Threading.Interlocked.CompareExchange(ref count, 0, 0); }
+#if EAIRA_LOCAL_OPERATOR_TEST_SEAM
+        internal static void ResetForTests() { System.Threading.Interlocked.Exchange(ref count, 0); }
+        internal static void RecordForTests(string channel) { Record(channel); }
+#endif
+    }
+
+    internal static class LocalOperatorHealth
+    {
+        internal const string CanonicalPayload = "{\"schema\":\"EAIRA_OPERATOR_HEALTH_V1\",\"status\":\"POLICY_READY\",\"observationScope\":\"COMPILED_CONTRACT_ONLY\",\"operatorSchema\":\"EAIRA_LOCAL_OPERATOR_V1\",\"capabilities\":[\"TASK\",\"KNOWLEDGE\",\"PROJECT_QA\",\"HEALTH\"],\"guardPosture\":\"REQUIRED_BEFORE_EFFECT\",\"network\":\"NONE\",\"reads\":\"NONE\",\"writes\":\"NONE\",\"providerConstruction\":\"NONE\",\"authority\":\"OBSERVATIONAL_NOT_AUTHORITY\"}";
+        internal static void Validate(LocalOperatorRequest request, LocalOperatorRoute route, string payload, string digest)
+        {
+            if (request == null || route == null || request.Capability != LocalOperatorCapability.Health || request.Provider != "NONE" || request.Model != "NONE" || request.Root != null || request.InputKind != "HEALTH" || request.Input != "COMPILED CONTRACT STATUS") throw new LocalOperatorException();
+            if (route.Capability != "HEALTH" || route.Network != "NONE" || route.Authority != "OBSERVATIONAL_NOT_AUTHORITY" || route.PayloadContract != "EAIRA_OPERATOR_HEALTH_V1" || route.CallBudget != "MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0") throw new LocalOperatorException();
+            if (!String.Equals(payload, CanonicalPayload, StringComparison.Ordinal) || Encoding.UTF8.GetByteCount(payload) != 366 || digest != "9E3EFCDB24B49E2C27254772DFF72DEF88968ECF0A76C60D4E6724AE90E2E181") throw new LocalOperatorException();
+        }
+    }
+
     internal static class LocalOperatorResponse
     {
         internal const int MaximumPayloadBytes = 16383, MaximumWrapperBytes = 587, MaximumLineBytes = 16970;
@@ -228,9 +253,10 @@ namespace EAIRA.AgentServices.Functional
         }
         private static bool HasExpectedPayloadPrefix(string contract, string payload)
         {
-            if (contract == "EAIRA_LOCAL_TASK_INTAKE_V1") return payload.StartsWith("{\"schemaVersion\":1,\"status\":\"PASS\",", StringComparison.Ordinal);
-            if (contract == "EAIRA_PROJECT_KNOWLEDGE_QUERY_V1") return payload.StartsWith("{\"schema\":\"EAIRA_PROJECT_KNOWLEDGE_QUERY_V1\",\"status\":\"KNOWLEDGE_QUERY_OK\",", StringComparison.Ordinal);
-            if (contract == "EAIRA_PROJECT_QA_V1") return payload.StartsWith("{\"schema\":\"EAIRA_PROJECT_QA_V1\",\"status\":\"PROJECT_QA_OK\",", StringComparison.Ordinal);
+            if (contract == "EAIRA_LOCAL_TASK_INTAKE_V1") return payload.IndexOf("{\"schemaVersion\":1,\"status\":\"PASS\",", StringComparison.Ordinal) == 0;
+            if (contract == "EAIRA_PROJECT_KNOWLEDGE_QUERY_V1") return payload.IndexOf("{\"schema\":\"EAIRA_PROJECT_KNOWLEDGE_QUERY_V1\",\"status\":\"KNOWLEDGE_QUERY_OK\",", StringComparison.Ordinal) == 0;
+            if (contract == "EAIRA_PROJECT_QA_V1") return payload.IndexOf("{\"schema\":\"EAIRA_PROJECT_QA_V1\",\"status\":\"PROJECT_QA_OK\",", StringComparison.Ordinal) == 0;
+            if (contract == "EAIRA_OPERATOR_HEALTH_V1") return String.Equals(payload, LocalOperatorHealth.CanonicalPayload, StringComparison.Ordinal);
             return false;
         }
         private static LocalOperatorExecutionResult Encode(int exit, string value) { return new LocalOperatorExecutionResult(exit, ContractCodec.Utf8Strict("Operator error").GetBytes(value)); }
@@ -239,14 +265,46 @@ namespace EAIRA.AgentServices.Functional
     internal sealed class LocalOperatorRunner
     {
         private readonly ILocalOperatorAdapterFactory factory;
-        internal LocalOperatorRunner(ILocalOperatorAdapterFactory value) { if (value == null) throw new LocalOperatorException(); factory = value; }
+#if EAIRA_LOCAL_OPERATOR_TEST_SEAM
+        internal delegate AgentDecision LocalOperatorGuardEvaluator(TaskEnvelope task);
+        private readonly LocalOperatorGuardEvaluator testGuard;
+#endif
+        internal LocalOperatorRunner(ILocalOperatorAdapterFactory value) { if (value == null) throw new LocalOperatorException(); factory = value;
+#if EAIRA_LOCAL_OPERATOR_TEST_SEAM
+            testGuard = null;
+#endif
+        }
+#if EAIRA_LOCAL_OPERATOR_TEST_SEAM
+        private LocalOperatorRunner(ILocalOperatorAdapterFactory value, LocalOperatorGuardEvaluator guard) { if (value == null || guard == null) throw new LocalOperatorException(); factory = value; testGuard = guard; }
+        internal static LocalOperatorRunner CreateForTests(ILocalOperatorAdapterFactory value, LocalOperatorGuardEvaluator guard) { return new LocalOperatorRunner(value, guard); }
+#endif
         internal LocalOperatorExecutionResult Execute(string[] args)
         {
             LocalOperatorRequest request;
             try { request = LocalOperatorRequest.Parse(args); } catch (Exception) { return LocalOperatorResponse.Invalid(); }
+            int attemptsBefore = LocalOperatorConnectAttemptMonitor.Snapshot();
             LocalOperatorRoute route = LocalOperatorRoute.Create(request);
-            if (GuardAgent.ExpectedDecision(request.Task) != AgentDecision.Allow)
+            AgentDecision decision = GuardAgent.ExpectedDecision(request.Task);
+#if EAIRA_LOCAL_OPERATOR_TEST_SEAM
+            if (testGuard != null) decision = testGuard(request.Task);
+#endif
+            if (decision != AgentDecision.Allow)
+            {
+                int attemptsAfter = LocalOperatorConnectAttemptMonitor.Snapshot();
+                if (attemptsAfter < attemptsBefore || attemptsAfter - attemptsBefore != 0) return LocalOperatorResponse.Build(request, route, "ORCHESTRATION_ERROR", 83, "NONE", null, null, OrchestrationChain.Emergency(request.RequestDigest, route.Digest));
                 return LocalOperatorResponse.Build(request, route, "DENIED", 77, "NONE", null, null, OrchestrationChain.Denied(request.RequestDigest, route.Digest));
+            }
+            if (request.Capability == LocalOperatorCapability.Health)
+            {
+                LocalOperatorExecutionResult health = ExecuteHealthAllowed(request, route);
+                int attemptsAfter = LocalOperatorConnectAttemptMonitor.Snapshot();
+                if (attemptsAfter < attemptsBefore || attemptsAfter - attemptsBefore != 0) return LocalOperatorResponse.Build(request, route, "OUTPUT_ERROR", 84, "NONE", null, null, OrchestrationChain.VerificationFailure(request.RequestDigest, route.Digest, "OUTPUT_ERROR", null));
+                return health;
+            }
+            return ExecuteLegacy(request, route);
+        }
+        private LocalOperatorExecutionResult ExecuteLegacy(LocalOperatorRequest request, LocalOperatorRoute route)
+        {
             LocalOperatorAdapterResult result;
             try
             {
@@ -265,6 +323,17 @@ namespace EAIRA.AgentServices.Functional
             catch (Exception) { return LocalOperatorResponse.Build(request, route, "OUTPUT_ERROR", 84, result.Network, null, null, OrchestrationChain.VerificationFailure(request.RequestDigest, route.Digest, "OUTPUT_ERROR", digest), digest); }
             try { return LocalOperatorResponse.Build(request, route, "PASS", 0, result.Network, result.Payload, digest, OrchestrationChain.Success(request.RequestDigest, route.Digest, digest)); }
             catch (Exception) { return LocalOperatorResponse.Build(request, route, "OUTPUT_ERROR", 84, result.Network, null, null, OrchestrationChain.VerificationFailure(request.RequestDigest, route.Digest, "OUTPUT_ERROR", digest), digest); }
+        }
+        private LocalOperatorExecutionResult ExecuteHealthAllowed(LocalOperatorRequest request, LocalOperatorRoute route)
+        {
+            string payload = LocalOperatorHealth.CanonicalPayload;
+            string digest = PayloadDigest(payload);
+            try
+            {
+                LocalOperatorHealth.Validate(request, route, payload, digest); ValidatePayload(payload);
+                return LocalOperatorResponse.Build(request, route, "PASS", 0, "NONE", payload, digest, OrchestrationChain.Success(request.RequestDigest, route.Digest, digest));
+            }
+            catch (Exception) { return LocalOperatorResponse.Build(request, route, "OUTPUT_ERROR", 84, "NONE", null, null, OrchestrationChain.VerificationFailure(request.RequestDigest, route.Digest, "OUTPUT_ERROR", digest), digest); }
         }
         private static void ValidatePayload(string value)
         {
@@ -305,8 +374,8 @@ namespace EAIRA.AgentServices.Functional
     internal sealed class LocalOperatorCompatibleLoopbackTransport : ILocalByteTransport
     {
         private readonly OllamaLoopbackTransport inner = new OllamaLoopbackTransport();
-        public byte[] GetTags(System.Threading.CancellationToken token) { return inner.GetTags(token); }
-        public byte[] SendChat(byte[] request, System.Threading.CancellationToken token) { return LocalOperatorOllamaResponseCompatibility.Normalize(inner.SendChat(request, token)); }
+        public byte[] GetTags(System.Threading.CancellationToken token) { LocalOperatorConnectAttemptMonitor.Record("TAGS"); return inner.GetTags(token); }
+        public byte[] SendChat(byte[] request, System.Threading.CancellationToken token) { LocalOperatorConnectAttemptMonitor.Record("CHAT"); return LocalOperatorOllamaResponseCompatibility.Normalize(inner.SendChat(request, token)); }
         public void Dispose() { inner.Dispose(); }
     }
     internal sealed class LocalOperatorLocalModelProviderFactory : ILocalModelProviderFactory

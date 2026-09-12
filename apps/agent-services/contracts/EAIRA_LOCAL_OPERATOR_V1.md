@@ -1,6 +1,6 @@
 # EAIRA Local Operator V1
 
-`EAIRA.LocalOperator.Cli.exe` is an unsigned, unprivileged, single-request console entry point for the published task, knowledge and project-QA capabilities. It is assistive software, not project authority.
+`EAIRA.LocalOperator.Cli.exe` is an unsigned, unprivileged, single-request console entry point for the published task, knowledge, project-QA and compiled-contract Health capabilities. It is assistive software, not project authority.
 
 ## Exact commands
 
@@ -11,6 +11,7 @@ EAIRA.LocalOperator.Cli.exe task --provider ollama-local --model qwen3:4b --trac
 EAIRA.LocalOperator.Cli.exe task --provider ollama-local --model qwen3:4b --trace <TRACE> --goal <GOAL> --context-root <ROOT>
 EAIRA.LocalOperator.Cli.exe knowledge --root <ROOT> --trace <TRACE> --query <QUERY>
 EAIRA.LocalOperator.Cli.exe project-qa --root <ROOT> --trace <TRACE> --question <QUESTION> --provider ollama-local --model qwen3:4b
+EAIRA.LocalOperator.Cli.exe health --trace <TRACE>
 ```
 
 No alias, default, reordered/duplicate/extra flag, response file, stdin, environment/config expansion, alternate provider, model or endpoint is accepted. Trace is 32 uppercase hexadecimal characters. Inputs and roots inherit the exact published M4 validation rules.
@@ -22,6 +23,9 @@ Every valid request creates a `TaskEnvelope` and calls static Guard before any r
 - Task reuses `EAIRA_LOCAL_TASK_INTAKE_V1` in-process.
 - Knowledge reads only the published ordered seven-file set and invokes no provider.
 - Project QA reads only four context plus seven knowledge files and uses exact `qwen3:4b` through `127.0.0.1:11434`, tags/chat/tags, no retry/fallback.
+- Health returns only the compile-time `EAIRA_OPERATOR_HEALTH_V1` payload. It performs zero reads, writes, provider/factory construction, model calls or network calls and reports `COMPILED_CONTRACT_ONLY` with `OBSERVATIONAL_NOT_AUTHORITY`.
+
+Health uses the exact call budget `MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0`. Static Guard runs before the Health branch. Both allowed and denied Health paths require a same-process connect-attempt delta of zero; the two sanctioned loopback entrypoints are independently instrumented and IL-verified, but Health never invokes either entrypoint.
 
 No route writes files/registry/IPC/log/cache/transcript, starts a child process or shell, dynamically loads code, reads `.obsidian`, or invokes an external provider.
 
@@ -58,3 +62,4 @@ The output never contains an absolute root, raw prompt, provider body/response, 
 ## Replay and authority
 
 Trace is correlation only, not authorization or a nonce. This no-persistence slice makes no cross-process replay-prevention claim. Knowledge is `NAVIGATIONAL_NOT_AUTHORITY`; QA is `ASSISTIVE_NOT_AUTHORITY`; task is `BOUNDED_EXECUTION_RESULT_NOT_PROJECT_AUTHORITY`.
+Health is `OBSERVATIONAL_NOT_AUTHORITY`: `POLICY_READY` describes the compiled contract only and is not live provider, service, operating-system, credential, certificate, deployment or production health.
