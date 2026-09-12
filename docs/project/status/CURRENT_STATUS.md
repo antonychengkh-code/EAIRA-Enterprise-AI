@@ -6,7 +6,7 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.38.0
+0.39.0
 
 ## Updated At
 
@@ -34,10 +34,30 @@ establish signing, Windows-service, customer-deployment, Annex, or production
 readiness.
 
 M5 is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`.
-Current authority is limited to M5 Slice 1 scope-package preparation for a
-unified user-mode orchestrator. No M5 product implementation, arbitrary vault
-read, runtime write, IPC, Windows/service/ACL change, credential, external
-provider, signing, or production change is authorized.
+M5 Slice 1 `M5_SLICE1_UNIFIED_USER_MODE_ORCHESTRATOR` is implemented,
+published, and independently live-remote verified. It provides one bounded
+user-mode local operator workflow over the existing task-intake, context,
+knowledge and project-QA surfaces. It does not authorize arbitrary vault read,
+runtime write, IPC, Windows/service/ACL change, credentials, external providers,
+signing, customer deployment, or production activation.
+
+M5 Slice 1 product commit `f768c21699c9e0b741e7afdddcaae8cb5fbd2a45`,
+parent `c50ccb8d22926220ac8712aaaa9eaacff1e9de93`, tree
+`22f27aa0e2829f436b1cbeb714b1a65a19f86e3c`, contains exactly 20 authorized
+text paths. Final profile SHA-256
+`93CB569791E96C80D5C4F0325A43AB7604F945B383EDCA97389299638404B7CA`
+and sealed manifest SHA-256
+`19E71363B177F254F3A8F340193FF230F35C017A9F97386B3C41FAB5C305A92C`
+bind two byte-identical builds, 96 stable-name local-operator tests, the existing
+M4 regressions, and all metadata, P/Invoke, native, loopback-policy and negative
+specimen checks. The authorized live loopback returned five ordered roles,
+exact `2 tags / 2 chat`, pre/post digest validation, no context root, and no raw
+model content retention; sanitized report SHA-256 is
+`D4B5C721846AE0E8C8FFA095AF1272B0D622812F3FD5A665EFF140D877937BC6`.
+Gate 15 independently verified live `origin/master` at the product commit with
+`P0=0`, `P1=0`, `P2=1`, and `PUBLICATION_VERIFIED=YES`. The sole P2 is the
+retained Codex auxiliary checkpoint-ref maintenance issue; it does not affect
+the product commit, tree, blobs, or normal fast-forward publication.
 
 M4 Slice 3, decision `SLICE3_A_READ_ONLY_PROJECT_CONTEXT`, is complete and published. Product commit `a0e172f34ebc09f76e1bd894d680614ed901113d` and post-publication synchronization commit `7e1c1d04e6b92fcbf89f0b1268d189da9892071b` were independently live-remote verified. The exact product publication contains 24 authorized paths and excludes the three unrelated Claude API paths.
 
@@ -90,6 +110,13 @@ is `docs/project/milestones/EAIRA_M5_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKF
 The controlling authorization-package decision remains `DEFER_PENDING_ADDITIONAL_PLANNING_EVIDENCE`. `AUTHORIZE_BOUNDED_ASSESSMENT` was not granted, and `AUTHORIZE_WITH_REQUIRED_REVISIONS` was not granted as conditional execution authority.
 
 The final M4 Slice decision was `SLICE5_A_BOUNDED_LOCAL_PROJECT_QA`, recorded in `docs/project/strategy/EAIRA_M4_FUNCTIONAL_AGENT_MVP_SLICE_5_SCOPE_DECISION.md`. Its exact 15-path bounded implementation is published and independently live-remote verified at commit `3945baaa3a63f8dba51a474ee36a6ad827d94817`. This historical final-slice publication grants no arbitrary path, external-provider, credential, runtime-write, Windows, service, signing or production authority.
+
+The M5 Slice 1 decision is recorded in
+`docs/project/strategy/EAIRA_M5_SLICE1_SCOPE_DECISION.md`. Its exact 20-path
+bounded implementation is published and independently live-remote verified at
+commit `f768c21699c9e0b741e7afdddcaae8cb5fbd2a45`. This establishes the bounded
+local operator workflow only and grants no broader runtime or operational
+authority.
 
 The authoritative Project Owner authorization-state decision for commit `f317294515d1dc27a261035260e9fcc45e1545f6` is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_F317294_AUTHORIZATION_STATE_DECISION.md`.
 
@@ -148,11 +175,12 @@ Under the Authorization Annex workstream, no assessment-authorization decision m
 
 ## Next Action
 
-Prepare the exact M5 Slice 1 scope package for
-`M5_SLICE1_UNIFIED_USER_MODE_ORCHESTRATOR`, then obtain independent scope review
-before any exact design or implementation. Preserve the user-mode, no-write,
-loopback-only, no-credential and no-privileged-mutation boundary. This snapshot
-does not establish its own staging, commit, push, or publication position.
+Prepare a separate Project Owner M5 Slice 2 scope decision. Preserve the
+user-mode, no-write, Guard-mediated, loopback-only, no-credential and
+no-privileged-mutation boundary. No Slice 2 scope, design, implementation, live
+provider activity, Windows mutation, signing, deployment, or production
+activation is authorized by this synchronization. This snapshot does not
+establish its own staging, commit, push, or publication position.
 
 Main Annex Version `0.33.0` mutation, commit, normal push, and independent post-push publication verification are complete. Separately and historically, the Project Owner authorized sequential execution of ten remaining Annex lifecycle gates with fail-closed preconditions; that statement does not count or authorize the current Slice 4 Gate 20-28 nine-gate lifecycle.
 

@@ -6,7 +6,7 @@
 
 ## Version
 
-0.37.0
+0.38.0
 
 ## Milestone
 
@@ -22,29 +22,33 @@ M5 Integrated Local Runtime and Operator Workflow: Active.
 
 ## Current Scope
 
-Close M4 as a bounded functional MVP, establish the selected M5 integrated-local
-runtime charter, and leave the project ready to prepare the M5 Slice 1 unified
-user-mode orchestrator scope package without changing product code.
+Synchronize the verified M5 Slice 1 product publication into the six controlled
+status/context/HANDOFF files while preserving the bounded local-only, no-write,
+no-credential and non-production authority boundary.
 
 ## Current Result
 
-The Project Owner selected
-`M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD` and
-`M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. The M4 readiness package
-and the decision/charter package each passed independent review with
-`P0=0`, `P1=0`, and `P2=0`. Slice 1 through Slice 5 remain published; Slice 5
-product commit `3945baaa3a63f8dba51a474ee36a6ad827d94817` and the final Slice 5
-state endpoint `023592cd62b1cd2f1efa94ab66f43817b43e07d3` remain the verified M4
-evidence baseline.
+M5 Slice 1 is implemented and published at product commit
+`f768c21699c9e0b741e7afdddcaae8cb5fbd2a45`, parent
+`c50ccb8d22926220ac8712aaaa9eaacff1e9de93`, tree
+`22f27aa0e2829f436b1cbeb714b1a65a19f86e3c`, with exactly 20 authorized
+text paths. Final profile SHA-256 is
+`93CB569791E96C80D5C4F0325A43AB7604F945B383EDCA97389299638404B7CA`;
+sealed manifest SHA-256 is
+`19E71363B177F254F3A8F340193FF230F35C017A9F97386B3C41FAB5C305A92C`;
+live-loopback report SHA-256 is
+`D4B5C721846AE0E8C8FFA095AF1272B0D622812F3FD5A665EFF140D877937BC6`.
+Independent post-push verification returned `PUBLICATION_VERIFIED=YES`,
+`P0=0`, `P1=0`, and `P2=1`; the P2 is limited to existing Codex auxiliary refs.
 
 ## Out of Scope
 
-M5 product implementation, release-profile or build-script changes, model calls,
-arbitrary vault access, runtime writes, IPC, external credentials, Windows
-service routing, persistence, signing, deployment, production activation,
-assessment evidence collection, checkpoint-ref repair and force push remain
-outside scope. Only the exact closeout documents and six synchronized state files
-may enter the gated repository-recording lifecycle.
+Further product implementation, release-profile or build-script changes, arbitrary
+vault access, runtime writes, IPC, external credentials/providers, Windows service
+routing, persistence, signing, deployment, production activation, assessment
+evidence collection, checkpoint-ref repair and force push remain outside scope.
+Only the exact six synchronized state files may enter this repository-recording
+lifecycle.
 
 ## Historical Objective Retained for Traceability
 
@@ -136,9 +140,9 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 
 ## Expected Deliverables
 
-One reviewed M4 closeout/M5 scope package, one explicit A/A decision record, one
-M5 charter, and six synchronized current-state/context/HANDOFF files. Their own
-staging, commit, push and publication position remains external Git evidence.
+Six synchronized current-state/context/HANDOFF files that accurately record the
+M5 Slice 1 publication and preserve all authority boundaries. Their own staging,
+commit, push and publication position remains external Git evidence.
 
 ## 2026-09-01 Reconciliation Results
 
@@ -153,15 +157,14 @@ staging, commit, push and publication position remains external Git evidence.
 
 [Clause M5-STATE-TODAY-CRITERIA]
 
-- The exact A/A Project Owner selections and both independent pre-synchronization
-  reviews are recorded without inference.
-- M4 is consistently completed, M5 is consistently active, and present authority
-  is limited to M5 Slice 1 scope-package preparation.
-- The decision, charter and six current-state/context/HANDOFF files preserve all
-  product, Windows, service, ACL, signing, external-provider and Annex boundaries.
-- Project-memory and diff validation pass; only the exact nine closeout paths enter
-  the repository lifecycle, while the three excluded untracked path classes remain
-  untouched and untracked.
+- Product commit, parent, tree, exact path count, final evidence hashes and Gate 15
+  result are recorded without inference.
+- M4 remains completed, M5 remains active, and M5 Slice 1 is consistently recorded
+  as published and independently verified.
+- The six files preserve all Windows, service, ACL, signing, external-provider,
+  production and Annex boundaries.
+- Project-memory and diff validation pass; only the exact six state paths enter
+  this lifecycle, while the three excluded untracked path classes remain untouched.
 
 ### 2026-09-01 Reconciliation Criteria Retained for Traceability
 
@@ -175,8 +178,8 @@ staging, commit, push and publication position remains external Git evidence.
 
 ## Next Action
 
-Prepare the M5 Slice 1 scope package for one unified user-mode orchestrator and
-submit it to independent review. Do not implement the orchestrator or begin
-external-provider, API, credential, Windows-service, IPC, account, membership,
-directory, ACL, encryption, persistence, signing, checkpoint-ref repair or
-production activity without later exact authorization.
+Prepare a separate Project Owner M5 Slice 2 scope decision. Do not infer Slice 2
+scope or begin implementation, external-provider/API/credential activity,
+Windows-service, IPC, account, membership, directory, ACL, encryption,
+persistence, signing, checkpoint-ref repair or production activity without later
+exact authorization.

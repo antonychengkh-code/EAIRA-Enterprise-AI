@@ -12,7 +12,7 @@ authority: provisional
 
 ## State
 
-[Clause M5-STATE-HANDOFF] Obsidian project memory remains navigational and report-only. M4 Functional Agent MVP is completed under `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`; all five product slices remain published. M5 Integrated Local Runtime and Operator Workflow is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. Current authority is limited to preparing the M5 Slice 1 unified user-mode orchestrator scope package. No product implementation, arbitrary vault read, runtime write, IPC, Windows/service/ACL mutation, credential, external-provider, signing, customer-deployment or production authority is established. This snapshot does not assert its own staging, commit, push or publication position.
+[Clause M5-STATE-HANDOFF] Obsidian project memory remains navigational and report-only. M4 Functional Agent MVP is completed under `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`; all five product slices remain published. M5 Integrated Local Runtime and Operator Workflow is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. M5 Slice 1 is implemented, published, and independently live-remote verified as one bounded user-mode local operator workflow. No arbitrary vault read, runtime write, IPC, Windows/service/ACL mutation, credential, external-provider, signing, customer-deployment or production authority is established. This snapshot does not assert its own staging, commit, push or publication position.
 
 ## Canonical Context
 
@@ -87,16 +87,19 @@ authority: provisional
 - The final profile SHA-256 is `E409F74AAEABA36F23795340B3F6F39362BB856063CBFC966215500BCC6A0EE8`. Sealed manifest SHA-256 `905AACA4C72E4738A82907C932DC850DC5CEDA9F8D53DC62F5F0DA7E5BAAF9E8` records `finalEvidence=true`, `profileBound=true`, two byte-identical builds, 484 tests and 36/36 compile-then-reject abuse specimens.
 - The single new-baseline live validation returned `PROJECT_QA_OK`, exact `2 tags / 1 chat`, both digest validations true, `LOOPBACK_ONLY`, `writes=NONE`, and fixed `MODEL_GENERATED_UNVERIFIED` / `ASSISTIVE_NOT_AUTHORITY`. Only sanitized report SHA-256 `9D1DB11C2C6384E4E4BB9B6763204ADA7AA90D6E7F072FBE916EB54E571A28EB` was persisted; no retry, pull, daemon start or external destination occurred.
 - Product commit `3945baaa3a63f8dba51a474ee36a6ad827d94817` was normally fast-forward pushed. Independent post-push verification returned `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, `P2=0`; the exact 15-path tree matches sealed evidence and the three excluded untracked paths were not published.
+- M5 Slice 1 product commit `f768c21699c9e0b741e7afdddcaae8cb5fbd2a45`, parent `c50ccb8d22926220ac8712aaaa9eaacff1e9de93`, tree `22f27aa0e2829f436b1cbeb714b1a65a19f86e3c`, contains exactly 20 authorized text paths. Final profile SHA-256 is `93CB569791E96C80D5C4F0325A43AB7604F945B383EDCA97389299638404B7CA`; sealed manifest SHA-256 is `19E71363B177F254F3A8F340193FF230F35C017A9F97386B3C41FAB5C305A92C`. Two clean builds are byte-identical; 96 stable-name local-operator cases and all retained M4, metadata, P/Invoke, native, loopback-policy and negative controls pass.
+- The authorized M5 Slice 1 live run produced five ordered roles from Planning through Audit, exact `2 tags / 2 chat`, successful pre/post model-digest validation, no context root, no raw model content retention, and sanitized report SHA-256 `D4B5C721846AE0E8C8FFA095AF1272B0D622812F3FD5A665EFF140D877937BC6`.
+- The M5 Slice 1 product commit was normally fast-forward pushed. Independent Gate 15 verified live `origin/master` at that commit with `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, and `P2=1`. The P2 is the existing 18-item Codex checkpoint-ref maintenance issue; product publication is unaffected and repair remains unauthorized.
 
 ## Remaining
 
 - Keep certificate purchase/enrollment deferred until the release-timing decision; when resumed, complete Gate 24.12–24.14 and sign only the accepted Gate 25 hashes.
-- Prepare the exact M5 Slice 1 unified user-mode orchestrator scope package and obtain independent review before exact design or implementation.
+- Obtain a separate Project Owner M5 Slice 2 scope decision before any further product design or implementation.
 - Preserve the no-write, Guard, source-allowlist, loopback-only and non-authority boundaries inherited from M4.
 - Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The task-intake, context, knowledge and QA CLIs remain separate local surfaces; they are not wired to those Windows services, IPC, credentials, storage, external providers or production systems.
 - Do not treat R3 publication or M4 Slice 1 local verification as signing eligibility. The binaries remain unsigned and Gate 25 remains incomplete.
 - Keep service-account, membership, directory, ACL, encryption, signing, cloud-resource, and operational mutations fail-closed until separately authorized.
-- Keep API, MCP, automated writes and external synchronization disabled unless separately authorized; only the current exact M4 closeout repository lifecycle is authorized for commit and normal push.
+- Keep API, MCP, automated writes and external synchronization disabled unless separately authorized; this synchronization grants no new runtime or product authority.
 - Keep the weekly audit report-only; passing the observation gate does not itself authorize automated writes.
 
 ## Scheduling
