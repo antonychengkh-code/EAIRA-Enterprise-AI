@@ -6,7 +6,7 @@ using System.Text;
 namespace EAIRA.AgentServices.Functional
 {
     internal sealed class LocalOperatorException : Exception { internal LocalOperatorException() : base(String.Empty) { } }
-    internal enum LocalOperatorCapability { Task = 1, Knowledge = 2, ProjectQa = 3, Health = 4 }
+    internal enum LocalOperatorCapability { Task = 1, Knowledge = 2, ProjectQa = 3, Health = 4, Preflight = 5 }
 
     internal sealed class LocalOperatorRequest
     {
@@ -27,7 +27,7 @@ namespace EAIRA.AgentServices.Functional
             Capability = capability; TraceId = trace; Provider = provider; Model = model; Root = root; InputKind = kind; Input = input;
             if (root != null) { ProjectQaRequest.ValidateLexicalRoot(root); }
             if (kind == "QUERY" || kind == "QUESTION") { Input = ProjectKnowledgeQuery.NormalizeQueryOrThrowRequest(input); }
-            Task = TaskEnvelope.Create(TaskEnvelope.CurrentSchemaVersion, trace, Input);
+            Task = TaskEnvelope.Create(TaskEnvelope.CurrentSchemaVersion, trace, capability == LocalOperatorCapability.Preflight ? "EXPLAIN COMPILED ROUTE POLICY" : Input);
             RootDigest = root == null ? "NONE" : DomainDigest("EAIRA_M5_SLICE1_ROOT_V1", root);
             InputDigest = DomainDigest("EAIRA_M5_SLICE1_" + kind + "_V1", Input);
             RequestDigest = ContractCodec.Sha256Hex("EAIRA_M5_SLICE1_REQUEST_V1\0" +
@@ -36,7 +36,7 @@ namespace EAIRA.AgentServices.Functional
                 ContractCodec.Field(InputKind) + ContractCodec.Field(InputDigest));
         }
 
-        internal string CapabilityName { get { return Capability == LocalOperatorCapability.Task ? "TASK" : Capability == LocalOperatorCapability.Knowledge ? "KNOWLEDGE" : Capability == LocalOperatorCapability.ProjectQa ? "PROJECT_QA" : "HEALTH"; } }
+        internal string CapabilityName { get { return Capability == LocalOperatorCapability.Task ? "TASK" : Capability == LocalOperatorCapability.Knowledge ? "KNOWLEDGE" : Capability == LocalOperatorCapability.ProjectQa ? "PROJECT_QA" : Capability == LocalOperatorCapability.Health ? "HEALTH" : "PREFLIGHT"; } }
         private static string DomainDigest(string domain, string value) { return ContractCodec.Sha256Hex(domain + "\0" + ContractCodec.Field(value)); }
 
         internal static LocalOperatorRequest Parse(string[] args)
@@ -62,6 +62,8 @@ namespace EAIRA.AgentServices.Functional
                     return new LocalOperatorRequest(LocalOperatorCapability.ProjectQa, args[4], "OLLAMA_LOOPBACK_V1", "qwen3:4b", args[2], "QUESTION", args[6]);
                 if (args[0] == "health" && args.Length == 3 && args[1] == "--trace")
                     return new LocalOperatorRequest(LocalOperatorCapability.Health, args[2], "NONE", "NONE", null, "HEALTH", "COMPILED CONTRACT STATUS");
+                if (args[0] == "preflight" && args.Length == 5 && args[1] == "--trace" && args[3] == "--route" && LocalOperatorPreflight.IsKnownRouteId(args[4]))
+                    return new LocalOperatorRequest(LocalOperatorCapability.Preflight, args[2], "NONE", "NONE", null, "PREFLIGHT_ROUTE", args[4]);
                 throw new LocalOperatorException();
             }
             catch (LocalOperatorException) { throw; }
@@ -88,6 +90,7 @@ namespace EAIRA.AgentServices.Functional
         }
         internal static LocalOperatorRoute Create(LocalOperatorRequest r)
         {
+            if (r.Capability == LocalOperatorCapability.Preflight) return new LocalOperatorRoute(r, "NONE", "NONE", "EAIRA_STATIC_OPERATOR_PREFLIGHT_V1", "NONE", "EXPLANATORY_NOT_AUTHORITY", "EAIRA_OPERATOR_PREFLIGHT_V1", "MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0");
             if (r.Capability == LocalOperatorCapability.Health) return new LocalOperatorRoute(r, "NONE", "NONE", "EAIRA_STATIC_OPERATOR_HEALTH_V1", "NONE", "OBSERVATIONAL_NOT_AUTHORITY", "EAIRA_OPERATOR_HEALTH_V1", "MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0");
             if (r.Capability == LocalOperatorCapability.Knowledge) return new LocalOperatorRoute(r, "NONE", "EAIRA_M4_SLICE4_KNOWLEDGE_SEVEN_FILE_ALLOWLIST_V1", "NONE", "NONE", "NAVIGATIONAL_NOT_AUTHORITY", "EAIRA_PROJECT_KNOWLEDGE_QUERY_V1", "MODEL_COMPLETE=0;TAGS=0;CHAT=0");
             if (r.Capability == LocalOperatorCapability.ProjectQa) return new LocalOperatorRoute(r, "EAIRA_M4_SLICE3_CONTEXT_ALLOWLIST_V1", "EAIRA_M4_SLICE4_KNOWLEDGE_SEVEN_FILE_ALLOWLIST_V1", "EAIRA_BOUNDED_LOCAL_PROJECT_QA_V1", "LOOPBACK_ONLY", "ASSISTIVE_NOT_AUTHORITY", "EAIRA_PROJECT_QA_V1", "MODEL_COMPLETE=0;TAGS=2;CHAT=1");
@@ -208,6 +211,79 @@ namespace EAIRA.AgentServices.Functional
         }
     }
 
+    internal sealed class LocalOperatorPreflightPolicy
+    {
+        internal string RouteId { get; private set; }
+        internal string Capability { get; private set; }
+        internal string SourceClass { get; private set; }
+        internal string ProviderPolicy { get; private set; }
+        internal string RouteNetwork { get; private set; }
+        internal string RouteAuthority { get; private set; }
+        internal LocalOperatorPreflightPolicy(string routeId, string capability, string sourceClass, string providerPolicy, string routeNetwork, string routeAuthority)
+        { RouteId = routeId; Capability = capability; SourceClass = sourceClass; ProviderPolicy = providerPolicy; RouteNetwork = routeNetwork; RouteAuthority = routeAuthority; }
+    }
+
+    internal static class LocalOperatorPreflight
+    {
+#if EAIRA_LOCAL_OPERATOR_TEST_SEAM
+        private static int lookupCount, payloadCount;
+        internal static void ResetCountersForTests() { lookupCount = 0; payloadCount = 0; }
+        internal static int LookupCountForTests() { return lookupCount; }
+        internal static int PayloadCountForTests() { return payloadCount; }
+#endif
+        internal static bool IsKnownRouteId(string value)
+        {
+            return value == "TASK_MOCK" || value == "TASK_MOCK_CONTEXT" || value == "TASK_OLLAMA_LOCAL" || value == "TASK_OLLAMA_LOCAL_CONTEXT" || value == "KNOWLEDGE" || value == "PROJECT_QA_OLLAMA_LOCAL" || value == "HEALTH";
+        }
+        private static LocalOperatorPreflightPolicy CreatePolicy(string value)
+        {
+            if (value == "TASK_MOCK") return new LocalOperatorPreflightPolicy(value, "TASK", "USER_ARGUMENTS_ONLY", "MOCK", "NONE", "BOUNDED_EXECUTION_RESULT_NOT_PROJECT_AUTHORITY");
+            if (value == "TASK_MOCK_CONTEXT") return new LocalOperatorPreflightPolicy(value, "TASK", "CONTROLLED_PROJECT_CONTEXT", "MOCK", "NONE", "BOUNDED_EXECUTION_RESULT_NOT_PROJECT_AUTHORITY");
+            if (value == "TASK_OLLAMA_LOCAL") return new LocalOperatorPreflightPolicy(value, "TASK", "USER_ARGUMENTS_ONLY", "OLLAMA_LOCAL_QWEN3_4B", "LOOPBACK_ONLY", "BOUNDED_EXECUTION_RESULT_NOT_PROJECT_AUTHORITY");
+            if (value == "TASK_OLLAMA_LOCAL_CONTEXT") return new LocalOperatorPreflightPolicy(value, "TASK", "CONTROLLED_PROJECT_CONTEXT", "OLLAMA_LOCAL_QWEN3_4B", "LOOPBACK_ONLY", "BOUNDED_EXECUTION_RESULT_NOT_PROJECT_AUTHORITY");
+            if (value == "KNOWLEDGE") return new LocalOperatorPreflightPolicy(value, "KNOWLEDGE", "CONTROLLED_PROJECT_MEMORY", "NONE", "NONE", "NAVIGATIONAL_NOT_AUTHORITY");
+            if (value == "PROJECT_QA_OLLAMA_LOCAL") return new LocalOperatorPreflightPolicy(value, "PROJECT_QA", "CONTROLLED_CONTEXT_AND_PROJECT_MEMORY", "OLLAMA_LOCAL_QWEN3_4B", "LOOPBACK_ONLY", "ASSISTIVE_NOT_AUTHORITY");
+            if (value == "HEALTH") return new LocalOperatorPreflightPolicy(value, "HEALTH", "COMPILED_CONTRACT_ONLY", "NONE", "NONE", "OBSERVATIONAL_NOT_AUTHORITY");
+            throw new LocalOperatorException();
+        }
+        internal static LocalOperatorPreflightPolicy Lookup(string value)
+        {
+#if EAIRA_LOCAL_OPERATOR_TEST_SEAM
+            lookupCount++;
+#endif
+            return CreatePolicy(value);
+        }
+        private static string CanonicalPayloadCore(LocalOperatorPreflightPolicy policy)
+        {
+            if (policy == null) throw new LocalOperatorException();
+            return "{\"schema\":\"EAIRA_OPERATOR_PREFLIGHT_V1\",\"status\":\"POLICY_EXPLAINED\",\"observationScope\":\"COMPILED_CONTRACT_ONLY\",\"routeId\":" + ContractCodec.Json(policy.RouteId) +
+                ",\"capability\":" + ContractCodec.Json(policy.Capability) + ",\"guardRequirement\":\"REQUIRED_BEFORE_EFFECT\",\"guardEvaluation\":\"ALLOW_PREFLIGHT_ONLY\",\"sourceClass\":" + ContractCodec.Json(policy.SourceClass) +
+                ",\"providerPolicy\":" + ContractCodec.Json(policy.ProviderPolicy) + ",\"routeNetwork\":" + ContractCodec.Json(policy.RouteNetwork) + ",\"preflightNetwork\":\"NONE\",\"writes\":\"NONE\",\"routeAuthority\":" + ContractCodec.Json(policy.RouteAuthority)
+                + ",\"authority\":\"EXPLANATORY_NOT_AUTHORITY\"}";
+        }
+        internal static string CanonicalPayload(LocalOperatorPreflightPolicy policy)
+        {
+#if EAIRA_LOCAL_OPERATOR_TEST_SEAM
+            payloadCount++;
+#endif
+            return CanonicalPayloadCore(policy);
+        }
+        private static bool SamePolicy(LocalOperatorPreflightPolicy left, LocalOperatorPreflightPolicy right)
+        {
+            return left != null && right != null && left.RouteId == right.RouteId && left.Capability == right.Capability && left.SourceClass == right.SourceClass && left.ProviderPolicy == right.ProviderPolicy && left.RouteNetwork == right.RouteNetwork && left.RouteAuthority == right.RouteAuthority;
+        }
+        internal static void Validate(LocalOperatorRequest request, LocalOperatorRoute route, LocalOperatorPreflightPolicy policy, string payload, string digest)
+        {
+            if (request == null || route == null || policy == null || request.Capability != LocalOperatorCapability.Preflight || request.Provider != "NONE" || request.Model != "NONE" || request.Root != null || request.InputKind != "PREFLIGHT_ROUTE" || !IsKnownRouteId(request.Input) || request.Task == null || request.Task.Goal != "EXPLAIN COMPILED ROUTE POLICY") throw new LocalOperatorException();
+            request.Task.ValidateIntegrity();
+            if (route.Capability != "PREFLIGHT" || route.Network != "NONE" || route.Authority != "EXPLANATORY_NOT_AUTHORITY" || route.PayloadContract != "EAIRA_OPERATOR_PREFLIGHT_V1" || route.CallBudget != "MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0") throw new LocalOperatorException();
+            LocalOperatorRoute expectedRoute = LocalOperatorRoute.Create(request);
+            if (!String.Equals(route.Digest, expectedRoute.Digest, StringComparison.Ordinal)) throw new LocalOperatorException();
+            LocalOperatorPreflightPolicy expected = CreatePolicy(request.Input);
+            if (!SamePolicy(policy, expected) || !String.Equals(payload, CanonicalPayloadCore(expected), StringComparison.Ordinal) || !String.Equals(digest, LocalOperatorResponse.ComputePayloadDigest(Encoding.UTF8.GetBytes(payload)), StringComparison.Ordinal)) throw new LocalOperatorException();
+        }
+    }
+
     internal static class LocalOperatorResponse
     {
         internal const int MaximumPayloadBytes = 16383, MaximumWrapperBytes = 587, MaximumLineBytes = 16970;
@@ -224,6 +300,7 @@ namespace EAIRA.AgentServices.Functional
             if (exit != ExitFor(status) || (network != "NONE" && network != "LOOPBACK_ONLY") || (pass && network != route.Network)) throw new LocalOperatorException();
             if (pass)
             {
+                if (route.PayloadContract == "EAIRA_OPERATOR_PREFLIGHT_V1") LocalOperatorPreflight.Validate(r, route, LocalOperatorPreflight.Lookup(r.Input), payload, payloadDigest);
                 byte[] verifiedPayload = ContractCodec.Utf8Strict("Operator payload").GetBytes(payload);
                 string verifiedDigest = ComputePayloadDigest(verifiedPayload);
                 if (!String.Equals(payloadDigest, verifiedDigest, StringComparison.Ordinal) || !HasExpectedPayloadPrefix(route.PayloadContract, payload)) throw new LocalOperatorException();
@@ -257,6 +334,7 @@ namespace EAIRA.AgentServices.Functional
             if (contract == "EAIRA_PROJECT_KNOWLEDGE_QUERY_V1") return payload.IndexOf("{\"schema\":\"EAIRA_PROJECT_KNOWLEDGE_QUERY_V1\",\"status\":\"KNOWLEDGE_QUERY_OK\",", StringComparison.Ordinal) == 0;
             if (contract == "EAIRA_PROJECT_QA_V1") return payload.IndexOf("{\"schema\":\"EAIRA_PROJECT_QA_V1\",\"status\":\"PROJECT_QA_OK\",", StringComparison.Ordinal) == 0;
             if (contract == "EAIRA_OPERATOR_HEALTH_V1") return String.Equals(payload, LocalOperatorHealth.CanonicalPayload, StringComparison.Ordinal);
+            if (contract == "EAIRA_OPERATOR_PREFLIGHT_V1") return payload.IndexOf("{\"schema\":\"EAIRA_OPERATOR_PREFLIGHT_V1\",\"status\":\"POLICY_EXPLAINED\",", StringComparison.Ordinal) == 0;
             return false;
         }
         private static LocalOperatorExecutionResult Encode(int exit, string value) { return new LocalOperatorExecutionResult(exit, ContractCodec.Utf8Strict("Operator error").GetBytes(value)); }
@@ -293,6 +371,13 @@ namespace EAIRA.AgentServices.Functional
                 int attemptsAfter = LocalOperatorConnectAttemptMonitor.Snapshot();
                 if (attemptsAfter < attemptsBefore || attemptsAfter - attemptsBefore != 0) return LocalOperatorResponse.Build(request, route, "ORCHESTRATION_ERROR", 83, "NONE", null, null, OrchestrationChain.Emergency(request.RequestDigest, route.Digest));
                 return LocalOperatorResponse.Build(request, route, "DENIED", 77, "NONE", null, null, OrchestrationChain.Denied(request.RequestDigest, route.Digest));
+            }
+            if (request.Capability == LocalOperatorCapability.Preflight)
+            {
+                LocalOperatorExecutionResult preflight = ExecutePreflightAllowed(request, route);
+                int attemptsAfter = LocalOperatorConnectAttemptMonitor.Snapshot();
+                if (attemptsAfter < attemptsBefore || attemptsAfter - attemptsBefore != 0) return LocalOperatorResponse.Build(request, route, "OUTPUT_ERROR", 84, "NONE", null, null, OrchestrationChain.VerificationFailure(request.RequestDigest, route.Digest, "OUTPUT_ERROR", null));
+                return preflight;
             }
             if (request.Capability == LocalOperatorCapability.Health)
             {
@@ -331,6 +416,18 @@ namespace EAIRA.AgentServices.Functional
             try
             {
                 LocalOperatorHealth.Validate(request, route, payload, digest); ValidatePayload(payload);
+                return LocalOperatorResponse.Build(request, route, "PASS", 0, "NONE", payload, digest, OrchestrationChain.Success(request.RequestDigest, route.Digest, digest));
+            }
+            catch (Exception) { return LocalOperatorResponse.Build(request, route, "OUTPUT_ERROR", 84, "NONE", null, null, OrchestrationChain.VerificationFailure(request.RequestDigest, route.Digest, "OUTPUT_ERROR", digest), digest); }
+        }
+        private LocalOperatorExecutionResult ExecutePreflightAllowed(LocalOperatorRequest request, LocalOperatorRoute route)
+        {
+            LocalOperatorPreflightPolicy policy = LocalOperatorPreflight.Lookup(request.Input);
+            string payload = LocalOperatorPreflight.CanonicalPayload(policy);
+            string digest = PayloadDigest(payload);
+            try
+            {
+                LocalOperatorPreflight.Validate(request, route, policy, payload, digest); ValidatePayload(payload);
                 return LocalOperatorResponse.Build(request, route, "PASS", 0, "NONE", payload, digest, OrchestrationChain.Success(request.RequestDigest, route.Digest, digest));
             }
             catch (Exception) { return LocalOperatorResponse.Build(request, route, "OUTPUT_ERROR", 84, "NONE", null, null, OrchestrationChain.VerificationFailure(request.RequestDigest, route.Digest, "OUTPUT_ERROR", digest), digest); }

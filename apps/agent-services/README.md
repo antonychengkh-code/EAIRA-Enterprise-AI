@@ -1,6 +1,6 @@
 # EAIRA Agent Services — Gate 25 unsigned-release preparation
 
-This directory contains the repository-owned R3 `NOWRITE_A` service-host, the five-Agent functional baseline, the published M4 task/context/knowledge/project-QA capabilities, the M5 Slice 1 bounded local operator, and the M5 Slice 2 compiled-contract Health candidate. Publication state is defined by controlled project status, not inferred from directory contents. The component remains a bounded release-engineering and contract-verification input, not a production-readiness claim.
+This directory contains the repository-owned R3 `NOWRITE_A` service-host, the five-Agent functional baseline, the published M4 task/context/knowledge/project-QA capabilities, the M5 Slice 1 bounded local operator, the M5 Slice 2 compiled-contract Health capability, and the M5 Slice 3 bounded route-policy preflight candidate. Publication state is defined by controlled project status, not inferred from directory contents. The component remains a bounded release-engineering and contract-verification input, not a production-readiness claim.
 
 ## Bound service profiles
 
@@ -58,7 +58,7 @@ Slice 5 adds `EAIRA.ProjectQa.Cli.exe`, a non-production, read-only local QA sur
 
 ## Integrated local operator
 
-M5 Slice 1 adds `EAIRA.LocalOperator.Cli.exe`, one unprivileged, single-request console entry point. M5 Slice 2 appends a fourth capability, compiled-contract Health. The legacy task, project-knowledge and project-QA routes remain unchanged and call their published typed implementations only after static Guard authorization. Invalid and denied requests construct no reader or provider factory.
+M5 Slice 1 adds `EAIRA.LocalOperator.Cli.exe`, one unprivileged, single-request console entry point. M5 Slice 2 appends compiled-contract Health. M5 Slice 3 appends bounded route-policy preflight. The legacy task, project-knowledge, project-QA and Health routes remain unchanged and call their published typed implementations only after static Guard authorization. Invalid and denied requests construct no reader or provider factory.
 
 Examples:
 
@@ -67,9 +67,10 @@ Examples:
 & .\EAIRA.LocalOperator.Cli.exe knowledge --root 'C:\EAIRA' --trace 0123456789ABCDEF0123456789ABCDEF --query 'current milestone'
 & .\EAIRA.LocalOperator.Cli.exe project-qa --root 'C:\EAIRA' --trace 0123456789ABCDEF0123456789ABCDEF --question 'what is the current objective?' --provider ollama-local --model qwen3:4b
 & .\EAIRA.LocalOperator.Cli.exe health --trace 0123456789ABCDEF0123456789ABCDEF
+& .\EAIRA.LocalOperator.Cli.exe preflight --trace 0123456789ABCDEF0123456789ABCDEF --route TASK_OLLAMA_LOCAL_CONTEXT
 ```
 
-Only the exact positional forms in `contracts/EAIRA_LOCAL_OPERATOR_V1.md` are accepted. Health returns a fixed 366-byte `EAIRA_OPERATOR_HEALTH_V1` payload and a fixed-trace 927-byte canonical line, performs no factory/provider construction, reads, writes or network calls, and is observational rather than authoritative. Output is one validated canonical UTF-8 JSON line, written once after complete in-memory construction. Payloads are capped at 16,383 bytes, the maximum wrapper is 587 bytes, and complete stdout is capped at 16,970 bytes. The operator adds no persistence, listener, IPC, shell, child process, credential, external provider, arbitrary vault read, or project-authority surface. Knowledge remains navigational; QA remains assistive and model-generated; trace identifiers are correlation only.
+Only the exact positional forms in `contracts/EAIRA_LOCAL_OPERATOR_V1.md` are accepted. Health returns a fixed 366-byte `EAIRA_OPERATOR_HEALTH_V1` payload and a fixed-trace 927-byte canonical line. Preflight accepts one of seven exact route IDs and returns only a canonical `EAIRA_OPERATOR_PREFLIGHT_V1` policy tuple; `ALLOW_PREFLIGHT_ONLY` never authorizes the described route. Both perform no factory/provider construction, reads, writes or network calls and are non-authoritative. Output is one validated canonical UTF-8 JSON line, written once after complete in-memory construction. Payloads are capped at 16,383 bytes, the maximum wrapper is 587 bytes, and complete stdout is capped at 16,970 bytes. The operator adds no persistence, listener, IPC, shell, child process, credential, external provider, arbitrary vault read, or project-authority surface. Knowledge remains navigational; QA remains assistive and model-generated; trace identifiers are correlation only.
 
 ## Gate 25 build
 
@@ -84,9 +85,9 @@ Only the exact positional forms in `contracts/EAIRA_LOCAL_OPERATOR_V1.md` are ac
 7. builds the local task-intake CLI, the context-aware intake harness, the 52-test project-context harness, the 41-test fake-provider harness, and the 10-test no-socket transport-policy harness, then verifies mock, Guard denial, disabled-real, malformed request, bounded local-provider behavior, complete read-only context abuse matrices, and fail-closed context handling;
 8. runs every role-bound service's offline self-test and negative argument test;
 9. verifies x64 PE machine type and `NotSigned` Authenticode state;
-10. compiles the M5 local-operator harness and CLI in exact source order, preserves the first 96 case names as 2,409 framed bytes, verifies the complete 119-case Slice 2 list as 3,095 framed bytes, checks invalid/deny/mock/health stdout channels, and compile-then-rejects the exact 13-row legacy-plus-Health abuse matrix;
+10. compiles the M5 local-operator harness and CLI in exact source order, preserves the 96-case Slice 1 and 119-case Slice 2 prefixes, verifies the complete 166-case Slice 3 list as 4,783 framed bytes, checks invalid/deny/mock/health/preflight stdout channels, and compile-then-rejects the legacy/Health matrix plus the exact ordered 15-row Preflight abuse matrix;
 11. requires byte-identical SHA-256 values across both builds; and
-12. binds the exact 32-path historical candidate scopes plus the operator's ordered 31 inputs and exact reference-assembly hashes/versions, verifies the six-method project-context P/Invoke boundary, native caller IL, loopback and output-isolation policies, and performs decoded IL/CFG/dominance checks over the Health dispatch, transitive allowed closure and the two instrumented loopback entrypoints, then emits a sanitized manifest. Discovery modes never create an unsigned-release directory; final mode copies the unsigned operator CLI only after every non-signing check and the separately reviewed profile SHA-256 pass.
+12. binds the exact 32-path historical candidate scopes plus the operator's ordered 34 inputs and exact reference-assembly hashes/versions, verifies the six-method project-context P/Invoke boundary, native caller IL, loopback and output-isolation policies, and performs decoded IL/CFG/dominance checks over the Health dispatch, transitive allowed closure and the two instrumented loopback entrypoints, then emits a sanitized manifest. Discovery modes never create an unsigned-release directory; final mode copies the unsigned operator CLI only after every non-signing check and the separately reviewed profile SHA-256 pass.
 
 Example after an approved Roslyn build toolchain is available:
 
@@ -104,4 +105,4 @@ The legacy .NET Framework compiler may be assessed only with `-DevelopmentProbe`
 - The produced functional and service runtimes do not create child processes. The build pipeline necessarily starts the approved compiler and the newly built offline test executables; that bounded build-time activity is recorded separately from the runtime policy.
 - No Windows service, account, group, membership, directory, ACL, TPM object or firewall rule is created or changed.
 - No output is written into the repository unless the caller explicitly chooses such a path; generated release evidence should remain outside the repository.
-- A successful M5 Slice 2 final build means only `M5_SLICE2_UNSIGNED_TECHNICAL_CHECKS_PASS`. It explicitly records `externalSigningEligible=false` and `signatureOnlyBlocked=false`; it is not live provider/service health, signing, Windows-service, customer-deployment or production-readiness evidence.
+- A successful M5 Slice 3 final build means only `M5_SLICE3_UNSIGNED_TECHNICAL_CHECKS_PASS`. It explicitly records `externalSigningEligible=false` and `signatureOnlyBlocked=false`; it is not route authorization, live provider/service health, signing, Windows-service, customer-deployment or production-readiness evidence.
