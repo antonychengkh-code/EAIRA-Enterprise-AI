@@ -6,11 +6,11 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.41.0
+0.42.0
 
 ## Updated At
 
-2026-09-13
+2026-09-14
 
 ## Current Milestone
 
@@ -110,6 +110,28 @@ Gate 19 independently verified live `origin/master` at the product commit with
 `P0=0`, `P1=0`, `P2=1`, and `PUBLICATION_VERIFIED=YES`; the sole P2 is
 the pre-existing Codex auxiliary checkpoint-ref maintenance issue.
 
+M5 Slice 4 `M5S4_A_BOUNDED_REQUEST_SPECIFIC_DRY_RUN_PLAN` is implemented,
+published, and independently live-remote verified. It adds a request-specific
+dry-run plan over the seven existing bounded routes. The 13-field payload is a
+validated plan, `PLAN_NOT_AUTHORITY`; it executes no route, calls no provider,
+reads no project or vault content, opens no network connection, and writes no state.
+
+M5 Slice 4 product commit `872e9b7916c24a09eb52cee8a894d69c0221295d`,
+parent `a0ef10a38fa0ac7fb62b9693f65936b0ff61fda9`, tree
+`d2bc1f392a1dd47e55456fae36289583b5076f1b`, contains exactly nine authorized
+text paths. Final profile SHA-256
+`A5063ACF405CDCFB3D272AF63C9ED16490DE45BE6D84D2A0AEC830B349C12A0A`
+and sealed manifest SHA-256
+`4B9C72AC8A8134F4596CBA024F8A4C6EC21766F85084CB8174EBD77A33A04D85`
+bind two byte-identical builds, 37 repository inputs, 224 stable-name
+local-operator tests including 58 Slice 4 cases, and 15 fixed-order
+compile-then-reject DryRun specimens. All 43 negative specimens are rejected;
+Health, Preflight and DryRun profile matches are true; all 18 discovery-bypass
+fields are false. The nine release artifacts match the manifest and remain
+unsigned. Independent post-push verification returned `PUBLICATION_VERIFIED=YES`,
+`P0=0`, `P1=0`, and `P2=1`; the P2 is limited to the pre-existing Codex
+auxiliary checkpoint-ref maintenance issue.
+
 M4 Slice 3, decision `SLICE3_A_READ_ONLY_PROJECT_CONTEXT`, is complete and published. Product commit `a0e172f34ebc09f76e1bd894d680614ed901113d` and post-publication synchronization commit `7e1c1d04e6b92fcbf89f0b1268d189da9892071b` were independently live-remote verified. The exact product publication contains 24 authorized paths and excludes the three unrelated Claude API paths.
 
 M4 Slice 4, decision `SLICE4_A_BOUNDED_READ_ONLY_PROJECT_KNOWLEDGE_QUERY`, is implemented, published and independently live-remote verified. Gate 23 R2R2R1 calibration closed with `P0=0`, `P1=0`, `P2=0`; the final profile SHA-256 is `C8BFBB36D344D547035E97A4CB13AE1B10A3A533BA644CC9BBE52F208D6D8464`. Gate 24 sealed evidence SHA-256 `D2EA61380DEA299BF856FFB4634B8A8B720EB6EE7481A7D89F17885DD262C086` passed clean A/B reproduction, 465 stable-name tests with case digest `4D938BBEB62914787E96DF381953D9BE0A8EB0D723F9483CF5638A4EDB372DA3`, four exact CLI channels, 17 knowledge specimens, 31 seam specimens, 17 native specimens and three isolation specimens. Gate 24 independent review, Gate 25 staged review and Gate 26 post-commit verification each closed at `P0=0`, `P1=0`, `P2=0`. Commit `8fefd6b7bb2369b80724270b64e74d33a7e1aa9f`, parent `7e1c1d04e6b92fcbf89f0b1268d189da9892071b`, tree `466742dac9861228d7b7678355eb82edf77038f4`, contains exactly 21 authorized text paths. Gate 27 normally fast-forward pushed it and Gate 28 independently verified live `origin/master` at that commit with `PUBLICATION_VERIFIED=YES`, `GATE_SEQUENCE_COMPLETE=YES`, and `P0=0`, `P1=0`, `P2=0`. The three unrelated Claude API paths were not published. The first six-file synchronization commit `904c52698a00051f9af27e917d61b057a944d79f` passed exact-content checks but its independent post-commit review returned `CANNOT_APPROVE`, `P0=0`, `P1=1`, `P2=1`, `PUSH_ELIGIBILITY=NO` because it self-described a superseded staged state. The next phase-stable commit `50b5ed2fc252dfea7dd6f0771c143c1e161e9072` passed structural checks, but at its first post-commit gate no push operation was performed and review returned `CANNOT_APPROVE`, `P0=0`, `P1=1`, `P2=0` because HANDOFF used an unqualified historical no-push statement. This replacement removes that final temporal ambiguity: its staging, commit and push facts are established only by separate Git evidence and independent reviews, never by the snapshot asserting its own repository position.
@@ -185,6 +207,14 @@ deterministic compiled-policy preflight explanation for seven exact routes and
 grants no route execution, project or vault read, provider construction, network,
 write, Windows, service, signing, deployment or production authority.
 
+The M5 Slice 4 decision is recorded in
+`docs/project/strategy/EAIRA_M5_SLICE4_SCOPE_DECISION.md`. Its exact nine-path
+bounded implementation is published and independently live-remote verified at
+commit `872e9b7916c24a09eb52cee8a894d69c0221295d`. This establishes only a
+request-specific validated dry-run plan for seven exact routes and grants no
+route execution, project or vault read, provider construction or call, network,
+write, Windows, service, signing, deployment or production authority.
+
 The authoritative Project Owner authorization-state decision for commit `f317294515d1dc27a261035260e9fcc45e1545f6` is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_F317294_AUTHORIZATION_STATE_DECISION.md`.
 
 The preserved finding is `REPOSITORY_RECORDED_AUTHORIZATION_EVIDENCE_NOT_FOUND`. It does not establish that prior authorization definitively never existed; it means only that qualifying repository-recorded evidence was not found within the documented search scope.
@@ -244,13 +274,13 @@ Under the Authorization Annex workstream, no assessment-authorization decision m
 
 After this controlled-state snapshot completes its separately evidenced review,
 staging, commit, push and final-verification lifecycle, prepare a separate Project
-Owner M5 Slice 4 scope decision. Preserve the user-mode, no-write,
+Owner M5 Slice 5 scope decision. Preserve the user-mode, no-write,
 Guard-mediated, loopback-only, no-credential and no-privileged-mutation boundary.
-No Slice 4 scope, design, implementation, live provider activity, Windows
+No Slice 5 scope, design, implementation, live provider activity, Windows
 mutation, signing, deployment or production activation is inferred. This
 snapshot does not establish its own staging, commit, push or publication position.
 
-Main Annex Version `0.33.0` mutation, commit, normal push, and independent post-push publication verification are complete. Separately and historically, the Project Owner authorized sequential execution of ten remaining Annex lifecycle gates with fail-closed preconditions; that historical statement grants no authority for the separate M5 Slice 4 scope decision or any subsequent M5 lifecycle.
+Main Annex Version `0.33.0` mutation, commit, normal push, and independent post-push publication verification are complete. Separately and historically, the Project Owner authorized sequential execution of ten remaining Annex lifecycle gates with fail-closed preconditions; that historical statement grants no authority for the separate M5 Slice 5 scope decision or any subsequent M5 lifecycle.
 
 The local identity, path, capability, backup, encryption, ACL, and WSL evidence gate completed read-only on `2026-08-26` with determination `FAIL_CLOSED_BLOCKED`. At that historical gate, the target evidence path and five proposed groups did not exist. A later authorized Windows change and administrator reconciliation established that the five approved groups now exist and are empty: `EAIRA_EVIDENCE_OPERATORS`, `EAIRA_EVIDENCE_OWNERS`, `EAIRA_EVIDENCE_READERS`, `EAIRA_EVIDENCE_STOP_METADATA`, and `EAIRA_EVIDENCE_VERIFIERS`. This does not establish service accounts, memberships, directories, ACLs, encryption, backup-copy absence, Field 9 implementation, or production readiness.
 

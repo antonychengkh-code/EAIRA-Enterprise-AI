@@ -2,7 +2,7 @@
 type: project-memory-handoff
 status: active
 created: 2026-08-26
-updated: 2026-09-13
+updated: 2026-09-14
 source: codex
 project: EAIRA
 authority: provisional
@@ -12,7 +12,7 @@ authority: provisional
 
 ## State
 
-[Clause M5-STATE-HANDOFF] Obsidian project memory remains navigational and report-only. M4 Functional Agent MVP is completed under `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`; all five product slices remain published. M5 Integrated Local Runtime and Operator Workflow is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. M5 Slices 1 through 3 are implemented, published, and independently live-remote verified. Slice 3 adds only deterministic compiled-policy preflight explanation for seven exact existing routes; it executes no route, reads no project or vault content, constructs no provider, opens no network connection, writes no state and grants no authority. No arbitrary vault read, runtime write, IPC, Windows/service/ACL mutation, credential, external-provider, signing, customer-deployment or production authority is established. This snapshot does not assert its own staging, commit, push or publication position.
+[Clause M5-STATE-HANDOFF] Obsidian project memory remains navigational and report-only. M4 Functional Agent MVP is completed under `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`; all five product slices remain published. M5 Integrated Local Runtime and Operator Workflow is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. M5 Slices 1 through 4 are implemented, published, and independently live-remote verified. Slice 4 adds only a request-specific validated dry-run plan for seven exact existing routes; it is `PLAN_NOT_AUTHORITY`, executes no route, reads no project or vault content, constructs or calls no provider, opens no network connection and writes no state. No arbitrary vault read, runtime write, IPC, Windows/service/ACL mutation, credential, external-provider, signing, customer-deployment or production authority is established. This snapshot does not assert its own staging, commit, push or publication position.
 
 ## Canonical Context
 
@@ -96,11 +96,14 @@ authority: provisional
 - M5 Slice 3 product commit `7cf3b323c7b393ed817f7a9ac4562b27d1e512fc`, parent `0be3bb95447a45c60ab4cc950a44950b784b086e`, tree `808cc75ca7287b8fa78ded1fafeb20c51f9fc4a8`, contains exactly nine authorized text paths. Final profile SHA-256 is `6FEA35EE7D0D28E03352CD552B5D1F56473A2228A294D93286278595A62428ED`; sealed manifest SHA-256 is `EC3176CD11D687EBB8A5A1E8681E2EC57695B0453C28E730FA2B630B326A52AE`. Two clean builds are byte-identical; 166 stable-name cases retain the first 119 Slice 2 and first 96 legacy cases, 15 fixed-order compile-then-reject preflight specimens pass, and all retained safety controls remain passing.
 - Health baselines are profile-bound at dispatch `137`, closure methods `107` and closure calls `578`; all forbidden/factory/provider/network/connect-attempt counts are zero. All discovery bypasses are false, and the nine unsigned release outputs match the sealed manifest.
 - The Slice 3 product commit was normally fast-forward pushed. Independent Gate 19 verified live `origin/master` at that commit with `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, and `P2=1`. The sole P2 remains the pre-existing Codex auxiliary checkpoint-ref maintenance issue; product publication is unaffected and repair remains unauthorized.
+- M5 Slice 4 product commit `872e9b7916c24a09eb52cee8a894d69c0221295d`, parent `a0ef10a38fa0ac7fb62b9693f65936b0ff61fda9`, tree `d2bc1f392a1dd47e55456fae36289583b5076f1b`, contains exactly nine authorized text paths. Final profile SHA-256 is `A5063ACF405CDCFB3D272AF63C9ED16490DE45BE6D84D2A0AEC830B349C12A0A`; sealed manifest SHA-256 is `4B9C72AC8A8134F4596CBA024F8A4C6EC21766F85084CB8174EBD77A33A04D85`.
+- Final evidence records two byte-identical builds, 37/37 bound inputs, 224 stable-name tests including 58 Slice 4 cases, 15/15 fixed-order DryRun compile-then-reject specimens, 43/43 negative specimens rejected, Health/Preflight/DryRun strict profile matches, all 18 discovery-bypass fields false, and exactly nine unsigned release outputs.
+- The Slice 4 product commit was normally fast-forward pushed. Independent live-remote verification returned `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, and `P2=1`. The sole P2 remains the pre-existing Codex auxiliary checkpoint-ref maintenance issue; product publication is unaffected and repair remains unauthorized.
 
 ## Remaining
 
 - Keep certificate purchase/enrollment deferred until the release-timing decision; when resumed, complete Gate 24.12–24.14 and sign only the accepted Gate 25 hashes.
-- After this synchronization completes separate review/publication verification, obtain a separate Project Owner M5 Slice 4 scope decision before any further product design or implementation.
+- After this synchronization completes separate review/publication verification, obtain a separate Project Owner M5 Slice 5 scope decision before any further product design or implementation.
 - Preserve the no-write, Guard, source-allowlist, loopback-only and non-authority boundaries inherited from M4.
 - Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The task-intake, context, knowledge and QA CLIs remain separate local surfaces; they are not wired to those Windows services, IPC, credentials, storage, external providers or production systems.
 - Do not treat R3 publication or M4 Slice 1 local verification as signing eligibility. The binaries remain unsigned and Gate 25 remains incomplete.

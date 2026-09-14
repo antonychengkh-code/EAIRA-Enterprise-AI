@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-09-13
+2026-09-14
 
 ## Version
 
-0.40.0
+0.41.0
 
 ## Milestone
 
@@ -22,23 +22,24 @@ M5 Integrated Local Runtime and Operator Workflow: Active.
 
 ## Current Scope
 
-Synchronize the verified M5 Slice 3 product publication into the six controlled
+Synchronize the verified M5 Slice 4 product publication into the six controlled
 status/context/HANDOFF files while preserving the bounded local-only, no-write,
 no-credential and non-production authority boundary.
 
 ## Current Result
 
-M5 Slice 3 is implemented and published at product commit
-`7cf3b323c7b393ed817f7a9ac4562b27d1e512fc`, parent
-`0be3bb95447a45c60ab4cc950a44950b784b086e`, tree
-`808cc75ca7287b8fa78ded1fafeb20c51f9fc4a8`, with exactly nine authorized
+M5 Slice 4 is implemented and published at product commit
+`872e9b7916c24a09eb52cee8a894d69c0221295d`, parent
+`a0ef10a38fa0ac7fb62b9693f65936b0ff61fda9`, tree
+`d2bc1f392a1dd47e55456fae36289583b5076f1b`, with exactly nine authorized
 text paths. Final profile SHA-256 is
-`6FEA35EE7D0D28E03352CD552B5D1F56473A2228A294D93286278595A62428ED`;
+`A5063ACF405CDCFB3D272AF63C9ED16490DE45BE6D84D2A0AEC830B349C12A0A`;
 sealed manifest SHA-256 is
-`EC3176CD11D687EBB8A5A1E8681E2EC57695B0453C28E730FA2B630B326A52AE`.
-Two clean builds are byte-identical; 166 local-operator tests, 15 preflight
-compile-then-reject specimens and all retained M4/M5 controls pass. All
-discovery bypasses are false and the nine manifest-bound outputs remain unsigned.
+`4B9C72AC8A8134F4596CBA024F8A4C6EC21766F85084CB8174EBD77A33A04D85`.
+Two clean builds are byte-identical; 224 local-operator tests including 58 Slice 4
+cases, 15 DryRun compile-then-reject specimens and all retained M4/M5 controls
+pass. All 43 negative specimens are rejected, all 18 discovery-bypass fields are
+false, and the nine manifest-bound outputs remain unsigned.
 Independent post-push verification returned `PUBLICATION_VERIFIED=YES`,
 `P0=0`, `P1=0`, and `P2=1`; the P2 is limited to the existing Codex auxiliary
 checkpoint-ref maintenance issue.
@@ -143,7 +144,7 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 ## Expected Deliverables
 
 Six synchronized current-state/context/HANDOFF files that accurately record the
-M5 Slice 3 publication and preserve all authority boundaries. Their own staging,
+M5 Slice 4 publication and preserve all authority boundaries. Their own staging,
 commit, push and publication position remains external Git evidence.
 
 ## 2026-09-01 Reconciliation Results
@@ -159,9 +160,9 @@ commit, push and publication position remains external Git evidence.
 
 [Clause M5-STATE-TODAY-CRITERIA]
 
-- Product commit, parent, tree, exact path count, final evidence hashes and Gate 19
+- Product commit, parent, tree, exact path count, final evidence hashes and post-push
   result are recorded without inference.
-- M4 remains completed, M5 remains active, and M5 Slice 3 is consistently recorded
+- M4 remains completed, M5 remains active, and M5 Slice 4 is consistently recorded
   as published and independently verified.
 - The six files preserve all Windows, service, ACL, signing, external-provider,
   production and Annex boundaries.
@@ -181,7 +182,7 @@ commit, push and publication position remains external Git evidence.
 ## Next Action
 
 After separate synchronization review/publication verification, prepare a
-Project Owner M5 Slice 4 scope decision. Do not infer Slice 4
+Project Owner M5 Slice 5 scope decision. Do not infer Slice 5
 scope or begin implementation, external-provider/API/credential activity,
 Windows-service, IPC, account, membership, directory, ACL, encryption,
 persistence, signing, checkpoint-ref repair or production activity without later
