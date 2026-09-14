@@ -6,7 +6,7 @@ using System.Text;
 namespace EAIRA.AgentServices.Functional
 {
     internal sealed class LocalOperatorException : Exception { internal LocalOperatorException() : base(String.Empty) { } }
-    internal enum LocalOperatorCapability { Task = 1, Knowledge = 2, ProjectQa = 3, Health = 4, Preflight = 5 }
+    internal enum LocalOperatorCapability { Task = 1, Knowledge = 2, ProjectQa = 3, Health = 4, Preflight = 5, DryRun = 6 }
 
     internal sealed class LocalOperatorRequest
     {
@@ -21,13 +21,17 @@ namespace EAIRA.AgentServices.Functional
         internal string InputDigest { get; private set; }
         internal string RequestDigest { get; private set; }
         internal TaskEnvelope Task { get; private set; }
+        internal string TargetRouteId { get; private set; }
 
-        private LocalOperatorRequest(LocalOperatorCapability capability, string trace, string provider, string model, string root, string kind, string input)
+        private LocalOperatorRequest(LocalOperatorCapability capability, string trace, string provider, string model, string root, string kind, string input, string targetRouteId)
         {
-            Capability = capability; TraceId = trace; Provider = provider; Model = model; Root = root; InputKind = kind; Input = input;
+            Capability = capability; TraceId = trace; Provider = provider; Model = model; Root = root; InputKind = kind; Input = input; TargetRouteId = targetRouteId;
             if (root != null) { ProjectQaRequest.ValidateLexicalRoot(root); }
             if (kind == "QUERY" || kind == "QUESTION") { Input = ProjectKnowledgeQuery.NormalizeQueryOrThrowRequest(input); }
-            Task = TaskEnvelope.Create(TaskEnvelope.CurrentSchemaVersion, trace, capability == LocalOperatorCapability.Preflight ? "EXPLAIN COMPILED ROUTE POLICY" : Input);
+            if (capability == LocalOperatorCapability.DryRun && kind == "GOAL") { TaskEnvelope.Create(TaskEnvelope.CurrentSchemaVersion, trace, input); }
+            if (capability == LocalOperatorCapability.DryRun && !String.Equals(targetRouteId, DeriveDryRunTargetRouteId(provider, model, root, kind, Input), StringComparison.Ordinal)) throw new LocalOperatorException();
+            if (capability != LocalOperatorCapability.DryRun && targetRouteId != null) throw new LocalOperatorException();
+            Task = TaskEnvelope.Create(TaskEnvelope.CurrentSchemaVersion, trace, capability == LocalOperatorCapability.Preflight ? "EXPLAIN COMPILED ROUTE POLICY" : capability == LocalOperatorCapability.DryRun ? "PLAN REQUEST WITHOUT EXECUTION" : Input);
             RootDigest = root == null ? "NONE" : DomainDigest("EAIRA_M5_SLICE1_ROOT_V1", root);
             InputDigest = DomainDigest("EAIRA_M5_SLICE1_" + kind + "_V1", Input);
             RequestDigest = ContractCodec.Sha256Hex("EAIRA_M5_SLICE1_REQUEST_V1\0" +
@@ -36,34 +40,77 @@ namespace EAIRA.AgentServices.Functional
                 ContractCodec.Field(InputKind) + ContractCodec.Field(InputDigest));
         }
 
-        internal string CapabilityName { get { return Capability == LocalOperatorCapability.Task ? "TASK" : Capability == LocalOperatorCapability.Knowledge ? "KNOWLEDGE" : Capability == LocalOperatorCapability.ProjectQa ? "PROJECT_QA" : Capability == LocalOperatorCapability.Health ? "HEALTH" : "PREFLIGHT"; } }
+        internal string CapabilityName
+        {
+            get
+            {
+                switch (Capability)
+                {
+                    case LocalOperatorCapability.Task: return "TASK";
+                    case LocalOperatorCapability.Knowledge: return "KNOWLEDGE";
+                    case LocalOperatorCapability.ProjectQa: return "PROJECT_QA";
+                    case LocalOperatorCapability.Health: return "HEALTH";
+                    case LocalOperatorCapability.Preflight: return "PREFLIGHT";
+                    case LocalOperatorCapability.DryRun: return "DRY_RUN_PLAN";
+                    default: throw new LocalOperatorException();
+                }
+            }
+        }
         private static string DomainDigest(string domain, string value) { return ContractCodec.Sha256Hex(domain + "\0" + ContractCodec.Field(value)); }
+        internal static string DeriveDryRunTargetRouteId(string provider, string model, string root, string kind, string input)
+        {
+            if (kind == "GOAL" && provider == "MOCK" && model == "NONE") return root == null ? "TASK_MOCK" : "TASK_MOCK_CONTEXT";
+            if (kind == "GOAL" && provider == "OLLAMA_LOOPBACK_V1" && model == "qwen3:4b") return root == null ? "TASK_OLLAMA_LOCAL" : "TASK_OLLAMA_LOCAL_CONTEXT";
+            if (kind == "QUERY" && provider == "NONE" && model == "NONE" && root != null) return "KNOWLEDGE";
+            if (kind == "QUESTION" && provider == "OLLAMA_LOOPBACK_V1" && model == "qwen3:4b" && root != null) return "PROJECT_QA_OLLAMA_LOCAL";
+            if (kind == "HEALTH" && provider == "NONE" && model == "NONE" && root == null && input == "COMPILED CONTRACT STATUS") return "HEALTH";
+            throw new LocalOperatorException();
+        }
+        private static LocalOperatorRequest ParseDryRun(string[] args)
+        {
+            if (args.Length == 8 && args[1] == "task" && args[2] == "--provider" && args[3] == "mock" && args[4] == "--trace" && args[6] == "--goal")
+                return new LocalOperatorRequest(LocalOperatorCapability.DryRun, args[5], "MOCK", "NONE", null, "GOAL", args[7], "TASK_MOCK");
+            if (args.Length == 10 && args[1] == "task" && args[2] == "--provider" && args[3] == "mock" && args[4] == "--trace" && args[6] == "--goal" && args[8] == "--context-root")
+                return new LocalOperatorRequest(LocalOperatorCapability.DryRun, args[5], "MOCK", "NONE", args[9], "GOAL", args[7], "TASK_MOCK_CONTEXT");
+            if (args.Length == 10 && args[1] == "task" && args[2] == "--provider" && args[3] == "ollama-local" && args[4] == "--model" && args[5] == "qwen3:4b" && args[6] == "--trace" && args[8] == "--goal")
+                return new LocalOperatorRequest(LocalOperatorCapability.DryRun, args[7], "OLLAMA_LOOPBACK_V1", "qwen3:4b", null, "GOAL", args[9], "TASK_OLLAMA_LOCAL");
+            if (args.Length == 12 && args[1] == "task" && args[2] == "--provider" && args[3] == "ollama-local" && args[4] == "--model" && args[5] == "qwen3:4b" && args[6] == "--trace" && args[8] == "--goal" && args[10] == "--context-root")
+                return new LocalOperatorRequest(LocalOperatorCapability.DryRun, args[7], "OLLAMA_LOOPBACK_V1", "qwen3:4b", args[11], "GOAL", args[9], "TASK_OLLAMA_LOCAL_CONTEXT");
+            if (args.Length == 8 && args[1] == "knowledge" && args[2] == "--root" && args[4] == "--trace" && args[6] == "--query")
+                return new LocalOperatorRequest(LocalOperatorCapability.DryRun, args[5], "NONE", "NONE", args[3], "QUERY", args[7], "KNOWLEDGE");
+            if (args.Length == 12 && args[1] == "project-qa" && args[2] == "--root" && args[4] == "--trace" && args[6] == "--question" && args[8] == "--provider" && args[9] == "ollama-local" && args[10] == "--model" && args[11] == "qwen3:4b")
+                return new LocalOperatorRequest(LocalOperatorCapability.DryRun, args[5], "OLLAMA_LOOPBACK_V1", "qwen3:4b", args[3], "QUESTION", args[7], "PROJECT_QA_OLLAMA_LOCAL");
+            if (args.Length == 4 && args[1] == "health" && args[2] == "--trace")
+                return new LocalOperatorRequest(LocalOperatorCapability.DryRun, args[3], "NONE", "NONE", null, "HEALTH", "COMPILED CONTRACT STATUS", "HEALTH");
+            throw new LocalOperatorException();
+        }
 
         internal static LocalOperatorRequest Parse(string[] args)
         {
             try
             {
                 if (args == null || args.Length < 1) { throw new LocalOperatorException(); }
+                if (args[0] == "dry-run") return ParseDryRun(args);
                 if (args[0] == "task")
                 {
                     if (args.Length == 7 && args[1] == "--provider" && args[2] == "mock" && args[3] == "--trace" && args[5] == "--goal")
-                        return new LocalOperatorRequest(LocalOperatorCapability.Task, args[4], "MOCK", "NONE", null, "GOAL", args[6]);
+                        return new LocalOperatorRequest(LocalOperatorCapability.Task, args[4], "MOCK", "NONE", null, "GOAL", args[6], null);
                     if (args.Length == 9 && args[1] == "--provider" && args[2] == "mock" && args[3] == "--trace" && args[5] == "--goal" && args[7] == "--context-root")
-                        return new LocalOperatorRequest(LocalOperatorCapability.Task, args[4], "MOCK", "NONE", args[8], "GOAL", args[6]);
+                        return new LocalOperatorRequest(LocalOperatorCapability.Task, args[4], "MOCK", "NONE", args[8], "GOAL", args[6], null);
                     if (args.Length == 9 && args[1] == "--provider" && args[2] == "ollama-local" && args[3] == "--model" && args[4] == "qwen3:4b" && args[5] == "--trace" && args[7] == "--goal")
-                        return new LocalOperatorRequest(LocalOperatorCapability.Task, args[6], "OLLAMA_LOOPBACK_V1", "qwen3:4b", null, "GOAL", args[8]);
+                        return new LocalOperatorRequest(LocalOperatorCapability.Task, args[6], "OLLAMA_LOOPBACK_V1", "qwen3:4b", null, "GOAL", args[8], null);
                     if (args.Length == 11 && args[1] == "--provider" && args[2] == "ollama-local" && args[3] == "--model" && args[4] == "qwen3:4b" && args[5] == "--trace" && args[7] == "--goal" && args[9] == "--context-root")
-                        return new LocalOperatorRequest(LocalOperatorCapability.Task, args[6], "OLLAMA_LOOPBACK_V1", "qwen3:4b", args[10], "GOAL", args[8]);
+                        return new LocalOperatorRequest(LocalOperatorCapability.Task, args[6], "OLLAMA_LOOPBACK_V1", "qwen3:4b", args[10], "GOAL", args[8], null);
                     throw new LocalOperatorException();
                 }
                 if (args[0] == "knowledge" && args.Length == 7 && args[1] == "--root" && args[3] == "--trace" && args[5] == "--query")
-                    return new LocalOperatorRequest(LocalOperatorCapability.Knowledge, args[4], "NONE", "NONE", args[2], "QUERY", args[6]);
+                    return new LocalOperatorRequest(LocalOperatorCapability.Knowledge, args[4], "NONE", "NONE", args[2], "QUERY", args[6], null);
                 if (args[0] == "project-qa" && args.Length == 11 && args[1] == "--root" && args[3] == "--trace" && args[5] == "--question" && args[7] == "--provider" && args[8] == "ollama-local" && args[9] == "--model" && args[10] == "qwen3:4b")
-                    return new LocalOperatorRequest(LocalOperatorCapability.ProjectQa, args[4], "OLLAMA_LOOPBACK_V1", "qwen3:4b", args[2], "QUESTION", args[6]);
+                    return new LocalOperatorRequest(LocalOperatorCapability.ProjectQa, args[4], "OLLAMA_LOOPBACK_V1", "qwen3:4b", args[2], "QUESTION", args[6], null);
                 if (args[0] == "health" && args.Length == 3 && args[1] == "--trace")
-                    return new LocalOperatorRequest(LocalOperatorCapability.Health, args[2], "NONE", "NONE", null, "HEALTH", "COMPILED CONTRACT STATUS");
+                    return new LocalOperatorRequest(LocalOperatorCapability.Health, args[2], "NONE", "NONE", null, "HEALTH", "COMPILED CONTRACT STATUS", null);
                 if (args[0] == "preflight" && args.Length == 5 && args[1] == "--trace" && args[3] == "--route" && LocalOperatorPreflight.IsKnownRouteId(args[4]))
-                    return new LocalOperatorRequest(LocalOperatorCapability.Preflight, args[2], "NONE", "NONE", null, "PREFLIGHT_ROUTE", args[4]);
+                    return new LocalOperatorRequest(LocalOperatorCapability.Preflight, args[2], "NONE", "NONE", null, "PREFLIGHT_ROUTE", args[4], null);
                 throw new LocalOperatorException();
             }
             catch (LocalOperatorException) { throw; }
@@ -90,6 +137,7 @@ namespace EAIRA.AgentServices.Functional
         }
         internal static LocalOperatorRoute Create(LocalOperatorRequest r)
         {
+            if (r.Capability == LocalOperatorCapability.DryRun) return new LocalOperatorRoute(r, "NONE", "NONE", "EAIRA_STATIC_OPERATOR_DRY_RUN_V1", "NONE", "PLAN_NOT_AUTHORITY", "EAIRA_OPERATOR_DRY_RUN_PLAN_V1", "MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0");
             if (r.Capability == LocalOperatorCapability.Preflight) return new LocalOperatorRoute(r, "NONE", "NONE", "EAIRA_STATIC_OPERATOR_PREFLIGHT_V1", "NONE", "EXPLANATORY_NOT_AUTHORITY", "EAIRA_OPERATOR_PREFLIGHT_V1", "MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0");
             if (r.Capability == LocalOperatorCapability.Health) return new LocalOperatorRoute(r, "NONE", "NONE", "EAIRA_STATIC_OPERATOR_HEALTH_V1", "NONE", "OBSERVATIONAL_NOT_AUTHORITY", "EAIRA_OPERATOR_HEALTH_V1", "MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0");
             if (r.Capability == LocalOperatorCapability.Knowledge) return new LocalOperatorRoute(r, "NONE", "EAIRA_M4_SLICE4_KNOWLEDGE_SEVEN_FILE_ALLOWLIST_V1", "NONE", "NONE", "NAVIGATIONAL_NOT_AUTHORITY", "EAIRA_PROJECT_KNOWLEDGE_QUERY_V1", "MODEL_COMPLETE=0;TAGS=0;CHAT=0");
@@ -253,6 +301,7 @@ namespace EAIRA.AgentServices.Functional
 #endif
             return CreatePolicy(value);
         }
+        internal static bool MatchesCanonical(LocalOperatorPreflightPolicy policy, string routeId) { return SamePolicy(policy, CreatePolicy(routeId)); }
         private static string CanonicalPayloadCore(LocalOperatorPreflightPolicy policy)
         {
             if (policy == null) throw new LocalOperatorException();
@@ -284,6 +333,39 @@ namespace EAIRA.AgentServices.Functional
         }
     }
 
+    internal static class LocalOperatorDryRun
+    {
+#if EAIRA_LOCAL_OPERATOR_TEST_SEAM
+        private static int payloadCount;
+        internal static void ResetCountersForTests() { payloadCount = 0; }
+        internal static int PayloadCountForTests() { return payloadCount; }
+#endif
+        private static string CanonicalPayloadCore(LocalOperatorPreflightPolicy policy)
+        {
+            if (policy == null) throw new LocalOperatorException();
+            return "{\"schema\":\"EAIRA_OPERATOR_DRY_RUN_PLAN_V1\",\"planStatus\":\"VALIDATED_NOT_EXECUTED\",\"routeId\":" + ContractCodec.Json(policy.RouteId) +
+                ",\"capability\":" + ContractCodec.Json(policy.Capability) + ",\"sourceClass\":" + ContractCodec.Json(policy.SourceClass) + ",\"providerPolicy\":" + ContractCodec.Json(policy.ProviderPolicy) +
+                ",\"routeNetwork\":" + ContractCodec.Json(policy.RouteNetwork) + ",\"routeAuthority\":" + ContractCodec.Json(policy.RouteAuthority) + ",\"writes\":\"NONE\",\"planGuardEvaluation\":\"ALLOW_DRY_RUN_ONLY\",\"executionGuardEvaluation\":\"NOT_EVALUATED\",\"executionStatus\":\"NOT_EXECUTED\",\"authority\":\"PLAN_NOT_AUTHORITY\"}";
+        }
+        internal static string CanonicalPayload(LocalOperatorPreflightPolicy policy)
+        {
+#if EAIRA_LOCAL_OPERATOR_TEST_SEAM
+            payloadCount++;
+#endif
+            return CanonicalPayloadCore(policy);
+        }
+        internal static void Validate(LocalOperatorRequest request, LocalOperatorRoute route, LocalOperatorPreflightPolicy policy, string payload, string digest)
+        {
+            if (request == null || route == null || policy == null || request.Capability != LocalOperatorCapability.DryRun || request.Provider == null || request.Model == null || request.Task == null || request.Task.Goal != "PLAN REQUEST WITHOUT EXECUTION") throw new LocalOperatorException();
+            request.Task.ValidateIntegrity();
+            string expectedTarget = LocalOperatorRequest.DeriveDryRunTargetRouteId(request.Provider, request.Model, request.Root, request.InputKind, request.Input);
+            if (!String.Equals(request.TargetRouteId, expectedTarget, StringComparison.Ordinal) || !LocalOperatorPreflight.IsKnownRouteId(expectedTarget) || !LocalOperatorPreflight.MatchesCanonical(policy, expectedTarget)) throw new LocalOperatorException();
+            if (route.Capability != "DRY_RUN_PLAN" || route.Network != "NONE" || route.Authority != "PLAN_NOT_AUTHORITY" || route.PayloadContract != "EAIRA_OPERATOR_DRY_RUN_PLAN_V1" || route.CallBudget != "MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0") throw new LocalOperatorException();
+            LocalOperatorRoute expectedRoute = LocalOperatorRoute.Create(request);
+            if (!String.Equals(route.Digest, expectedRoute.Digest, StringComparison.Ordinal) || !String.Equals(payload, CanonicalPayloadCore(policy), StringComparison.Ordinal) || !String.Equals(digest, LocalOperatorResponse.ComputePayloadDigest(Encoding.UTF8.GetBytes(payload)), StringComparison.Ordinal)) throw new LocalOperatorException();
+        }
+    }
+
     internal static class LocalOperatorResponse
     {
         internal const int MaximumPayloadBytes = 16383, MaximumWrapperBytes = 587, MaximumLineBytes = 16970;
@@ -300,7 +382,12 @@ namespace EAIRA.AgentServices.Functional
             if (exit != ExitFor(status) || (network != "NONE" && network != "LOOPBACK_ONLY") || (pass && network != route.Network)) throw new LocalOperatorException();
             if (pass)
             {
-                if (route.PayloadContract == "EAIRA_OPERATOR_PREFLIGHT_V1") LocalOperatorPreflight.Validate(r, route, LocalOperatorPreflight.Lookup(r.Input), payload, payloadDigest);
+                if (route.PayloadContract == "EAIRA_OPERATOR_PREFLIGHT_V1" || route.PayloadContract == "EAIRA_OPERATOR_DRY_RUN_PLAN_V1")
+                {
+                    LocalOperatorPreflightPolicy policy = LocalOperatorPreflight.Lookup(route.PayloadContract == "EAIRA_OPERATOR_PREFLIGHT_V1" ? r.Input : r.TargetRouteId);
+                    if (route.PayloadContract == "EAIRA_OPERATOR_PREFLIGHT_V1") LocalOperatorPreflight.Validate(r, route, policy, payload, payloadDigest);
+                    else LocalOperatorDryRun.Validate(r, route, policy, payload, payloadDigest);
+                }
                 byte[] verifiedPayload = ContractCodec.Utf8Strict("Operator payload").GetBytes(payload);
                 string verifiedDigest = ComputePayloadDigest(verifiedPayload);
                 if (!String.Equals(payloadDigest, verifiedDigest, StringComparison.Ordinal) || !HasExpectedPayloadPrefix(route.PayloadContract, payload)) throw new LocalOperatorException();
@@ -335,6 +422,7 @@ namespace EAIRA.AgentServices.Functional
             if (contract == "EAIRA_PROJECT_QA_V1") return payload.IndexOf("{\"schema\":\"EAIRA_PROJECT_QA_V1\",\"status\":\"PROJECT_QA_OK\",", StringComparison.Ordinal) == 0;
             if (contract == "EAIRA_OPERATOR_HEALTH_V1") return String.Equals(payload, LocalOperatorHealth.CanonicalPayload, StringComparison.Ordinal);
             if (contract == "EAIRA_OPERATOR_PREFLIGHT_V1") return payload.IndexOf("{\"schema\":\"EAIRA_OPERATOR_PREFLIGHT_V1\",\"status\":\"POLICY_EXPLAINED\",", StringComparison.Ordinal) == 0;
+            if (contract == "EAIRA_OPERATOR_DRY_RUN_PLAN_V1") return payload.IndexOf("{\"schema\":\"EAIRA_OPERATOR_DRY_RUN_PLAN_V1\",\"planStatus\":\"VALIDATED_NOT_EXECUTED\",", StringComparison.Ordinal) == 0;
             return false;
         }
         private static LocalOperatorExecutionResult Encode(int exit, string value) { return new LocalOperatorExecutionResult(exit, ContractCodec.Utf8Strict("Operator error").GetBytes(value)); }
@@ -372,6 +460,13 @@ namespace EAIRA.AgentServices.Functional
                 if (attemptsAfter < attemptsBefore || attemptsAfter - attemptsBefore != 0) return LocalOperatorResponse.Build(request, route, "ORCHESTRATION_ERROR", 83, "NONE", null, null, OrchestrationChain.Emergency(request.RequestDigest, route.Digest));
                 return LocalOperatorResponse.Build(request, route, "DENIED", 77, "NONE", null, null, OrchestrationChain.Denied(request.RequestDigest, route.Digest));
             }
+            if (request.Capability == LocalOperatorCapability.DryRun)
+            {
+                LocalOperatorExecutionResult dryRun = ExecuteDryRunAllowed(request, route);
+                int attemptsAfter = LocalOperatorConnectAttemptMonitor.Snapshot();
+                if (attemptsAfter < attemptsBefore || attemptsAfter - attemptsBefore != 0) return LocalOperatorResponse.Build(request, route, "OUTPUT_ERROR", 84, "NONE", null, null, OrchestrationChain.VerificationFailure(request.RequestDigest, route.Digest, "OUTPUT_ERROR", null));
+                return dryRun;
+            }
             if (request.Capability == LocalOperatorCapability.Preflight)
             {
                 LocalOperatorExecutionResult preflight = ExecutePreflightAllowed(request, route);
@@ -387,6 +482,18 @@ namespace EAIRA.AgentServices.Functional
                 return health;
             }
             return ExecuteLegacy(request, route);
+        }
+        private LocalOperatorExecutionResult ExecuteDryRunAllowed(LocalOperatorRequest request, LocalOperatorRoute route)
+        {
+            LocalOperatorPreflightPolicy policy = LocalOperatorPreflight.Lookup(request.TargetRouteId);
+            string payload = LocalOperatorDryRun.CanonicalPayload(policy);
+            string digest = PayloadDigest(payload);
+            try
+            {
+                LocalOperatorDryRun.Validate(request, route, policy, payload, digest); ValidatePayload(payload);
+                return LocalOperatorResponse.Build(request, route, "PASS", 0, "NONE", payload, digest, OrchestrationChain.Success(request.RequestDigest, route.Digest, digest));
+            }
+            catch (Exception) { return LocalOperatorResponse.Build(request, route, "OUTPUT_ERROR", 84, "NONE", null, null, OrchestrationChain.VerificationFailure(request.RequestDigest, route.Digest, "OUTPUT_ERROR", digest), digest); }
         }
         private LocalOperatorExecutionResult ExecuteLegacy(LocalOperatorRequest request, LocalOperatorRoute route)
         {

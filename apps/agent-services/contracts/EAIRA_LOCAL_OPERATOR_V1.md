@@ -1,6 +1,6 @@
 # EAIRA Local Operator V1
 
-`EAIRA.LocalOperator.Cli.exe` is an unsigned, unprivileged, single-request console entry point for the published task, knowledge, project-QA and compiled-contract Health capabilities plus bounded route-policy preflight. It is assistive software, not project authority.
+`EAIRA.LocalOperator.Cli.exe` is an unsigned, unprivileged, single-request console entry point for the published task, knowledge, project-QA and compiled-contract Health capabilities plus bounded route-policy preflight and request-specific dry-run planning. It is assistive software, not project authority.
 
 ## Exact commands
 
@@ -13,6 +13,13 @@ EAIRA.LocalOperator.Cli.exe knowledge --root <ROOT> --trace <TRACE> --query <QUE
 EAIRA.LocalOperator.Cli.exe project-qa --root <ROOT> --trace <TRACE> --question <QUESTION> --provider ollama-local --model qwen3:4b
 EAIRA.LocalOperator.Cli.exe health --trace <TRACE>
 EAIRA.LocalOperator.Cli.exe preflight --trace <TRACE> --route <ROUTE_ID>
+EAIRA.LocalOperator.Cli.exe dry-run task --provider mock --trace <TRACE> --goal <GOAL>
+EAIRA.LocalOperator.Cli.exe dry-run task --provider mock --trace <TRACE> --goal <GOAL> --context-root <ROOT>
+EAIRA.LocalOperator.Cli.exe dry-run task --provider ollama-local --model qwen3:4b --trace <TRACE> --goal <GOAL>
+EAIRA.LocalOperator.Cli.exe dry-run task --provider ollama-local --model qwen3:4b --trace <TRACE> --goal <GOAL> --context-root <ROOT>
+EAIRA.LocalOperator.Cli.exe dry-run knowledge --root <ROOT> --trace <TRACE> --query <QUERY>
+EAIRA.LocalOperator.Cli.exe dry-run project-qa --root <ROOT> --trace <TRACE> --question <QUESTION> --provider ollama-local --model qwen3:4b
+EAIRA.LocalOperator.Cli.exe dry-run health --trace <TRACE>
 ```
 
 Preflight accepts exactly one of `TASK_MOCK`, `TASK_MOCK_CONTEXT`,
@@ -34,8 +41,14 @@ Every valid request creates a `TaskEnvelope` and calls static Guard before any r
   authority policy. `ALLOW_PREFLIGHT_ONLY` authorizes only this explanation,
   never the described route. It performs zero reads, writes, adapter/provider
   construction, model calls or network calls.
+- Dry-run uses the fixed Guard goal `PLAN REQUEST WITHOUT EXECUTION`, then
+  describes exactly one request-specific route using the same seven-row policy
+  lookup as Preflight. `ALLOW_DRY_RUN_ONLY` authorizes only emission of the
+  canonical plan and never authorizes or executes the described route. It
+  performs zero reads, writes, adapter/provider construction, model calls,
+  network calls, shell/child-process operations or persistence.
 
-Health and Preflight use the exact call budget `MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0`. Static Guard runs before either branch. Both allowed and denied paths require a same-process connect-attempt delta of zero; the two sanctioned loopback entrypoints are independently instrumented and IL-verified, but neither branch invokes either entrypoint. Preflight denial occurs before the seven-row policy lookup or payload construction.
+Health, Preflight and dry-run use the exact call budget `MODEL_COMPLETE=0;READS=0;TAGS=0;CHAT=0;FACTORIES=0`. Static Guard runs before any of these branches. Their allowed and denied paths require a same-process connect-attempt delta of zero; the two sanctioned loopback entrypoints are independently instrumented and IL-verified, but none of these branches invokes either entrypoint. Preflight and dry-run denial occurs before the seven-row policy lookup or payload construction.
 
 No route writes files/registry/IPC/log/cache/transcript, starts a child process or shell, dynamically loads code, reads `.obsidian`, or invokes an external provider.
 
@@ -59,7 +72,7 @@ Schema is `EAIRA_LOCAL_OPERATOR_V1`. Valid statuses and exits are:
 
 `PROVIDER_BLOCKED`/78 is not part of this contract. Legacy task behavior is unchanged.
 
-PASS embeds one validated M4 canonical object, the fixed Health object, or an exact 14-member `EAIRA_OPERATOR_PREFLIGHT_V1` object. The preflight object separates `routeAuthority` from fixed response `authority=EXPLANATORY_NOT_AUTHORITY`, reports `COMPILED_CONTRACT_ONLY`, and contains no free-form explanation. Denial/errors have null payload and payload digest. Invalid request before a sealed route has null trace/capability/digests/audit. Other terminal outcomes contain sanitized request/route and Audit chain digests. Stderr is empty and no partial stdout is emitted.
+PASS embeds one validated M4 canonical object, the fixed Health object, an exact 14-member `EAIRA_OPERATOR_PREFLIGHT_V1` object, or an exact 13-member `EAIRA_OPERATOR_DRY_RUN_PLAN_V1` object. The dry-run payload order is `schema`, `planStatus`, `routeId`, `capability`, `sourceClass`, `providerPolicy`, `routeNetwork`, `routeAuthority`, `writes`, `planGuardEvaluation`, `executionGuardEvaluation`, `executionStatus`, `authority`; its fixed plan status is `VALIDATED_NOT_EXECUTED`, write policy is `NONE`, plan Guard state is `ALLOW_DRY_RUN_ONLY`, execution Guard state is `NOT_EVALUATED`, execution status is `NOT_EXECUTED`, and outer authority is `PLAN_NOT_AUTHORITY`. Preflight and dry-run keep the described route authority separate from their fixed outer authority and contain no free-form explanation or raw input. Denial/errors have null payload and payload digest. Invalid request before a sealed route has null trace/capability/digests/audit. Other terminal outcomes contain sanitized request/route and Audit chain digests. Stderr is empty and no partial stdout is emitted.
 
 Bounds:
 
@@ -76,3 +89,6 @@ Health is `OBSERVATIONAL_NOT_AUTHORITY`: `POLICY_READY` describes the compiled c
 Preflight is `EXPLANATORY_NOT_AUTHORITY`: its Guard result applies only to
 emitting compiled policy and is not readiness, permission or authorization for
 the described route. Running that route separately requires its own Guard check.
+Dry-run is `PLAN_NOT_AUTHORITY`: it records `NOT_EXECUTED`, never evaluates the
+described route's execution Guard, and cannot be used as authority, readiness,
+permission or evidence that the described route was executed.
