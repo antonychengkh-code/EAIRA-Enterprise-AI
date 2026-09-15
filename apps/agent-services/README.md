@@ -1,6 +1,6 @@
 # EAIRA Agent Services — Gate 25 unsigned-release preparation
 
-This directory contains the repository-owned R3 `NOWRITE_A` service-host, the five-Agent functional baseline, the published M4 task/context/knowledge/project-QA capabilities, the M5 Slice 1 bounded local operator, the M5 Slice 2 compiled-contract Health capability, the M5 Slice 3 bounded route-policy preflight, and the M5 Slice 4 request-specific dry-run-plan candidate. Publication state is defined by controlled project status, not inferred from directory contents. The component remains a bounded release-engineering and contract-verification input, not a production-readiness claim.
+This directory contains the repository-owned R3 `NOWRITE_A` service-host, the five-Agent functional baseline, the published M4 task/context/knowledge/project-QA capabilities, the M5 Slice 1 bounded local operator, the M5 Slice 2 compiled-contract Health capability, the M5 Slice 3 bounded route-policy preflight, the M5 Slice 4 request-specific dry-run plan, and the M5 Slice 5 bounded unsigned customer-package readiness candidate. Publication state is defined by controlled project status, not inferred from directory contents. The component remains a bounded release-engineering and contract-verification input, not a production-readiness claim.
 
 ## Bound service profiles
 
@@ -102,6 +102,18 @@ Example after an approved Roslyn build toolchain is available:
 ```
 
 The legacy .NET Framework compiler may be assessed only with `-DevelopmentProbe`. That mode can validate compilation and runtime checks but cannot emit the accepted M4 technical-check status or satisfy reproducibility.
+
+## Bounded unsigned customer-package readiness
+
+M5 Slice 5 adds a separate offline package-readiness tool and verifier. It consumes
+only the exact nine binaries from the sealed M5 Slice 4 unsigned output, produces two
+deterministic out-of-tree package directories, and verifies their canonical README,
+manifest and payload hashes without executing any payload. The package is explicitly
+unsigned, non-installable and non-production. It contains no installer, archive,
+updater, rollback executor, credential, telemetry or service activation surface.
+See `contracts/EAIRA_UNSIGNED_CUSTOMER_PACKAGE_V1.md` and run
+`build/Invoke-UnsignedCustomerPackageReadiness.ps1` only with the separately reviewed
+Roslyn path and new exact `C:\Temp` work/package evidence roots.
 
 ## Explicit exclusions
 
