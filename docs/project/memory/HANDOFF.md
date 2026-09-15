@@ -12,9 +12,36 @@ authority: provisional
 
 ## State
 
-[Clause M5-STATE-HANDOFF] Obsidian project memory remains navigational/provisional; its scheduled audit is report-only. M4 Functional Agent MVP is completed under `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`; all five M4 product slices remain published. M5 Integrated Local Runtime and Operator Workflow is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. M5 Slices 1 through 5 are implemented, published and independently live-remote verified. Slice 5 adds only bounded offline unsigned package readiness over nine sealed Slice 4 payloads, without changing the existing runtime or executing a payload. Build tool writes are output-root-only; Verify tool writes are none; wrapper evidence/compilation writes stay in its exact out-of-tree work root. Existing runtime no-write, Guard, allowlist and provider boundaries remain unchanged. `PACKAGE_NOT_RELEASE_AUTHORITY` grants no signing, installation, customer distribution, deployment or production authority. This snapshot does not assert its own staging, commit, push or publication position, and M5 closeout is not established.
+[Clause M5-STATE-HANDOFF] This is a provisional handoff, not a decision source.
+The Human Project Owner approved M5 bounded closeout under
+`M5_CLOSEOUT_A_BOUNDED_USER_MODE_WITH_EXPLICIT_CARRY_FORWARD` and separately
+selected `NEXT_A_BOUNDED_LOCAL_OPERATOR_USABILITY_AND_ACCEPTANCE` on 2026-09-15.
+The canonical decision is `docs/project/strategy/EAIRA_M5_BOUNDED_CLOSEOUT_DECISION.md`;
+NEXT_A scope is `docs/project/strategy/EAIRA_NEXT_A_LOCAL_OPERATOR_USABILITY_SCOPE_DECISION.md`.
+M5 is completed only within the approved user-mode / unsigned-readiness boundary.
+Transport, encrypted state, service/ACL activation and signed pilot remain
+undelivered carry-forward; Annex blockers and existing product P2 remain unchanged.
+NEXT_A is scope/readiness preparation only: no M6 designation, interface selection,
+exact implementation design or implementation authority is established.
+
+M5 Slice 5 synchronization publication is independently verified at
+`7ff305ad4751211b7a82f98819cdb24f7e0a7aae`, parent
+`2d37d4acabb2713cb62838af1ee041851eddf2f2`, tree
+`79f2941b5cf58962604600d96bec4dbd4cf90094`, exactly six paths.
+Local-only report `EAIRA_M5S5_STATE_SYNC_INDEPENDENT_POST_PUSH_REPORT_20260915.md`,
+SHA-256 `E79C7397579CA20864980ACFD58E1ED81B950B54B66E61BC62318D2AA13E2D62`,
+records PASS_WITH_NON_BLOCKING_FINDING (P0=0, P1=0, P2=1).
+This closes that prior synchronization lifecycle, not the publication lifecycle
+of this new documentary package. Historical sealed inputs remain frozen; these
+state edits do not regenerate or revalidate product release baselines.
+The current ten-path package is documentary only. Its review/publication position
+is separate evidence; this handoff does not confer any execution authority.
 
 ## Canonical Context
+
+- [[docs/project/strategy/EAIRA_M5_BOUNDED_CLOSEOUT_DECISION]]
+- [[docs/project/strategy/EAIRA_NEXT_A_LOCAL_OPERATOR_USABILITY_SCOPE_DECISION]]
+- [[docs/project/planning/EAIRA_NEXT_A_LOCAL_OPERATOR_USABILITY_READINESS_PACKAGE]]
 
 - [[docs/project/status/CURRENT_STATUS]]
 - [[docs/project/status/TODAY_OBJECTIVE]]
@@ -23,7 +50,10 @@ authority: provisional
 
 ## Completed
 
-- M5 Slice 5 product commit `2d37d4acabb2713cb62838af1ee041851eddf2f2`, sole parent `e57307269e012afd9d01c45102c01e7eda2f2501`, tree `05d518a3d3364f4003e0ac8abb8393e8a9e9cfab`, contains exactly nine authorized text paths and was normally fast-forward pushed. Independent post-push verification queried the live remote and recomputed commit/tree/blobs, returning `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, `P2=2`. Both existing P2 findings (#US exact-entry-offset limitation and local Codex checkpoint refs) remain nonblocking and unrepaired. This records product publication only, not completion of this synchronization's publication lifecycle.
+- Human Project Owner explicitly selected bounded M5 closeout with carry-forward and NEXT_A after the R1 proposal independent review (P0=0, P1=0, P2=0). The repository decision/scope/readiness text is a new review target, not covered by that earlier PASS.
+- Prior Slice 5 six-file synchronization publication is verified at `7ff305ad4751211b7a82f98819cdb24f7e0a7aae`; it does not establish publication of this new package.
+
+- M5 Slice 5 product commit `2d37d4acabb2713cb62838af1ee041851eddf2f2`, sole parent `e57307269e012afd9d01c45102c01e7eda2f2501`, tree `05d518a3d3364f4003e0ac8abb8393e8a9e9cfab`, contains exactly nine authorized text paths and was normally fast-forward pushed. Independent post-push verification queried the live remote and recomputed commit/tree/blobs, returning `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, `P2=2`. Both existing P2 findings (#US exact-entry-offset limitation and local Codex checkpoint refs) remain nonblocking and unrepaired. That product report covers product publication only; the separate six-file synchronization completion is evidenced above.
 - Slice 5 profile SHA-256 is `CDDF0BA541888222681DBA5BE9C60F92648C25C8D8ADF92CF6C20E57C62B4C67`; sealed Build/Verify summary hashes are `6CD5077FF94DD60D64917F928F82DDF47C4A8D9E42F3664753BA0843CF945DCA` and `8A2E2B684F8445B95720A83C4C12FB89A88ACFAC56DA79FE1B76BE7BB3873667`. Both have `SEALED_FINAL`, `finalEvidence=true`, A/B equality, 64 cases, 76 fault subcases / 380 projections, 36 specimens and five argv goldens. Each package contains exactly 11 files: nine unsigned payloads, README and manifest. These are frozen product-snapshot bindings, not new baselines for later state edits.
 - Slice 5 local-only independent publication report is `EAIRA_M5S5_INDEPENDENT_POST_PUSH_REPORT_20260915.md`, SHA-256 `6547255A060D696048BE4EFF2ACD6059FD7E9D2CA63F1A7C592C68F486D3F056`. Canonical references: [[docs/project/strategy/EAIRA_M5_SLICE5_SCOPE_DECISION]], [[docs/project/planning/EAIRA_M5_SLICE5_BOUNDED_UNSIGNED_CUSTOMER_PACKAGE_READINESS_PACKAGE]], [[docs/project/planning/EAIRA_M5_SLICE5_EXACT_IMPLEMENTATION_DESIGN]], [[apps/agent-services/contracts/EAIRA_UNSIGNED_CUSTOMER_PACKAGE_V1]], and [[apps/agent-services/release/unsigned-customer-package-profile.json]]. Their frozen candidate-review markers remain historical input-snapshot text; current product state comes from controlled status and separately verified Git evidence.
 
@@ -107,7 +137,7 @@ authority: provisional
 ## Remaining
 
 - Keep certificate purchase/enrollment deferred until the release-timing decision; when resumed, complete Gate 24.12–24.14 and sign only the accepted Gate 25 hashes.
-- Next Gate: `SEPARATE_INDEPENDENT_EAIRA_M5_SLICE5_POST_PUBLICATION_CONTROLLED_STATE_AND_HANDOFF_SYNCHRONIZATION_REVIEW`. Review the six-file synchronization and then obtain separate exact staging/commit/push authority with independent verification at each required stage. After its final publication verification, obtain a separate next-scope or M5 closeout decision; neither is selected here.
+- Next Gate: `SEPARATE_INDEPENDENT_EAIRA_M5_CLOSEOUT_AND_NEXT_A_SCOPE_READINESS_PACKAGE_REVIEW`. Review the exact ten-path documents in the readiness manifest. UI form and exact implementation design remain unselected; implementation and staging/commit/push require separate authority.
 - Preserve the no-write, Guard, source-allowlist, loopback-only and non-authority boundaries inherited from M4.
 - Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The task-intake, context, knowledge and QA CLIs remain separate local surfaces; they are not wired to those Windows services, IPC, credentials, storage, external providers or production systems.
 - Do not treat R3 publication or M4 Slice 1 local verification as signing eligibility. The binaries remain unsigned and Gate 25 remains incomplete.

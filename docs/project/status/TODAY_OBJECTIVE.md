@@ -6,7 +6,7 @@
 
 ## Version
 
-0.42.0
+0.43.0
 
 ## Milestone
 
@@ -18,18 +18,39 @@ M3.4 Evidence-Driven AI Organization Slice: Completed.
 
 M4 Functional Agent MVP: Completed.
 
-M5 Integrated Local Runtime and Operator Workflow: Active.
+M5 Integrated Local Runtime and Operator Workflow: Completed within approved bounded scope.
+
+NEXT_A Local Operator Usability and Acceptance: Selected; documentary preparation only.
 
 ## Current Scope
 
-Synchronize the independently verified M5 Slice 5 product publication into exactly
-CURRENT_STATUS, TODAY_OBJECTIVE, ACTIVE_TASK, AGENT_CONTEXT_VERSION,
-CURRENT_CONTEXT and HANDOFF. Preserve the existing runtime no-write boundary and
-the package tool's distinct authorized out-of-tree Build/Verify write contract.
-No new product, signing, installation, customer distribution or production
-authority is established.
+Prepare the exact ten-path M5 closeout decision, NEXT_A scope/readiness and
+controlled-state/HANDOFF/navigation package; submit it to independent review.
+The Human Project Owner approved M5 bounded closeout under
+`M5_CLOSEOUT_A_BOUNDED_USER_MODE_WITH_EXPLICIT_CARRY_FORWARD` and separately
+selected `NEXT_A_BOUNDED_LOCAL_OPERATOR_USABILITY_AND_ACCEPTANCE` on 2026-09-15.
+The canonical decision is `docs/project/strategy/EAIRA_M5_BOUNDED_CLOSEOUT_DECISION.md`;
+NEXT_A scope is `docs/project/strategy/EAIRA_NEXT_A_LOCAL_OPERATOR_USABILITY_SCOPE_DECISION.md`.
+M5 is completed only within the approved user-mode / unsigned-readiness boundary.
+Transport, encrypted state, service/ACL activation and signed pilot remain
+undelivered carry-forward; Annex blockers and existing product P2 remain unchanged.
+NEXT_A is scope/readiness preparation only: no M6 designation, interface selection,
+exact implementation design or implementation authority is established.
 
 ## Current Result
+
+M5 Slice 5 synchronization publication is independently verified at
+`7ff305ad4751211b7a82f98819cdb24f7e0a7aae`, parent
+`2d37d4acabb2713cb62838af1ee041851eddf2f2`, tree
+`79f2941b5cf58962604600d96bec4dbd4cf90094`, exactly six paths.
+Local-only report `EAIRA_M5S5_STATE_SYNC_INDEPENDENT_POST_PUSH_REPORT_20260915.md`,
+SHA-256 `E79C7397579CA20864980ACFD58E1ED81B950B54B66E61BC62318D2AA13E2D62`,
+records PASS_WITH_NON_BLOCKING_FINDING (P0=0, P1=0, P2=1).
+This closes that prior synchronization lifecycle, not the publication lifecycle
+of this new documentary package. Historical sealed inputs remain frozen; these
+state edits do not regenerate or revalidate product release baselines.
+
+### Retained M5 Slice 5 Product Result
 
 M5 Slice 5 `M5S5_A_BOUNDED_UNSIGNED_CUSTOMER_PACKAGE_READINESS` is implemented,
 published and independently live-remote verified at commit
@@ -57,17 +78,14 @@ manifest. Independent post-push verification returned `PUBLICATION_VERIFIED=YES`
 exact-entry-offset limitation and the existing local Codex checkpoint-ref
 maintenance issue. Neither finding was repaired by this synchronization.
 
-This result concerns the product commit, not publication of these six synchronized
-state files. The output remains `PACKAGE_NOT_RELEASE_AUTHORITY`.
+The retained result concerns the frozen product commit. Prior six-file synchronization
+publication is evidenced above; the current ten-path package does not assert its
+own publication. The package output remains `PACKAGE_NOT_RELEASE_AUTHORITY`.
 
 ## Out of Scope
 
-Further product implementation, release-profile or build-script changes, arbitrary
-vault access, runtime writes, IPC, external credentials/providers, Windows service
-routing, persistence, signing, deployment, production activation, assessment
-evidence collection, checkpoint-ref repair and force push remain outside scope.
-Only the exact six synchronized state files may change in this turn. Staging,
-commit and push require later separate authorization.
+Documentary preparation and read-only validation only. No product implementation, runtime execution, model/provider call, arbitrary project/vault read, Windows/service/IPC/account/group/membership/directory/ACL/certificate/signing change, external provider, credential, checkpoint-ref repair, scheduling or external synchronization. Staging, commit and push require separate authorization.
+Only the exact ten documentary paths in the readiness manifest may change.
 
 ## Historical Objective Retained for Traceability
 
@@ -159,9 +177,10 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 
 ## Expected Deliverables
 
-Six synchronized current-state/context/HANDOFF files that accurately record the
-M5 Slice 5 publication and preserve all authority boundaries. Their own staging,
-commit, push and publication position remains external Git evidence.
+Three canonical decision/scope/readiness documents, six aligned status/context/
+HANDOFF files and one navigation index, exactly as listed in `docs/project/planning/EAIRA_NEXT_A_LOCAL_OPERATOR_USABILITY_READINESS_PACKAGE.md`.
+A separate independent review report must bind the candidate hashes; the earlier
+R1 proposal review is not approval of these new repository documents.
 
 ## 2026-09-01 Reconciliation Results
 
@@ -176,14 +195,12 @@ commit, push and publication position remains external Git evidence.
 
 [Clause M5-STATE-TODAY-CRITERIA]
 
-- Product commit, parent, tree, exact path count, final evidence hashes and post-push
-  result are recorded without inference.
-- M4 remains completed, M5 remains active, and M5 Slice 5 is consistently recorded
-  as published and independently verified.
-- The six files preserve all Windows, service, ACL, signing, external-provider,
-  production and Annex boundaries.
-- Project-memory and diff validation pass; only the exact six state paths enter
-  this lifecycle, while the three excluded untracked path classes remain untouched.
+- Record the two explicit Owner selections without extending them to implementation.
+- Preserve M5 product/synchronization evidence, undelivered carry-forward and all Annex states.
+- Keep phase-dependent mock-provider rules identical across scope/readiness.
+- Verify exact ten-path changes, YAML, versions, links, whitespace and memory structure.
+- Preserve excluded content, existing product files and index; no staging/commit/push.
+- Independent package review is separate evidence, not inferred from this snapshot.
 
 ### 2026-09-01 Reconciliation Criteria Retained for Traceability
 
@@ -198,9 +215,8 @@ commit, push and publication position remains external Git evidence.
 ## Next Action
 
 Next Gate:
-`SEPARATE_INDEPENDENT_EAIRA_M5_SLICE5_POST_PUBLICATION_CONTROLLED_STATE_AND_HANDOFF_SYNCHRONIZATION_REVIEW`.
-The separate review and later exact staging/commit/push/publication Gates must
-establish this snapshot's lifecycle position from external evidence. A subsequent
-product scope or M5 closeout decision requires separate Project Owner selection.
-No further product, API/provider/credential, Windows/service/IPC/ACL, signing,
-checkpoint-ref repair, deployment or production action is authorized here.
+`SEPARATE_INDEPENDENT_EAIRA_M5_CLOSEOUT_AND_NEXT_A_SCOPE_READINESS_PACKAGE_REVIEW`.
+Review the exact ten-path documentary package described in `docs/project/planning/EAIRA_NEXT_A_LOCAL_OPERATOR_USABILITY_READINESS_PACKAGE.md`.
+This snapshot records the Owner's two decisions; its own review, staging, commit,
+push and publication position must be established separately from evidence.
+Documentary preparation and read-only validation only. No product implementation, runtime execution, model/provider call, arbitrary project/vault read, Windows/service/IPC/account/group/membership/directory/ACL/certificate/signing change, external provider, credential, checkpoint-ref repair, scheduling or external synchronization. Staging, commit and push require separate authorization.

@@ -2,7 +2,7 @@
 type: project-memory-decision-index
 status: active
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-09-15
 source: codex
 project: EAIRA
 authority: navigational
@@ -13,6 +13,9 @@ authority: navigational
 Durable project decisions remain in `docs/project/strategy/`. This page is a navigation aid and must not restate or supersede their semantics.
 
 ## Current Entry Points
+
+- [[docs/project/strategy/EAIRA_M5_BOUNDED_CLOSEOUT_DECISION]] - canonical bounded M5 closeout decision and carry-forward disposition.
+- [[docs/project/strategy/EAIRA_NEXT_A_LOCAL_OPERATOR_USABILITY_SCOPE_DECISION]] - canonical NEXT_A direction and documentary scope boundary.
 
 - [[docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_B2_MAN_007_FIELD_8_REVISION_2_DISPOSITION_DECISION]] - Project Owner Option A disposition accepting Revision 2 documentary bindings and authorizing exact one-file Main Annex candidate preparation only.
 
