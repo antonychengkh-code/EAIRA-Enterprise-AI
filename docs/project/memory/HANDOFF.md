@@ -2,7 +2,7 @@
 type: project-memory-handoff
 status: active
 created: 2026-08-26
-updated: 2026-09-14
+updated: 2026-09-15
 source: codex
 project: EAIRA
 authority: provisional
@@ -12,7 +12,7 @@ authority: provisional
 
 ## State
 
-[Clause M5-STATE-HANDOFF] Obsidian project memory remains navigational and report-only. M4 Functional Agent MVP is completed under `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`; all five product slices remain published. M5 Integrated Local Runtime and Operator Workflow is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. M5 Slices 1 through 4 are implemented, published, and independently live-remote verified. Slice 4 adds only a request-specific validated dry-run plan for seven exact existing routes; it is `PLAN_NOT_AUTHORITY`, executes no route, reads no project or vault content, constructs or calls no provider, opens no network connection and writes no state. No arbitrary vault read, runtime write, IPC, Windows/service/ACL mutation, credential, external-provider, signing, customer-deployment or production authority is established. This snapshot does not assert its own staging, commit, push or publication position.
+[Clause M5-STATE-HANDOFF] Obsidian project memory remains navigational/provisional; its scheduled audit is report-only. M4 Functional Agent MVP is completed under `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`; all five M4 product slices remain published. M5 Integrated Local Runtime and Operator Workflow is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`. M5 Slices 1 through 5 are implemented, published and independently live-remote verified. Slice 5 adds only bounded offline unsigned package readiness over nine sealed Slice 4 payloads, without changing the existing runtime or executing a payload. Build tool writes are output-root-only; Verify tool writes are none; wrapper evidence/compilation writes stay in its exact out-of-tree work root. Existing runtime no-write, Guard, allowlist and provider boundaries remain unchanged. `PACKAGE_NOT_RELEASE_AUTHORITY` grants no signing, installation, customer distribution, deployment or production authority. This snapshot does not assert its own staging, commit, push or publication position, and M5 closeout is not established.
 
 ## Canonical Context
 
@@ -22,6 +22,10 @@ authority: provisional
 - [[docs/project/status/AGENT_CONTEXT_VERSION.yaml]]
 
 ## Completed
+
+- M5 Slice 5 product commit `2d37d4acabb2713cb62838af1ee041851eddf2f2`, sole parent `e57307269e012afd9d01c45102c01e7eda2f2501`, tree `05d518a3d3364f4003e0ac8abb8393e8a9e9cfab`, contains exactly nine authorized text paths and was normally fast-forward pushed. Independent post-push verification queried the live remote and recomputed commit/tree/blobs, returning `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, `P2=2`. Both existing P2 findings (#US exact-entry-offset limitation and local Codex checkpoint refs) remain nonblocking and unrepaired. This records product publication only, not completion of this synchronization's publication lifecycle.
+- Slice 5 profile SHA-256 is `CDDF0BA541888222681DBA5BE9C60F92648C25C8D8ADF92CF6C20E57C62B4C67`; sealed Build/Verify summary hashes are `6CD5077FF94DD60D64917F928F82DDF47C4A8D9E42F3664753BA0843CF945DCA` and `8A2E2B684F8445B95720A83C4C12FB89A88ACFAC56DA79FE1B76BE7BB3873667`. Both have `SEALED_FINAL`, `finalEvidence=true`, A/B equality, 64 cases, 76 fault subcases / 380 projections, 36 specimens and five argv goldens. Each package contains exactly 11 files: nine unsigned payloads, README and manifest. These are frozen product-snapshot bindings, not new baselines for later state edits.
+- Slice 5 local-only independent publication report is `EAIRA_M5S5_INDEPENDENT_POST_PUSH_REPORT_20260915.md`, SHA-256 `6547255A060D696048BE4EFF2ACD6059FD7E9D2CA63F1A7C592C68F486D3F056`. Canonical references: [[docs/project/strategy/EAIRA_M5_SLICE5_SCOPE_DECISION]], [[docs/project/planning/EAIRA_M5_SLICE5_BOUNDED_UNSIGNED_CUSTOMER_PACKAGE_READINESS_PACKAGE]], [[docs/project/planning/EAIRA_M5_SLICE5_EXACT_IMPLEMENTATION_DESIGN]], [[apps/agent-services/contracts/EAIRA_UNSIGNED_CUSTOMER_PACKAGE_V1]], and [[apps/agent-services/release/unsigned-customer-package-profile.json]]. Their frozen candidate-review markers remain historical input-snapshot text; current product state comes from controlled status and separately verified Git evidence.
 
 - M4 Slice 2 direction `SLICE2_A_LOCAL_MODEL_PROVIDER` selected and readiness R4 independently passed with no P0/P1/P2.
 - The remediated exact local `qwen3:4b` candidate passed two byte-identical builds, `34` functional tests, `15` intake tests, `41` fake-provider tests, `10` no-socket transport-policy tests, five service self-tests, non-CLI zero-network/stream checks, and the frozen CLI `18` TypeRef/`35` MemberRef allowlist.
@@ -103,12 +107,12 @@ authority: provisional
 ## Remaining
 
 - Keep certificate purchase/enrollment deferred until the release-timing decision; when resumed, complete Gate 24.12–24.14 and sign only the accepted Gate 25 hashes.
-- After this synchronization completes separate review/publication verification, obtain a separate Project Owner M5 Slice 5 scope decision before any further product design or implementation.
+- Next Gate: `SEPARATE_INDEPENDENT_EAIRA_M5_SLICE5_POST_PUBLICATION_CONTROLLED_STATE_AND_HANDOFF_SYNCHRONIZATION_REVIEW`. Review the six-file synchronization and then obtain separate exact staging/commit/push authority with independent verification at each required stage. After its final publication verification, obtain a separate next-scope or M5 closeout decision; neither is selected here.
 - Preserve the no-write, Guard, source-allowlist, loopback-only and non-authority boundaries inherited from M4.
 - Treat the five service binaries as bounded lifecycle/configuration scaffolds with offline functional self-tests. The task-intake, context, knowledge and QA CLIs remain separate local surfaces; they are not wired to those Windows services, IPC, credentials, storage, external providers or production systems.
 - Do not treat R3 publication or M4 Slice 1 local verification as signing eligibility. The binaries remain unsigned and Gate 25 remains incomplete.
 - Keep service-account, membership, directory, ACL, encryption, signing, cloud-resource, and operational mutations fail-closed until separately authorized.
-- Keep API, MCP, automated writes and external synchronization disabled unless separately authorized; this synchronization grants no new runtime or product authority.
+- No API/MCP, automation or external synchronization was enabled or changed by this documentary synchronization. Keep automated writes disabled unless separately authorized; the existing weekly report-only audit remains unchanged. This grants no new runtime or product authority.
 - Keep the weekly audit report-only; passing the observation gate does not itself authorize automated writes.
 
 ## Scheduling

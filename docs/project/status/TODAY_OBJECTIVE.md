@@ -2,11 +2,11 @@
 
 ## Date
 
-2026-09-14
+2026-09-15
 
 ## Version
 
-0.41.0
+0.42.0
 
 ## Milestone
 
@@ -22,27 +22,43 @@ M5 Integrated Local Runtime and Operator Workflow: Active.
 
 ## Current Scope
 
-Synchronize the verified M5 Slice 4 product publication into the six controlled
-status/context/HANDOFF files while preserving the bounded local-only, no-write,
-no-credential and non-production authority boundary.
+Synchronize the independently verified M5 Slice 5 product publication into exactly
+CURRENT_STATUS, TODAY_OBJECTIVE, ACTIVE_TASK, AGENT_CONTEXT_VERSION,
+CURRENT_CONTEXT and HANDOFF. Preserve the existing runtime no-write boundary and
+the package tool's distinct authorized out-of-tree Build/Verify write contract.
+No new product, signing, installation, customer distribution or production
+authority is established.
 
 ## Current Result
 
-M5 Slice 4 is implemented and published at product commit
-`872e9b7916c24a09eb52cee8a894d69c0221295d`, parent
-`a0ef10a38fa0ac7fb62b9693f65936b0ff61fda9`, tree
-`d2bc1f392a1dd47e55456fae36289583b5076f1b`, with exactly nine authorized
-text paths. Final profile SHA-256 is
-`A5063ACF405CDCFB3D272AF63C9ED16490DE45BE6D84D2A0AEC830B349C12A0A`;
-sealed manifest SHA-256 is
-`4B9C72AC8A8134F4596CBA024F8A4C6EC21766F85084CB8174EBD77A33A04D85`.
-Two clean builds are byte-identical; 224 local-operator tests including 58 Slice 4
-cases, 15 DryRun compile-then-reject specimens and all retained M4/M5 controls
-pass. All 43 negative specimens are rejected, all 18 discovery-bypass fields are
-false, and the nine manifest-bound outputs remain unsigned.
-Independent post-push verification returned `PUBLICATION_VERIFIED=YES`,
-`P0=0`, `P1=0`, and `P2=1`; the P2 is limited to the existing Codex auxiliary
-checkpoint-ref maintenance issue.
+M5 Slice 5 `M5S5_A_BOUNDED_UNSIGNED_CUSTOMER_PACKAGE_READINESS` is implemented,
+published and independently live-remote verified at commit
+`2d37d4acabb2713cb62838af1ee041851eddf2f2`, sole parent
+`e57307269e012afd9d01c45102c01e7eda2f2501`, tree
+`05d518a3d3364f4003e0ac8abb8393e8a9e9cfab`, with exactly nine authorized
+text paths. It adds a separate offline package-readiness tool and verifier over
+the exact nine sealed M5 Slice 4 binaries; it changes no existing runtime binary
+and executes no payload. Build writes only to the exact authorized package output
+roots; Verify performs no tool writes. Wrapper snapshots, compilation and evidence
+writes are confined to its separately authorized out-of-tree work root. Existing
+Agent runtime no-write and source/provider boundaries remain unchanged.
+
+Final profile SHA-256 is
+`CDDF0BA541888222681DBA5BE9C60F92648C25C8D8ADF92CF6C20E57C62B4C67`.
+Sealed Build summary SHA-256 is
+`6CD5077FF94DD60D64917F928F82DDF47C4A8D9E42F3664753BA0843CF945DCA`;
+sealed Verify summary SHA-256 is
+`8A2E2B684F8445B95720A83C4C12FB89A88ACFAC56DA79FE1B76BE7BB3873667`.
+Both are `PASS / SEALED_FINAL / finalEvidence=true`; A/B outputs match,
+64 cases, 76 fault subcases / 380 projections, 36 specimens and five argv goldens
+pass. Each package contains exactly 11 files: nine unsigned payloads, README and
+manifest. Independent post-push verification returned `PUBLICATION_VERIFIED=YES`,
+`P0=0`, `P1=0`, `P2=2`. The retained P2 findings are the bounded `#US`
+exact-entry-offset limitation and the existing local Codex checkpoint-ref
+maintenance issue. Neither finding was repaired by this synchronization.
+
+This result concerns the product commit, not publication of these six synchronized
+state files. The output remains `PACKAGE_NOT_RELEASE_AUTHORITY`.
 
 ## Out of Scope
 
@@ -50,8 +66,8 @@ Further product implementation, release-profile or build-script changes, arbitra
 vault access, runtime writes, IPC, external credentials/providers, Windows service
 routing, persistence, signing, deployment, production activation, assessment
 evidence collection, checkpoint-ref repair and force push remain outside scope.
-Only the exact six synchronized state files may enter this repository-recording
-lifecycle.
+Only the exact six synchronized state files may change in this turn. Staging,
+commit and push require later separate authorization.
 
 ## Historical Objective Retained for Traceability
 
@@ -144,7 +160,7 @@ No Main Annex, strategy decision record, package source, historical record, Boot
 ## Expected Deliverables
 
 Six synchronized current-state/context/HANDOFF files that accurately record the
-M5 Slice 4 publication and preserve all authority boundaries. Their own staging,
+M5 Slice 5 publication and preserve all authority boundaries. Their own staging,
 commit, push and publication position remains external Git evidence.
 
 ## 2026-09-01 Reconciliation Results
@@ -162,7 +178,7 @@ commit, push and publication position remains external Git evidence.
 
 - Product commit, parent, tree, exact path count, final evidence hashes and post-push
   result are recorded without inference.
-- M4 remains completed, M5 remains active, and M5 Slice 4 is consistently recorded
+- M4 remains completed, M5 remains active, and M5 Slice 5 is consistently recorded
   as published and independently verified.
 - The six files preserve all Windows, service, ACL, signing, external-provider,
   production and Annex boundaries.
@@ -181,9 +197,10 @@ commit, push and publication position remains external Git evidence.
 
 ## Next Action
 
-After separate synchronization review/publication verification, prepare a
-Project Owner M5 Slice 5 scope decision. Do not infer Slice 5
-scope or begin implementation, external-provider/API/credential activity,
-Windows-service, IPC, account, membership, directory, ACL, encryption,
-persistence, signing, checkpoint-ref repair or production activity without later
-exact authorization.
+Next Gate:
+`SEPARATE_INDEPENDENT_EAIRA_M5_SLICE5_POST_PUBLICATION_CONTROLLED_STATE_AND_HANDOFF_SYNCHRONIZATION_REVIEW`.
+The separate review and later exact staging/commit/push/publication Gates must
+establish this snapshot's lifecycle position from external evidence. A subsequent
+product scope or M5 closeout decision requires separate Project Owner selection.
+No further product, API/provider/credential, Windows/service/IPC/ACL, signing,
+checkpoint-ref repair, deployment or production action is authorized here.

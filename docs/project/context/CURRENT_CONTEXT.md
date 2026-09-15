@@ -8,7 +8,11 @@ This file is a working-context summary only. It is not an authoritative project 
 
 ## Current State
 
-Repository evidence supports the following current state:
+Repository evidence and the separately verified publication support the following
+current state as of 2026-09-15:
+
+- M5 Slice 5 `M5S5_A_BOUNDED_UNSIGNED_CUSTOMER_PACKAGE_READINESS` is implemented, published and independently live-remote verified at commit `2d37d4acabb2713cb62838af1ee041851eddf2f2`, sole parent `e57307269e012afd9d01c45102c01e7eda2f2501`, tree `05d518a3d3364f4003e0ac8abb8393e8a9e9cfab`, with exactly nine authorized text paths. The separate offline tool packages the exact nine sealed M5 Slice 4 payloads without executing them or changing the existing runtime. Build writes only to authorized package output roots; Verify performs no tool writes; wrapper writes are confined to its authorized out-of-tree work root. Each deterministic A/B package has nine unsigned payloads, README and manifest. `PACKAGE_NOT_RELEASE_AUTHORITY` grants no installation, customer-distribution, signing, deployment or production authority.
+- Slice 5 final profile SHA-256 is `CDDF0BA541888222681DBA5BE9C60F92648C25C8D8ADF92CF6C20E57C62B4C67`; sealed Build/Verify summary hashes are `6CD5077FF94DD60D64917F928F82DDF47C4A8D9E42F3664753BA0843CF945DCA` and `8A2E2B684F8445B95720A83C4C12FB89A88ACFAC56DA79FE1B76BE7BB3873667`. Both are `PASS / SEALED_FINAL / finalEvidence=true`, with A/B equality, 64 cases, 76 fault subcases / 380 projections, 36 specimens and five argv goldens. Independent post-push verification returned `PUBLICATION_VERIFIED=YES`, `P0=0`, `P1=0`, `P2=2`: the bounded #US exact-entry-offset limitation and local Codex checkpoint-ref maintenance issue remain nonblocking and unrepaired. Local-only report `EAIRA_M5S5_INDEPENDENT_POST_PUSH_REPORT_20260915.md` has SHA-256 `6547255A060D696048BE4EFF2ACD6059FD7E9D2CA63F1A7C592C68F486D3F056`. [Clause M5-S5-STATE-ACTIVE-LINKS]
 
 - M4 Functional Agent MVP is completed under `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`; this is bounded functional-MVP closeout, not production readiness.
 - M5 Integrated Local Runtime and Operator Workflow is active under `M5_A_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW`.
@@ -70,16 +74,18 @@ Repository evidence supports the following current state:
 
 ## Current Milestone
 
-The latest completed milestone evidence remains M3, including the completed M3.4 Evidence-Driven AI Organization Slice.
+M3, including M3.4 Evidence-Driven AI Organization Slice, remains completed historical milestone evidence; the latest completed milestone is the bounded M4 Functional Agent MVP.
 
 M4 Functional Agent MVP is completed. Slice 1 through Slice 5 are published. Slice 5 product commit `3945baaa3a63f8dba51a474ee36a6ad827d94817` is independently live-remote verified and provides bounded local project QA over the exact published Slice 3/4 read surfaces with one fixed Ollama-loopback request and strict host-side reconstruction. Its answer remains model-generated, unverified and assistive rather than authoritative.
 
-M5 Integrated Local Runtime and Operator Workflow is active. Slice 1 is published
-as a bounded unified user-mode local operator workflow. Slice 2 scope remains
-unselected and requires a separate Project Owner decision. Platform Foundation,
+M5 Integrated Local Runtime and Operator Workflow remains active. Slices 1 through
+5 are published and independently verified: unified local operator, compiled
+Health status, route-policy preflight, request-specific dry-run plan, and bounded
+unsigned package readiness. This does not close M5 or establish Platform Foundation,
 a formal EAIRA Execution Layer, Windows-service task routing, external-provider
-integration, persistence, deployment capability, signing eligibility and a
-production multi-agent runtime are not established.
+integration, persistence, signing, installation, customer deployment or a
+production multi-agent runtime. The next scope or M5 closeout decision remains
+separately unselected.
 
 ## Current Planning Models
 
@@ -145,10 +151,14 @@ Assessment execution, command execution, local inspection, connectivity testing,
 
 ## Current Planning Direction
 
-After this snapshot's separate synchronization review/publication lifecycle, the
-current product direction is a separate M5 Slice 5 scope decision. No Slice 5
-feature, design, implementation, provider activity, Windows change, signing,
-deployment or production authority is inferred.
+Next Gate:
+`SEPARATE_INDEPENDENT_EAIRA_M5_SLICE5_POST_PUBLICATION_CONTROLLED_STATE_AND_HANDOFF_SYNCHRONIZATION_REVIEW`.
+The current authorization is exact-six documentary synchronization and read-only
+validation only. Independent review and separately authorized staging, commit,
+push and final publication verification must follow. After that lifecycle, obtain
+a separate next-scope or M5 closeout decision; no further feature or operational
+authority is inferred. Existing Agent runtime no-write and Guard/source/provider
+boundaries are unchanged by the package tool's bounded out-of-tree write contract.
 
 Version `0.30.0` downstream synchronization completed at commit `0d0185738309f58d64f143f93cf9e7917d12aa1e`, parent `f7408802a0fba79bdaf81684683d213df217075b`, with exactly six modified paths, `59` additions, and `47` deletions. It updates only current-state and task artifacts to the independently verified Main Annex Version `0.30.0` publication and the independently verified B2-MAN-007 planning-evidence adoption record.
 
@@ -170,7 +180,7 @@ That local evidence gate completed read-only on `2026-08-26` with `FAIL_CLOSED_B
 
 The 2026-09-01 controlled-state reconciliation confirms that Gate 19 through Gate 23 bounded preparation and independent review are complete. Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are available, but the legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred. That evidence did not itself establish a milestone; M4 was established separately on 2026-09-02. Neither the reconciliation nor M4 Slice 1 establishes service readiness, production readiness, Field transition, category satisfaction, blocker closure, or all-fields gate passage.
 
-The M5 Slice 4 product lifecycle through independent post-push verification is complete. Local `HEAD`, cached `origin/master` and live `refs/heads/master` were independently reconciled at `872e9b7916c24a09eb52cee8a894d69c0221295d` before this synchronization. This exact-six snapshot is phase-stable: its own stage, commit, push and publication position must be established from external Git evidence and independent review, not by the snapshot itself. Checkpoint-ref repair, additional product or live-provider activity, Windows, service, signing, external-provider and production mutations remain unauthorized.
+The M5 Slice 5 product lifecycle through independent post-push verification is complete. Local `HEAD`, cached `origin/master` and live `refs/heads/master` were independently reconciled at `2d37d4acabb2713cb62838af1ee041851eddf2f2` before this synchronization. This exact-six snapshot is phase-stable: its own stage, commit, push and publication position must be established from external Git evidence and independent review, not by the snapshot itself. The frozen product scope/readiness/V14 design markers refer to historical candidate inputs, not current publication state; product files and their sealed baselines remain unchanged. Checkpoint-ref repair, additional product or provider activity, Windows, service, signing, external-provider and production mutations remain unauthorized.
 
 ## Authoritative Sources
 
@@ -189,7 +199,10 @@ The M5 Slice 4 product lifecycle through independent post-push verification is c
 | Current status | `docs/project/status/CURRENT_STATUS.md` |
 | M4 closeout and M5 scope decision | `docs/project/strategy/EAIRA_M4_CLOSEOUT_AND_M5_SCOPE_DECISION.md` |
 | M5 charter | `docs/project/milestones/EAIRA_M5_INTEGRATED_LOCAL_RUNTIME_AND_OPERATOR_WORKFLOW_PROJECT_CHARTER.md` |
-| Active task | `docs/project/status/ACTIVE_TASK.yaml`; M5 Slice 4 product publication verified, phase-stable synchronization snapshot |
+| Active task | `docs/project/status/ACTIVE_TASK.yaml`; M5 Slice 5 product publication verified, phase-stable synchronization snapshot |
+| M5 Slice 5 scope | `docs/project/strategy/EAIRA_M5_SLICE5_SCOPE_DECISION.md` |
+| M5 Slice 5 readiness and exact design | `docs/project/planning/EAIRA_M5_SLICE5_BOUNDED_UNSIGNED_CUSTOMER_PACKAGE_READINESS_PACKAGE.md`; `docs/project/planning/EAIRA_M5_SLICE5_EXACT_IMPLEMENTATION_DESIGN.md` |
+| M5 Slice 5 package contract and profile | `apps/agent-services/contracts/EAIRA_UNSIGNED_CUSTOMER_PACKAGE_V1.md`; `apps/agent-services/release/unsigned-customer-package-profile.json` |
 | Retained blocked Annex task | `docs/tasks/LOCAL_READINESS_ASSESSMENT_AUTHORIZATION_ANNEX_PLANNING_001.md` |
 | Historical validation constraints | `docs/tasks/M3_4_FINANCE_REVENUE_INPUT_TASK_RECORD.md` |
 

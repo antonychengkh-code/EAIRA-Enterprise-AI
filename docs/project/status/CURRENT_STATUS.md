@@ -6,11 +6,11 @@ EAIRA-PROJECT-STATUS-2026-07-16
 
 ## Version
 
-0.42.0
+0.43.0
 
 ## Updated At
 
-2026-09-14
+2026-09-15
 
 ## Current Milestone
 
@@ -25,6 +25,44 @@ M4 Functional Agent MVP: Completed.
 M5 Integrated Local Runtime and Operator Workflow: Active.
 
 ## Active Phase
+
+M5 Slice 5 `M5S5_A_BOUNDED_UNSIGNED_CUSTOMER_PACKAGE_READINESS` is implemented,
+published and independently live-remote verified at commit
+`2d37d4acabb2713cb62838af1ee041851eddf2f2`, sole parent
+`e57307269e012afd9d01c45102c01e7eda2f2501`, tree
+`05d518a3d3364f4003e0ac8abb8393e8a9e9cfab`, with exactly nine authorized
+text paths. It adds a separate offline package-readiness tool and verifier over
+the exact nine sealed M5 Slice 4 binaries; it changes no existing runtime binary
+and executes no payload. Build writes only to the exact authorized package output
+roots; Verify performs no tool writes. Wrapper snapshots, compilation and evidence
+writes are confined to its separately authorized out-of-tree work root. Existing
+Agent runtime no-write and source/provider boundaries remain unchanged.
+
+Final profile SHA-256 is
+`CDDF0BA541888222681DBA5BE9C60F92648C25C8D8ADF92CF6C20E57C62B4C67`.
+Sealed Build summary SHA-256 is
+`6CD5077FF94DD60D64917F928F82DDF47C4A8D9E42F3664753BA0843CF945DCA`;
+sealed Verify summary SHA-256 is
+`8A2E2B684F8445B95720A83C4C12FB89A88ACFAC56DA79FE1B76BE7BB3873667`.
+Both are `PASS / SEALED_FINAL / finalEvidence=true`; A/B outputs match,
+64 cases, 76 fault subcases / 380 projections, 36 specimens and five argv goldens
+pass. Each package contains exactly 11 files: nine unsigned payloads, README and
+manifest. Independent post-push verification returned `PUBLICATION_VERIFIED=YES`,
+`P0=0`, `P1=0`, `P2=2`. The retained P2 findings are the bounded `#US`
+exact-entry-offset limitation and the existing local Codex checkpoint-ref
+maintenance issue. Neither finding was repaired by this synchronization.
+
+The product publication is verified; the separate controlled-state synchronization
+lifecycle is not closed by this snapshot. `PACKAGE_NOT_RELEASE_AUTHORITY` remains
+controlling: no signing, installation, customer distribution, deployment or
+production readiness is established. M4 remains completed and M5 remains active.
+The next product scope or M5 closeout decision remains separately unselected.
+
+Publication evidence is the independently verified Git commit above plus local-only
+report `EAIRA_M5S5_INDEPENDENT_POST_PUSH_REPORT_20260915.md`, SHA-256
+`6547255A060D696048BE4EFF2ACD6059FD7E9D2CA63F1A7C592C68F486D3F056`.
+The two sealed summaries bind the frozen nine-path product snapshot, not later
+controlled-state edits; this synchronization does not regenerate release baselines.
 
 M4 Functional Agent MVP is closed under
 `M4_CLOSEOUT_A_APPROVE_WITH_NON_BLOCKING_CARRY_FORWARD`. Independent readiness
@@ -215,6 +253,14 @@ request-specific validated dry-run plan for seven exact routes and grants no
 route execution, project or vault read, provider construction or call, network,
 write, Windows, service, signing, deployment or production authority.
 
+The M5 Slice 5 decision is recorded in
+`docs/project/strategy/EAIRA_M5_SLICE5_SCOPE_DECISION.md`; the readiness package is
+`docs/project/planning/EAIRA_M5_SLICE5_BOUNDED_UNSIGNED_CUSTOMER_PACKAGE_READINESS_PACKAGE.md`
+and exact design is `docs/project/planning/EAIRA_M5_SLICE5_EXACT_IMPLEMENTATION_DESIGN.md`
+(V14). Their frozen candidate-stage markers are historical input-snapshot markers,
+not the current lifecycle state. The separately verified product publication above
+controls this synchronization; those product files remain unchanged.
+
 The authoritative Project Owner authorization-state decision for commit `f317294515d1dc27a261035260e9fcc45e1545f6` is `docs/project/strategy/EAIRA_LOCAL_READINESS_ASSESSMENT_F317294_AUTHORIZATION_STATE_DECISION.md`.
 
 The preserved finding is `REPOSITORY_RECORDED_AUTHORIZATION_EVIDENCE_NOT_FOUND`. It does not establish that prior authorization definitively never existed; it means only that qualifying repository-recorded evidence was not found within the documented search scope.
@@ -272,18 +318,20 @@ Under the Authorization Annex workstream, no assessment-authorization decision m
 
 ## Next Action
 
-After this controlled-state snapshot completes its separately evidenced review,
-staging, commit, push and final-verification lifecycle, prepare a separate Project
-Owner M5 Slice 5 scope decision. Preserve the user-mode, no-write,
-Guard-mediated, loopback-only, no-credential and no-privileged-mutation boundary.
-No Slice 5 scope, design, implementation, live provider activity, Windows
-mutation, signing, deployment or production activation is inferred. This
-snapshot does not establish its own staging, commit, push or publication position.
+Next Gate:
+`SEPARATE_INDEPENDENT_EAIRA_M5_SLICE5_POST_PUBLICATION_CONTROLLED_STATE_AND_HANDOFF_SYNCHRONIZATION_REVIEW`.
+The Project Owner authorized only the necessary six-file documentary synchronization
+and read-only validation. Its independent review, staging, commit, push and final
+publication verification remain separate Gates; this snapshot does not establish
+its own position in that sequence or grant those actions. After synchronization
+publication is verified, obtain a separate next-scope or M5 closeout decision.
+Preserve existing runtime no-write, Guard, allowlist, loopback-only and
+non-authority controls; infer no further product or operational authority.
 
-Main Annex Version `0.33.0` mutation, commit, normal push, and independent post-push publication verification are complete. Separately and historically, the Project Owner authorized sequential execution of ten remaining Annex lifecycle gates with fail-closed preconditions; that historical statement grants no authority for the separate M5 Slice 5 scope decision or any subsequent M5 lifecycle.
+Main Annex Version `0.33.0` mutation, commit, normal push, and independent post-push publication verification are complete. Separately and historically, the Project Owner authorized sequential execution of ten remaining Annex lifecycle gates with fail-closed preconditions; that historical statement grants no authority for subsequent M5 lifecycle actions.
 
 The local identity, path, capability, backup, encryption, ACL, and WSL evidence gate completed read-only on `2026-08-26` with determination `FAIL_CLOSED_BLOCKED`. At that historical gate, the target evidence path and five proposed groups did not exist. A later authorized Windows change and administrator reconciliation established that the five approved groups now exist and are empty: `EAIRA_EVIDENCE_OPERATORS`, `EAIRA_EVIDENCE_OWNERS`, `EAIRA_EVIDENCE_READERS`, `EAIRA_EVIDENCE_STOP_METADATA`, and `EAIRA_EVIDENCE_VERIFIERS`. This does not establish service accounts, memberships, directories, ACLs, encryption, backup-copy absence, Field 9 implementation, or production readiness.
 
 Gate 19 through Gate 23 bounded preparation and independent review are complete. Gate 24 is partial: the official .NET Framework 4.8 Developer Pack and Windows SDK SignTool are available and their recorded local evidence matches the sanitized reconciliation report, while the legal signing identity, provider, certificate acquisition, compliant non-exportable cloud-HSM key, and release signing remain deferred. Gates 25 through 29 remain ineligible until those Gate 24 prerequisites and all other documented blockers are closed.
 
-Slice 3 through Slice 5 product repository lifecycles and the exact six-file Slice 5 post-publication synchronization are complete; final Slice 5 controlled-state endpoint is `023592cd62b1cd2f1efa94ab66f43817b43e07d3`. M4 closeout and M5 scope now follow their separate decision and charter lifecycle. External-provider credentials, Windows-service routing, persistence, signing and production activation remain outside scope. The separate production-signing Gate 24 remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.
+M4 Slice 3 through M4 Slice 5 product repository lifecycles and the exact six-file M4 Slice 5 post-publication synchronization are complete; final M4 Slice 5 controlled-state endpoint is `023592cd62b1cd2f1efa94ab66f43817b43e07d3`. M4 closeout and M5 scope now follow their separate decision and charter lifecycle. External-provider credentials, Windows-service routing, persistence, signing and production activation remain outside scope. The separate production-signing Gate 24 remains deferred. Field 8 remains `PARTIALLY_RESOLVED_WITH_REQUIRED_IMPLEMENTATION_DETAILS`, Category 14 remains unsatisfied, B2-MAN-007 remains `0` of `16`, and the all-fields-resolved gate remains `BLOCKED`.
